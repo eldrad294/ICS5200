@@ -26,7 +26,7 @@ drop table MSC_SQLSTATS;
 drop table MSC_DBA_SJL;
 drop table MSC_DBA_HIST_SNAPSHOT;
 drop table MSC_DBA_HIST_ASH;
-drop table MSC_SQL_BIND_CAPTURE
+drop table MSC_SQL_BIND_CAPTURE;
 drop table MSC_DBA_AWR_HIST;
 drop table MSC_DBA_SQL_HIST;
 drop table MSC_DBA_HIST_SYSMETRIC;
@@ -35,3 +35,4 @@ drop table MSC_DBA_HIST_SYSTEM_EVENT;
 drop table MSC_DBA_HIST_IOSTAT_DETAIL;
 drop table MSC_DBA_HIST_EVENT_HISTOGRAM;
 drop table MSC_DBA_HIST_SERVICE_STAT;
+drop table MSC_DBA_SJ_RUN_DETAILS;

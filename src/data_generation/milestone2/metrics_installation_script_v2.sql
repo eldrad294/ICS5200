@@ -1,8 +1,9 @@
 create or replace procedure PERF_EXTRACT_DATA
 is
-  i_count     pls_integer                      := 0;
-  v_retention varchar2(1)                      := 1;   							  -- number of days to retrieve data from
-  v_parallel_degree varchar2(2)                := 10;
+  i_count     pls_integer                      := 0;                                -- Starting value does not matter
+  i_debug_lvl pls_integer                      := 1;                                -- Debug level: 0 - No Debug, 1 - Debug only raised exceptions, 2 - Debug all messages
+  v_retention varchar2(1)                      := 1;   							    -- number of days to retrieve data from
+  v_parallel_degree varchar2(2)                := 2;                                -- Denotes script parallelity
   --
   v_MSC_DEBUG varchar2(400)                    := 'MSC_DEBUG';                      -- debug table for logging purposes
   v_MSC_VSQL varchar2(200)                     := 'MSC_VSQL';        		        -- v$sql
@@ -27,6 +28,7 @@ is
   v_MSC_DBA_HIST_IOSTAT_DETAIL varchar2(200)   := 'MSC_DBA_HIST_IOSTAT_DETAIL';     -- dba_hist_iostat_detail
   v_MSC_DBA_HIST_EVENT_HISTOGRAM varchar2(200) := 'MSC_DBA_HIST_EVENT_HISTOGRAM';   -- dba_hist_event_histogram
   v_MSC_DBA_HIST_SERVICE_STAT varchar2(200)    := 'MSC_DBA_HIST_SERVICE_STAT';      -- dba_hist_service_stat
+  v_MSC_DBA_SJ_RUN_DETAILS varchar2(200)       := 'MSC_DBA_SJ_RUN_DETAILS';         -- dba_scheduler_job_run_details
 begin
   --
   -- MSC_DEBUG
@@ -43,7 +45,9 @@ begin
 						   message varchar2(800) not null,
 						   log_date varchar2(30) not null
 				         ) tablespace USERS';
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values (''Created Debug Table'', '''||to_char(sysdate)||''')';
+      if (i_debug_lvl > 1) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values (''Created Debug Table'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+      end if;
       commit;
     end if;
     --dbms_output.put_line(v_MSC_VSQL||' extract complete..');
@@ -51,7 +55,6 @@ begin
     when others then
       rollback;
       dbms_output.put_line(sqlerrm);
-      commit;
   end;
   --
   -- v$sql
@@ -79,13 +82,17 @@ begin
 		                   and   last_active_time is not null
 		                   order by last_active_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_VSQL||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_VSQL||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- v$sqlarea
@@ -113,13 +120,17 @@ begin
 		                   and   last_active_time is not null
 		                   order by last_active_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_VSQLAREA||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_VSQLAREA||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- v$sql_workarea
@@ -155,13 +166,17 @@ begin
 	     							sw.operation_id,
 	     							sw.child_number';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_SQLWORKAREA||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_SQLWORKAREA||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- v$active_session_history
@@ -189,13 +204,17 @@ begin
 		                   and   sample_time is not null
 		                   order by sample_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_ASH||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_ASH||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- v$rman_backup_job_details
@@ -223,13 +242,17 @@ begin
 		                   and   start_time is not null
 		                   order by start_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_RMAN_BJD||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_RMAN_BJD||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- v$sql_plan_statistics
@@ -265,13 +288,17 @@ begin
                                     sps.operation_id,
                                     sps.child_number';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_SQL_PLAN_STATS||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_SQL_PLAN_STATS||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- v$sql_plan_statistics_all
@@ -299,13 +326,17 @@ begin
 		                   and   timestamp is not null
 		                   order by timestamp, id';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_SQL_PLAN_STATS_ALL||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_SQL_PLAN_STATS_ALL||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- v$sqlstats
@@ -333,13 +364,17 @@ begin
 		                   and   last_active_time is not null
 		                   order by last_active_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_SQLSTATS||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_SQLSTATS||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- dba_scheduler_job_log
@@ -367,13 +402,17 @@ begin
 		                   and   log_date is not null
 		                   order by log_date';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_SJL||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_SJL||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- dba_hist_snapshot
@@ -401,13 +440,17 @@ begin
 		                   and  begin_interval_time is not null
 		                   order by begin_interval_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_SNAPSHOT||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_SNAPSHOT||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- dba_hist_active_sess_history
@@ -435,13 +478,17 @@ begin
 		                   and  sample_time is not null
 		                   order by sample_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_ASH||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_ASH||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- v$sql_bind_capture
@@ -469,7 +516,7 @@ begin
     else
       --
       execute immediate 'insert into '||v_MSC_SQL_BIND_CAPTURE||'
-                           select /*+PARALLEL('||v_parallel_degree||')*/sbc.address, sbc.hash_value, sbc.sql_id, sbc.child_address, sbc.child_number, sbc.name, sbc.position, sbc.dup_position, sbc.datatype, sbc.datatype_string, sbc.character_sid, sbc.precision, sbc.scale, sbc.max_length, sbc.was_captured, sbc.last_captured, sbc.con_id
+                           select /*+PARALLEL('||v_parallel_degree||')*/sbc.address, sbc.hash_value, sbc.sql_id, sbc.child_address, sbc.child_number, sbc.name, sbc.position, sbc.dup_position, sbc.datatype, sbc.datatype_string, sbc.character_sid, sbc.precision, sbc.scale, sbc.max_length, sbc.was_captured, sbc.last_captured
 						   from   v$sql_bind_capture sbc,
 					              v$sql s
 						   where  s.sql_id = sbc.sql_id
@@ -479,13 +526,17 @@ begin
 						   order by s.last_active_time,
 							        sbc.child_number';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_SQL_BIND_CAPTURE||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_SQL_BIND_CAPTURE||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- dba_tables
@@ -571,23 +622,31 @@ begin
         execute immediate 'insert into '||v_MSC_DBA_AWR_HIST||' (output, snap_id, time_stamp)
         					 select output, '||to_char(rec.snap_id)||', sysdate
         					 from table(dbms_workload_repository.awr_report_html('||to_char(rec.dbid)||',1,'||to_char(rec.snap_id)||','||to_char(rec.snap_id + 1)||'))';
-        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_AWR_HIST||' extract complete'', '''||to_char(sysdate)||''')';
+        if (i_debug_lvl > 1) then
+          execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_AWR_HIST||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        end if;
         commit;
       exception
         when others then
           rollback;
-          execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-          commit;
+          if (i_debug_lvl > 0) then
+            execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+            commit;
+          end if;
       end;
     end loop;
     --
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_AWR_HIST||' extract complete'', '''||to_char(sysdate)||''')';
-    commit;
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_AWR_HIST||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+      commit;
+    end if;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- dba_hist_snapshot
@@ -625,13 +684,17 @@ begin
                            and   to_date(to_char(sysdate,''DD/MM/YYYY HH24:MI:SS''), ''DD/MM/YYYY HH24:MI:SS'') --Returns n day snapshot
                            order by begin_interval_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_SQL_HIST||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_SQL_HIST||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- dba_hist_sysmetric
@@ -661,13 +724,17 @@ begin
 						   and   to_date(to_char(sysdate,''DD/MM/YYYY HH24:MI:SS''), ''DD/MM/YYYY HH24:MI:SS'') --Returns n day snapshot
 						   order by snap_id, begin_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_SYSMETRIC||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_SYSMETRIC||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- dba_hist_sysstat
@@ -699,13 +766,17 @@ begin
 						   and to_date(to_char(sysdate,''DD/MM/YYYY HH24:MI:SS''), ''DD/MM/YYYY HH24:MI:SS'')
 						   order by dhss.snap_id, dhss.begin_interval_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_SYSSTAT||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_SYSSTAT||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- dba_hist_system_event
@@ -737,13 +808,17 @@ begin
 						   and to_date(to_char(sysdate,''DD/MM/YYYY HH24:MI:SS''), ''DD/MM/YYYY HH24:MI:SS'')
 						   order by dhss.snap_id, dhss.begin_interval_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_SYSTEM_EVENT||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_SYSTEM_EVENT||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- dba_hist_iostat_detail
@@ -775,13 +850,17 @@ begin
 						   and to_date(to_char(sysdate,''DD/MM/YYYY HH24:MI:SS''), ''DD/MM/YYYY HH24:MI:SS'')
 						   order by dhss.snap_id, dhss.begin_interval_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_IOSTAT_DETAIL||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_IOSTAT_DETAIL||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- dba_hist_event_histogram
@@ -796,7 +875,7 @@ begin
       --
       execute immediate 'create table '||v_MSC_DBA_HIST_EVENT_HISTOGRAM||' tablespace USERS as
 	 					 select /*+ PARALLEL('||v_parallel_degree||')*/ dhs.*, dhss.begin_interval_time
-						 from dba_hist_iostat_detail dhs,
+						 from dba_hist_event_histogram dhs,
 						      dba_hist_snapshot dhss
 						 where dhs.snap_id = dhss.snap_id
 						 and begin_interval_time between to_date(to_char(sysdate-'||v_retention||',''DD/MM/YYYY HH24:MI:SS''), ''DD/MM/YYYY HH24:MI:SS'')
@@ -806,20 +885,24 @@ begin
       --
       execute immediate 'insert into '||v_MSC_DBA_HIST_EVENT_HISTOGRAM||'
                            select /*+ PARALLEL('||v_parallel_degree||')*/ dhs.*, dhss.begin_interval_time
-						   from dba_hist_iostat_detail dhs,
+						   from dba_hist_event_histogram dhs,
 						        dba_hist_snapshot dhss
 						   where dhs.snap_id = dhss.snap_id
 						   and begin_interval_time between to_date(to_char(sysdate-'||v_retention||',''DD/MM/YYYY HH24:MI:SS''), ''DD/MM/YYYY HH24:MI:SS'')
 						   and to_date(to_char(sysdate,''DD/MM/YYYY HH24:MI:SS''), ''DD/MM/YYYY HH24:MI:SS'')
 						   order by dhss.snap_id, dhss.begin_interval_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_EVENT_HISTOGRAM||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_EVENT_HISTOGRAM||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
   -- dba_hist_service_stat
@@ -851,23 +934,68 @@ begin
 						   and to_date(to_char(sysdate,''DD/MM/YYYY HH24:MI:SS''), ''DD/MM/YYYY HH24:MI:SS'')
 						   order by dhss.snap_id, dhss.begin_interval_time';
     end if;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_SERVICE_STAT||' extract complete'', '''||to_char(sysdate)||''')';
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_HIST_SERVICE_STAT||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
     commit;
   exception
     when others then
       rollback;
-      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-      commit;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
   end;
   --
-  execute immediate 'insert into '||v_MSC_DEBUG|| ' values (''Script Complete.'', '''||to_char(sysdate)||''')';
-  commit;
+  -- DBA_SCHEDULER_JOB_RUN_DETAILS
+  begin
+    --
+    select count(*)
+    into i_count
+    from user_tables
+    where table_name = v_MSC_DBA_SJ_RUN_DETAILS;
+    --
+    if i_count = 0 then
+      --
+      execute immediate 'create table '||v_MSC_DBA_SJ_RUN_DETAILS||' tablespace USERS as
+	 					 select /*+ PARALLEL('||v_parallel_degree||')*/ *
+						 from dba_scheduler_job_run_details
+						 order by log_id';
+    else
+      --
+      execute immediate 'insert into '||v_MSC_DBA_SJ_RUN_DETAILS||'
+                           select /*+ PARALLEL('||v_parallel_degree||')*/ *
+						   from dba_scheduler_job_run_details
+						   where log_date between to_date(to_char(sysdate-'||v_retention||',''DD/MM/YYYY HH24:MI:SS''), ''DD/MM/YYYY HH24:MI:SS'')
+						   and to_date(to_char(sysdate,''DD/MM/YYYY HH24:MI:SS''), ''DD/MM/YYYY HH24:MI:SS'')
+						   order by log_id';
+    end if;
+    if (i_debug_lvl > 1) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||v_MSC_DBA_SJ_RUN_DETAILS||' extract complete'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    end if;
+    commit;
+  exception
+    when others then
+      rollback;
+      if (i_debug_lvl > 0) then
+        execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+        commit;
+      end if;
+  end;
+  --
+  -- Scrpt Complete
+  if (i_debug_lvl > 1) then
+    execute immediate 'insert into '||v_MSC_DEBUG|| ' values (''Script Complete.'', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+    commit;
+  end if;
   --
 exception
   when others then
     rollback;
-    execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate)||''')';
-    commit;
+    if (i_debug_lvl > 0) then
+      execute immediate 'insert into '||v_MSC_DEBUG|| ' values ('''||sqlerrm||''', '''||to_char(sysdate,'DD/MM/YYYY HH24:MI:SS')||''')';
+      commit;
+    end if;
 end;
 /
 --
@@ -877,7 +1005,7 @@ begin
     job_name => 'PERF_JOB_EXTRACT_DATA',
     job_type => 'STORED_PROCEDURE',
     job_action  => 'PERF_EXTRACT_DATA',
-    start_date => '03-JUL-2018 10.48.00 AM',
+    start_date => '09-JUL-2018 10.09.00 AM',
     repeat_interval => 'FREQ=DAILY;',
     end_date => '30-DEC-2019 11.59.00 PM',
     auto_drop => FALSE,
