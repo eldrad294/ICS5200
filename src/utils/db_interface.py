@@ -1,6 +1,7 @@
 #
 # Module Imports
 import cx_Oracle
+import getpass
 #
 class DatabaseInterface:
     #
@@ -10,10 +11,10 @@ class DatabaseInterface:
         self.__host = host
         self.__service = service
         self.__port = port
-        self.__password = input("Enter database password:")
+        self.__password = getpass.getpass("Enter database password:")
     #
     def connect(self):
-        conn_str = self.__user + "/" + self.__password + "@" + self.__host + ":" + self.__port + "/" + self.__service
+        conn_str = str(self.__user) + "/" + str(self.__password) + "@" + str(self.__host) + ":" + str(self.__port) + "/" + str(self.__service)
         self.conn = cx_Oracle.connect(conn_str)
         print("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
     #
