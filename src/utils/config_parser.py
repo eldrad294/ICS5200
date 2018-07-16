@@ -53,5 +53,5 @@ class ConfigParser:
         if not os.path.isfile(config_file_path):
             raise ValueError('File not found.')
 #
-config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'config.ini')
+config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'main/config.ini')
 g_config = ConfigParser(config_file)

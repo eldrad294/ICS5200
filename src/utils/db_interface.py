@@ -7,7 +7,7 @@ import getpass
 class DatabaseInterface:
     #
     def __init__(self, instance_name=None, user=None, host=None, service=None, port=None):
-        self.__instance_name = str(instance_name)
+        self.__instance_name = instance_name
         self.__user = str(user)
         self.__host = str(host)
         self.__service = str(service)
@@ -60,6 +60,7 @@ class DatabaseInterface:
         :return:
         """
         self.conn.close()
+        print("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
 #
 # Retrieves config data
 instance_name = g_config.get_value('DatabaseConnectionString','instance_name')
