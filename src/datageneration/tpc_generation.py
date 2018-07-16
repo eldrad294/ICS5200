@@ -41,7 +41,7 @@ class TPC_Wrapper:
             elif parallel_degree > 1:
                 sys = "./dsdgen -f -scale " + str(data_size) + " -dir " + data_generated_directory + "/" + data_generated_directory[0] + " -parallel " + str(parallel_degree) + " -FORCE"
             else:
-                raise Exception("Parallel degree not Supported!")
+                raise Exception("Parallel degree not supported!")
             output = os.system(sys)
             if output != 0:
                 raise Exception("Terminating process!")
