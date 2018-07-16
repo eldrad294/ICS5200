@@ -1,6 +1,7 @@
 #
 # Module Imports
 from src.utils.config_parser import g_config
+from src.utils.logger import logger
 import cx_Oracle
 import getpass
 #
@@ -40,7 +41,7 @@ class DatabaseInterface:
         """
         conn_str = self.__user + "/" + self.__password + "@" + self.__host + ":" + self.__port + "/" + self.__service
         self.conn = cx_Oracle.connect(conn_str)
-        print("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
+        logger.log("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
     #
     def query(self, query, params=None):
         """
@@ -60,7 +61,7 @@ class DatabaseInterface:
         :return:
         """
         self.conn.close()
-        print("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
+        logger.log("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
 #
 # Retrieves config data
 instance_name = g_config.get_value('DatabaseConnectionString','instance_name')
