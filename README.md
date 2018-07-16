@@ -7,3 +7,11 @@ to generate efficient Explain Plans can do so upon mantained, updated Optimizer 
 
 # Project Distribution
 - src
+  - datageneration
+  - main
+  - prototypes
+  - sql
+  - utils
+- data
+  - TPC-DS
+  - TPC-E
