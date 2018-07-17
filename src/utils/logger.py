@@ -4,7 +4,8 @@ from src.utils.config_parser import g_config
 from src.utils.env_var_loader import ev_loader
 import datetime, time
 #
-class Logger():
+#
+class Logger:
     """
     This class acts under the the singleton design pattern, used for environment logging
     """
