@@ -25,8 +25,8 @@ db_conn.connect()
 #
 tpcds_generation_bool, tpce_generation_bool = bool(g_config.get_value('DataGeneration','tpcds_generation')), \
                                               bool(g_config.get_value('DataGeneration','tpce_generation'))
-parallel_degree, data_size = int(g_config.get_value('DataGeneration','tpcds_generation')), \
-                             int(g_config.get_value('DataGeneration','tpcds_generation'))
+parallel_degree, data_size = int(g_config.get_value('DataGeneration','parallel_degree')), \
+                             int(g_config.get_value('DataGeneration','data_size'))
 if tpcds_generation_bool is True:
     TPC_Wrapper.generate_data(tpc_type='TPC-DS',
                               data_size=data_size,
