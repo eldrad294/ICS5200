@@ -1,5 +1,6 @@
 #
 # Module Imports
+from src.utils.logger import logger
 from os.path import expanduser
 import os
 home = expanduser("~")
@@ -46,7 +47,7 @@ class TPC_Wrapper:
             if output != 0:
                 raise Exception("Terminating process!")
             #
-            print(supported_tpc_types[0] + " data generated for [" + str(data_size) + "] Gigabytes using parallel degree [" + str(parallel_degree) + "]")
+            logger.log(supported_tpc_types[0] + " data generated for [" + str(data_size) + "] Gigabytes using parallel degree [" + str(parallel_degree) + "]")
         elif tpc_type == supported_tpc_types[1]:
             raise NotImplementedError("TPC-E not supported yet!")
 #
