@@ -53,8 +53,10 @@ class DatabaseInterface:
         :param params:
         :return:
         """
+        if params is None:
+            params = {}
         cursor = self.conn.cursor()
-        result = cursor.execute(query, params).fetchall()
+        result = cursor.execute(sql=query, bind=params).fetchall()
         cursor.close()
         return result
     #
