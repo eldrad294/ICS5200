@@ -81,4 +81,10 @@ db_conn = DatabaseInterface(instance_name=instance_name,
                             host=host,
                             service=service,
                             port=port)
-
+"""
+Follow below example:
+---------------------
+db_conn.connect()
+rec_cur = db_conn.query('select 1 from dual')
+print(rec_cur)
+"""

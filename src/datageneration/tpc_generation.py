@@ -51,6 +51,10 @@ class TPC_Wrapper:
         elif tpc_type == supported_tpc_types[1]:
             raise NotImplementedError("TPC-E not supported yet!")
 #
+"""
+Follow below example:
+---------------------
 TPC_Wrapper.generate_data(tpc_type='TPC-DS',
                           data_size=1,
                           parallel_degree=2)
+"""
