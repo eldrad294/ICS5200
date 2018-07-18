@@ -46,7 +46,7 @@ class DatabaseInterface:
         except Exception as e:
             logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
     #
-    def query(self, query):
+    def query(self, query, params=None):
         """
         Statement wrapper method, invoked to pass query statements to the connected database instance
         :param query:
@@ -54,7 +54,10 @@ class DatabaseInterface:
         :return:
         """
         cursor = self.conn.cursor()
-        result = cursor.execute(sql=query)
+        if params is None:
+            result = cursor.execute(query).fetchall()
+        else:
+            result = cursor.execute(query, params).fetchall()
         cursor.close()
         return result
     #
