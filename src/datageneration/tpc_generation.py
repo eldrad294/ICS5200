@@ -33,14 +33,14 @@ class TPC_Wrapper:
             # TPC-DS
             dsdgen = home+"/ICS5200/data/TPC-DS/tools"
             #
-            if not os.path.exists(data_generated_directory + "/" + data_generated_directory[0]):
-                os.makedirs(data_generated_directory + "/" + data_generated_directory[0])
+            if not os.path.exists(data_generated_directory + "/" + supported_tpc_types[0]):
+                os.makedirs(data_generated_directory + "/" + supported_tpc_types[0])
             os.chdir(dsdgen)
             #
             if parallel_degree > 0:
-                sys = "./dsdgen -scale " + str(data_size) + " -dir " + data_generated_directory + "/" + data_generated_directory[0] + " -FORCE"
+                sys = "./dsdgen -scale " + str(data_size) + " -dir " + data_generated_directory + "/" + supported_tpc_types[0] + " -FORCE"
             elif parallel_degree > 1:
-                sys = "./dsdgen -f -scale " + str(data_size) + " -dir " + data_generated_directory + "/" + data_generated_directory[0] + " -parallel " + str(parallel_degree) + " -FORCE"
+                sys = "./dsdgen -f -scale " + str(data_size) + " -dir " + data_generated_directory + "/" + supported_tpc_types[0] + " -parallel " + str(parallel_degree) + " -FORCE"
             else:
                 raise Exception("Parallel degree not supported!")
             output = os.system(sys)
@@ -55,6 +55,7 @@ class TPC_Wrapper:
 Follow below example:
 ---------------------
 TPC_Wrapper.generate_data(tpc_type='TPC-DS',
+                          data_generated_directory=data_generated_directory,
                           data_size=1,
                           parallel_degree=2)
 """

@@ -27,8 +27,11 @@ tpcds_generation_bool, tpce_generation_bool = bool(g_config.get_value('DataGener
                                               bool(g_config.get_value('DataGeneration','tpce_generation'))
 parallel_degree, data_size = int(g_config.get_value('DataGeneration','parallel_degree')), \
                              int(g_config.get_value('DataGeneration','data_size'))
+data_generated_directory = str(g_config.get_value('DataGeneration','data_generated_directory'))
+#
 if tpcds_generation_bool is True:
     TPC_Wrapper.generate_data(tpc_type='TPC-DS',
+                              data_generated_directory=data_generated_directory,
                               data_size=data_size,
                               parallel_degree=parallel_degree)
 elif tpce_generation_bool is True:
