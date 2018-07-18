@@ -33,8 +33,8 @@ class Logger:
         if Logger.__instance is None:
             Logger()
             Logger.__log_file_path = log_file_path
-            Logger.__write_to_disk = write_to_disk
-            Logger.__write_to_screen = write_to_screen
+            Logger.__write_to_disk = bool(write_to_disk)
+            Logger.__write_to_screen = bool(write_to_screen)
         return Logger.__instance
     #
     @staticmethod
