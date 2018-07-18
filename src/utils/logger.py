@@ -56,7 +56,7 @@ class Logger:
         """
         if Logger.__write_to_disk is True:
             try:
-                with open(Logger.__log_file_path,"a") as myfile:
+                with open(Logger.__log_file_path,"a+") as myfile:
                     myfile.write(str(Logger.getTimeStamp()) + ": " + str(msg))
             except IOError as ioe:
                 raise IOError("An exception was raised during handling of log file [" + str(ioe) + "]")
