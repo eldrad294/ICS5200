@@ -20,3 +20,5 @@ from src.utils.db_interface import db_conn
 #
 # Connects to Database
 db_conn.connect()
+rec_cur = db_conn.query('select 1 from dual;')
+print(rec_cur)
