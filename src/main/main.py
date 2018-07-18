@@ -16,7 +16,7 @@ from src.utils.env_var_loader import ev_loader
 # Loading of program variables
 ev_loader.var_load({"project_dir":project_dir,"src_dir":src_dir})
 from src.utils.logger import logger
-from src.datageneration.tpc_generation import TPC_Wrapper
+from src.data.tpc import TPC_Wrapper
 from src.utils.db_interface import db_conn
 from src.utils.config_parser import g_config
 #
@@ -25,15 +25,9 @@ db_conn.connect()
 #
 tpcds_generation_bool, tpce_generation_bool = bool(g_config.get_value('DataGeneration','tpcds_generation')), \
                                               bool(g_config.get_value('DataGeneration','tpce_generation'))
-parallel_degree, data_size = int(g_config.get_value('DataGeneration','parallel_degree')), \
-                             int(g_config.get_value('DataGeneration','data_size'))
-data_generated_directory = str(g_config.get_value('DataGeneration','data_generated_directory'))
 #
 if tpcds_generation_bool is True:
-    TPC_Wrapper.generate_data(tpc_type='TPC-DS',
-                              data_generated_directory=data_generated_directory,
-                              data_size=data_size,
-                              parallel_degree=parallel_degree)
+    TPC_Wrapper.generate_data(tpc_type='TPC-DS')
 elif tpce_generation_bool is True:
     raise NotImplementedError("This logic is not yet implemented!")
 #
