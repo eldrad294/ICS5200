@@ -1,0 +1,1 @@
+2018-07-18 17:19:23: Exception caught whilst establishing connection to database! [DPI-1047: 64-bit Oracle Client library cannot be loaded: "C:\app\gabriel.sammut\product\11.2.0\client_1\bin\oci.dll is not the correct architecture". See https://oracle.github.io/odpi/doc/installation.html#windows for help]

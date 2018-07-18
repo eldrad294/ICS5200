@@ -2,7 +2,7 @@
 # Module Imports
 from src.utils.config_parser import g_config
 from src.utils.env_var_loader import ev_loader
-import datetime, time
+import datetime, time, os
 #
 #
 class Logger:
@@ -56,10 +56,13 @@ class Logger:
         """
         if Logger.__write_to_disk is True:
             try:
+                if not os.path.exists(os.path.dirname(Logger.__log_file_path)):
+                    os.makedirs(os.path.dirname(Logger.__log_file_path))
+                #
                 with open(Logger.__log_file_path,"a+") as myfile:
                     myfile.write(str(Logger.getTimeStamp()) + ": " + str(msg))
-            except IOError as ioe:
-                raise IOError("An exception was raised during handling of log file [" + str(ioe) + "]")
+            except OSError as ioe:
+                raise OSError("An exception was raised during handling of log file [" + str(ioe) + "]")
         #
         if Logger.__write_to_screen is True:
             print(str(Logger.getTimeStamp()) + ": " + str(msg))
