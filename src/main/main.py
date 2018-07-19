@@ -29,8 +29,8 @@ from src.data.loading import FileLoader
 # Establishes database connection
 db_conn.connect()
 #
-tpcds_generation_bool, tpce_generation_bool = bool(g_config.get_value('DataGeneration','tpcds_generation')), \
-                                              bool(g_config.get_value('DataGeneration','tpce_generation'))
+tpcds_generation_bool, tpce_generation_bool = bool(g_config.get_value('DataGeneration','tpcds_generation').title()), \
+                                              bool(g_config.get_value('DataGeneration','tpce_generation').title())
 #
 """
 Data Generation
@@ -45,8 +45,8 @@ if tpce_generation_bool is True:
 """
 Data Loading
 """
-tpcds_loading_bool, tpce_loading_bool = bool(g_config.get_value('DataLoading','tpcds_loading')), \
-                                        bool(g_config.get_value('DataLoading','tpce_loading'))
+tpcds_loading_bool, tpce_loading_bool = bool(g_config.get_value('DataLoading','tpcds_loading').title()), \
+                                        bool(g_config.get_value('DataLoading','tpce_loading').title())
 data_generated_dir = str(g_config.get_value('DataGeneration','data_generated_directory'))
 fl = FileLoader(app_name="ICS5200", master="local")
 if tpcds_loading_bool is True:
