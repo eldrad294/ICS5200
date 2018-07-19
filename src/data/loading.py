@@ -1,4 +1,5 @@
 from pyspark import SparkContext, SparkConf
+from src.utils.logger import logger
 #
 # Module Imports
 class FileLoader:
@@ -15,6 +16,7 @@ class FileLoader:
         #
         conf = SparkConf().setAppName(app_name).setMaster(master)
         self.sc = SparkContext(conf=conf)
+        logger.log("Spark Context Established..")
     #
     def __validate(self, app_name, master):
         if app_name is None:
