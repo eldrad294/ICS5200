@@ -2,7 +2,6 @@
 # Module Imports
 import sys
 from os.path import dirname, abspath
-from src.data.loading import FileLoader
 #
 # Retrieving relative paths for project directory
 project_dir = dirname(dirname(dirname(abspath(__file__))))
@@ -16,10 +15,16 @@ from src.utils.env_var_loader import ev_loader
 #
 # Loading of program variables
 ev_loader.var_load({"project_dir":project_dir,"src_dir":src_dir})
+"""
+--------------IMPORTANT!!--------------
+-------PLACE NEW MODULES BELOW!!-------
+---------------------------------------
+"""
 from src.utils.logger import logger
 from src.data.tpc import TPC_Wrapper
 from src.utils.db_interface import db_conn
 from src.utils.config_parser import g_config
+from src.data.loading import FileLoader
 #
 # Establishes database connection
 db_conn.connect()
