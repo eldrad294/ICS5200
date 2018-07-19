@@ -33,8 +33,8 @@ class Logger:
         if Logger.__instance is None:
             Logger()
             Logger.__log_file_path = log_file_path
-            Logger.__write_to_disk = bool(write_to_disk.title())
-            Logger.__write_to_screen = bool(write_to_screen.title())
+            Logger.__write_to_disk = write_to_disk.title()
+            Logger.__write_to_screen = write_to_screen.title()
         return Logger.__instance
     #
     @staticmethod
@@ -54,7 +54,7 @@ class Logger:
         :param msg: Message output/written to disk
         :return:
         """
-        if Logger.__write_to_disk is True:
+        if Logger.__write_to_disk == 'True':
             try:
                 if not os.path.exists(os.path.dirname(Logger.__log_file_path)):
                     os.makedirs(os.path.dirname(Logger.__log_file_path))
@@ -64,7 +64,7 @@ class Logger:
             except OSError as ioe:
                 raise OSError("An exception was raised during handling of log file [" + str(ioe) + "]")
         #
-        if Logger.__write_to_screen is True:
+        if Logger.__write_to_screen == 'True':
             print(str(Logger.getTimeStamp()) + ": " + str(msg))
 #
 write_to_disk = g_config.get_value("EnvironmentSettings","write_to_disk")
