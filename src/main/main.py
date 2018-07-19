@@ -35,6 +35,8 @@ tpcds_generation_bool, tpce_generation_bool = bool(g_config.get_value('DataGener
 """
 Data Generation
 """
+print(tpcds_generation_bool)
+print(g_config.get_value('DataGeneration','tpcds_generation'))
 if tpcds_generation_bool is True:
     TPC_Wrapper.generate_data(tpc_type='TPC-DS')
 if tpce_generation_bool is True:
