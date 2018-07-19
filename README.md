@@ -5,6 +5,15 @@ This M.Sc research dissertation project attempts an untried approach for relatio
 maximizing Optimizer Statistics accuracy, by ensuring that all relavent statistics are kept up to date, respective of database schema and data. This ensures that any capable SQL engine attempting
 to generate efficient Explain Plans can do so upon mantained, updated Optimizer Statistics.
 
+# Virtual Environment
+Project dependencies are logged under a Python3 virtual environment. The enviroment can be enabled/disabled using the following instructions:
+## Enable Virtual Environment
+* cd ~/ICS5200/venv/bin
+* source activate
+## Disable Virtual Environment
+* cd ~/ICS5200/venv/bin
+* deactivate 
+
 # Project Distribution
 - src
   - datageneration
