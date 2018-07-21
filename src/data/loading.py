@@ -60,18 +60,10 @@ class FileLoader:
         """
         list_line = []
         value = ""
-        null_checker = 0
         for i in line:
             if i != self.__delimeter:
                 value += i
-                null_checker = 0
             else:
-                if null_checker == 1:
-                    value = "null"
-                    list_line.append(value)
-                    null_checker = 0
-                    value = ""
-                    continue
                 try:
                     value = int(value)
                 except Exception:
@@ -81,6 +73,5 @@ class FileLoader:
                         pass
                 list_line.append(value)
                 value = ""
-                null_checker = 1
         return tuple(list_line)
 
