@@ -1,7 +1,7 @@
 #
 # Module Imports
-from src.utils.config_parser import g_config
-from src.utils.env_var_loader import ev_loader
+from src.framework.config_parser import g_config
+from src.framework.env_var_loader import ev_loader
 import datetime, time, os
 #
 #

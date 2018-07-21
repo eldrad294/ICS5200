@@ -1,5 +1,5 @@
 from pyspark import SparkContext, SparkConf
-from src.utils.logger import logger
+from src.framework.logger import logger
 #
 # Module Imports
 class FileLoader:

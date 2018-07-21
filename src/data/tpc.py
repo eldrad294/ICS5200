@@ -1,7 +1,7 @@
 #
 # Module Imports
-from src.utils.logger import logger
-from src.utils.config_parser import g_config
+from src.framework.logger import logger
+from src.framework.config_parser import g_config
 from os.path import expanduser
 import os
 home = expanduser("~")
