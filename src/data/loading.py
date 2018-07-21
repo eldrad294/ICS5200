@@ -48,7 +48,7 @@ class FileLoader:
                 dml += " :" + str(i+1) + " "
             else:
                 dml += ", :" + str(i+1) + " "
-        dml += ");"
+        dml += ")"
         return dml, l_line
     #
     def __parse_data_line(self, line):
