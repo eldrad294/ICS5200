@@ -67,8 +67,11 @@ class FileLoader:
                 if value != "":
                     try:
                         value = int(value)
-                    except Exception as e:
-                        value = float(value)
+                    except Exception:
+                        try:
+                            value = float(value)
+                        except Exception:
+                            pass
                     list_line.append(value)
                     value = ""
         return list_line
