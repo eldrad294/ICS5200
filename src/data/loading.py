@@ -32,9 +32,7 @@ class FileLoader:
         for i, line in enumerate(l_dist_file):
             dml, bind_values = self.__build_insert(line, table_name)
             db_conn.execute_dml(dml, bind_values)
-            if i % 100 == 0 or i == len(l_dist_file):
-                # Commit transactions every 100 inserts, or at end of batch
-                db_conn.commit()
+        db_conn.commit()
     #
     def __build_insert(self, line, table):
         """
@@ -67,11 +65,10 @@ class FileLoader:
                 value += i
             else:
                 if value != "":
-                    if value.isdigit():
-                        if "." in value:
-                            value = float(value)
-                        else:
-                            value = int(value)
+                    try:
+                        value = int(value)
+                    except Exception as e:
+                        value = float(value)
                     list_line.append(value)
                     value = ""
         return list_line
