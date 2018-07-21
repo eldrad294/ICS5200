@@ -26,4 +26,6 @@ class FileLoader:
     #
     def load_data(self, path):
         dist_file = self.sc.textFile(path)
-        print(dist_file)
+        l_dist_file = dist_file.collect()
+        for line in l_dist_file:        
+            print(line)
