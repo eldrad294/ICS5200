@@ -67,6 +67,11 @@ class FileLoader:
                 value += i
             else:
                 if value != "":
+                    if value.isdigit():
+                        if "." in value:
+                            value = float(value)
+                        else:
+                            value = int(value)
                     list_line.append(value)
                     value = ""
         return list_line
