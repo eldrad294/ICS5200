@@ -47,9 +47,9 @@ class FileLoader:
         dml = "INSERT INTO " + table + " VALUES ("
         for i in range(len(l_line)):
             if i == 0:
-                dml += "':" + str(i+1) + "'"
+                dml += " :" + str(i+1) + " "
             else:
-                dml += ",':" + str(i+1) + "'"
+                dml += ", :" + str(i+1) + " "
         dml += ");"
         return dml, l_line
     #
