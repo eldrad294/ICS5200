@@ -74,5 +74,5 @@ class FileLoader:
                             pass
                     list_line.append(value)
                     value = ""
-        return list_line
+        return tuple(list_line)
 
