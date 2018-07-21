@@ -77,6 +77,25 @@ class TPC_Wrapper:
             raise Exception("No data files where found!")
         #
         return file_list
+    #
+    @staticmethod
+    def get_file_extension_list(tpc_type=None):
+        """
+        Iterates over all available files, and retrieves each respective file name + extension
+        :param tpc_type:
+        :return:
+        """
+        file_names = []
+        file_extensions = []
+        for data_file_name in TPC_Wrapper.get_data_file_list(tpc_type=tpc_type):
+            datum = data_file_name.split(".")
+            if datum[0] is None or datum[1] is None or datum[0] == "" or datum[1] == "":
+                raise ValueError("An attempt was made to parse non eligible files!")
+            file_names.append(datum[0])
+            file_extensions.append(datum[1])
+        if len(file_names) != len(file_extensions):
+            raise ValueError("File name list does not match list of file extensions!")
+        return file_names, file_extensions
 #
 """
 Follow below example:

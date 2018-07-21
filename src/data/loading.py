@@ -17,6 +17,8 @@ class FileLoader:
         conf = SparkConf().setAppName(app_name).setMaster(master)
         self.sc = SparkContext(conf=conf)
         logger.log("Spark Context Established..")
+        self.__bulk_load = 100
+        self.__delimeter = '|'
     #
     def __validate(self, app_name, master):
         if app_name is None:
@@ -24,8 +26,48 @@ class FileLoader:
         elif master is None:
             raise Exception('Master was not declared for Spark context!')
     #
-    def load_data(self, path):
+    def load_data(self, path, table_name, db_conn):
         dist_file = self.sc.textFile(path)
-        l_dist_file = dist_file.collect()
-        for line in l_dist_file:        
-            print(line)
+        l_dist_file = dist_file.collect() # Convert into python collection (list)
+        for i, line in enumerate(l_dist_file):
+            dml, bind_values = self.__build_insert(line, table_name)
+            db_conn.execute_dml(dml, bind_values)
+            if i % 100 == 0 or i == len(l_dist_file):
+                # Commit transactions every 100 inserts, or at end of batch
+                db_conn.commit()
+    #
+    def __build_insert(self, line, table):
+        """
+        Formats insert statement
+        :param line:
+        :param table:
+        :return:
+        """
+        l_line = self.__parse_data_line(line)
+        dml = "INSERT INTO " + table + " VALUES ("
+        for i in range(len(l_line)):
+            if i == 0:
+                dml += ":" + str(i+1)
+            else:
+                dml += ",:" + str(i+1)
+        dml += ");"
+        return dml, l_line
+    #
+    def __parse_data_line(self, line):
+        """
+        Iterates over input data line, and parses value into a list. Values are delimeted according to config file,
+        default to '|'
+        :param line:
+        :return:
+        """
+        list_line = []
+        value = ""
+        for i in line:
+            if i != self.__delimeter:
+                value += i
+            else:
+                if value != "":
+                    list_line.append(value)
+                    value = ""
+        return list_line
+

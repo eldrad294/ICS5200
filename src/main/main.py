@@ -46,12 +46,20 @@ Data Loading
 tpcds_loading_bool, tpce_loading_bool = g_config.get_value('DataLoading','tpcds_loading').title(), \
                                         g_config.get_value('DataLoading','tpce_loading').title()
 data_generated_dir = str(g_config.get_value('DataGeneration','data_generated_directory'))
+#
 fl = FileLoader(app_name="ICS5200", master="local")
 if tpcds_loading_bool == 'True':
     #
+    # Retrieve eligible data file names
+    table_names = TPC_Wrapper.get_file_extension_list(tpc_type="TPC-DS")[0]
+    #
     # Retrieve all eligible data files
-    for data_file_name in TPC_Wrapper.get_data_file_list("TPC-DS"):
-        fl.load_data(data_generated_dir + "/TPC-DS/" + data_file_name)
+    file_names = TPC_Wrapper.get_data_file_list(tpc_type="TPC-DS")
+    #
+    for i in range(len(file_names)):
+        fl.load_data(data_generated_dir + "/TPC-DS/" + file_names[i], table_names[i], db_conn)
+        logger.log("Loaded table [" + table_names[i] + "]")
+    #
 if tpce_loading_bool == 'True':
     raise NotImplementedError("This logic is not yet implemented!")
 #

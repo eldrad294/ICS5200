@@ -46,11 +46,12 @@ class DatabaseInterface:
         except Exception as e:
             logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
     #
-    def query(self, query, params=None):
+    def execute_query(self, query, params=None):
         """
-        Statement wrapper method, invoked to pass query statements to the connected database instance
-        :param query:
-        :param params:
+        Statement wrapper method, invoked to pass query statements to the connected database instance, and return
+        cursor result set in the form of a tuple set
+        :param query: SQL statement (selects)
+        :param params: dictionary of bind variables
         :return:
         """
         cursor = self.conn.cursor()
@@ -60,6 +61,27 @@ class DatabaseInterface:
             result = cursor.execute(query, params).fetchall()
         cursor.close()
         return result
+    #
+    def execute_dml(self, dml, params=None):
+        """
+        Statement wrapper methodm invokled to pass dml statements to the connected database instance
+        :param dml: (insert, update, delete, merge)
+        :param params: dictionary of bind variables
+        :return:
+        """
+        cursor = self.conn.cursor()
+        if params is None:
+            cursor.execute(dml)
+        else:
+            cursor.execute(dml, params)
+        cursor.close()
+    #
+    def commit(self):
+        """
+        Commits transaction/s
+        :return:
+        """
+        self.conn.commit()
     #
     def close(self):
         """
@@ -85,6 +107,6 @@ db_conn = DatabaseInterface(instance_name=instance_name,
 Follow below example:
 ---------------------
 db_conn.connect()
-rec_cur = db_conn.query('select 1 from dual')
+rec_cur = db_conn.execute_query('select 1 from dual')
 print(rec_cur)
 """
