@@ -13,7 +13,7 @@ class FileLoader:
         #
         self.__validate(app_name=app_name, master=master)
         #
-        self.sc = self.__create_Spark_context()
+        self.sc = self.__create_Spark_context(app_name=app_name,master=master)
         #
         self.__bulk_load = 100
         self.__delimeter = '|'
