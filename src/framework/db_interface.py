@@ -70,9 +70,9 @@ class DatabaseInterface:
         :return:
         """
         cursor = self.conn.cursor()
-        print(dml)
-        print(params)
-        print(len(params))
+        # print(dml)
+        # print(params)
+        # print(len(params))
         if params is None:
             cursor.execute(dml)
         else:

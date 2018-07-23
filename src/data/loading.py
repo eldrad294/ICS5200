@@ -33,6 +33,7 @@ class FileLoader:
             dml, bind_values = self.__build_insert(line, table_name)
             db_conn.execute_dml(dml, bind_values)
         db_conn.commit()
+        logger.log("Loaded table [" + table_name + "]")
     #
     def __build_insert(self, line, table):
         """
@@ -64,6 +65,7 @@ class FileLoader:
             if i != self.__delimeter:
                 value += i
             else:
+                value = value.encode('utf-8') # Required for data loading due to some illegal characters within TPC-DS
                 try:
                     value = int(value)
                 except Exception:

@@ -58,7 +58,6 @@ if tpcds_loading_bool == 'True':
     #
     for i in range(len(file_names)):
         fl.load_data(data_generated_dir + "/TPC-DS/" + file_names[i], table_names[i], db_conn)
-        logger.log("Loaded table [" + table_names[i] + "]")
     #
 if tpce_loading_bool == 'True':
     raise NotImplementedError("This logic is not yet implemented!")
