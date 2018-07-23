@@ -22,11 +22,11 @@ class FileLoader:
         conf = SparkConf()
         conf.setAppName(app_name)
         conf.setMaster(master)
-        conf.set('spark.executor.memory', '2g')
-        conf.set('spark.executor.cores', '2')
-        conf.set('spark.cores.max', '2')
-        conf.set('spark.driver.memory', '2g')
-        conf.set('spark.logConf', True)
+        conf.set('spark.executor.memory', str(g_config.get_value('SparkContext','spark_executor_memory')))
+        conf.set('spark.executor.cores', str(g_config.get_value('SparkContext','spark_executor_cores')))
+        conf.set('spark.cores.max', str(g_config.get_value('SparkContext','spark_cores_max')))
+        conf.set('spark.driver.memory', str(g_config.get_value('SparkContext','spark_driver_memory')))
+        conf.set('spark.logConf', g_config.get_value('SparkContext','spark_logConf').title())
         sc = SparkContext(conf=conf)
         logger.log("Spark Context Established..")
         for conf in sc.getConf().getAll():
@@ -43,9 +43,10 @@ class FileLoader:
         dist_file = self.sc.textFile(path)
         l_dist_file = dist_file.collect() # Convert into python collection (list)
         for i, line in enumerate(l_dist_file):
+            line = line.encode('utf-8')
             dml, bind_values = self.__build_insert(line, table_name)
             db_conn.execute_dml(dml, bind_values)
-            if i%10000==0:
+            if i%10000==0 and i != 0:
                 logger.log("Loaded " + str(i) + " records..")
         db_conn.commit()
         logger.log("Loaded table [" + table_name + "]")
