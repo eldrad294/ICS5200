@@ -48,6 +48,11 @@ class Logger:
         return datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
     #
     @staticmethod
+    def getDate():
+        ts = time.time()
+        return datetime.datetime.fromtimestamp(ts).strftime('%Y%M%D')
+    #
+    @staticmethod
     def log(msg):
         """
         Method invoked to either log to disk, or log to screen, or both
@@ -72,6 +77,6 @@ write_to_screen = g_config.get_value("EnvironmentSettings","write_to_screen")
 log_file_name = g_config.get_value("EnvironmentSettings","log_file_name")
 log_file_path = ev_loader.var_get(var_name="project_dir") + "/log/"
 #
-logger = Logger.getInstance(log_file_path=log_file_path+log_file_name,
+logger = Logger.getInstance(log_file_path=log_file_path+log_file_name+ "_" + str(Logger.getDate()),
                             write_to_disk=write_to_disk,
                             write_to_screen=write_to_screen)
