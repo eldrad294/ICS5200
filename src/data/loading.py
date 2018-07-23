@@ -16,7 +16,9 @@ class FileLoader:
         #
         conf = SparkConf().setAppName(app_name).setMaster(master)
         self.sc = SparkContext(conf=conf)
-        logger.log("Spark Context Established..\n" + self.sc.getConf().getAll())
+        logger.log("Spark Context Established..")
+        for conf in self.sc.getConf().getAll():
+            logger.log(conf)
         self.__bulk_load = 100
         self.__delimeter = '|'
     #
