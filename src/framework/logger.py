@@ -65,7 +65,7 @@ class Logger:
                     os.makedirs(os.path.dirname(Logger.__log_file_path))
                 #
                 with open(Logger.__log_file_path,"a+") as myfile:
-                    myfile.write(str(Logger.getTimeStamp()) + ": " + str(msg))
+                    myfile.write(str(Logger.getTimeStamp()) + ": " + str(msg) + "\n")
             except OSError as ioe:
                 raise OSError("An exception was raised during handling of log file [" + str(ioe) + "]")
         #
