@@ -50,7 +50,7 @@ class Logger:
     @staticmethod
     def getDate():
         ts = time.time()
-        return datetime.datetime.fromtimestamp(ts).strftime('%Y%M%D')
+        return datetime.datetime.today().strftime('%Y%m%d')
     #
     @staticmethod
     def log(msg):
