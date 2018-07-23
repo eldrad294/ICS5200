@@ -36,8 +36,8 @@
 create table dbgen_version
 (
     dv_version                varchar(16)                   ,
-    dv_create_date            date                          ,
-    dv_create_time            date                          ,
+    dv_create_date            varchar(10)                   ,
+    dv_create_time            varchar(10)                   ,
     dv_cmdline_args           varchar(200)                  
 );
 
@@ -77,7 +77,7 @@ create table date_dim
 (
     d_date_sk                 integer               not null,
     d_date_id                 char(16)              not null,
-    d_date                    date                          ,
+    d_date                    varchar(10)                   ,
     d_month_seq               integer                       ,
     d_week_seq                integer                       ,
     d_quarter_seq             integer                       ,
@@ -171,8 +171,8 @@ create table item
 (
     i_item_sk                 integer               not null,
     i_item_id                 char(16)              not null,
-    i_rec_start_date          date                          ,
-    i_rec_end_date            date                          ,
+    i_rec_start_date          varchar(10)                   ,
+    i_rec_end_date            varchar(10)                   ,
     i_item_desc               varchar(200)                  ,
     i_current_price           decimal(7,2)                  ,
     i_wholesale_cost          decimal(7,2)                  ,
@@ -198,8 +198,8 @@ create table store
 (
     s_store_sk                integer               not null,
     s_store_id                char(16)              not null,
-    s_rec_start_date          date                          ,
-    s_rec_end_date            date                          ,
+    s_rec_start_date          varchar(10)                   ,
+    s_rec_end_date            varchar(10)                   ,
     s_closed_date_sk          integer                       ,
     s_store_name              varchar(50)                   ,
     s_number_employees        integer                       ,
@@ -232,8 +232,8 @@ create table call_center
 (
     cc_call_center_sk         integer               not null,
     cc_call_center_id         char(16)              not null,
-    cc_rec_start_date         date                          ,
-    cc_rec_end_date           date                          ,
+    cc_rec_start_date         varchar(10)                   ,
+    cc_rec_end_date           varchar(10)                   ,
     cc_closed_date_sk         integer                       ,
     cc_open_date_sk           integer                       ,
     cc_name                   varchar(50)                   ,
@@ -291,8 +291,8 @@ create table web_site
 (
     web_site_sk               integer               not null,
     web_site_id               char(16)              not null,
-    web_rec_start_date        date                          ,
-    web_rec_end_date          date                          ,
+    web_rec_start_date        varchar(10)                   ,
+    web_rec_end_date          varchar(10)                   ,
     web_name                  varchar(50)                   ,
     web_open_date_sk          integer                       ,
     web_close_date_sk         integer                       ,
@@ -357,8 +357,8 @@ create table web_page
 (
     wp_web_page_sk            integer               not null,
     wp_web_page_id            char(16)              not null,
-    wp_rec_start_date         date                          ,
-    wp_rec_end_date           date                          ,
+    wp_rec_start_date         varchar(10)                   ,
+    wp_rec_end_date           varchar(10)                   ,
     wp_creation_date_sk       integer                       ,
     wp_access_date_sk         integer                       ,
     wp_autogen_flag           char(1)                       ,
