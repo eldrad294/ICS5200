@@ -29,7 +29,7 @@ class FileLoader:
         conf.set('spark.logConf', True)
         sc = SparkContext(conf=conf)
         logger.log("Spark Context Established..")
-        for conf in self.sc.getConf().getAll():
+        for conf in sc.getConf().getAll():
             logger.log(conf)
         return sc
     #
