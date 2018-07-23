@@ -67,7 +67,6 @@ class FileLoader:
             if i != self.__delimeter:
                 value += i
             else:
-                value = value.encode('utf-8') # Required for data loading due to some illegal characters within TPC-DS
                 try:
                     value = int(value)
                 except Exception:
@@ -75,6 +74,11 @@ class FileLoader:
                         value = float(value)
                     except Exception:
                         pass
+                #
+                if type(value) == "str":
+                    # Required for data loading due to some illegal characters within TPC-DS
+                    value = value.encode('utf-8')
+                #
                 list_line.append(value)
                 value = ""
         return tuple(list_line)
