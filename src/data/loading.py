@@ -11,16 +11,26 @@ class FileLoader:
     #
     def __init__(self, app_name="ICS5200", master="local"):
         #
-        self.__validate(app_name=app_name,
-                        master=master)
+        self.__validate(app_name=app_name, master=master)
         #
-        conf = SparkConf().setAppName(app_name).setMaster(master)
+        self.__create_Spark_context()
+        #
+        self.__bulk_load = 100
+        self.__delimeter = '|'
+    #
+    def __create_Spark_context(self, app_name, master):
+        conf = SparkConf()
+        conf.setAppName(app_name)
+        conf.setMaster(master)
+        conf.set('spark.executor.memory', '2g')
+        conf.set('spark.executor.cores', '2')
+        conf.set('spark.cores.max', '2')
+        conf.set('spark.driver.memory', '2g')
+        conf.set('spark.logConf', True)
         self.sc = SparkContext(conf=conf)
         logger.log("Spark Context Established..")
         for conf in self.sc.getConf().getAll():
             logger.log(conf)
-        self.__bulk_load = 100
-        self.__delimeter = '|'
     #
     def __validate(self, app_name, master):
         if app_name is None:
