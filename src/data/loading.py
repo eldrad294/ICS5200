@@ -13,7 +13,7 @@ class FileLoader:
         #
         self.__validate(app_name=app_name, master=master)
         #
-        self.__create_Spark_context()
+        self.sc = self.__create_Spark_context()
         #
         self.__bulk_load = 100
         self.__delimeter = '|'
@@ -27,10 +27,11 @@ class FileLoader:
         conf.set('spark.cores.max', '2')
         conf.set('spark.driver.memory', '2g')
         conf.set('spark.logConf', True)
-        self.sc = SparkContext(conf=conf)
+        sc = SparkContext(conf=conf)
         logger.log("Spark Context Established..")
         for conf in self.sc.getConf().getAll():
             logger.log(conf)
+        return sc
     #
     def __validate(self, app_name, master):
         if app_name is None:
