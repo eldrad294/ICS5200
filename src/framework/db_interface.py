@@ -55,11 +55,17 @@ class DatabaseInterface:
         :return:
         """
         cursor = self.conn.cursor()
-        if params is None:
-            result = cursor.execute(query).fetchall()
-        else:
-            result = cursor.execute(query, params).fetchall()
-        cursor.close()
+        result = None
+        try:
+            if params is None:
+                result = cursor.execute(query).fetchall()
+            else:
+                result = cursor.execute(query, params).fetchall()
+        except Exception as e:
+            logger.log('Skipped record due to following exception: [' + str(e) + ']')
+        finally:
+            if cursor is not None:
+                cursor.close()
         return result
     #
     def execute_dml(self, dml, params=None):
@@ -70,14 +76,16 @@ class DatabaseInterface:
         :return:
         """
         cursor = self.conn.cursor()
-        # print(dml)
-        # print(params)
-        # print(len(params))
-        if params is None:
-            cursor.execute(dml)
-        else:
-            cursor.execute(dml, params)
-        cursor.close()
+        try:
+            if params is None:
+                cursor.execute(dml)
+            else:
+                cursor.execute(dml, params)
+        except Exception as e:
+            logger.log('Skipped record due to following exception: [' + str(e) + ']')
+        finally:
+            if cursor is not None:
+                cursor.close()
     #
     def commit(self):
         """

@@ -27,7 +27,7 @@ class FileLoader:
             raise Exception('Master was not declared for Spark context!')
     #
     def load_data(self, path, table_name, db_conn):
-        dist_file = self.sc.textFile(path, mode="utf-8")
+        dist_file = self.sc.textFile(path)
         l_dist_file = dist_file.collect() # Convert into python collection (list)
         for i, line in enumerate(l_dist_file):
             dml, bind_values = self.__build_insert(line, table_name)
@@ -74,10 +74,6 @@ class FileLoader:
                         value = float(value)
                     except Exception:
                         pass
-                #
-                # if type(value) == "str":
-                #     # Required for data loading due to some illegal characters within TPC-DS
-                #     value = value.encode('utf-8')
                 #
                 list_line.append(value)
                 value = ""
