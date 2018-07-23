@@ -41,7 +41,7 @@ class DatabaseInterface:
         """
         conn_str = self.__user + "/" + self.__password + "@" + self.__host + ":" + self.__port + "/" + self.__service
         try:
-            self.conn = cx_Oracle.connect(conn_str)
+            self.conn = cx_Oracle.connect(conn_str, encoding = "UTF-8", nencoding = "UTF-8")
             logger.log("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
         except Exception as e:
             logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
@@ -76,7 +76,6 @@ class DatabaseInterface:
         :return:
         """
         cursor = self.conn.cursor()
-        dml = dml.encode('utf-8')
         try:
             if params is None:
                 cursor.execute(dml)
