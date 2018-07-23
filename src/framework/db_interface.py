@@ -76,6 +76,7 @@ class DatabaseInterface:
         :return:
         """
         cursor = self.conn.cursor()
+        dml = dml.encode('utf-8')
         try:
             if params is None:
                 cursor.execute(dml)

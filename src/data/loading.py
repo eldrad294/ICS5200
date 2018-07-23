@@ -44,7 +44,6 @@ class FileLoader:
         dist_file = self.sc.textFile(path)
         l_dist_file = dist_file.collect() # Convert into python collection (list)
         for i, line in enumerate(l_dist_file):
-            line = line.encode('utf-8')
             dml, bind_values = self.__build_insert(line, table_name)
             db_conn.execute_dml(dml, bind_values)
             if i%10000==0 and i != 0:
