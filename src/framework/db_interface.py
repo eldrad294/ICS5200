@@ -109,17 +109,8 @@ class DatabaseInterface:
         """
         # Open and read the file as a single buffer
         fd = open(filename, 'r')
-        fileContent = fd.read()
+        sqlFile = fd.read()
         fd.close()
-        #
-        # Strip file from comments
-        sqlFile = ""
-        for line in fileContent:
-            if line[0] != "-" and line[1] != "-":
-                sqlFile += line
-        #
-        # Strip file content of useless characters
-        sqlFile = sqlFile.replace("\n","")
         #
         # all SQL commands (split on ';')
         sqlCommands = sqlFile.split(';')
@@ -129,8 +120,7 @@ class DatabaseInterface:
             # This will skip and report errors
             # For example, if the tables do not yet exist, this will skip over
             # the DROP TABLE commands
-            print(command)
-            if command is not None and command != "":
+            if command is not None or command != "":
                 self.execute_dml(command)
     #
     def close(self):
