@@ -112,9 +112,11 @@ class DatabaseInterface:
         sqlFile = fd.read()
         fd.close()
         #
+        # Strip file content of useless characters
+        sqlFile = sqlFile.replace("\n","")
+        #
         # all SQL commands (split on ';')
         sqlCommands = sqlFile.split(';')
-        #print(sqlCommands)
         #
         # Execute every command from the input file
         for command in sqlCommands:
