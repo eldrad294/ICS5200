@@ -55,7 +55,7 @@ if tpcds_loading_bool == 'True':
     result = int(db_conn.execute_query(sql_statement, fetch_single=True)[0])
     if result < 1:
         db_conn.executeScriptsFromFile(ev_loader.var_get("src_dir") + "/sql/Installation/tpcds_schema_tables.sql")
-        logger.log('TPC-DS schema generation successful!')
+        logger.log('TPC-DS table generation successful!')
     else:
         logger.log('Skipping schema creation..TPC-DS tables already exist!')
     #
@@ -68,6 +68,15 @@ if tpcds_loading_bool == 'True':
     for i in range(len(file_names)):
         fl.load_data(data_generated_dir + "/TPC-DS/" + file_names[i], table_names[i], db_conn)
     #
+    # Check whether indexes needs creating - executed only if relevant indexes are not found
+    sql_statement = "select count(*) from user_indexes where index_name = 'SS_SOLD_DATE_SK_INDEX'"
+    result = int(db_conn.execute_query(sql_statement, fetch_single=True)[0])
+    if result < 1:
+        logger.log('Starting schema indexes creation..')
+        db_conn.executeScriptsFromFile(ev_loader.var_get("src_dir") + "/sql/Installation/tpcds_schema_indexes.sql")
+        logger.log('TPC-DS indexes generation successful!')
+    else:
+        logger.log('Skipping schema creation..TPC-DS indexes already exist!')
 if tpce_loading_bool == 'True':
     raise NotImplementedError("This logic is not yet implemented!")
 #
