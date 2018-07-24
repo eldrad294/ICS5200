@@ -82,7 +82,7 @@ class DatabaseInterface:
             else:
                 cursor.execute(dml, params)
         except Exception as e:
-            logger.log('Skipped record due to following exception: [' + str(e) + ']')
+            logger.log('Skipped DML instruction due to following exception: [' + str(e) + ']')
         finally:
             if cursor is not None:
                 cursor.close()
@@ -93,6 +93,26 @@ class DatabaseInterface:
         :return:
         """
         self.conn.commit()
+    #
+    def executeScriptsFromFile(self, filename):
+        """
+        Opens SQL file, separates content by ; delimiter, and executes each instruction.
+        :return:
+        """
+        # Open and read the file as a single buffer
+        fd = open(filename, 'r')
+        sqlFile = fd.read()
+        fd.close()
+        #
+        # all SQL commands (split on ';')
+        sqlCommands = sqlFile.split(';')
+        #
+        # Execute every command from the input file
+        for command in sqlCommands:
+            # This will skip and report errors
+            # For example, if the tables do not yet exist, this will skip over
+            # the DROP TABLE commands
+            self.execute_query(command)
     #
     def close(self):
         """

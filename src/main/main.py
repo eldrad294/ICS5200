@@ -50,6 +50,16 @@ data_generated_dir = str(g_config.get_value('DataGeneration','data_generated_dir
 fl = FileLoader(app_name="ICS5200", master="local")
 if tpcds_loading_bool == 'True':
     #
+    # Check whether schema needs creating - executed only if relevant tables are not found
+    sql_statement = "select count(*) from user_tables where table_name = 'STORE_SALES'"
+    result = int(db_conn.execute_query(sql_statement))
+    if result < 1:
+        print(ev_loader.var_get("src_dir") + "/sql/Installation/tpcds_schema_tables.sql")
+        db_conn.executeScriptsFromFile(ev_loader.var_get("src_dir") + "/sql/Installation/tpcds_schema_tables.sql")
+        logger.log('TPC-DS schema generation successful!')
+    else:
+        logger.log('Skipping schema creation..TPC-DS tables already exist!')
+    #
     # Retrieve eligible data file names
     table_names = TPC_Wrapper.get_file_extension_list(tpc_type="TPC-DS")[0]
     #
