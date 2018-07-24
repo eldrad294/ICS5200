@@ -52,8 +52,9 @@ if tpcds_loading_bool == 'True':
     #
     # Check whether schema needs creating - executed only if relevant tables are not found
     sql_statement = "select count(*) from user_tables where table_name = 'STORE_SALES'"
-    result = db_conn.execute_query(sql_statement)
+    result = db_conn.execute_query(sql_statement, fetch_single=True)[0]
     print(result)
+    result = int(result)
     if result < 1:
         print(ev_loader.var_get("src_dir") + "/sql/Installation/tpcds_schema_tables.sql")
         db_conn.executeScriptsFromFile(ev_loader.var_get("src_dir") + "/sql/Installation/tpcds_schema_tables.sql")

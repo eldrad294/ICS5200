@@ -46,21 +46,28 @@ class DatabaseInterface:
         except Exception as e:
             logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
     #
-    def execute_query(self, query, params=None):
+    def execute_query(self, query, params=None, fetch_single=False):
         """
         Statement wrapper method, invoked to pass query statements to the connected database instance, and return
         cursor result set in the form of a tuple set
         :param query: SQL statement (selects)
         :param params: dictionary of bind variables
+        :param fetch_single: warns code logic that returned cursor will consist of a single result
         :return:
         """
         cursor = self.conn.cursor()
         result = None
         try:
-            if params is None:
-                result = cursor.execute(query).fetchall()
+            if fetch_single is True:
+                if params is None:
+                    result = cursor.execute(query).fetchone()
+                else:
+                    result = cursor.execute(query, params).fetchone()
             else:
-                result = cursor.execute(query, params).fetchall()
+                if params is None:
+                    result = cursor.execute(query).fetchall()
+                else:
+                    result = cursor.execute(query, params).fetchall()
         except Exception as e:
             logger.log('Skipped record due to following exception: [' + str(e) + ']')
         finally:
