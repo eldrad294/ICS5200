@@ -119,6 +119,7 @@ class DatabaseInterface:
             # This will skip and report errors
             # For example, if the tables do not yet exist, this will skip over
             # the DROP TABLE commands
+            print(command)
             self.execute_query(command)
     #
     def close(self):
