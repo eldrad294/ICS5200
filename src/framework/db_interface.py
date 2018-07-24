@@ -144,7 +144,8 @@ db_conn = DatabaseInterface(instance_name=instance_name,
                             user=user,
                             host=host,
                             service=service,
-                            port=port)
+                            port=port,
+                            password=password)
 """
 Follow below example:
 ---------------------
