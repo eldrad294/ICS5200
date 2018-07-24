@@ -7,13 +7,14 @@ import getpass
 #
 class DatabaseInterface:
     #
-    def __init__(self, instance_name=None, user=None, host=None, service=None, port=None):
+    def __init__(self, instance_name=None, user=None, host=None, service=None, port=None, password=None):
         self.__instance_name = instance_name
         self.__user = str(user)
         self.__host = str(host)
         self.__service = str(service)
         self.__port = str(port)
-        self.__password = str(getpass.getpass("Enter database password:"))
+        #self.__password = str(getpass.getpass("Enter database password:"))
+        self.__password = str(password)
         #
         # Validates connection config
         self.__validate_db_config()
@@ -137,6 +138,7 @@ user = g_config.get_value('DatabaseConnectionString','user')
 host = g_config.get_value('DatabaseConnectionString','host')
 service = g_config.get_value('DatabaseConnectionString','service')
 port = g_config.get_value('DatabaseConnectionString','port')
+password = g_config.get_value('DatabaseConnectionString','password')
 #
 db_conn = DatabaseInterface(instance_name=instance_name,
                             user=user,
