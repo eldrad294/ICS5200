@@ -89,7 +89,8 @@ class DatabaseInterface:
             else:
                 cursor.execute(dml, params)
         except Exception as e:
-            logger.log('Skipped DML instruction due to following exception: [' + str(e) + ']')
+            logger.log('Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' + dml +
+                       ']')
         finally:
             if cursor is not None:
                 cursor.close()
