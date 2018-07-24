@@ -120,7 +120,7 @@ class DatabaseInterface:
             # This will skip and report errors
             # For example, if the tables do not yet exist, this will skip over
             # the DROP TABLE commands
-            if command is not None or command != "" or command != '\n\n':
+            if command is not None and command != "" and command != '\n\n':
                 self.execute_dml(command)
     #
     def close(self):
