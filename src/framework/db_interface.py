@@ -114,13 +114,13 @@ class DatabaseInterface:
         #
         # all SQL commands (split on ';')
         sqlCommands = sqlFile.split(';')
+        print(sqlCommands)
         #
         # Execute every command from the input file
         for command in sqlCommands:
             # This will skip and report errors
             # For example, if the tables do not yet exist, this will skip over
             # the DROP TABLE commands
-            print(command)
             self.execute_dml(command)
     #
     def close(self):
