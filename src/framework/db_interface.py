@@ -50,7 +50,7 @@ class DatabaseInterface:
         except Exception as e:
             logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
     #
-    def execute_query(self, query, params=None, fetch_single=False):
+    def execute_query(self, query, params=None, fetch_single=False, describe=False):
         """
         Statement wrapper method, invoked to pass query statements to the connected database instance, and return
         cursor result set in the form of a tuple set.
@@ -58,10 +58,11 @@ class DatabaseInterface:
         :param query: SQL statement (selects)
         :param params: dictionary of bind variables
         :param fetch_single: warns code logic that returned cursor will consist of a single result
+        :param describe: Defines whether table schema is also returned
         :return:
         """
         cursor = self.conn.cursor()
-        result = None
+        result, description = None, None
         query = self.__clean_query(query)
         try:
             if fetch_single is True:
@@ -74,34 +75,45 @@ class DatabaseInterface:
                     result = cursor.execute(query).fetchall()
                 else:
                     result = cursor.execute(query, params).fetchall()
+            #
+            if describe is True:
+                description = cursor.description()
         except Exception as e:
             logger.log('Skipped record due to following exception: [' + str(e) + ']')
         finally:
             if cursor is not None:
                 cursor.close()
-        return result
+        #
+        return result, description
     #
-    def execute_dml(self, dml, params=None):
+    def execute_dml(self, dml, params=None, describe=False):
         """
         Statement wrapper methodm invokled to pass dml statements to the connected database instance.
         Expected to return no results from query execution
         :param dml: (insert, update, delete, merge, explain plan for, etc...)
         :param params: dictionary of bind variables
+        :param describe: Defines whether table schema is also returned
         :return:
         """
         cursor = self.conn.cursor()
+        description = None
         dml = self.__clean_query(dml)
         try:
             if params is None:
                 cursor.execute(dml)
             else:
                 cursor.execute(dml, params)
+            #
+            if describe is True:
+                description = cursor.description()
         except Exception as e:
-            logger.log('Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' + str(dml) +
-                       ']')
+            logger.log('Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
+                       str(dml) + ' ]')
         finally:
             if cursor is not None:
                 cursor.close()
+        #
+        return description
     #
     def commit(self):
         """
