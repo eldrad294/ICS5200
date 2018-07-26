@@ -35,6 +35,9 @@ class DatabaseInterface:
         if self.__port is None:
             raise ValueError("Database port was not declared!")
     #
+    def __clean_query(self, v_sql):
+        return v_sql.replace("\n"," ")
+    #
     def connect(self):
         """
         Establishes instance connection to Oracle database
@@ -59,6 +62,7 @@ class DatabaseInterface:
         """
         cursor = self.conn.cursor()
         result = None
+        query = self.__clean_query(query)
         try:
             if fetch_single is True:
                 if params is None:
@@ -86,6 +90,7 @@ class DatabaseInterface:
         :return:
         """
         cursor = self.conn.cursor()
+        dml = self.__clean_query(dml)
         try:
             if params is None:
                 cursor.execute(dml)
