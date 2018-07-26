@@ -18,16 +18,14 @@ class XPlan:
         Ensures that latest explain plan is returned from Oracle's plan_table
         :return:
         """
-        return """
-                select *
-                from plan_table
-                where plan_id = (
-                  select max(plan_id)
-                  from plan_table
-                  where to_date(to_char(timestamp,'MM/DD/YYYY'),'MM/DD/YYYY') = to_date(to_char(sysdate,'MM/DD/YYYY'),'MM/DD/YYYY')
-                )
-                order by id;
-               """
+        return "select * " \
+               "from plan_table " \
+                "where plan_id = ( " \
+                " select max(plan_id) " \
+                " from plan_table " \
+                " where to_date(to_char(timestamp,'MM/DD/YYYY'),'MM/DD/YYYY') = to_date(to_char(sysdate,'MM/DD/YYYY'),'MM/DD/YYYY') " \
+                ") " \
+                "order by id"
     #
     def generateXPlan(self, sql, binds=None):
         #
