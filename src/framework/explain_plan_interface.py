@@ -9,6 +9,7 @@ class XPlan:
     """
     def __init__(self, db_conn):
         self.__db_conn = db_conn
+        self.__accepted_plan_formats = ('explain','execution')
     #
     def __explain_plan_for(self, p_sql):
         return "explain plan for " + str(p_sql)
@@ -27,13 +28,43 @@ class XPlan:
                 ") " \
                 "order by id"
     #
-    def generateXPlan(self, sql, binds=None):
+    def generateXPlan(self, sql, binds=None, type='explain'):
+        """
+        Main caller method for this class - has 2 modes of functionality depending on type parameter
+        :param sql: SQL under evaluation
+        :param binds: Accepts query bind parameters as a tuple
+        :param type: Mode of processing - Accepts either 'explain' for explain plan generation (default), or 'execute'
+                     for execution plan generation
+        :return: Explain/Execution plan in tabular format
+        """
         #
-        v_sql = self.__explain_plan_for(sql)
+        plan = None
+        if type == self.__accepted_plan_formats[0]:
+            #
+            v_sql = self.__explain_plan_for(sql)
+            #
+            self.__db_conn.execute_dml(dml=v_sql, params=binds)
+            #
+            plan = self.__db_conn.execute_query(query=self.__query_plan_table())
+        elif type == self.__accepted_plan_formats[1]:
+            #
+            raise NotImplementedError("This logic is not yet implemented!")
+        else:
+            raise ValueError('Parameter type incorrect! Must be as follows: [' + self.__accepted_plan_formats + ']')
         #
-        self.__db_conn.execute_dml(dml=v_sql, params=binds)
-        #
-        result_set = self.__db_conn.execute_query(query=self.__query_plan_table())
-        #
-        return result_set
+        return plan
 #
+"""
+EXAMPLE
+----------------------------------------
+#
+# Establishes database connection
+db_conn.connect()
+#
+xp = XPlan(db_conn=db_conn)
+v_query = "select * " \
+          "from CATALOG_SALES "\
+          "where cs_sold_date_sk = '2450816' "\
+          "order by cs_sold_time_sk"
+print(xp.generateXPlan(v_query))
+"""
