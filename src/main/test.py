@@ -38,4 +38,4 @@ where cs_sold_date_sk = :1
 order by cs_sold_time_sk
 """
 v_params = ('2450816')
-print(xp.generateXPlan(v_test,v_params))
+print(xp.generateXPlan(v_query,v_params))
