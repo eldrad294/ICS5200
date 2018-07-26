@@ -29,7 +29,7 @@ class XPlan:
                 order by id;
                """
     #
-    def generateXPlan(self, sql, binds):
+    def generateXPlan(self, sql, binds=None):
         #
         v_sql = self.__explain_plan_for(sql)
         #
