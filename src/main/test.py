@@ -35,6 +35,6 @@ v_test = """
 select *
 from CATALOG_SALES
 where cs_sold_date_sk = '2450816'
-order by cs_sold_time_sk;
+order by cs_sold_time_sk
 """
 print(xp.generateXPlan(v_test))
