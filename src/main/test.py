@@ -34,8 +34,7 @@ xp = XPlan(db_conn=db_conn)
 v_query = """
 select *
 from CATALOG_SALES
-where cs_sold_date_sk = :1
+where cs_sold_date_sk = '2450816'
 order by cs_sold_time_sk
 """
-v_params = ('2450816')
-print(xp.generateXPlan(v_query,v_params))
+print(xp.generateXPlan(v_query))

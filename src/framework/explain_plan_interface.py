@@ -11,7 +11,7 @@ class XPlan:
         self.__db_conn = db_conn
     #
     def __explain_plan_for(self, p_sql):
-        return "explain plan for " + p_sql
+        return "explain plan for " + str(p_sql)
     #
     def __query_plan_table(self):
         """
