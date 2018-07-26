@@ -29,13 +29,13 @@ class XPlan:
                 order by id;
                """
     #
-    def generateXPlan(self, p_sql):
+    def generateXPlan(self, sql, binds):
         #
-        v_sql = self.__explain_plan_for(p_sql)
+        v_sql = self.__explain_plan_for(sql)
         #
-        self.__db_conn.execute_dml(v_sql)
+        self.__db_conn.execute_dml(dml=v_sql, params=binds)
         #
-        result_set = self.__db_conn.execute_query(self.__query_plan_table())
+        result_set = self.__db_conn.execute_query(dml=self.__query_plan_table())
         #
         return result_set
 #

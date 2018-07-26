@@ -31,10 +31,11 @@ from src.framework.explain_plan_interface import XPlan
 db_conn.connect()
 #
 xp = XPlan(db_conn=db_conn)
-v_test = """
+v_query = """
 select *
 from CATALOG_SALES
-where cs_sold_date_sk = '2450816'
+where cs_sold_date_sk = :1
 order by cs_sold_time_sk
 """
-print(xp.generateXPlan(v_test))
+v_params = ('2450816')
+print(xp.generateXPlan(v_test,v_params))
