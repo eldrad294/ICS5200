@@ -35,7 +35,7 @@ class XPlan:
         #
         self.__db_conn.execute_dml(dml=v_sql, params=binds)
         #
-        result_set = self.__db_conn.execute_query(dml=self.__query_plan_table())
+        result_set = self.__db_conn.execute_query(query=self.__query_plan_table())
         #
         return result_set
 #
