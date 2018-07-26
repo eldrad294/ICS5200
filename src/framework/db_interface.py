@@ -50,7 +50,8 @@ class DatabaseInterface:
     def execute_query(self, query, params=None, fetch_single=False):
         """
         Statement wrapper method, invoked to pass query statements to the connected database instance, and return
-        cursor result set in the form of a tuple set
+        cursor result set in the form of a tuple set.
+        Expected to return results from query execution
         :param query: SQL statement (selects)
         :param params: dictionary of bind variables
         :param fetch_single: warns code logic that returned cursor will consist of a single result
@@ -78,8 +79,9 @@ class DatabaseInterface:
     #
     def execute_dml(self, dml, params=None):
         """
-        Statement wrapper methodm invokled to pass dml statements to the connected database instance
-        :param dml: (insert, update, delete, merge)
+        Statement wrapper methodm invokled to pass dml statements to the connected database instance.
+        Expected to return no results from query execution
+        :param dml: (insert, update, delete, merge, explain plan for, etc...)
         :param params: dictionary of bind variables
         :return:
         """
