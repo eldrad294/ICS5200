@@ -16,12 +16,12 @@ class XPlan:
     #
     def __execution_plan_syntax(self, p_sql):
         p_sql = p_sql.strip()
-        r_sql = []
+        r_sql = ""
         for i, sql in enumerate(p_sql):
-            if i == 0:
-                r_sql.append(self.__execution_plan_hint)
-            r_sql.append(sql)
-        return " ".join(r_sql)
+            if i == 1:
+                r_sql += " " + self.__execution_plan_hint
+            r_sql += " " + sql
+        return r_sql
     #
     def __query_explain_plan(self):
         """
