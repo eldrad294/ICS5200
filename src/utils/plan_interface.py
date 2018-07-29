@@ -15,7 +15,7 @@ class XPlan:
         return "explain plan for " + str(p_sql)
     #
     def __execution_plan_syntax(self, p_sql):
-        p_sql = p_sql.strip()
+        p_sql = p_sql.split()
         r_sql = ""
         for i, sql in enumerate(p_sql):
             if i == 1:
