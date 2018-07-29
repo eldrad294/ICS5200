@@ -2,6 +2,7 @@
 Documentation
 * https://dba.stackexchange.com/questions/84012/what-are-the-omem-and-1mem-columns-in-the-plan-output
 * http://www.dba-oracle.com/t_gather_plan_statistics.htm
+* https://blogs.oracle.com/optimizer/how-to-generate-a-useful-sql-execution-plan
 
 Example 1 - Query Estimation
 */
