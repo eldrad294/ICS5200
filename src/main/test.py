@@ -25,7 +25,7 @@ from src.data.tpc import TPC_Wrapper
 from src.framework.db_interface import db_conn
 from src.framework.config_parser import g_config
 from src.data.loading import FileLoader
-from src.framework.explain_plan_interface import XPlan
+from src.utils.plan_interface import XPlan
 #
 # Establishes database connection
 db_conn.connect()
