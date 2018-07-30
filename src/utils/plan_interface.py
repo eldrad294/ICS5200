@@ -74,7 +74,7 @@ class XPlan:
         #
         self.__db_conn.execute_dml(dml=sql, params=binds)
         #
-        plan = self.__db_conn.execute_query(query=self.__query_explain_plan())
+        plan = self.__db_conn.execute_query(query=self.__query_explain_plan(), describe=True)
         #
         return plan
     #
@@ -89,7 +89,7 @@ class XPlan:
         #
         self.__db_conn.execute_dml(dml=sql, params=binds)
         #
-        plan = self.__db_conn.execute_query(query=self.__query_execution_plan())
+        plan = self.__db_conn.execute_query(query=self.__query_execution_plan(), describe=True)
         #
         return plan
 #

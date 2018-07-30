@@ -58,7 +58,7 @@ class DatabaseInterface:
         :param query: SQL statement (selects)
         :param params: dictionary of bind variables
         :param fetch_single: warns code logic that returned cursor will consist of a single result
-        :param describe: Defines whether table schema is also returned
+        :param describe: Defines whether table description is also returned
         :return:
         """
         cursor = self.conn.cursor()
@@ -92,7 +92,7 @@ class DatabaseInterface:
         Expected to return no results from query execution
         :param dml: (insert, update, delete, merge, explain plan for, etc...)
         :param params: dictionary of bind variables
-        :param describe: Defines whether table schema is also returned
+        :param describe: Defines whether table description is also returned
         :return:
         """
         cursor = self.conn.cursor()
