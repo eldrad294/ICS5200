@@ -74,9 +74,9 @@ class XPlan:
         #
         self.__db_conn.execute_dml(dml=sql, params=binds)
         #
-        plan = self.__db_conn.execute_query(query=self.__query_explain_plan(), describe=True)
+        plan, schema = self.__db_conn.execute_query(query=self.__query_explain_plan(), describe=True)
         #
-        return plan
+        return plan, schema
     #
     def generateExecutionPlan(self, sql, binds=None):
         """
@@ -89,9 +89,9 @@ class XPlan:
         #
         self.__db_conn.execute_dml(dml=sql, params=binds)
         #
-        plan = self.__db_conn.execute_query(query=self.__query_execution_plan(), describe=True)
+        plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(), describe=True)
         #
-        return plan
+        return plan, schema
 #
 """
 EXAMPLE
