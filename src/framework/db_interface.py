@@ -86,34 +86,27 @@ class DatabaseInterface:
         #
         return result, self.__schema_names(description)
     #
-    def execute_dml(self, dml, params=None, describe=False):
+    def execute_dml(self, dml, params=None):
         """
         Statement wrapper methodm invokled to pass dml statements to the connected database instance.
         Expected to return no results from query execution
         :param dml: (insert, update, delete, merge, explain plan for, etc...)
         :param params: dictionary of bind variables
-        :param describe: Defines whether table description is also returned
         :return:
         """
         cursor = self.conn.cursor()
-        description = None
         dml = self.__clean_query(dml)
         try:
             if params is None:
                 cursor.execute(dml)
             else:
                 cursor.execute(dml, params)
-            #
-            if describe is True:
-                description = cursor.description
         except Exception as e:
             logger.log('Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
                        str(dml) + ' ]')
         finally:
             if cursor is not None:
                 cursor.close()
-        #
-        return self.__schema_names(description)
     #
     def commit(self):
         """
@@ -153,6 +146,10 @@ class DatabaseInterface:
     #
     def __schema_names(self, schema):
         column_names = []
+        #
+        if schema is None:
+            raise ValueError('Passed schema descriptor is empty!')
+        #
         for element in schema:
             column_names.append(element[0])
         return column_names
