@@ -77,10 +77,7 @@ class DatabaseInterface:
                     result = cursor.execute(query, params).fetchall()
             #
             if describe is True:
-                description = cursor.description()
-                print(description)
-                print('--+--')
-                print(description[0])
+                description = cursor.description
         except Exception as e:
             logger.log('Skipped record due to following exception: [' + str(e) + ']')
         finally:
@@ -108,7 +105,7 @@ class DatabaseInterface:
                 cursor.execute(dml, params)
             #
             if describe is True:
-                description = cursor.description()
+                description = cursor.description
         except Exception as e:
             logger.log('Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
                        str(dml) + ' ]')
