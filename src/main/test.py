@@ -26,8 +26,6 @@ from src.framework.db_interface import db_conn
 from src.framework.config_parser import g_config
 from src.data.loading import FileLoader
 from src.utils.plan_interface import XPlan
-from src.utils.encryptor import PasswordEncrypter
 #
 # Establishes database connection
-print(PasswordEncrypter.hash_password('bw3data'))
-#db_conn.connect()
+db_conn.connect()
