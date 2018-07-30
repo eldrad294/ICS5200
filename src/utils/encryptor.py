@@ -13,7 +13,7 @@ class PasswordEncrypter:
         :return:
         """
         salt = uuid.uuid4().hex
-        return hashlib.sha3_256(salt.encode() + password.encode()).hexdigest() + ':' + salt
+        return hashlib.sha256(salt.encode() + password.encode()).hexdigest() + ':' + salt
     #
     @staticmethod
     def check_password(hashed_password, user_password):
