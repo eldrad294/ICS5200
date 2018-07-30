@@ -63,11 +63,13 @@ class XPlan:
                "  ) where rownum = 1 " \
                ") order by id"
     #
-    def generateExplainPlan(self, sql, binds=None):
+    def generateExplainPlan(self, sql, binds=None, selection=()):
         """
         Retrieves Explain Plan - Query is not executed for explain plan retrieval
         :param sql: SQL under evaluation
         :param binds: Accepts query bind parameters as a tuple
+        :param selection: Accepts list of column names which will be returned for the explain plan generation. If left
+                          empty, selection is assumed to return all explain plan columns
         :return: Explain plan in tabular format
         """
         sql = self.__explain_plan_syntax(sql)
@@ -76,13 +78,21 @@ class XPlan:
         #
         plan, schema = self.__db_conn.execute_query(query=self.__query_explain_plan(), describe=True)
         #
-        return plan, schema
+        output_plan, output_schema = [], []
+        if len(selection) != 0:
+            pass
+        else:
+            output_plan, output_schema = plan, schema
+        #
+        return output_plan, output_schema
     #
-    def generateExecutionPlan(self, sql, binds=None):
+    def generateExecutionPlan(self, sql, binds=None, selection=()):
         """
         Retrieves Execution Plan - Query is executed for execution plan retrieval
-        :param sql:
-        :param binds:
+        :param sql: SQL under evaluation
+        :param binds: Accepts query bind parameters as a tuple
+        :param selection: Accepts list of column names which will be returned for the explain plan generation. If left
+                          empty, selection is assumed to return all execution plan columns
         :return: Execution plan in tabular format
         """
         sql = self.__execution_plan_syntax(sql)
@@ -90,6 +100,12 @@ class XPlan:
         self.__db_conn.execute_dml(dml=sql, params=binds)
         #
         plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(), describe=True)
+        #
+        output_plan, output_schema = [], []
+        if len(selection) != 0:
+            pass
+        else:
+            output_plan, output_schema = plan, schema
         #
         return plan, schema
 #

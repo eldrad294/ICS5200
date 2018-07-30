@@ -29,3 +29,15 @@ from src.utils.plan_interface import XPlan
 #
 # Establishes database connection
 db_conn.connect()
+#
+xp = XPlan(db_conn=db_conn)
+v_query = "select * " \
+          "from CATALOG_SALES "\
+          "where cs_sold_date_sk = '2450816' "\
+          "order by cs_sold_time_sk"
+plan, schema = xp.generateExplainPlan(v_query)
+print(plan)
+print(schema)
+plan, schema = xp.generateExecutionPlan(v_query)
+print(plan)
+print(schema)
