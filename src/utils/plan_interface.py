@@ -87,7 +87,7 @@ class XPlan:
         """
         sql = self.__execution_plan_syntax(sql)
         #
-        self.__db_conn.execute_query(dml=sql, params=binds)
+        self.__db_conn.execute_dml(dml=sql, params=binds)
         #
         plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(), describe=True)
         #
