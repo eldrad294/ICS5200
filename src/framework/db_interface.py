@@ -84,7 +84,7 @@ class DatabaseInterface:
             if cursor is not None:
                 cursor.close()
         #
-        return result, description
+        return result, self.__schema_names(description)
     #
     def execute_dml(self, dml, params=None, describe=False):
         """
@@ -113,7 +113,7 @@ class DatabaseInterface:
             if cursor is not None:
                 cursor.close()
         #
-        return description
+        return self.__schema_names(description)
     #
     def commit(self):
         """
@@ -151,8 +151,12 @@ class DatabaseInterface:
         self.conn.close()
         logger.log("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
     #
-    def __schema_structure(self, schema_tuple):
-        pass
+    def __schema_names(self, schema):
+        column_names = []
+        for element in schema:
+            column_names.append(element[0])
+        return column_names
+
 
 #
 # Retrieves config data
