@@ -26,14 +26,8 @@ from src.framework.db_interface import db_conn
 from src.framework.config_parser import g_config
 from src.data.loading import FileLoader
 from src.utils.plan_interface import XPlan
+from src.utils.encryptor import PasswordEncrypter
 #
 # Establishes database connection
-db_conn.connect()
-#
-xp = XPlan(db_conn=db_conn)
-v_query = "select * " \
-          "from CATALOG_SALES "\
-          "where cs_sold_date_sk = '2450816' "\
-          "order by cs_sold_time_sk"
-print(xp.generateExplainPlan(v_query)[1])
-print(xp.generateExecutionPlan(v_query)[1])
+print(PasswordEncrypter.hash_password('bw3data'))
+#db_conn.connect()

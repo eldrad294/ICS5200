@@ -38,6 +38,21 @@ class DatabaseInterface:
     def __clean_query(self, v_sql):
         return v_sql.replace("\n"," ")
     #
+    def __schema_names(self, schema):
+        """
+        Returns CX_Oracle table description, and returns the table column names as a list
+        :param schema:
+        :return:
+        """
+        column_names = []
+        #
+        if schema is None:
+            raise ValueError('Passed schema descriptor is empty!')
+        #
+        for element in schema:
+            column_names.append(element[0])
+        return column_names
+    #
     def connect(self):
         """
         Establishes instance connection to Oracle database
@@ -117,7 +132,7 @@ class DatabaseInterface:
     #
     def executeScriptsFromFile(self, filename):
         """
-        Opens SQL file, separates content by ; delimiter, and executes each instruction.
+        Opens SQL file, separates content by ';' delimiter, and executes each instruction.
         :return:
         """
         # Open and read the file as a single buffer
@@ -143,18 +158,6 @@ class DatabaseInterface:
         """
         self.conn.close()
         logger.log("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
-    #
-    def __schema_names(self, schema):
-        column_names = []
-        #
-        if schema is None:
-            raise ValueError('Passed schema descriptor is empty!')
-        #
-        for element in schema:
-            column_names.append(element[0])
-        return column_names
-
-
 #
 # Retrieves config data
 instance_name = g_config.get_value('DatabaseConnectionString','instance_name')
