@@ -35,9 +35,7 @@ v_query = "select * " \
           "from CATALOG_SALES "\
           "where cs_sold_date_sk = '2450816' "\
           "order by cs_sold_time_sk"
-plan, schema = xp.generateExplainPlan(v_query)
+plan = xp.generateExplainPlan(v_query, ['COST','DEPTH','CARDINALITY'])
 print(plan)
-print(schema)
-plan, schema = xp.generateExecutionPlan(v_query)
+plan = xp.generateExecutionPlan(v_query, ['COST','DEPTH','CARDINALITY'])
 print(plan)
-print(schema)

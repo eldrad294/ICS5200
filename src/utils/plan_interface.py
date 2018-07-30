@@ -63,14 +63,40 @@ class XPlan:
                "  ) where rownum = 1 " \
                ") order by id"
     #
-    def generateExplainPlan(self, sql, binds=None, selection=()):
+    def __select_relevant_columns(self, plan, schema, selection):
+        """
+        This private function iterates over full explain/execution plan, and returns only relevant columns dictated by
+        selection list
+        :param plan: The original, full explain/execution plan
+        :param schema: The explain/execution column names passed as a list
+        :param selection: The fields to be filtered according to the selection list
+        :return: Returns a filtered version of the explain/execution plan + schema
+        """
+        #
+        temp_plan, return_plan = dict(), dict()
+        #
+        # Converts plan into dictionary of columns
+        for i in range(len(schema)):
+            temp_plan[schema[i]] = []
+            for row in plan:
+                temp_plan[schema[i]].append(row[i])
+        #
+        if selection is not None:
+            for sel in selection:
+                if sel in temp_plan:
+                    return_plan[sel] = temp_plan[sel]
+            return return_plan
+        else:
+            return temp_plan
+    #
+    def generateExplainPlan(self, sql, binds=None, selection=None):
         """
         Retrieves Explain Plan - Query is not executed for explain plan retrieval
         :param sql: SQL under evaluation
         :param binds: Accepts query bind parameters as a tuple
         :param selection: Accepts list of column names which will be returned for the explain plan generation. If left
                           empty, selection is assumed to return all explain plan columns
-        :return: Explain plan in tabular format
+        :return: Explain plan in dictionary format
         """
         sql = self.__explain_plan_syntax(sql)
         #
@@ -78,22 +104,19 @@ class XPlan:
         #
         plan, schema = self.__db_conn.execute_query(query=self.__query_explain_plan(), describe=True)
         #
-        output_plan, output_schema = [], []
-        if len(selection) != 0:
-            pass
-        else:
-            output_plan, output_schema = plan, schema
+        # Retrieves relevant columns specified in selection list
+        plan = self.__select_relevant_columns(plan=plan, schema=schema, selection=selection)
         #
-        return output_plan, output_schema
+        return plan
     #
-    def generateExecutionPlan(self, sql, binds=None, selection=()):
+    def generateExecutionPlan(self, sql, binds=None, selection=None):
         """
         Retrieves Execution Plan - Query is executed for execution plan retrieval
         :param sql: SQL under evaluation
         :param binds: Accepts query bind parameters as a tuple
         :param selection: Accepts list of column names which will be returned for the explain plan generation. If left
                           empty, selection is assumed to return all execution plan columns
-        :return: Execution plan in tabular format
+        :return: Execution plan in dictionary format
         """
         sql = self.__execution_plan_syntax(sql)
         #
@@ -101,13 +124,10 @@ class XPlan:
         #
         plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(), describe=True)
         #
-        output_plan, output_schema = [], []
-        if len(selection) != 0:
-            pass
-        else:
-            output_plan, output_schema = plan, schema
+        # Retrieves relavent columns specified in selection list
+        plan = self.__select_relevant_columns(plan=plan, schema=schema, selection=selection)
         #
-        return plan, schema
+        return plan
 #
 """
 EXAMPLE
