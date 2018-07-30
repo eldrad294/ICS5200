@@ -37,5 +37,5 @@ v_query = "select * " \
           "order by cs_sold_time_sk"
 plan = xp.generateExplainPlan(sql=v_query, selection=['COST','DEPTH','CARDINALITY'])
 print(plan)
-plan = xp.generateExecutionPlan(sql=v_query, selection=['COST','DEPTH','CARDINALITY'])
+plan = xp.generateExecutionPlan(sql=v_query)
 print(plan)
