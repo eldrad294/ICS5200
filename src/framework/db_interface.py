@@ -78,6 +78,9 @@ class DatabaseInterface:
             #
             if describe is True:
                 description = cursor.description()
+                print(description)
+                print('--+--')
+                print(description[0])
         except Exception as e:
             logger.log('Skipped record due to following exception: [' + str(e) + ']')
         finally:
