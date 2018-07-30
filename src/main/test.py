@@ -35,5 +35,5 @@ v_query = "select * " \
           "from CATALOG_SALES "\
           "where cs_sold_date_sk = '2450816' "\
           "order by cs_sold_time_sk"
-print(xp.generateExplainPlan(v_query))
-print(xp.generateExecutionPlan(v_query))
+print(xp.generateExplainPlan(v_query)[1])
+print(xp.generateExecutionPlan(v_query)[1])

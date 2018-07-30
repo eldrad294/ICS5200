@@ -150,6 +150,10 @@ class DatabaseInterface:
         """
         self.conn.close()
         logger.log("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
+    #
+    def __schema_structure(self, schema_tuple):
+        pass
+
 #
 # Retrieves config data
 instance_name = g_config.get_value('DatabaseConnectionString','instance_name')
