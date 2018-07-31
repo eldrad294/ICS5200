@@ -91,9 +91,10 @@ class TPC_Wrapper:
         #
         query0_path = ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/query_0.sql"
         #
+        print(query0_path)
+        print(os.path.exists(query0_path))
         if os.path.exists(query0_path) is False:
-            raise FileNotFoundError('Query_0.sql was not found! Ensure that schema type ['+tpc_type+'] SQL generation '
-                                                                                                    'has occurred!')
+            raise FileNotFoundError('Query_0.sql was not found! Ensure that schema type ['+tpc_type+'] SQL generation has occurred!')
         else:
             #
             logger.log("Starting " + str(tpc_type) + " sql splitting")
