@@ -44,7 +44,7 @@ class XPlan:
     #
     def __query_execution_plan(self):
         """
-        Ensures that latest execution plan metrics are returned from Oracle's v$sql_plan view, distinguished by latest
+        Ensures that latest execution plan metrics are returned from Oracle's v$sqlarea view, distinguished by latest
         hint found within the view. The query identifies queries using a hint (SQL Comment), and retrieves the most
         latest one from the view.
         :return:
