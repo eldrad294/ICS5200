@@ -107,7 +107,7 @@ class TPC_Wrapper:
             #
             sql_list = read_data.split(";")
             for i, sql in enumerate(sql_list):
-                with open(ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/query_"+str(i)+".sql", "w") as f:
+                with open(ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/query_"+str(i)+".sql", "w") as f:
                     f.write(sql+";")
                 logger.log("Generated query_" + str(i) + ".sql")
     #
