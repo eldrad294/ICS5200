@@ -85,6 +85,12 @@ class TPC_Wrapper:
     #
     @staticmethod
     def split_tpc_sql_file(tpc_type=None):
+        """
+        Parses TPC query_0.sql, composed of all TPC sql in a single sql file. Place each respective sql in a separate
+        SQL file for better handling.
+        :param tpc_type:
+        :return:
+        """
         #
         # Input validation
         TPC_Wrapper.__validate_input(tpc_type=tpc_type)
@@ -107,9 +113,9 @@ class TPC_Wrapper:
             #
             sql_list = read_data.split(";")
             for i, sql in enumerate(sql_list):
-                with open(ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/query_"+str(i)+".sql", "w") as f:
+                with open(ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/query_"+str(i+1)+".sql", "w") as f:
                     f.write(sql+";")
-                logger.log("Generated query_" + str(i) + ".sql")
+                logger.log("Generated query_" + str(i+1) + ".sql")
     #
     @staticmethod
     def __validate_input(tpc_type=None):
