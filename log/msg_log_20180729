@@ -1,0 +1,7 @@
+2018-07-29 10:08:50: Connected to database [gabsam] with user [tpcds]
+2018-07-29 10:08:55: Connected to database [gabsam] with user [tpcds]
+2018-07-29 13:08:54: Connected to database [gabsam] with user [tpcds]
+2018-07-29 13:08:54: Skipped DML instruction due to following exception: [ORA-00900: invalid SQL statement] - Instruction: [/*ICS5200_MONITOR_HINT*/ s e l e c t   *   f r o m   C A T A L O G _ S A L E S   w h e r e   c s _ s o l d _ d a t e _ s k   =   ' 2 4 5 0 8 1 6 '   o r d e r   b y   c s _ s o l d _ t i m e _ s k ]
+2018-07-29 13:45:54: Connected to database [gabsam] with user [tpcds]
+2018-07-29 13:45:54: Skipped DML instruction due to following exception: [ORA-00900: invalid SQL statement] - Instruction: [ s /*ICS5200_MONITOR_HINT*/ e l e c t   *   f r o m   C A T A L O G _ S A L E S   w h e r e   c s _ s o l d _ d a t e _ s k   =   ' 2 4 5 0 8 1 6 '   o r d e r   b y   c s _ s o l d _ t i m e _ s k ]
+2018-07-29 13:47:27: Connected to database [gabsam] with user [tpcds]

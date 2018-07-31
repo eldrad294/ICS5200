@@ -1,0 +1,23 @@
+2018-07-24 19:24:30: Connected to database [gabsam] with user [tpcds]
+2018-07-24 19:24:33: Spark Context Established..
+2018-07-24 19:24:33: ('spark.master', 'local')
+2018-07-24 19:24:33: ('spark.executor.memory', '2g')
+2018-07-24 19:24:33: ('spark.driver.host', 'cisk.rs2.com')
+2018-07-24 19:24:33: ('spark.app.id', 'local-1532453072907')
+2018-07-24 19:24:33: ('spark.executor.id', 'driver')
+2018-07-24 19:24:33: ('spark.executor.cores', '2')
+2018-07-24 19:24:33: ('spark.driver.port', '33013')
+2018-07-24 19:24:33: ('spark.logConf', 'False')
+2018-07-24 19:24:33: ('spark.rdd.compress', 'True')
+2018-07-24 19:24:33: ('spark.driver.memory', '2g')
+2018-07-24 19:24:33: ('spark.cores.max', '2')
+2018-07-24 19:24:33: ('spark.serializer.objectStreamReset', '100')
+2018-07-24 19:24:33: ('spark.submit.deployMode', 'client')
+2018-07-24 19:24:33: ('spark.ui.showConsoleProgress', 'true')
+2018-07-24 19:24:33: ('spark.app.name', 'ICS5200')
+2018-07-24 19:24:33: TPC-DS table generation successful!
+2018-07-24 19:24:34: Loaded table [call_center]
+2018-07-24 19:24:36: Loaded 10000 records..
+2018-07-24 19:24:36: Loaded table [catalog_page]
+2018-07-24 19:24:41: Loaded 10000 records..
+2018-07-24 19:24:43: Loaded 20000 records..
