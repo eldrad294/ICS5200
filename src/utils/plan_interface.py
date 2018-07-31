@@ -50,7 +50,7 @@ class XPlan:
         :return:
         """
         return "select * " \
-               "from v$sql_plan " \
+               "from v$sqlarea " \
                "where sql_id = ( " \
                "  select sql_id " \
                "  from ( " \
@@ -61,7 +61,7 @@ class XPlan:
                "    and sql_fulltext not like '%V$SQL%' " \
                "    order by last_active_time desc " \
                "  ) where rownum = 1 " \
-               ") order by id"
+               ")"
     #
     def __select_relevant_columns(self, plan, schema, selection):
         """
