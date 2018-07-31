@@ -2,6 +2,7 @@
 # Module Imports
 from src.framework.logger import logger
 from src.framework.config_parser import g_config
+from src.framework.env_var_loader import ev_loader
 from os.path import expanduser
 import os
 home = expanduser("~")
@@ -9,6 +10,7 @@ home = expanduser("~")
 class TPC_Wrapper:
     #
     __data_generated_directory = str(g_config.get_value('DataGeneration','data_generated_directory')) # Determines in which directory datafiles are generated
+    __sql_generated_directory = str(g_config.get_value('DataGeneration','sql_generated_directory')) # Determines in which directory TPC SQL are generated
     __parallel_degree = int(g_config.get_value('DataGeneration', 'parallel_degree')) # Determines number of cores invoked to generate data with
     __data_size = int(g_config.get_value('DataGeneration', 'data_size')) # Determines size (in Gigabytes) of generated data
     __supported_tpc_types = ('TPC-DS', 'TPC-E')
@@ -29,6 +31,7 @@ class TPC_Wrapper:
             # TPC-DS
             dsdgen = home+"/ICS5200/data/TPC-DS/tools"
             #
+            # Navigates to tool directory
             if not os.path.exists(TPC_Wrapper.__data_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0]):
                 os.makedirs(TPC_Wrapper.__data_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0])
             os.chdir(dsdgen)
@@ -44,6 +47,39 @@ class TPC_Wrapper:
                 raise Exception("Terminating process!")
             #
             logger.log(TPC_Wrapper.__supported_tpc_types[0] + " data generated for [" + str(TPC_Wrapper.__data_size) + "] Gigabytes using parallel degree [" + str(TPC_Wrapper.__parallel_degree) + "]")
+        elif tpc_type == TPC_Wrapper.__supported_tpc_types[1]:
+            raise NotImplementedError("TPC-E not supported yet!")
+    #
+    @staticmethod
+    def generate_sql(tpc_type=None):
+        """
+        Method used to invoke respective TPC (TPC-DS/TPC-E) data generation tools
+        :param tpc_type: Triggers either TPC-E or TPC-DS logic
+        :return: None
+        """
+        #
+        # Input validation
+        TPC_Wrapper.__validate_input(tpc_type=tpc_type)
+        #
+        if tpc_type == TPC_Wrapper.__supported_tpc_types[0]:
+            # TPC-DS
+            dsqgen = ev_loader.var_get('project_dir')+"/data/TPC-DS/tools"
+            #
+            # Navigates to tool directory
+            if not os.path.exists(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0]):
+                os.makedirs(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0])
+            os.chdir(dsqgen)
+            #
+            sys = "./dsqgen -DIRECTORY " + ev_loader.var_get('project_dir') + "/data/TPC-DS/query_templates -INPUT " + \
+                  ev_loader.var_get('project_dir') + "/data/TPC-DS/query_templates/templates.lst -VERBOSE Y -QUALIFY Y " \
+                  "-SCALE " + str(TPC_Wrapper.__parallel_degree) + " -DIALECT oracle -OUTPUT " + \
+                  ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS"
+            output = os.system(sys)
+            if output != 0:
+                raise Exception("Terminating process!")
+                #
+            logger.log(TPC_Wrapper.__supported_tpc_types[0] + " SQLs generated for dataset of [" + str(
+                    TPC_Wrapper.__data_size) + "] Gigabytes")
         elif tpc_type == TPC_Wrapper.__supported_tpc_types[1]:
             raise NotImplementedError("TPC-E not supported yet!")
     #

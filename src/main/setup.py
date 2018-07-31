@@ -29,8 +29,8 @@ from src.data.loading import FileLoader
 # Establishes database connection
 db_conn.connect()
 #
-tpcds_generation_bool, tpce_generation_bool = g_config.get_value('DataGeneration','tpcds_generation').title(), \
-                                              g_config.get_value('DataGeneration','tpce_generation').title()
+tpcds_generation_bool, tpce_generation_bool = g_config.get_value('DataGeneration','tpcds_data_generation').title(), \
+                                              g_config.get_value('DataGeneration','tpce_data_generation').title()
 #
 """
 Data Generation
@@ -43,12 +43,12 @@ if tpce_generation_bool == 'True':
 """
 Data Loading
 """
-tpcds_loading_bool, tpce_loading_bool = g_config.get_value('DataLoading','tpcds_loading').title(), \
+tpcds_data_loading_bool, tpce_data_loading_bool = g_config.get_value('DataLoading','tpcds_loading').title(), \
                                         g_config.get_value('DataLoading','tpce_loading').title()
 data_generated_dir = str(g_config.get_value('DataGeneration','data_generated_directory'))
 #
 fl = FileLoader(app_name="ICS5200", master="local")
-if tpcds_loading_bool == 'True':
+if tpcds_data_loading_bool == 'True':
     #
     # Check whether schema needs creating - executed only if relevant tables are not found
     sql_statement = "select count(*) from user_tables where table_name = 'STORE_SALES'"
@@ -77,7 +77,17 @@ if tpcds_loading_bool == 'True':
         logger.log('TPC-DS indexes generation successful!')
     else:
         logger.log('Skipping schema creation..TPC-DS indexes already exist!')
-if tpce_loading_bool == 'True':
+if tpce_data_loading_bool == 'True':
+    raise NotImplementedError("This logic is not yet implemented!")
+#
+"""
+SQL Generation
+"""
+tpcds_sql_generation_bool, tpce_sql_generation_bool = g_config.get_value('DataGeneration','tpcds_sql_generation').title(), \
+                                                        g_config.get_value('DataGeneration','tpce_sql_generation').title()
+if tpcds_sql_generation_bool == 'True':
+    TPC_Wrapper.generate_sql(tpc_type='TPC-DS')
+if tpce_sql_generation_bool == 'True':
     raise NotImplementedError("This logic is not yet implemented!")
 #
 logger.log("Script Complete!\n-------------------------------------")
