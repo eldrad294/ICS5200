@@ -29,7 +29,7 @@ class TPC_Wrapper:
         # Invoke respective TPC tool
         if tpc_type == TPC_Wrapper.__supported_tpc_types[0]:
             # TPC-DS
-            dsdgen = home+"/ICS5200/data/TPC-DS/tools"
+            dsdgen = ev_loader.var_get('project_dir') + "/data/TPC-DS/tools"
             #
             # Navigates to tool directory
             if not os.path.exists(TPC_Wrapper.__data_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0]):
@@ -82,6 +82,14 @@ class TPC_Wrapper:
                     TPC_Wrapper.__data_size) + "] Gigabytes")
         elif tpc_type == TPC_Wrapper.__supported_tpc_types[1]:
             raise NotImplementedError("TPC-E not supported yet!")
+    #
+    @staticmethod
+    def split_tpc_sql_file(tpc_type=None):
+        #
+        # Input validation
+        TPC_Wrapper.__validate_input(tpc_type=tpc_type)
+        #
+
     #
     @staticmethod
     def __validate_input(tpc_type=None):
@@ -140,4 +148,6 @@ TPC_Wrapper.generate_data(tpc_type='TPC-DS',
                           data_generated_directory=data_generated_directory,
                           data_size=1,
                           parallel_degree=2)
+#
+TPC_Wrapper.generate_sql(tpc_type='TPC-DS')
 """
