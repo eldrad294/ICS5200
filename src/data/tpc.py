@@ -89,7 +89,7 @@ class TPC_Wrapper:
         # Input validation
         TPC_Wrapper.__validate_input(tpc_type=tpc_type)
         #
-        query0_path = ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/query_0.sql"
+        query0_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/query_0.sql"
         #
         print(query0_path)
         print(os.path.exists(query0_path))
