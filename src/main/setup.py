@@ -87,6 +87,7 @@ tpcds_sql_generation_bool, tpce_sql_generation_bool = g_config.get_value('DataGe
                                                         g_config.get_value('DataGeneration','tpce_sql_generation').title()
 if tpcds_sql_generation_bool == 'True':
     TPC_Wrapper.generate_sql(tpc_type='TPC-DS')
+    TPC_Wrapper.split_tpc_sql_file(tpc_type='TPC-DS')
 if tpce_sql_generation_bool == 'True':
     raise NotImplementedError("This logic is not yet implemented!")
 #

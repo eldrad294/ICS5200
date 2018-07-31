@@ -89,7 +89,26 @@ class TPC_Wrapper:
         # Input validation
         TPC_Wrapper.__validate_input(tpc_type=tpc_type)
         #
-
+        query0_path = ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/query_0.sql"
+        #
+        if os.path.exists(query0_path) is False:
+            raise FileNotFoundError('Query_0.sql was not found! Ensure that schema type ['+tpc_type+'] SQL generation '
+                                                                                                    'has occurred!')
+        else:
+            #
+            logger.log("Starting " + str(tpc_type) + " sql splitting")
+            #
+            # Read file into memory
+            with open(query0_path) as f:
+                read_data = f.read()
+            #
+            read_data = read_data.replace("\n","")
+            #
+            sql_list = read_data.split(";")
+            for i, sql in enumerate(sql_list):
+                with open(ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/query_"+str(i)+".sql", "w") as f:
+                    f.write(sql+";")
+                logger.log("Generated query_" + str(i) + ".sql")
     #
     @staticmethod
     def __validate_input(tpc_type=None):
