@@ -88,7 +88,7 @@ class TPC_Wrapper:
             #
             # TPC-DS - DML Generation
             dml_data = ev_loader.var_get('project_dir')+"/data/TPC-DS/tests"
-            dml_src = ev_loader.var_get('src_dir')+"/sql/Runtime/" + TPC_Wrapper.__supported_tpc_types[0] + "/DML"
+            dml_src = ev_loader.var_get('src_dir')+"/sql/Runtime/" + TPC_Wrapper.__supported_tpc_types[0] + "/DML/"
             #
             if not os.path.exists(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/Query"):
                 os.makedirs(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/Query")
@@ -125,8 +125,6 @@ class TPC_Wrapper:
         #
         query0_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/Query/query_0.sql"
         #
-        print(query0_path)
-        print(os.path.exists(query0_path))
         if os.path.exists(query0_path) is False:
             raise FileNotFoundError('Query_0.sql was not found! Ensure that schema type ['+tpc_type+'] SQL generation has occurred!')
         else:
