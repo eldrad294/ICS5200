@@ -47,7 +47,7 @@ class DatabaseInterface:
         column_names = []
         #
         if schema is None:
-            return None
+            raise ValueError('Schema descriptor is empty!')
         #
         for element in schema:
             column_names.append(element[0])
@@ -99,7 +99,10 @@ class DatabaseInterface:
             if cursor is not None:
                 cursor.close()
         #
-        return result, self.__schema_names(description)
+        if describe is True:
+            return result, self.__schema_names(description)
+        else:
+            return result
     #
     def execute_dml(self, dml, params=None):
         """
