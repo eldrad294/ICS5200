@@ -20,11 +20,7 @@ ev_loader.var_load({"project_dir":project_dir,"src_dir":src_dir})
 -------PLACE NEW MODULES BELOW!!-------
 ---------------------------------------
 """
-from src.framework.logger import logger
-from src.data.tpc import TPC_Wrapper
-from src.framework.db_interface import db_conn
-from src.framework.config_parser import g_config
-from src.data.loading import FileLoader
+from src.utils.db_interface import db_conn
 from src.utils.plan_interface import XPlan
 #
 # Establishes database connection

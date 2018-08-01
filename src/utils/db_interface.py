@@ -47,7 +47,7 @@ class DatabaseInterface:
         column_names = []
         #
         if schema is None:
-            raise ValueError('Passed schema descriptor is empty!')
+            return None
         #
         for element in schema:
             column_names.append(element[0])

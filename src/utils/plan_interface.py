@@ -1,6 +1,5 @@
 #
 # Module Imports
-from src.framework.db_interface import db_conn
 #
 class XPlan:
     """
