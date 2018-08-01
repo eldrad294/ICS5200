@@ -53,7 +53,12 @@ class TPC_Wrapper:
     @staticmethod
     def generate_sql(tpc_type=None):
         """
-        Method used to invoke respective TPC (TPC-DS/TPC-E) data generation tools
+        Method used to invoke respective TPC (TPC-DS/TPC-E) SQL generation tools.
+        The method is composed of dual functionality as follows:
+        1) Invokes the DSQGEN tool to create 'query_0.sql' (which will later be segmented into a number of seperate SQL
+           files) under the src/ directory
+        2) Moves Data Maintenance tasks (DML Logic) and moves it under the src directory
+
         :param tpc_type: Triggers either TPC-E or TPC-DS logic
         :return: None
         """
@@ -62,24 +67,47 @@ class TPC_Wrapper:
         TPC_Wrapper.__validate_input(tpc_type=tpc_type)
         #
         if tpc_type == TPC_Wrapper.__supported_tpc_types[0]:
-            # TPC-DS
+            # TPC-DS - Query Generation
             dsqgen = ev_loader.var_get('project_dir')+"/data/TPC-DS/tools"
             #
-            # Navigates to tool directory
-            if not os.path.exists(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0]):
-                os.makedirs(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0])
+            # Navigates to tool directory so as to invoke DSQGEN
+            if not os.path.exists(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/Query"):
+                os.makedirs(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/Query")
             os.chdir(dsqgen)
             #
             sys = "./dsqgen -DIRECTORY " + ev_loader.var_get('project_dir') + "/data/TPC-DS/query_templates -INPUT " + \
                   ev_loader.var_get('project_dir') + "/data/TPC-DS/query_templates/templates.lst -VERBOSE Y -QUALIFY Y " \
                   "-SCALE " + str(TPC_Wrapper.__parallel_degree) + " -DIALECT oracle -OUTPUT " + \
-                  ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS"
+                  ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/Query"
             output = os.system(sys)
             if output != 0:
-                raise Exception("Terminating process!")
+                raise Exception("An exception arose during dsqgen invocation..terminating process!")
                 #
             logger.log(TPC_Wrapper.__supported_tpc_types[0] + " SQLs generated for dataset of [" + str(
                     TPC_Wrapper.__data_size) + "] Gigabytes")
+            #
+            # TPC-DS - DML Generation
+            dml_data = ev_loader.var_get('project_dir')+"/data/TPC-DS/tests"
+            dml_src = ev_loader.var_get('src_dir')+"/sql/Runtime/" + TPC_Wrapper.__supported_tpc_types[0] + "/DML"
+            #
+            if not os.path.exists(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/Query"):
+                os.makedirs(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/Query")
+            os.chdir(dml_data)
+            #
+            target_scripts = [] # Keeps reference of which DML scripts to move under src/
+            for filename in os.listdir(dml_data):
+                if filename.endswith(".sql"):
+                    target_scripts.append(filename)
+            #
+            for script in target_scripts:
+                cmd = "cp " + dml_data + "/" + script + " " + dml_src + "/" + script
+                output = os.system(cmd)
+                if output != 0:
+                    raise Exception("An exception arose during DML script migrations..terminating process!")
+                else:
+                    logger.log("Successfully migrated " + str(script) + " under src/ tree..")
+            #
+            logger.log("Successfully finished migrating DML scripts!")
         elif tpc_type == TPC_Wrapper.__supported_tpc_types[1]:
             raise NotImplementedError("TPC-E not supported yet!")
     #
@@ -95,7 +123,7 @@ class TPC_Wrapper:
         # Input validation
         TPC_Wrapper.__validate_input(tpc_type=tpc_type)
         #
-        query0_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/query_0.sql"
+        query0_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/Query/query_0.sql"
         #
         print(query0_path)
         print(os.path.exists(query0_path))
@@ -113,7 +141,7 @@ class TPC_Wrapper:
             #
             sql_list = read_data.split(";")
             for i, sql in enumerate(sql_list):
-                with open(ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/query_"+str(i+1)+".sql", "w") as f:
+                with open(ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/Query/query_"+str(i+1)+".sql", "w") as f:
                     f.write(sql+";")
                 logger.log("Generated query_" + str(i+1) + ".sql")
     #
