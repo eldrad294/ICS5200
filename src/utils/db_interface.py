@@ -78,7 +78,7 @@ class DatabaseInterface:
         """
         cursor = self.conn.cursor()
         result, description = None, None
-        query = self.__clean_query(query)
+        #query = self.__clean_query(query)
         try:
             if fetch_single is True:
                 if params is None:
@@ -113,7 +113,7 @@ class DatabaseInterface:
         :return:
         """
         cursor = self.conn.cursor()
-        dml = self.__clean_query(dml)
+        #dml = self.__clean_query(dml)
         try:
             if params is None:
                 cursor.execute(dml)
