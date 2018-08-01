@@ -90,8 +90,8 @@ class TPC_Wrapper:
             dml_data = ev_loader.var_get('project_dir')+"/data/TPC-DS/tests"
             dml_src = ev_loader.var_get('src_dir')+"/sql/Runtime/" + TPC_Wrapper.__supported_tpc_types[0] + "/DML/"
             #
-            if not os.path.exists(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/Query"):
-                os.makedirs(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/Query")
+            if not os.path.exists(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/DML"):
+                os.makedirs(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/DML")
             os.chdir(dml_data)
             #
             target_scripts = [] # Keeps reference of which DML scripts to move under src/
