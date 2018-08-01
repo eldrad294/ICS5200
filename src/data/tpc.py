@@ -100,7 +100,7 @@ class TPC_Wrapper:
                     target_scripts.append(filename)
             #
             for script in target_scripts:
-                cmd = "cp " + dml_data + "/" + script + " " + dml_src + "/" + script
+                cmd = "cp " + dml_data + "/" + script + " " + dml_src
                 output = os.system(cmd)
                 if output != 0:
                     raise Exception("An exception arose during DML script migrations..terminating process!")
