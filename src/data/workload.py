@@ -23,7 +23,8 @@ class Workload:
         self.__min_num_dml, self.__max_num_dml = self.__process_interval(g_config.get_value('WorkloadGeneration', 'num_dml'))
         self.__min_outer_interval, self.__max_outer_interval = self.__process_interval(g_config.get_value('WorkloadGeneration','outer_interval'))
         self.__min_inner_interval, self.__max_inner_interval = self.__process_interval(g_config.get_value('WorkloadGeneration', 'inner_interval'))
-        self.__repeats = g_config.get_value('WorkloadGeneration', 'repeats')
+        self.__repeats_degree = g_config.get_value('WorkloadGeneration', 'repeats_degree')
+        self.__parallel_degree = g_config.get_value('WorkloadGeneration', 'parallel_degree')
         #
         # Type cast to appropriate data types
         self.__cast_vars()
@@ -68,7 +69,9 @@ class Workload:
         self.__min_inner_interval = float(self.__min_inner_interval)
         self.__max_inner_interval = float(self.__max_inner_interval)
         # repeats
-        self.__repeats = int(self.__repeats)
+        self.__repeats_degree = int(self.__repeats_degree)
+        # parallel
+        self.__parallel_degree = int(self.__parallel_degree)
     #
     def __validate_vars(self):
         """
@@ -91,8 +94,10 @@ class Workload:
             raise ValueError('outer_interval values must be greater than 0!')
         if self.__min_inner_interval <= 0 or self.__max_inner_interval <= 0:
             raise ValueError('inner_interval values must be greater than 0!')
-        if self.__repeats <= 0:
-            raise ValueError('repeats values must be greater than 0!')
+        if self.__repeats_degree <= 0:
+            raise ValueError('repeats_degree value must be greater than 0!')
+        if self.__parallel_degree <= 0:
+            raise ValueError('parallel_degree value must be greater than 0!')
         #
         if self.__min_sql_sample_range > self.__max_sql_sample_range:
             raise ValueError('Incorrect sql_sample_range. Min value must be smaller than max!')
