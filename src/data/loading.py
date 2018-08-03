@@ -25,6 +25,7 @@ class FileLoader:
         conf.setMaster(master)
         conf.set('spark.executor.memory', str(g_config.get_value('SparkContext','spark_executor_memory')))
         conf.set('spark.executor.cores', str(g_config.get_value('SparkContext','spark_executor_cores')))
+        conf.set('spark.driver.maxResultSize', str(g_config.get_value('SparkContext', 'spark_max_result_size')))
         conf.set('spark.cores.max', str(g_config.get_value('SparkContext','spark_cores_max')))
         conf.set('spark.driver.memory', str(g_config.get_value('SparkContext','spark_driver_memory')))
         conf.set('spark.logConf', g_config.get_value('SparkContext','spark_logConf').title())
@@ -43,13 +44,14 @@ class FileLoader:
     def load_data(self, path, table_name, db_conn):
         dist_file = self.sc.textFile(path)
         l_dist_file = dist_file.collect() # Convert into python collection (list)
+        logger.log("Loaded [" + path + "] into memory..")
         for i, line in enumerate(l_dist_file):
             dml, bind_values = self.__build_insert(line, table_name)
             db_conn.execute_dml(dml, bind_values)
             if i % 10000 == 0 and i != 0:
                 logger.log("Loaded " + str(i) + " records..")
         db_conn.commit()
-        logger.log("Loaded table [" + table_name + "]")
+        logger.log("Loaded table [" + table_name + "] into database..")
     #
     def __build_insert(self, line, table):
         """
