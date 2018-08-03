@@ -10,13 +10,13 @@ class FileLoader:
     toolset to manipulate file un/loading in an efficient manner.
     """
     #
-    def __init__(self, app_name="ICS5200", master="local"):
+    def __init__(self, app_name="ICS5200", master="local",db_conn=None):
         #
-        self.__validate(app_name=app_name, master=master)
+        self.__validate(app_name=app_name, master=master, db_conn=db_conn)
+        self.__db_conn = db_conn
         #
         self.sc = self.__create_Spark_context(app_name=app_name,master=master)
         #
-        #self.__bulk_load = 100
         self.__delimeter = '|'
     #
     def __create_Spark_context(self, app_name, master):
@@ -35,23 +35,32 @@ class FileLoader:
             logger.log(conf)
         return sc
     #
-    def __validate(self, app_name, master):
+    def __validate(self, app_name, master, db_conn):
         if app_name is None:
             raise Exception('App name was not defined for Spark context!')
         elif master is None:
             raise Exception('Master was not declared for Spark context!')
+        #
+        if db_conn is None:
+            raise Exception('Unintialized database connection!')
     #
-    def load_data(self, path, table_name, db_conn):
+    def load_data(self, path, table_name):
         dist_file = self.sc.textFile(path)
-        l_dist_file = dist_file.collect() # Convert into python collection (list)
-        logger.log("Loaded [" + path + "] into memory..")
-        for i, line in enumerate(l_dist_file):
-            dml, bind_values = self.__build_insert(line, table_name)
-            db_conn.execute_dml(dml, bind_values)
-            if i % 10000 == 0 and i != 0:
-                logger.log("Loaded " + str(i) + " records..")
-        db_conn.commit()
+        # l_dist_file = dist_file.collect() # Convert into python collection (list)
+        # logger.log("Loaded [" + path + "] into memory..")
+        # for i, line in enumerate(l_dist_file):
+        #     dml, bind_values = self.__build_insert(line, table_name)
+        #     db_conn.execute_dml(dml, bind_values)
+        #     if i % 10000 == 0 and i != 0:
+        #         logger.log("Loaded " + str(i) + " records..")
+        # db_conn.commit()
+        dist_file.map(self.__split_into_line(table_name=table_name))
+        self.__db_conn.commit()
         logger.log("Loaded table [" + table_name + "] into database..")
+    #
+    def __split_into_line(self,s, table_name):
+        line = s.plit("\n")
+        return self.__build_insert(line, table_name)
     #
     def __build_insert(self, line, table):
         """
@@ -68,7 +77,8 @@ class FileLoader:
             else:
                 dml += ", :" + str(i+1) + " "
         dml += ")"
-        return dml, l_line
+        #return dml, l_line
+        return self.__db_conn.execute_dml(dml, l_line)
     #
     def __parse_data_line(self, line):
         """
