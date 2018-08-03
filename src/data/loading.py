@@ -73,8 +73,7 @@ class FileLoader:
             else:
                 dml += ", :" + str(i+1) + " "
         dml += ")"
-        #return dml, l_line
-        return self.__db_conn.execute_dml(dml, l_line)
+        self.__db_conn.execute_dml(dml, l_line)
     #
     def __parse_data_line(self, line):
         """
