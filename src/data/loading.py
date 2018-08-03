@@ -34,7 +34,7 @@ class FileLoader:
             logger.log(conf)
         return sc
     #
-    def __validate(self, app_name, master, table_name, db_conn):
+    def __validate(self, app_name, master, db_conn):
         if app_name is None:
             raise Exception('App name was not defined for Spark context!')
         elif master is None:
