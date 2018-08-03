@@ -54,8 +54,13 @@ class FileLoader:
         #     if i % 10000 == 0 and i != 0:
         #         logger.log("Loaded " + str(i) + " records..")
         # db_conn.commit()
-        rdd_file.map(lambda x: x.split('\n')).map(self.__build_insert, table_name)
+        #
+        #rdd_file.map(lambda x: x.split('\n')).map(self.__build_insert, table_name)
+        #
+        lines = rdd_file.map(lambda x: x.split('\n'))
+        lines.reduce(self.__build_insert, table_name)
         self.__db_conn.commit()
+        #
         logger.log("Loaded table [" + table_name + "] into database..")
     #
     def __build_insert(self, line, table):
