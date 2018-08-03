@@ -61,11 +61,13 @@ class FileLoader:
         # db_conn.commit()
         #
         rdd_file.map(lambda x: x.split('\n'))
-        rdd_file.foreach(self.__build_insert)
+        __build_insert = self.__build_insert
+        rdd_file.foreach(__build_insert)
         self.__db_conn.commit()
         #
         logger.log("Loaded table [" + self.__table_name + "] into database..")
     #
+    @staticmethod
     def __build_insert(self, line):
         """
         Formats insert statement
