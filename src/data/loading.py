@@ -1,7 +1,7 @@
 from pyspark import SparkContext, SparkConf
 from src.framework.logger import logger
 from src.framework.config_parser import g_config
-from functools import partial
+from src.utils.db_interface import db_conn
 #
 # Module Imports
 class FileLoader:
@@ -18,8 +18,6 @@ class FileLoader:
         self.__db_conn = db_conn
         #
         self.sc = self.__create_Spark_context(app_name=app_name,master=master)
-        #
-        self.__delimeter = '|'
     #
     def __create_Spark_context(self, app_name, master):
         conf = SparkConf()
@@ -61,30 +59,37 @@ class FileLoader:
         # db_conn.commit()
         #
         rdd_file.map(lambda x: x.split('\n'))
-        __build_insert = self.__build_insert
-        rdd_file.foreach(__build_insert)
+        rdd_file.foreach(FileLoaderUtils.build_insert)
         self.__db_conn.commit()
         #
         logger.log("Loaded table [" + self.__table_name + "] into database..")
     #
-    def __build_insert(self, line):
+class FileLoaderUtils:
+    """
+    Contains static methods for calling of FileLoader context
+    """
+    __delimeter = '|'
+    #
+    @staticmethod
+    def build_insert(line, table_name):
         """
         Formats insert statement
         :param line:
         :param table:
         :return:
         """
-        l_line = self.__parse_data_line(line)
-        dml = "INSERT INTO " + self.__table_name + " VALUES ("
+        l_line = FileLoaderUtils.__parse_data_line(line)
+        dml = "INSERT INTO " + table_name + " VALUES ("
         for i in range(len(l_line)):
             if i == 0:
                 dml += " :" + str(i+1) + " "
             else:
                 dml += ", :" + str(i+1) + " "
         dml += ")"
-        self.__db_conn.execute_dml(dml, l_line)
+        db_conn.execute_dml(dml, l_line)
     #
-    def __parse_data_line(self, line):
+    @staticmethod
+    def __parse_data_line(line):
         """
         Iterates over input data line, and parses value into a list. Values are delimeted according to config file,
         default to '|'
@@ -94,7 +99,7 @@ class FileLoader:
         list_line = []
         value = ""
         for i in line:
-            if i != self.__delimeter:
+            if i != FileLoaderUtils.__delimeter:
                 value += i
             else:
                 try:
