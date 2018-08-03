@@ -58,7 +58,6 @@ if tpcds_data_loading_bool == 'True':
     # Check whether schema needs creating - executed only if relevant tables are not found
     sql_statement = "select count(*) from user_tables where table_name = 'DBGEN_VERSION'"
     result = int(db_conn.execute_query(sql_statement, fetch_single=True)[0])
-    logger.log(db_conn.execute_query(sql_statement, fetch_single=True)[0])
     if result < 1:
         db_conn.executeScriptsFromFile(ev_loader.var_get("src_dir") + "/sql/Installation/tpcds_schema_tables.sql")
         logger.log('TPC-DS table generation successful!')
