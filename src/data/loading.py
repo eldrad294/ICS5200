@@ -11,9 +11,10 @@ class FileLoader:
     toolset to manipulate file un/loading in an efficient manner.
     """
     #
-    def __init__(self, app_name="ICS5200", master="local",db_conn=None):
+    def __init__(self, app_name="ICS5200", master="local",table_name=None,db_conn=None):
         #
-        self.__validate(app_name=app_name, master=master, db_conn=db_conn)
+        self.__validate(app_name=app_name, master=master, table_name=table_name, db_conn=db_conn)
+        self.__table_name = table_name
         self.__db_conn = db_conn
         #
         self.sc = self.__create_Spark_context(app_name=app_name,master=master)
@@ -36,16 +37,19 @@ class FileLoader:
             logger.log(conf)
         return sc
     #
-    def __validate(self, app_name, master, db_conn):
+    def __validate(self, app_name, master, table_name, db_conn):
         if app_name is None:
             raise Exception('App name was not defined for Spark context!')
         elif master is None:
             raise Exception('Master was not declared for Spark context!')
         #
+        if table_name is None:
+            raise Exception('Undeclared table name!')
+        #
         if db_conn is None:
-            raise Exception('Unintialized database connection!')
+            raise Exception('Uninitialized database connection!')
     #
-    def load_data(self, path, table_name):
+    def load_data(self, path):
         rdd_file = self.sc.textFile(path) # Materializes an RDD
         # l_dist_file = dist_file.collect() # Convert into python collection (list)
         # logger.log("Loaded [" + path + "] into memory..")
@@ -57,13 +61,12 @@ class FileLoader:
         # db_conn.commit()
         #
         rdd_file.map(lambda x: x.split('\n'))
-        __build_insert = self.__build_insert
-        rdd_file.foreach(partial(__build_insert, arg1=table_name))
+        rdd_file.foreach(self.__build_insert)
         self.__db_conn.commit()
         #
-        logger.log("Loaded table [" + table_name + "] into database..")
+        logger.log("Loaded table [" + self.__table_name + "] into database..")
     #
-    def __build_insert(self, line, table_name):
+    def __build_insert(self, line):
         """
         Formats insert statement
         :param line:
@@ -71,7 +74,7 @@ class FileLoader:
         :return:
         """
         l_line = self.__parse_data_line(line)
-        dml = "INSERT INTO " + table_name + " VALUES ("
+        dml = "INSERT INTO " + self.__table_name + " VALUES ("
         for i in range(len(l_line)):
             if i == 0:
                 dml += " :" + str(i+1) + " "
