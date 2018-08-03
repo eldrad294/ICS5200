@@ -71,7 +71,7 @@ if tpcds_data_loading_bool == 'True':
     file_names = TPC_Wrapper.get_data_file_list(tpc_type="TPC-DS")
     #
     for i in range(len(file_names)):
-        fl.load_data(data_generated_dir + "/TPC-DS/" + ev_loader.var_get('user') + file_names[i], table_names[i], db_conn)
+        fl.load_data(data_generated_dir + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i], table_names[i], db_conn)
     #
     # Check whether indexes needs creating - executed only if relevant indexes are not found
     sql_statement = "select count(*) from user_indexes where index_name = 'SS_SOLD_DATE_SK_INDEX'"
