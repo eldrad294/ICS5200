@@ -14,7 +14,7 @@ class DatabaseInterface:
         self.__service = str(service)
         self.__port = str(port)
         #self.__password = str(getpass.getpass("Enter database password:"))
-        self.__password = str(password)
+        self.__password = str(password) # Required to execute under nohup instead of manual user input
         #
         # Validates connection config
         self.__validate_db_config()
