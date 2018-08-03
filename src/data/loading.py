@@ -1,6 +1,7 @@
 from pyspark import SparkContext, SparkConf
 from src.framework.logger import logger
 from src.framework.config_parser import g_config
+from functools import partial
 #
 # Module Imports
 class FileLoader:
@@ -56,12 +57,12 @@ class FileLoader:
         # db_conn.commit()
         #
         rdd_file.map(lambda x: x.split('\n'))
-        rdd_file.foreach(self.__build_insert, table_name)
+        rdd_file.foreach(partial(self.__build_insert, arg1=table_name))
         self.__db_conn.commit()
         #
         logger.log("Loaded table [" + table_name + "] into database..")
     #
-    def __build_insert(self, line, table):
+    def __build_insert(self, line, table_name):
         """
         Formats insert statement
         :param line:
@@ -69,7 +70,7 @@ class FileLoader:
         :return:
         """
         l_line = self.__parse_data_line(line)
-        dml = "INSERT INTO " + table + " VALUES ("
+        dml = "INSERT INTO " + table_name + " VALUES ("
         for i in range(len(l_line)):
             if i == 0:
                 dml += " :" + str(i+1) + " "
