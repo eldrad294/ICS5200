@@ -16,7 +16,7 @@ class FileLoader:
         #
         self.sc = self.__create_Spark_context(app_name=app_name,master=master)
         #
-        self.__bulk_load = 100
+        #self.__bulk_load = 100
         self.__delimeter = '|'
     #
     def __create_Spark_context(self, app_name, master):

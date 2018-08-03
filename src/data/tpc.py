@@ -45,7 +45,8 @@ class TPC_Wrapper:
                       + " -parallel " + str(TPC_Wrapper.__parallel_degree) + " -FORCE"
             else:
                 raise Exception("Parallel degree not supported!")
-            logger.log("Generating " + TPC_Wrapper.__supported_tpc_types[0] + " data..")
+            logger.log("Generating " + TPC_Wrapper.__supported_tpc_types[0] + " data for volumes of [" +
+                       str(TPC_Wrapper.__data_size) + "]..")
             output = os.system(sys)
             if output != 0:
                 raise Exception("Terminating process!")
