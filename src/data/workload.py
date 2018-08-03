@@ -6,6 +6,8 @@ import random
 #
 class Workload:
     """
+    THIS CLASS IS UNDER DEV AND THEREFORE STILL A WORKS IN PROGRESS
+    -------------------
     This class is dedicated to generating an artificial workload over TPC-esq schemas, mainly:
     * TPC-DS
     * TPC-E

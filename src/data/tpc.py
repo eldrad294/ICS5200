@@ -32,21 +32,25 @@ class TPC_Wrapper:
             dsdgen = ev_loader.var_get('project_dir') + "/data/TPC-DS/tools"
             #
             # Navigates to tool directory
-            if not os.path.exists(TPC_Wrapper.__data_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0]):
-                os.makedirs(TPC_Wrapper.__data_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0])
+            data_generated_path = TPC_Wrapper.__data_generated_directory + "/" + \
+                                  TPC_Wrapper.__supported_tpc_types[0] + "/" + ev_loader.var_get("user")
+            if not os.path.exists(data_generated_path):
+                os.makedirs(data_generated_path)
             os.chdir(dsdgen)
             #
             if TPC_Wrapper.__parallel_degree > 0:
-                sys = "./dsdgen -scale " + str(TPC_Wrapper.__data_size) + " -dir " + TPC_Wrapper.__data_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + " -FORCE"
+                sys = "./dsdgen -scale " + str(TPC_Wrapper.__data_size) + " -dir " + data_generated_path + " -FORCE"
             elif TPC_Wrapper.__parallel_degree > 1:
-                sys = "./dsdgen -f -scale " + str(TPC_Wrapper.__data_size) + " -dir " + TPC_Wrapper.__data_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + " -parallel " + str(TPC_Wrapper.__parallel_degree) + " -FORCE"
+                sys = "./dsdgen -f -scale " + str(TPC_Wrapper.__data_size) + " -dir " + data_generated_path \
+                      + " -parallel " + str(TPC_Wrapper.__parallel_degree) + " -FORCE"
             else:
                 raise Exception("Parallel degree not supported!")
             output = os.system(sys)
             if output != 0:
                 raise Exception("Terminating process!")
             #
-            logger.log(TPC_Wrapper.__supported_tpc_types[0] + " data generated for [" + str(TPC_Wrapper.__data_size) + "] Gigabytes using parallel degree [" + str(TPC_Wrapper.__parallel_degree) + "]")
+            logger.log(TPC_Wrapper.__supported_tpc_types[0] + " data generated for [" + str(TPC_Wrapper.__data_size)
+                       + "] Gigabytes using parallel degree [" + str(TPC_Wrapper.__parallel_degree) + "]")
         elif tpc_type == TPC_Wrapper.__supported_tpc_types[1]:
             raise NotImplementedError("TPC-E not supported yet!")
     #
@@ -71,14 +75,14 @@ class TPC_Wrapper:
             dsqgen = ev_loader.var_get('project_dir')+"/data/TPC-DS/tools"
             #
             # Navigates to tool directory so as to invoke DSQGEN
-            if not os.path.exists(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/Query"):
-                os.makedirs(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/Query")
+            sql_generated_path = TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/" + ev_loader.var_get("user") + "/Query"
+            if not os.path.exists(sql_generated_path):
+                os.makedirs(sql_generated_path)
             os.chdir(dsqgen)
             #
             sys = "./dsqgen -DIRECTORY " + ev_loader.var_get('project_dir') + "/data/TPC-DS/query_templates -INPUT " + \
                   ev_loader.var_get('project_dir') + "/data/TPC-DS/query_templates/templates.lst -VERBOSE Y -QUALIFY Y " \
-                  "-SCALE " + str(TPC_Wrapper.__parallel_degree) + " -DIALECT oracle -OUTPUT " + \
-                  ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/Query"
+                  "-SCALE " + str(TPC_Wrapper.__parallel_degree) + " -DIALECT oracle -OUTPUT " + sql_generated_path
             output = os.system(sys)
             if output != 0:
                 raise Exception("An exception arose during dsqgen invocation..terminating process!")
@@ -88,10 +92,10 @@ class TPC_Wrapper:
             #
             # TPC-DS - DML Generation
             dml_data = ev_loader.var_get('project_dir')+"/data/TPC-DS/tests"
-            dml_src = ev_loader.var_get('src_dir')+"/sql/Runtime/" + TPC_Wrapper.__supported_tpc_types[0] + "/DML/"
+            dml_src = ev_loader.var_get('src_dir')+"/sql/Runtime/" + TPC_Wrapper.__supported_tpc_types[0] + "/" + ev_loader.var_get("user") + "/DML/"
             #
-            if not os.path.exists(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/DML"):
-                os.makedirs(TPC_Wrapper.__sql_generated_directory + "/" + TPC_Wrapper.__supported_tpc_types[0] + "/DML")
+            if not os.path.exists(dml_src):
+                os.makedirs(dml_src)
             os.chdir(dml_data)
             #
             target_scripts = [] # Keeps reference of which DML scripts to move under src/
@@ -123,7 +127,7 @@ class TPC_Wrapper:
         # Input validation
         TPC_Wrapper.__validate_input(tpc_type=tpc_type)
         #
-        query0_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/Query/query_0.sql"
+        query0_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get("user") + "/Query/query_0.sql"
         #
         if os.path.exists(query0_path) is False:
             raise FileNotFoundError('Query_0.sql was not found! Ensure that schema type ['+tpc_type+'] SQL generation has occurred!')
@@ -139,7 +143,7 @@ class TPC_Wrapper:
             #
             sql_list = read_data.split(";")
             for i, sql in enumerate(sql_list):
-                with open(ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/Query/query_"+str(i+1)+".sql", "w") as f:
+                with open(ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get("user") + "/Query/query_"+str(i+1)+".sql", "w") as f:
                     f.write(sql+";")
                 logger.log("Generated query_" + str(i+1) + ".sql")
     #

@@ -46,7 +46,7 @@ class FileLoader:
         for i, line in enumerate(l_dist_file):
             dml, bind_values = self.__build_insert(line, table_name)
             db_conn.execute_dml(dml, bind_values)
-            if i%10000==0 and i != 0:
+            if i % 10000 == 0 and i != 0:
                 logger.log("Loaded " + str(i) + " records..")
         db_conn.commit()
         logger.log("Loaded table [" + table_name + "]")
