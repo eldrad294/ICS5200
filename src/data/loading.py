@@ -67,7 +67,6 @@ class FileLoader:
         #
         logger.log("Loaded table [" + self.__table_name + "] into database..")
     #
-    @staticmethod
     def __build_insert(self, line):
         """
         Formats insert statement
