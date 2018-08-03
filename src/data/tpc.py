@@ -45,6 +45,7 @@ class TPC_Wrapper:
                       + " -parallel " + str(TPC_Wrapper.__parallel_degree) + " -FORCE"
             else:
                 raise Exception("Parallel degree not supported!")
+            logger.log("Generating " + TPC_Wrapper.__supported_tpc_types[0] + " data..")
             output = os.system(sys)
             if output != 0:
                 raise Exception("Terminating process!")
@@ -172,7 +173,7 @@ class TPC_Wrapper:
         # Input validation
         TPC_Wrapper.__validate_input(tpc_type=tpc_type)
         #
-        file_list = os.listdir(TPC_Wrapper.__data_generated_directory + "/" + tpc_type)
+        file_list = os.listdir(TPC_Wrapper.__data_generated_directory + "/" + tpc_type + "/" + ev_loader.var_get('user'))
         if file_list is None or len(file_list) < 1:
             raise Exception("No data files where found!")
         #
