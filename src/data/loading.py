@@ -57,7 +57,8 @@ class FileLoader:
         # db_conn.commit()
         #
         rdd_file.map(lambda x: x.split('\n'))
-        rdd_file.foreach(partial(self.__build_insert, arg1=table_name))
+        __build_insert = self.__build_insert
+        rdd_file.foreach(partial(__build_insert, arg1=table_name))
         self.__db_conn.commit()
         #
         logger.log("Loaded table [" + table_name + "] into database..")
