@@ -45,7 +45,7 @@ class FileLoader:
             raise Exception('Unintialized database connection!')
     #
     def load_data(self, path, table_name):
-        dist_file = self.sc.textFile(path)
+        rdd_file = self.sc.textFile(path) # Materializes an RDD
         # l_dist_file = dist_file.collect() # Convert into python collection (list)
         # logger.log("Loaded [" + path + "] into memory..")
         # for i, line in enumerate(l_dist_file):
@@ -54,13 +54,9 @@ class FileLoader:
         #     if i % 10000 == 0 and i != 0:
         #         logger.log("Loaded " + str(i) + " records..")
         # db_conn.commit()
-        dist_file.map(self.__split_into_line(table_name=table_name))
+        rdd_file.map(lambda x: x.split('\n')).map(self.__build_insert, table_name)
         self.__db_conn.commit()
         logger.log("Loaded table [" + table_name + "] into database..")
-    #
-    def __split_into_line(self,s, table_name):
-        line = s.plit("\n")
-        return self.__build_insert(line, table_name)
     #
     def __build_insert(self, line, table):
         """
