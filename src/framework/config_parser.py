@@ -1,7 +1,8 @@
+#
+# Module Imports
 import os
 import configparser
-
-
+#
 class ConfigParser:
     """
     Class responsible for parsing the main configuration file.

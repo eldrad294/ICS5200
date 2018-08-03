@@ -168,7 +168,8 @@ user = g_config.get_value('DatabaseConnectionString','user')
 host = g_config.get_value('DatabaseConnectionString','host')
 service = g_config.get_value('DatabaseConnectionString','service')
 port = g_config.get_value('DatabaseConnectionString','port')
-password = getpass.getpass('Password:')
+#password = getpass.getpass('Password:')
+password = g_config.get_value('DatabaseConnectionString','password')
 #
 db_conn = DatabaseInterface(instance_name=instance_name,
                             user=user,
