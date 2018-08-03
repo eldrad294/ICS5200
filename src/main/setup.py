@@ -52,6 +52,7 @@ tpcds_data_loading_bool, tpce_data_loading_bool = g_config.get_value('DataLoadin
                                         g_config.get_value('DataLoading','tpce_loading').title()
 data_generated_dir = str(g_config.get_value('DataGeneration','data_generated_directory'))
 #
+fl = FileLoader(app_name="ICS5200", master="local", db_conn=db_conn)
 if tpcds_data_loading_bool == 'True':
     #
     # Check whether schema needs creating - executed only if relevant tables are not found
@@ -70,8 +71,7 @@ if tpcds_data_loading_bool == 'True':
     file_names = TPC_Wrapper.get_data_file_list(tpc_type="TPC-DS")
     #
     for i in range(len(file_names)):
-        fl = FileLoader(app_name="ICS5200", master="local", table_name=table_names[i], db_conn=db_conn)
-        fl.load_data(data_generated_dir + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i])
+        fl.load_data(data_generated_dir + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i], table_names[i])
     #
     # Check whether indexes needs creating - executed only if relevant indexes are not found
     sql_statement = "select count(*) from user_indexes where index_name = 'SS_SOLD_DATE_SK_INDEX'"

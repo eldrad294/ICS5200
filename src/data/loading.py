@@ -11,13 +11,12 @@ class FileLoader:
     toolset to manipulate file un/loading in an efficient manner.
     """
     #
-    def __init__(self, app_name="ICS5200", master="local",table_name=None,db_conn=None):
+    def __init__(self, app_name="ICS5200", master="local", db_conn=None):
         #
-        self.__validate(app_name=app_name, master=master, table_name=table_name, db_conn=db_conn)
-        self.__table_name = table_name
+        self.__validate(app_name=app_name, master=master, db_conn=db_conn)
         self.__db_conn = db_conn
         #
-        self.sc = self.__create_Spark_context(app_name=app_name,master=master)
+        self.sc = self.__create_Spark_context(app_name=app_name, master=master)
     #
     def __create_Spark_context(self, app_name, master):
         conf = SparkConf()
@@ -41,13 +40,10 @@ class FileLoader:
         elif master is None:
             raise Exception('Master was not declared for Spark context!')
         #
-        if table_name is None:
-            raise Exception('Undeclared table name!')
-        #
         if db_conn is None:
             raise Exception('Uninitialized database connection!')
     #
-    def load_data(self, path):
+    def load_data(self, path, table_name):
         rdd_file = self.sc.textFile(path) # Materializes an RDD
         # l_dist_file = dist_file.collect() # Convert into python collection (list)
         # logger.log("Loaded [" + path + "] into memory..")
@@ -62,7 +58,7 @@ class FileLoader:
         rdd_file.foreach(FileLoaderUtils.build_insert)
         self.__db_conn.commit()
         #
-        logger.log("Loaded table [" + self.__table_name + "] into database..")
+        logger.log("Loaded table [" + table_name + "] into database..")
     #
 class FileLoaderUtils:
     """
