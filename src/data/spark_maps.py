@@ -38,7 +38,7 @@ class SparkMaps:
         list_line = []
         value = ""
         for i in line:
-            if i != FileLoaderUtils.__delimeter:
+            if i != __delimeter:
                 value += i
             else:
                 try:
