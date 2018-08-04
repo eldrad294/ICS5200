@@ -10,6 +10,11 @@ The script will:
 * Generate TPC-E/TPC-DS SQL/DML
 --------------------------
 """
+"""
+---------------------------------------------------
+SCRIPT WARM UP - Module Import & Path Configuration
+---------------------------------------------------
+"""
 #
 # Module Imports
 import sys
@@ -23,7 +28,13 @@ src_dir = dirname(dirname(abspath(__file__)))
 sys.path.append(project_dir)
 sys.path.append(src_dir)
 #
-from src.framework.script_initializer import ev_loader, db_conn, spark_context, logger
+from src.framework.script_initializer import ScriptInitializer
+si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir)
+ev_loader = si.get_global_config()
+db_conn = si.initialize_database()
+spark_context = si.initialize_spark()
+logger = si.initialize_logger()
+
 from src.data.tpc import TPC_Wrapper, FileLoader
 #
 # TPC Wrapper Initialization
