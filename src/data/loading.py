@@ -54,7 +54,7 @@ class FileLoader:
         rdd_file = self.sc.textFile(path, self.__rdd_parallelism) # Materializes an RDD, but does not compute due to lazy evaluation
         rdd_file = rdd_file.map(lambda x: x.split('\n')) # Split line by line - does not compute immediately due to lazy evaluation
         #rdd_file.foreachPartition(partial(SparkMaps.build_insert, table_name=table_name))
-        rdd_file.foreachPartition(lambda x : SparkMaps.build_insert(dataline=x, table_name=table_name))
+        rdd_file.foreachPartition(lambda x : SparkMaps.build_insert(dataline=x, table_name=table_name, db_conn=db_conn))
         db_conn.commit()
         #
         logger.log("Loaded table [" + table_name + "] into database..")
