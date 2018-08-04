@@ -33,6 +33,7 @@ class Spark:
         #
         # Initialize Spark Context
         self.__spark_context = self.__create_Spark_context()
+        self.display_spark_context()
     #
     def __validate(self):
         if self.__app_name is None:
@@ -76,7 +77,6 @@ class Spark:
         conf.set('spark.driver.memory', str(self.__spark_driver_memory))
         conf.set('spark.logConf', self.__spark_logConf.title())
         sc = SparkContext(conf=conf)
-        self.display_spark_context()
         return sc
     #
     def get_spark_context(self):
@@ -92,9 +92,9 @@ class Spark:
         :return:
         """
         if self.__spark_context is None:
-            raise ValueError('Spart Context Uninitialized!')
+            raise ValueError('Spark Context Uninitialized!')
         #
-        for conf in sc.getConf().getAll():
+        for conf in self.__spark_context.getConf().getAll():
             self.__logger.log(conf)
 #
 class SparkMaps:
