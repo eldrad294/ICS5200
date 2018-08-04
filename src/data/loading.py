@@ -12,18 +12,19 @@ class FileLoader:
     toolset to manipulate file un/loading in an efficient manner.
     """
     #
-    def __init__(self, app_name="ICS5200", master="local", db_conn=None):
+    def __init__(self, app_name="ICS5200", master="local"):
         #
-        self.__validate(app_name=app_name, master=master, db_conn=db_conn)
-        self.__db_conn = db_conn
+        self.__rdd_parallelism = g_config.get_value('SparkContext','rdd_partitions')
+        self.__app_name = app_name
+        self.__master = master
+        self.__validate()
         #
-        self.sc = self.__create_Spark_context(app_name=app_name, master=master)
-        self.rdd_parallelism = g_config.get_value('SparkContext','rdd_partitions')
+        self.sc = self.__create_Spark_context()
     #
-    def __create_Spark_context(self, app_name, master):
+    def __create_Spark_context(self):
         conf = SparkConf()
-        conf.setAppName(app_name)
-        conf.setMaster(master)
+        conf.setAppName(self.__app_name)
+        conf.setMaster(self.__master)
         conf.set('spark.executor.memory', str(g_config.get_value('SparkContext','spark_executor_memory')))
         conf.set('spark.executor.cores', str(g_config.get_value('SparkContext','spark_executor_cores')))
         conf.set('spark.driver.maxResultSize', str(g_config.get_value('SparkContext', 'spark_max_result_size')))
@@ -36,20 +37,24 @@ class FileLoader:
             logger.log(conf)
         return sc
     #
-    def __validate(self, app_name, master, db_conn):
-        if app_name is None:
-            raise Exception('App name was not defined for Spark context!')
-        elif master is None:
-            raise Exception('Master was not declared for Spark context!')
+    def __validate(self):
+        if self.__app_name is None:
+            raise ValueError('App name was not defined for Spark context!')
+        elif self.__master is None:
+            raise ValueError('Master was not declared for Spark context!')
+        elif self.__rdd_parallelism is None:
+            raise ValueError('RDD Parallelism degree was not established!')
         #
-        if db_conn is None:
-            raise Exception('Uninitialized database connection!')
+        try:
+            self.__rdd_parallelism = int(self.__rdd_parallelism)
+        except ValueError:
+            raise ValueError('RDD Parallelism degree must be a numeric value')
     #
     def load_data(self, path, table_name):
-        rdd_file = self.sc.textFile(path, self.rdd_parallelism) # Materializes an RDD, but does not compute due to lazy evaluation
+        rdd_file = self.sc.textFile(path, self.__rdd_parallelism) # Materializes an RDD, but does not compute due to lazy evaluation
         rdd_file.map(lambda x: x.split('\n')) # Split line by line - does not compute immediately due to lazy evaluation
         rdd_file.foreach(SparkMaps.build_insert(table_name=table_name))
-        self.__db_conn.commit()
+        db_conn.commit()
         #
         logger.log("Loaded table [" + table_name + "] into database..")
 
