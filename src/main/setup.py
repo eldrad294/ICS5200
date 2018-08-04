@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 --------------------------
 This script is used to generate and load TPC data into TPC (DS or E) schema
