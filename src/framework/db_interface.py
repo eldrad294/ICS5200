@@ -32,7 +32,7 @@ class DatabaseInterface:
             raise ValueError("Database service was not declared!")
         if self.__port is None:
             raise ValueError("Database port was not declared!")
-        if self.self.__logger is None:
+        if self.__logger is None:
             raise ValueError("Logger context was not declared!")
     #
     def __clean_query(self, v_sql):
