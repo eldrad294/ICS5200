@@ -4,7 +4,7 @@ SCRIPT WARM UP
 --------------------------
 """
 import os
-from src.framework.env_var_loader import ev_loader
+from src.framework.env_var_loader import ev_loader, ConfigParser
 #
 # Defines config object
 config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'main/config.ini')
