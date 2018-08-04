@@ -1,7 +1,4 @@
 #
-# Module Imports
-from src.framework.logger import logger
-#
 class Spark:
     """
     Class dedicated to Spark context manipulation
