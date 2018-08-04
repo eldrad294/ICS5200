@@ -46,9 +46,9 @@ tpc = TPC_Wrapper(ev_loader=ev_loader,
 SCRIPT EXECUTION - Data Generation
 ----------------------------------
 """
-if ev_loader.get('tpcds_generation_bool') == 'True':
+if ev_loader.get_value('tpcds_generation_bool') == 'True':
     tpc.generate_data(tpc_type='TPC-DS')
-if ev_loader.get('tpce_generation_bool') == 'True':
+if ev_loader.get_value('tpce_generation_bool') == 'True':
     raise NotImplementedError("This logic is not yet implemented!")
 """
 -------------------------------
@@ -59,7 +59,7 @@ fl = FileLoader(ev_loader=ev_loader,
                 logger=logger,
                 database_context=db_conn,
                 spark_context=spark_context)
-if ev_loader.get('tpcds_data_loading_bool') == 'True':
+if ev_loader.get_value('tpcds_data_loading_bool') == 'True':
     #
     # Check whether schema needs creating - executed only if relevant tables are not found
     sql_statement = "select count(*) from user_tables where table_name = 'DBGEN_VERSION'"
@@ -89,17 +89,17 @@ if ev_loader.get('tpcds_data_loading_bool') == 'True':
         logger.log('TPC-DS indexes generation successful!')
     else:
         logger.log('Skipping schema creation..TPC-DS indexes already exist!')
-if ev_loader.get('tpce_data_loading_bool') == 'True':
+if ev_loader.get_value('tpce_data_loading_bool') == 'True':
     raise NotImplementedError("This logic is not yet implemented!")
 """
 ------------------------------
 SCRIPT EXECUTION - SQL Loading
 ------------------------------
 """
-if ev_loader.get('tpcds_sql_generation_bool') == 'True':
+if ev_loader.get_value('tpcds_sql_generation_bool') == 'True':
     tpc.generate_sql(tpc_type='TPC-DS')
     tpc.split_tpc_sql_file(tpc_type='TPC-DS')
-if ev_loader.get('tpce_sql_generation_bool') == 'True':
+if ev_loader.get_value('tpce_sql_generation_bool') == 'True':
     raise NotImplementedError("This logic is not yet implemented!")
 #
 logger.log("Script Complete!\n-------------------------------------")
