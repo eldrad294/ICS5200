@@ -1,59 +1,41 @@
-#
-# Module Imports
-import sys
-from os.path import dirname, abspath
-#
-# Retrieving relative paths for project directory
-project_dir = dirname(dirname(dirname(abspath(__file__))))
-src_dir = dirname(dirname(abspath(__file__)))
-#
-# Appending to python path
-sys.path.append(project_dir)
-sys.path.append(src_dir)
-#
-from src.framework.env_var_loader import ev_loader
-#
-# Loading of program variables
-ev_loader.var_load({"project_dir": project_dir,"src_dir": src_dir})
-#
-from src.framework.config_parser import g_config
-user = g_config.get_value('DatabaseConnectionString','user')
-ev_loader.var_load({"user": user})
 """
---------------IMPORTANT!!--------------
--------PLACE NEW MODULES BELOW!!-------
----------------------------------------
+--------------------------
+This script is used to generate and load TPC data into TPC (DS or E) schema
+The script will:
+* Generate TPC-E/TPC-DS dat files , according to specified size. A file will be generated per table withing schema
+* Generate TPC-E/TPC-DS schema, mainly the tables
+* Load each dat file in memory using Spark RDDs.
+* The loaded data is dumped into an Oracle instance
+* Create indexes on oracle instance
+* Generate TPC-E/TPC-DS SQL/DML
+--------------------------
 """
-from src.framework.logger import logger
-from src.data.tpc import TPC_Wrapper
-from src.utils.db_interface import db_conn
+from src.framework.script_initializer import ev_loader, db_conn, spark_context, logger
+from src.data.tpc import TPC_Wrapper, FileLoader
 #
-from src.data.loading import FileLoader
-#
-#
-# Establishes database connection
-db_conn.connect()
-#
-tpcds_generation_bool, tpce_generation_bool = g_config.get_value('DataGeneration','tpcds_data_generation').title(), \
-                                              g_config.get_value('DataGeneration','tpce_data_generation').title()
-#
+# TPC Wrapper Initialization
+tpc = TPC_Wrapper(ev_loader=ev_loader,
+                  logger=logger,
+                  database_context=db_conn)
 """
-Data Generation
+----------------------------------
+SCRIPT EXECUTION - Data Generation
+----------------------------------
 """
-if tpcds_generation_bool  == 'True':
-    TPC_Wrapper.generate_data(tpc_type='TPC-DS')
-if tpce_generation_bool == 'True':
+if ev_loader.get('tpcds_generation_bool') == 'True':
+    tpc.generate_data(tpc_type='TPC-DS')
+if ev_loader.get('tpce_generation_bool') == 'True':
     raise NotImplementedError("This logic is not yet implemented!")
-#
 """
-Data Loading
+-------------------------------
+SCRIPT EXECUTION - Data Loading
+-------------------------------
 """
-tpcds_data_loading_bool, tpce_data_loading_bool = g_config.get_value('DataLoading','tpcds_loading').title(), \
-                                        g_config.get_value('DataLoading','tpce_loading').title()
-data_generated_dir = str(g_config.get_value('DataGeneration','data_generated_directory'))
-#
-fl = FileLoader(app_name="ICS5200", master="local")
-if tpcds_data_loading_bool == 'True':
+fl = FileLoader(ev_loader=ev_loader,
+                logger=logger,
+                database_context=db_conn,
+                spark_context=spark_context)
+if ev_loader.get('tpcds_data_loading_bool') == 'True':
     #
     # Check whether schema needs creating - executed only if relevant tables are not found
     sql_statement = "select count(*) from user_tables where table_name = 'DBGEN_VERSION'"
@@ -65,13 +47,14 @@ if tpcds_data_loading_bool == 'True':
         logger.log('Skipping schema creation..TPC-DS tables already exist!')
     #
     # Retrieve eligible data file names
-    table_names = TPC_Wrapper.get_file_extension_list(tpc_type="TPC-DS")[0]
+    table_names = tpc.get_file_extension_list(tpc_type="TPC-DS")[0]
     #
     # Retrieve all eligible data files
-    file_names = TPC_Wrapper.get_data_file_list(tpc_type="TPC-DS")
+    file_names = tpc.get_data_file_list(tpc_type="TPC-DS")
     #
     for i in range(len(file_names)):
-        fl.load_data(data_generated_dir + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i], table_names[i])
+        fl.load_data(path=data_generated_dir + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i],
+                     table_name=table_names[i])
     #
     # Check whether indexes needs creating - executed only if relevant indexes are not found
     sql_statement = "select count(*) from user_indexes where index_name = 'SS_SOLD_DATE_SK_INDEX'"
@@ -82,18 +65,17 @@ if tpcds_data_loading_bool == 'True':
         logger.log('TPC-DS indexes generation successful!')
     else:
         logger.log('Skipping schema creation..TPC-DS indexes already exist!')
-if tpce_data_loading_bool == 'True':
+if ev_loader.get('tpce_data_loading_bool') == 'True':
     raise NotImplementedError("This logic is not yet implemented!")
-#
 """
-SQL Generation
+------------------------------
+SCRIPT EXECUTION - SQL Loading
+------------------------------
 """
-tpcds_sql_generation_bool, tpce_sql_generation_bool = g_config.get_value('DataGeneration','tpcds_sql_generation').title(), \
-                                                        g_config.get_value('DataGeneration','tpce_sql_generation').title()
-if tpcds_sql_generation_bool == 'True':
-    TPC_Wrapper.generate_sql(tpc_type='TPC-DS')
-    TPC_Wrapper.split_tpc_sql_file(tpc_type='TPC-DS')
-if tpce_sql_generation_bool == 'True':
+if ev_loader.get('tpcds_sql_generation_bool') == 'True':
+    tpc.generate_sql(tpc_type='TPC-DS')
+    tpc.split_tpc_sql_file(tpc_type='TPC-DS')
+if ev_loader.get('tpce_sql_generation_bool') == 'True':
     raise NotImplementedError("This logic is not yet implemented!")
 #
 logger.log("Script Complete!\n-------------------------------------")

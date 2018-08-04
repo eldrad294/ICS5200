@@ -1,20 +1,18 @@
 #
 # Module Imports
-from src.framework.config_parser import g_config
-from src.framework.logger import logger
 import cx_Oracle
 import getpass
 #
 class DatabaseInterface:
     #
-    def __init__(self, instance_name=None, user=None, host=None, service=None, port=None, password=None):
+    def __init__(self, instance_name=None, user=None, host=None, service=None, port=None, password=None, logger=None):
         self.__instance_name = instance_name
         self.__user = str(user)
         self.__host = str(host)
         self.__service = str(service)
         self.__port = str(port)
-        #self.__password = str(getpass.getpass("Enter database password:"))
-        self.__password = str(password) # Required to execute under nohup instead of manual user input
+        self.__password = str(password) # Required to execute under nohup instead of manual user input,
+        self.__logger = logger
         #
         # Validates connection config
         self.__validate_db_config()
@@ -34,6 +32,8 @@ class DatabaseInterface:
             raise ValueError("Database service was not declared!")
         if self.__port is None:
             raise ValueError("Database port was not declared!")
+        if self.self.__logger is None:
+            raise ValueError("Logger context was not declared!")
     #
     def __clean_query(self, v_sql):
         return v_sql.replace("\n"," ")
@@ -61,9 +61,9 @@ class DatabaseInterface:
         conn_str = self.__user + "/" + self.__password + "@" + self.__host + ":" + self.__port + "/" + self.__service
         try:
             self.conn = cx_Oracle.connect(conn_str, encoding = "UTF-8", nencoding = "UTF-8")
-            logger.log("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
+            self.__logger.log("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
         except Exception as e:
-            logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
+            self.__logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
     #
     def execute_query(self, query, params=None, fetch_single=False, describe=False):
         """
@@ -94,7 +94,7 @@ class DatabaseInterface:
             if describe is True:
                 description = cursor.description
         except Exception as e:
-            logger.log('Skipped record due to following exception: [' + str(e) + ']')
+            self.__logger.log('Skipped record due to following exception: [' + str(e) + ']')
         finally:
             if cursor is not None:
                 cursor.close()
@@ -120,7 +120,7 @@ class DatabaseInterface:
             else:
                 cursor.execute(dml, params)
         except Exception as e:
-            logger.log('Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
+            self.__logger.log('Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
                        str(dml) + ' ]')
         finally:
             if cursor is not None:
@@ -160,23 +160,7 @@ class DatabaseInterface:
         :return:
         """
         self.conn.close()
-        logger.log("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
-#
-# Retrieves config data
-instance_name = g_config.get_value('DatabaseConnectionString','instance_name')
-user = g_config.get_value('DatabaseConnectionString','user')
-host = g_config.get_value('DatabaseConnectionString','host')
-service = g_config.get_value('DatabaseConnectionString','service')
-port = g_config.get_value('DatabaseConnectionString','port')
-#password = getpass.getpass('Password:')
-password = g_config.get_value('DatabaseConnectionString','password')
-#
-db_conn = DatabaseInterface(instance_name=instance_name,
-                            user=user,
-                            host=host,
-                            service=service,
-                            port=port,
-                            password=password)
+        self.__logger.log("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
 """
 Follow below example:
 ---------------------
