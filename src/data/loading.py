@@ -2,6 +2,7 @@ from pyspark import SparkContext, SparkConf
 from src.framework.logger import logger
 from src.framework.config_parser import g_config
 from src.utils.db_interface import db_conn
+from src.data.pyspark_loading import FileLoaderUtils
 #
 # Module Imports
 class FileLoader:
@@ -44,7 +45,7 @@ class FileLoader:
             raise Exception('Uninitialized database connection!')
     #
     def load_data(self, path, table_name):
-        rdd_file = self.sc.textFile(path) # Materializes an RDD
+        rdd_file = self.sc.textFile(path,1) # Materializes an RDD, but does not compute due to lazy evaluation
         # l_dist_file = dist_file.collect() # Convert into python collection (list)
         # logger.log("Loaded [" + path + "] into memory..")
         # for i, line in enumerate(l_dist_file):
@@ -54,59 +55,9 @@ class FileLoader:
         #         logger.log("Loaded " + str(i) + " records..")
         # db_conn.commit()
         #
-        rdd_file.map(lambda x: x.split('\n'))
+        rdd_file.map(lambda x: x.split('\n')) # Split line by line - does not compute immediately due to lazy evaluation
         rdd_file.foreach(FileLoaderUtils.build_insert)
         self.__db_conn.commit()
         #
         logger.log("Loaded table [" + table_name + "] into database..")
-    #
-class FileLoaderUtils:
-    """
-    Contains static methods for calling of FileLoader context
-    """
-    __delimeter = '|'
-    #
-    @staticmethod
-    def build_insert(line, table_name):
-        """
-        Formats insert statement
-        :param line:
-        :param table:
-        :return:
-        """
-        l_line = FileLoaderUtils.__parse_data_line(line)
-        dml = "INSERT INTO " + table_name + " VALUES ("
-        for i in range(len(l_line)):
-            if i == 0:
-                dml += " :" + str(i+1) + " "
-            else:
-                dml += ", :" + str(i+1) + " "
-        dml += ")"
-        db_conn.execute_dml(dml, l_line)
-    #
-    @staticmethod
-    def __parse_data_line(line):
-        """
-        Iterates over input data line, and parses value into a list. Values are delimeted according to config file,
-        default to '|'
-        :param line:
-        :return:
-        """
-        list_line = []
-        value = ""
-        for i in line:
-            if i != FileLoaderUtils.__delimeter:
-                value += i
-            else:
-                try:
-                    value = int(value)
-                except Exception:
-                    try:
-                        value = float(value)
-                    except Exception:
-                        pass
-                #
-                list_line.append(value)
-                value = ""
-        return tuple(list_line)
 
