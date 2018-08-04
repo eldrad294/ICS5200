@@ -10,7 +10,7 @@ class SparkMaps:
     __delimeter = '|'
     #
     @staticmethod
-    def build_insert(dataline, table_name):
+    def build_insert(table_name, dataline):
         """
         Formats insert statement
         :param line:
