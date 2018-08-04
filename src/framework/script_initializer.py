@@ -84,46 +84,53 @@ class ScriptInitializer:
                             'spark_cores_max':spark_cores_max,
                             'spark_driver_memory':spark_driver_memory,
                             'spark_logConf':spark_logConf})
+        #
+        self.logger = Logger.getInstance(log_file_path=ev_loader.var_get(var_name="project_dir") + "/log/" +
+                                          ev_loader.var_get('log_file_name') + "_" + ev_loader.var_get("user") + "_"
+                                          + str(Logger.getDate()),
+                                         write_to_disk=ev_loader.var_get('write_to_disk'),
+                                         write_to_screen=ev_loader.var_get('write_to_screen'))
+        #
+        self.db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
+                                         user=ev_loader.var_get('user'),
+                                         host=ev_loader.var_get('host'),
+                                         service=ev_loader.var_get('service'),
+                                         port=ev_loader.var_get('port'),
+                                         password=ev_loader.var_get('password'),
+                                         logger=self.logger).connect()
+        #
+        self.spark = Spark(app_name=ev_loader.var_get('app_name'),
+                           master=ev_loader.var_get('master'),
+                           spark_rdd_partitions=ev_loader.var_get('spark_rdd_partitions'),
+                           spark_executor_memory=ev_loader.var_get('spark_executor_memory'),
+                           spark_executor_cores=ev_loader.var_get('spark_executor_cores'),
+                           spark_max_result_size=ev_loader.var_get('spark_max_result_size'),
+                           spark_cores_max=ev_loader.var_get('spark_cores_max'),
+                           spark_driver_memory=ev_loader.var_get('spark_driver_memory'),
+                           spark_logConf=ev_loader.var_get('spark_logConf'),
+                           logger=self.logger)
+        self.ev_loader = ev_loader
     #
     def initialize_logger(self):
         """
         Logger Initialization
         :return: logger instance
         """
-        return Logger.getInstance(log_file_path=ev_loader.var_get(var_name="project_dir") + "/log/" +
-                                          ev_loader.var_get('log_file_name') + "_" + ev_loader.var_get("user") + "_"
-                                          + str(Logger.getDate()),
-                                  write_to_disk=ev_loader.var_get('write_to_disk'),
-                                  write_to_screen=ev_loader.var_get('write_to_screen'))
+        return self.logger
     #
     def initialize_database(self):
         """
         Database connection Initialization
         :return:
         """
-        return DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-                                 user=ev_loader.var_get('user'),
-                                 host=ev_loader.var_get('host'),
-                                 service=ev_loader.var_get('service'),
-                                 port=ev_loader.var_get('port'),
-                                 password=ev_loader.var_get('password'),
-                                 logger=logger).connect()
+        return self.db_conn
     #
     def initialize_spark(self):
         """
         Spark Context Initialization
         :return:
         """
-        return Spark(app_name=ev_loader.var_get('app_name'),
-                     master=ev_loader.var_get('master'),
-                     spark_rdd_partitions=ev_loader.var_get('spark_rdd_partitions'),
-                     spark_executor_memory=ev_loader.var_get('spark_executor_memory'),
-                     spark_executor_cores=ev_loader.var_get('spark_executor_cores'),
-                     spark_max_result_size=ev_loader.var_get('spark_max_result_size'),
-                     spark_cores_max=ev_loader.var_get('spark_cores_max'),
-                     spark_driver_memory=ev_loader.var_get('spark_driver_memory'),
-                     spark_logConf=ev_loader.var_get('spark_logConf'),
-                     logger=logger)
+        return self.spark
     #
     def get_global_config(self):
-        return ev_loader
+        return self.ev_loader
