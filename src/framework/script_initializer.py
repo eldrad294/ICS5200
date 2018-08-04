@@ -3,19 +3,6 @@
 SCRIPT WARM UP
 --------------------------
 """
-#
-# Module Imports
-import sys
-from os.path import dirname, abspath
-#
-# Retrieving relative paths for project directory
-project_dir = dirname(dirname(dirname(abspath(__file__))))
-src_dir = dirname(dirname(abspath(__file__)))
-#
-# Appending to python path
-sys.path.append(project_dir)
-sys.path.append(src_dir)
-#
 from src.framework.env_var_loader import ev_loader
 #
 # Defines config object

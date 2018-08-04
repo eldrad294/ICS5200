@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 --------------------------
 This script is used to generate and load TPC data into TPC (DS or E) schema
@@ -11,6 +10,19 @@ The script will:
 * Generate TPC-E/TPC-DS SQL/DML
 --------------------------
 """
+#
+# Module Imports
+import sys
+from os.path import dirname, abspath
+#
+# Retrieving relative paths for project directory
+project_dir = dirname(dirname(dirname(abspath(__file__))))
+src_dir = dirname(dirname(abspath(__file__)))
+#
+# Appending to python path
+sys.path.append(project_dir)
+sys.path.append(src_dir)
+#
 from src.framework.script_initializer import ev_loader, db_conn, spark_context, logger
 from src.data.tpc import TPC_Wrapper, FileLoader
 #
