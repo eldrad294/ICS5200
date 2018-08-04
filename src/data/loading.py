@@ -2,7 +2,7 @@ from pyspark import SparkContext, SparkConf
 from src.framework.logger import logger
 from src.framework.config_parser import g_config
 from src.utils.db_interface import db_conn
-from src.data.pyspark_loading import FileLoaderUtils
+from src.data.spark_maps import SparkMaps
 #
 # Module Imports
 class FileLoader:
@@ -18,6 +18,7 @@ class FileLoader:
         self.__db_conn = db_conn
         #
         self.sc = self.__create_Spark_context(app_name=app_name, master=master)
+        self.rdd_parallelism = g_config.get_value('SparkContext','rdd_partitions')
     #
     def __create_Spark_context(self, app_name, master):
         conf = SparkConf()
@@ -45,18 +46,9 @@ class FileLoader:
             raise Exception('Uninitialized database connection!')
     #
     def load_data(self, path, table_name):
-        rdd_file = self.sc.textFile(path,1) # Materializes an RDD, but does not compute due to lazy evaluation
-        # l_dist_file = dist_file.collect() # Convert into python collection (list)
-        # logger.log("Loaded [" + path + "] into memory..")
-        # for i, line in enumerate(l_dist_file):
-        #     dml, bind_values = self.__build_insert(line, table_name)
-        #     db_conn.execute_dml(dml, bind_values)
-        #     if i % 10000 == 0 and i != 0:
-        #         logger.log("Loaded " + str(i) + " records..")
-        # db_conn.commit()
-        #
+        rdd_file = self.sc.textFile(path, self.rdd_parallelism) # Materializes an RDD, but does not compute due to lazy evaluation
         rdd_file.map(lambda x: x.split('\n')) # Split line by line - does not compute immediately due to lazy evaluation
-        rdd_file.foreach(FileLoaderUtils.build_insert)
+        rdd_file.foreach(SparkMaps.build_insert(table_name=table_name))
         self.__db_conn.commit()
         #
         logger.log("Loaded table [" + table_name + "] into database..")

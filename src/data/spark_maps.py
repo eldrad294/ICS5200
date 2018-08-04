@@ -1,6 +1,11 @@
-class FileLoaderUtils:
+class SparkMaps:
     """
-    Contains static methods for calling of FileLoader context
+    This class contains all mapping functions which are utilized throughout this project.
+
+    It is IMPERATIVE that this class remains a standalone class, and that it should AVOID any global variable
+    references, including module imports outside the scope of this class but within the same .py class. Note, that this
+    class is reserved to mapping functions - functions which will be executed on parallel executors, and will therefore
+    not have reference to variables usually accessed by Spark's Main driver.
     """
     __delimeter = '|'
     #
