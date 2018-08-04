@@ -10,14 +10,14 @@ class SparkMaps:
     __delimeter = '|'
     #
     @staticmethod
-    def build_insert(line, table_name):
+    def build_insert(table_name, dataline):
         """
         Formats insert statement
         :param line:
         :param table:
         :return:
         """
-        l_line = FileLoaderUtils.__parse_data_line(line)
+        l_line = FileLoaderUtils.__parse_data_line(dataline)
         dml = "INSERT INTO " + table_name + " VALUES ("
         for i in range(len(l_line)):
             if i == 0:
