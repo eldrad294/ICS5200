@@ -3,6 +3,7 @@
 SCRIPT WARM UP
 --------------------------
 """
+import os
 from src.framework.env_var_loader import ev_loader
 #
 # Defines config object
