@@ -27,7 +27,7 @@ class ScriptInitializer:
         #
         app_name = str(g_config.get_value('SparkContext','app_name'))
         master = str(g_config.get_value('SparkContext','master'))
-        spark_rdd_partitions = int(g_config.get_value('SparkContext','rdd_partitions'))
+        spark_rdd_partitions = int(g_config.get_value('SparkContext','spark_rdd_partitions'))
         spark_executor_memory = str(g_config.get_value('SparkContext','spark_executor_memory'))
         spark_executor_cores = str(g_config.get_value('SparkContext','spark_executor_cores'))
         spark_max_result_size = str(g_config.get_value('SparkContext','spark_max_result_size'))
