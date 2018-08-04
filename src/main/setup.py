@@ -52,7 +52,7 @@ tpcds_data_loading_bool, tpce_data_loading_bool = g_config.get_value('DataLoadin
                                         g_config.get_value('DataLoading','tpce_loading').title()
 data_generated_dir = str(g_config.get_value('DataGeneration','data_generated_directory'))
 #
-fl = FileLoader(app_name="ICS5200", master="local", db_conn=db_conn)
+fl = FileLoader(app_name="ICS5200", master="local")
 if tpcds_data_loading_bool == 'True':
     #
     # Check whether schema needs creating - executed only if relevant tables are not found
