@@ -97,7 +97,7 @@ class ScriptInitializer:
                                          service=ev_loader.var_get('service'),
                                          port=ev_loader.var_get('port'),
                                          password=ev_loader.var_get('password'),
-                                         logger=self.logger).connect()
+                                         logger=self.logger)
         #
         self.spark = Spark(app_name=ev_loader.var_get('app_name'),
                            master=ev_loader.var_get('master'),
