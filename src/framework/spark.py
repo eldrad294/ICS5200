@@ -1,6 +1,7 @@
 #
 # Module Imports
 from pyspark.conf import SparkConf
+from pyspark.context import SparkContext
 #
 class Spark:
     """
