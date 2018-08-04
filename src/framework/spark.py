@@ -1,4 +1,7 @@
 #
+# Module Imports
+from pyspark.conf import SparkConf
+#
 class Spark:
     """
     Class dedicated to Spark context manipulation
