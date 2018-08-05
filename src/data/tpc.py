@@ -221,6 +221,6 @@ class FileLoader:
         f = lambda line: SparkMaps.build_insert(dataline=line,
                                                 table_name=table_name,
                                                 database_context=db_conn)
-        mapped_rdd_file.foreach(lambda rdd: rdd.foreachPartition(f))
+        mapped_rdd_file.foreachRDD(lambda rdd: rdd.foreachPartition(f))
         #
         self.__logger.log("Loaded table [" + table_name + "] into database..")
