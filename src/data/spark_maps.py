@@ -41,7 +41,7 @@ class SparkMaps:
         list_line = []
         delimeter = '|'
         value = ""
-        for i in dataline:
+        for i in dataline[0]:
             if i != delimeter:
                 value += i
             else:
