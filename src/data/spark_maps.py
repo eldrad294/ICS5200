@@ -4,7 +4,7 @@ class SparkMaps:
     """
     #
     @staticmethod
-    def build_insert(dataline, table_name, database_context, ):
+    def build_insert(dataline, table_name, database_context):
         """
         Formats insert statement
         :param line: Current .DAT line
@@ -13,7 +13,8 @@ class SparkMaps:
         :param spark_context: Spark connection context
         :return:
         """
-        l_line = SparkMaps.__parse_data_line(dataline)
+        print(dataline)
+        l_line = SparkMaps.__parse_data_line(dataline=dataline)
         dml = "INSERT INTO " + table_name + " VALUES ("
         for i in range(len(l_line)):
             if i == 0:
@@ -24,7 +25,7 @@ class SparkMaps:
         database_context.execute_dml(dml, l_line).commit()
     #
     @staticmethod
-    def __parse_data_line(line):
+    def __parse_data_line(dataline):
         """
         Iterates over input data line, and parses value into a list. Values are delimeted according to config file,
         default to '|'
@@ -34,7 +35,7 @@ class SparkMaps:
         list_line = []
         delimeter = '|'
         value = ""
-        for i in line:
+        for i in dataline:
             if i != delimeter:
                 value += i
             else:
