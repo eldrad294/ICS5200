@@ -78,7 +78,7 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
     file_names = tpc.get_data_file_list(tpc_type="TPC-DS")
     #
     for i in range(len(file_names)):
-        fl.load_data(path=data_generated_dir + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i],
+        fl.load_data(path=ev_loader.var_get('data_generated_directory') + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i],
                      table_name=table_names[i])
     #
     # Check whether indexes needs creating - executed only if relevant indexes are not found
