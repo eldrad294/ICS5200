@@ -1,6 +1,7 @@
 #
 # Module Imports
 from os.path import expanduser
+from src.framework.spark import SparkMaps
 import os
 home = expanduser("~")
 #
@@ -214,7 +215,7 @@ class FileLoader:
         :param spark_context: Spark connection context
         :return:
         """
-        rdd_file = self.__spark_context.textFile(path, ev_loader.get('spark_rdd_partitions')) # Materializes an RDD, but does not compute due to lazy evaluation
+        rdd_file = self.__spark_context.textFile(path, self.__ev_loader.get('spark_rdd_partitions')) # Materializes an RDD, but does not compute due to lazy evaluation
         rdd_file = rdd_file.map(lambda x: x.split('\n')) # Split line by line - does not compute immediately due to lazy evaluation
         #rdd_file.foreachPartition(partial(SparkMaps.build_insert, table_name=table_name))
         rdd_file.foreachPartition(lambda x : SparkMaps.build_insert(dataline=x,
