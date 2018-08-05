@@ -13,7 +13,8 @@ class SparkMaps:
         :param spark_context: Spark connection context
         :return:
         """
-        print(dataline.value)
+        print(dataline.toDebugString())
+        print(dataline.getAll())
         l_line = SparkMaps.__parse_data_line(dataline=dataline)
         dml = "INSERT INTO " + table_name + " VALUES ("
         for i in range(len(l_line)):
