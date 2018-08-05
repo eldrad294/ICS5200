@@ -221,7 +221,7 @@ class FileLoader:
         # mapped_rdd_file.foreach(lambda line : SparkMaps.build_insert(dataline=line,
         #                                                                table_name=table_name,
         #                                                                database_context=db_conn))
-        mapped_rdd_file.foreachRDD(lambda rdd: rdd.foreachPartition(lambda line : SparkMaps.build_insert(dataline=line,
+        mapped_rdd_file.foreach(lambda rdd: rdd.foreachPartition(lambda line : SparkMaps.build_insert(dataline=line,
                                                                                                          table_name=table_name,
                                                                                                          database_context=db_conn)))
         #
