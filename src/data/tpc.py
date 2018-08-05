@@ -1,7 +1,7 @@
 #
 # Module Imports
 from os.path import expanduser
-from src.framework.spark import SparkMaps
+from src.data.spark_maps import SparkMaps
 import os
 home = expanduser("~")
 #
