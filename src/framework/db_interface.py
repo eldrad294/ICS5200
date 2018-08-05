@@ -161,6 +161,13 @@ class DatabaseInterface:
         """
         self.conn.close()
         self.__logger.log("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
+    #
+    def get_connection_details(self):
+        return {'instance_name':self.__instance_name,
+                'user':self.__user,
+                'host':self.__host,
+                'service':self.__service,
+                'port':self.__port}
 """
 Follow below example:
 ---------------------

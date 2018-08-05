@@ -18,7 +18,7 @@ class SparkMaps:
         print("Tablename")
         print(table_name)
         print("Database Context")
-        print(database_context)
+        print(database_context.get_connection_details())
         l_line = SparkMaps.__parse_data_line(dataline=dataline)
         dml = "INSERT INTO " + table_name + " VALUES ("
         for i in range(len(l_line)):
