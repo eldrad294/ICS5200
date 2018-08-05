@@ -33,7 +33,7 @@ si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir)
 ev_loader = si.get_global_config()
 db_conn = si.initialize_database()
 db_conn.connect()
-spark_context = si.initialize_spark()
+spark_context = si.initialize_spark().get_spark_context()
 logger = si.initialize_logger()
 
 from src.data.tpc import TPC_Wrapper, FileLoader
