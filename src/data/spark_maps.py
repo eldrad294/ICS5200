@@ -1,10 +1,14 @@
+#
+# Module Imports
+from src.framework.db_interface import DatabaseInterface
+#
 class SparkMaps:
     """
     This class contains all mapping functions which are utilized throughout this project.
     """
     #
     @staticmethod
-    def build_insert(dataline, table_name, database_context):
+    def build_insert(data, table_name, ev_loader):
         """
         Formats insert statement
         :param line: Current .DAT line
@@ -13,22 +17,26 @@ class SparkMaps:
         :param spark_context: Spark connection context
         :return:
         """
-        print("Dataline")
-        print(dataline)
-        print("Tablename")
-        print(table_name)
-        print("Database Context")
-        print(database_context.get_connection_details())
-        l_line = SparkMaps.__parse_data_line(dataline=dataline)
-        dml = "INSERT INTO " + table_name + " VALUES ("
-        for i in range(len(l_line)):
-            if i == 0:
-                dml += " :" + str(i+1) + " "
-            else:
-                dml += ", :" + str(i+1) + " "
-        dml += ")"
-        print(dml)
-        database_context.execute_dml(dml, l_line).commit()
+        di = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
+                               user=ev_loader.var_get('user'),
+                               host=ev_loader.var_get('host'),
+                               service=ev_loader.var_get('service'),
+                               port=ev_loader.var_get('port'),
+                               password=ev_loader.var_get('password'))
+        di.connect()
+        for dataline in data:
+            l_line = SparkMaps.__parse_data_line(dataline=dataline)
+            dml = "INSERT INTO " + table_name + " VALUES ("
+            for i in range(len(l_line)):
+                if i == 0:
+                    dml += " :" + str(i+1) + " "
+                else:
+                    dml += ", :" + str(i+1) + " "
+            dml += ")"
+            print(dml)
+            di.execute_dml(dml, l_line)
+        di.commit()
+        di.close()
     #
     @staticmethod
     def __parse_data_line(dataline):

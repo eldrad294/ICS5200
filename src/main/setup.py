@@ -58,7 +58,6 @@ SCRIPT EXECUTION - Data Loading
 """
 fl = FileLoader(ev_loader=ev_loader,
                 logger=logger,
-                database_context=db_conn,
                 spark_context=spark_context)
 if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
     #

@@ -61,9 +61,15 @@ class DatabaseInterface:
         conn_str = self.__user + "/" + self.__password + "@" + self.__host + ":" + self.__port + "/" + self.__service
         try:
             self.conn = cx_Oracle.connect(conn_str, encoding = "UTF-8", nencoding = "UTF-8")
-            self.__logger.log("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
+            if self.__logger is not None:
+                self.__logger.log("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
+            else:
+                print("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
         except Exception as e:
-            self.__logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
+            if self.__logger is not None:
+                self.__logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
+            else:
+                print("Exception caught whilst establishing connection to database! [" + str(e) + "]")
     #
     def execute_query(self, query, params=None, fetch_single=False, describe=False):
         """
@@ -94,7 +100,10 @@ class DatabaseInterface:
             if describe is True:
                 description = cursor.description
         except Exception as e:
-            self.__logger.log('Skipped record due to following exception: [' + str(e) + ']')
+            if self.__logger is not None:
+                self.__logger.log('Skipped record due to following exception: [' + str(e) + ']')
+            else:
+                print('Skipped record due to following exception: [' + str(e) + ']')
         finally:
             if cursor is not None:
                 cursor.close()
@@ -120,8 +129,11 @@ class DatabaseInterface:
             else:
                 cursor.execute(dml, params)
         except Exception as e:
-            self.__logger.log('Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
-                       str(dml) + ' ]')
+            if self.__logger is not None:
+                self.__logger.log('Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
+                        str(dml) + ' ]')
+            else:
+                print('Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' + str(dml) + ' ]')
         finally:
             if cursor is not None:
                 cursor.close()
@@ -160,7 +172,10 @@ class DatabaseInterface:
         :return:
         """
         self.conn.close()
-        self.__logger.log("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
+        if self.__logger is not None:
+            self.__logger.log("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
+        else:
+            print("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
     #
     def get_connection_details(self):
         return {'instance_name':self.__instance_name,

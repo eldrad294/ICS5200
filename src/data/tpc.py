@@ -200,12 +200,11 @@ class FileLoader:
     for TPC generated data, allowing .dat files to be parsed, and loaded into database tables. It utilizes the Spark
     toolset to manipulate file un/loading in an efficient manner.
     """
-    def __init__(self, ev_loader, logger, database_context, spark_context):
+    def __init__(self, ev_loader, logger, spark_context):
         self.__ev_loader = ev_loader
         self.__logger = logger
-        self.__database_context = database_context
         self.__spark_context = spark_context
-
+    #
     def load_data(self, path, table_name):
         """
         Loads data into memory using Spark RDDs, and inserts into Oracle DB
@@ -216,10 +215,11 @@ class FileLoader:
         :return:
         """
         rdd_file = self.__spark_context.textFile(path, self.__ev_loader.var_get('spark_rdd_partitions')) # Materializes an RDD, but does not compute due to lazy evaluation
-        mapped_rdd_file = rdd_file.map(lambda x: x.split('\n')) # Split line by line - does not compute immediately due to lazy evaluation
-        db_conn = self.__database_context
-        mapped_rdd_file.foreach(lambda line : SparkMaps.build_insert(dataline=line,
-                                                                     table_name=table_name,
-                                                                     database_context=db_conn))
+        # mapped_rdd_file = rdd_file.map(lambda x: x.split('\n')) # Split line by line - does not compute immediately due to lazy evaluation
+        # mapped_rdd_file.foreach(lambda line : SparkMaps.build_insert(dataline=line,
+        #                                                              table_name=table_name))
+        rdd_file_stream = rdd_file.foreachRDD(lambda rdd: rdd.foreachPartition(lambda line : SparkMaps.build_insert(data=line,
+                                                                                                                    table_name=table_name,
+                                                                                                                    ev_loader=self.__ev_loader)))
         #
         self.__logger.log("Loaded table [" + table_name + "] into database..")
