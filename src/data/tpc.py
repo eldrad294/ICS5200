@@ -200,7 +200,7 @@ class FileLoader:
     for TPC generated data, allowing .dat files to be parsed, and loaded into database tables. It utilizes the Spark
     toolset to manipulate file un/loading in an efficient manner.
     """
-    def __init__(self, ev_loader, logger, spark_context, spark_streaming):
+    def __init__(self, ev_loader, logger, spark_context):
         self.__ev_loader = ev_loader
         self.__logger = logger
         self.__spark_context = spark_context
