@@ -216,6 +216,7 @@ class FileLoader:
         :return:
         """
         rdd_file = self.__spark_context.textFile(path, self.__ev_loader.var_get('spark_rdd_partitions')) # Materializes an RDD, but does not compute due to lazy evaluation
+        print(rdd_file.first())
         mapped_rdd_file = rdd_file.map(lambda x: x.split('\n')) # Split line by line - does not compute immediately due to lazy evaluation
         # mapped_rdd_file.foreach(lambda line : SparkMaps.build_insert(dataline=line,
         #                                                               table_name=table_name))
