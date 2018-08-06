@@ -31,7 +31,7 @@ class LoadTPCData:
         di.connect()
         row_count = 0
         for data in data_line:
-            l_line = SparkMaps.__parse_data_line(dataline=data)
+            l_line = LoadTPCData.__parse_data_line(dataline=data)
             dml = "INSERT INTO " + table_name + " VALUES ("
             for i in range(len(l_line)):
                 if i == 0:
