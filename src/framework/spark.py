@@ -7,6 +7,7 @@ from pyspark.context import SparkContext
 class Spark:
     """
     Class dedicated to Spark context manipulation
+    http://192.168.202.222:4040/jobs/
     """
     def __init__(self,
                  app_name,

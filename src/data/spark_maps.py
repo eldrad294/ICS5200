@@ -1,14 +1,16 @@
 #
 # Module Imports
 from src.framework.db_interface import DatabaseInterface
+import time
+#from src.framework.logger import Logger
 #
-class SparkMaps:
+class LoadTPCData:
     """
     This class contains all mapping functions which are utilized throughout this project.
     """
     #
     @staticmethod
-    def send_partition(data_line, table_name, instance_details):
+    def send_partition(data_line, table_name, logger, instance_details):
         """
         Ships partition to slave executor, formats insert statements and executes them in parallel
         :param line: Current .DAT line
@@ -16,14 +18,18 @@ class SparkMaps:
         :param instance_details: List containing instance details
         :return:
         """
+        start_time = time.time()
         di = DatabaseInterface(instance_name=instance_details[0],
                                user=instance_details[1],
                                host=instance_details[2],
                                service=instance_details[3],
                                port=instance_details[4],
                                password=instance_details[5])
+        # logger = Logger.getInstance(log_file_path=logger_details[0],
+        #                             write_to_disk=logger_details[1],
+        #                             write_to_screen=logger_details[2])
         di.connect()
-        j = 0
+        row_count = 0
         for data in data_line:
             l_line = SparkMaps.__parse_data_line(dataline=data)
             dml = "INSERT INTO " + table_name + " VALUES ("
@@ -35,10 +41,11 @@ class SparkMaps:
             dml += ")"
             #print(dml)
             di.execute_dml(dml, l_line)
-            j += 1
+            row_count += 1
         di.commit()
-        print('Committed ' + str(j) + ' rows for table ' + table_name)
         di.close()
+        end_time = time.time()
+        logger.log('Committed ' + str(row_count) + ' rows for table ' + table_name + " | " + str(end_time-start_time) + " seconds")
     #
     @staticmethod
     def __parse_data_line(dataline):
