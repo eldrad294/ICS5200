@@ -23,7 +23,7 @@ class SparkMaps:
                                port=instance_details[4],
                                password=instance_details[5])
         di.connect()
-        i = 0
+        j = 0
         for data in data_line:
             l_line = SparkMaps.__parse_data_line(dataline=data)
             dml = "INSERT INTO " + table_name + " VALUES ("
@@ -35,9 +35,9 @@ class SparkMaps:
             dml += ")"
             #print(dml)
             di.execute_dml(dml, l_line)
-            i += 1
+            j += 1
         di.commit()
-        print('Committed batch! ' + str(i))
+        print('Committed batch! ' + str(j))
         di.close()
     #
     @staticmethod
