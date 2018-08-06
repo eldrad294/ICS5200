@@ -232,7 +232,7 @@ class FileLoader:
                           self.__ev_loader.var_get('write_to_screen')]
         #
         # Carry out Spark action on established RDDs
-        rdd_file.foreachPartition(lambda line: LoadTPCData.send_partition(data_line=line,
+        rdd_file.foreachPartitionAsync(lambda line: LoadTPCData.send_partition(data_line=line,
                                                                           table_name=table_name,
                                                                           logger_details=logger_details,
                                                                           instance_details=instance_details))
