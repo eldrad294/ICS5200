@@ -216,12 +216,13 @@ class FileLoader:
         :return:
         """
         rdd_file = self.__spark_context.textFile(path, self.__ev_loader.var_get('spark_rdd_partitions')) # Materializes an RDD, but does not compute due to lazy evaluation
+        print('Hello')
         print(rdd_file.first())
         ev_loader = self.__ev_loader
         # rdd_file.foreach(lambda rdd: rdd.foreachPartition(lambda line : SparkMaps.build_insert(data=line,
         #                                                                                        table_name=table_name,
         #                                                                                        ev_loader=ev_loader)))
-        rdd_file.foreach(lambda rdd_file: rdd_file.foreachPartition(SparkMaps.build_insert(table_name=table_name,
-                                                                                           ev_loader=ev_loader)))
+        rdd_file.foreach(lambda rdd: rdd.foreachPartition(SparkMaps.build_insert(table_name=table_name,
+                                                                                ev_loader=ev_loader)))
         #
         self.__logger.log("Loaded table [" + table_name + "] into database..")
