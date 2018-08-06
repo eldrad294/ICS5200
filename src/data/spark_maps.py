@@ -13,6 +13,7 @@ class SparkMaps:
         Ships partition to slave executor, formats insert statements and executes them in parallel
         :param line: Current .DAT line
         :param table: Table data being loaded into
+        :param instance_details: List containing instance details
         :return:
         """
         di = DatabaseInterface(instance_name=instance_details[0],
@@ -22,6 +23,7 @@ class SparkMaps:
                                port=instance_details[4],
                                password=instance_details[5])
         di.connect()
+        i = 0
         for data in data_line:
             l_line = SparkMaps.__parse_data_line(dataline=data)
             dml = "INSERT INTO " + table_name + " VALUES ("
@@ -31,9 +33,11 @@ class SparkMaps:
                 else:
                     dml += ", :" + str(i+1) + " "
             dml += ")"
-            print(dml)
+            #print(dml)
             di.execute_dml(dml, l_line)
+            i += 1
         di.commit()
+        print('Committed batch! ' + str(i))
         di.close()
     #
     @staticmethod
