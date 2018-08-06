@@ -2,7 +2,6 @@
 # Module Imports
 from src.framework.db_interface import DatabaseInterface
 import time
-#from src.framework.logger import Logger
 #
 class LoadTPCData:
     """
@@ -18,6 +17,7 @@ class LoadTPCData:
         :param instance_details: List containing instance details
         :return:
         """
+        logger.log('Starting data migration into table [' + table_name + ']')
         start_time = time.time()
         di = DatabaseInterface(instance_name=instance_details[0],
                                user=instance_details[1],
