@@ -86,8 +86,7 @@ class ScriptInitializer:
                             'spark_logConf':spark_logConf})
         #
         self.logger = Logger(log_file_path=ev_loader.var_get(var_name="project_dir") + "/log/" +
-                                          ev_loader.var_get('log_file_name') + "_" + ev_loader.var_get("user") + "_"
-                                          + str(Logger.getDate()),
+                                          ev_loader.var_get('log_file_name') + "_" + ev_loader.var_get("user"),
                              write_to_disk=ev_loader.var_get('write_to_disk'),
                              write_to_screen=ev_loader.var_get('write_to_screen'))
         #

@@ -12,20 +12,21 @@ class Logger:
     """
     #
     def __init__(self, log_file_path, write_to_disk, write_to_screen):
-        self.__log_file_path = log_file_path
+        self.__log_file_path = log_file_path + self.__getDate()
         self.__write_to_disk = write_to_disk
         self.__write_to_screen = write_to_screen
     #
-    def getTimeStamp(self):
+    def __getTimeStamp(self):
         """
-        Returns system timestamp
-        :param self:
-        :return:
+        :return: Returns system timestamp
         """
         ts = time.time()
         return datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
     #
-    def getDate(self):
+    def __getDate(self):
+        """
+        :return: Returns system date
+        """
         return datetime.datetime.today().strftime('%Y%m%d')
     #
     def log(self, msg):
@@ -40,9 +41,9 @@ class Logger:
                     os.makedirs(os.path.dirname(self.__log_file_path))
                 #
                 with open(self.__log_file_path,"a+") as myfile:
-                    myfile.write(str(self.getTimeStamp()) + ": " + str(msg) + "\n")
+                    myfile.write(str(self.__getTimeStamp()) + ": " + str(msg) + "\n")
             except OSError as ioe:
                 raise OSError("An exception was raised during handling of log file [" + str(ioe) + "]")
         #
         if self.__write_to_screen == 'True':
-            print(str(self.getTimeStamp()) + ": " + str(msg))
+            print(str(self.__getTimeStamp()) + ": " + str(msg))
