@@ -22,6 +22,7 @@ class SparkMaps:
                                port=instance_details[4],
                                password=instance_details[5])
         di.connect()
+        print(data)
         l_line = SparkMaps.__parse_data_line(dataline=data)
         print(l_line)
         dml = "INSERT INTO " + table_name + " VALUES ("
@@ -47,7 +48,7 @@ class SparkMaps:
         list_line = []
         delimeter = '|'
         value = ""
-        for i in dataline[0]:
+        for i in dataline:
             if i != delimeter:
                 value += i
             else:
