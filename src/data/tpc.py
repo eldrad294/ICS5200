@@ -215,7 +215,6 @@ class FileLoader:
         :return:
         """
         rdd_file = self.__spark_context.textFile(path, self.__ev_loader.var_get('spark_rdd_partitions')) # Materializes an RDD, but does not compute due to lazy evaluation
-        print('Hello')
         print(rdd_file.first())
         instance_details = [self.__ev_loader.var_get('instance_name'),
                             self.__ev_loader.var_get('user'),
