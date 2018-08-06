@@ -60,8 +60,7 @@ SCRIPT EXECUTION - Data Loading
 """
 fl = FileLoader(ev_loader=ev_loader,
                 logger=logger,
-                spark_context=spark_context,
-                spark_streaming=spark_streaming)
+                spark_context=spark_context)
 if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
     #
     # Check whether schema needs creating - executed only if relevant tables are not found

@@ -204,7 +204,6 @@ class FileLoader:
         self.__ev_loader = ev_loader
         self.__logger = logger
         self.__spark_context = spark_context
-        self.__spark_streaming = spark_streaming
     #
     def load_data(self, path, table_name):
         """
