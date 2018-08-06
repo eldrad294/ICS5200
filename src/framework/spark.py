@@ -109,3 +109,5 @@ class Spark:
         #
         for conf in self.__spark_context.getConf().getAll():
             self.__logger.log(conf)
+        self.__logger.log('Default parallelism: [' + str(self.__spark_context.defaultParallelism) + ']')
+        self.__logger.log('Default minimum partitions [' + str(self.__spark_context.defaultMinPartitions) + ']')
