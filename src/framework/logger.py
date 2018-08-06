@@ -13,8 +13,8 @@ class Logger:
     #
     def __init__(self, log_file_path, write_to_disk, write_to_screen):
         self.__log_file_path = log_file_path + self.__getDate()
-        self.__write_to_disk = write_to_disk
-        self.__write_to_screen = write_to_screen
+        self.__write_to_disk = write_to_disk.title()
+        self.__write_to_screen = write_to_screen.title()
     #
     def __getTimeStamp(self):
         """
