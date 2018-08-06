@@ -22,6 +22,7 @@ class SparkMaps:
                                port=instance_details[4],
                                password=instance_details[5])
         di.connect()
+        print(data)
         l_line = SparkMaps.__parse_data_line(dataline=data)
         dml = "INSERT INTO " + table_name + " VALUES ("
         for i in range(len(l_line)):
@@ -30,7 +31,7 @@ class SparkMaps:
             else:
                 dml += ", :" + str(i+1) + " "
         dml += ")"
-        #print(dml)
+        print(dml)
         di.execute_dml(dml, l_line)
         di.commit()
         di.close()
