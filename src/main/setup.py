@@ -35,7 +35,6 @@ db_conn = si.initialize_database()
 db_conn.connect()
 spark = si.initialize_spark()
 spark_context = spark.get_spark_context()
-spark_streaming = spark.get_spark_streaming()
 logger = si.initialize_logger()
 
 from src.data.tpc import TPC_Wrapper, FileLoader
