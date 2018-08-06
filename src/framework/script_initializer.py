@@ -85,11 +85,11 @@ class ScriptInitializer:
                             'spark_driver_memory':spark_driver_memory,
                             'spark_logConf':spark_logConf})
         #
-        self.logger = Logger.getInstance(log_file_path=ev_loader.var_get(var_name="project_dir") + "/log/" +
+        self.logger = Logger(log_file_path=ev_loader.var_get(var_name="project_dir") + "/log/" +
                                           ev_loader.var_get('log_file_name') + "_" + ev_loader.var_get("user") + "_"
                                           + str(Logger.getDate()),
-                                         write_to_disk=ev_loader.var_get('write_to_disk'),
-                                         write_to_screen=ev_loader.var_get('write_to_screen'))
+                             write_to_disk=ev_loader.var_get('write_to_disk'),
+                             write_to_screen=ev_loader.var_get('write_to_screen'))
         #
         self.db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                                          user=ev_loader.var_get('user'),

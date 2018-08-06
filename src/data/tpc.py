@@ -225,10 +225,14 @@ class FileLoader:
                             self.__ev_loader.var_get('service'),
                             self.__ev_loader.var_get('port'),
                             self.__ev_loader.var_get('password')]
-        logger = self.__logger
+        #
+        # Pass logger context details, to allow Spark executors to create their own logger context
+        logger_details = [self.__ev_loader.var_get('log_file_path'),
+                          self.__ev_loader.var_get('write_to_disk'),
+                          self.__ev_loader.var_get('write_to_screen')]
         #
         # Carry out Spark action on established RDDs
         rdd_file.foreachPartition(lambda line: LoadTPCData.send_partition(data_line=line,
                                                                           table_name=table_name,
-                                                                          logger=logger,
+                                                                          logger_details=logger_details,
                                                                           instance_details=instance_details))
