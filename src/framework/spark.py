@@ -98,12 +98,6 @@ class Spark:
         """
         return self.__spark_session
     #
-    def get_spark_streaming(self):
-        """
-        :return: Instance of Spark Streaming
-        """
-        return self.__spark_streaming
-    #
     def display_spark_context(self):
         """
         Displays Spark context
