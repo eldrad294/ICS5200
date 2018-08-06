@@ -8,19 +8,19 @@ class SparkMaps:
     """
     #
     @staticmethod
-    def send_partition(data, table_name, ev_loader):
+    def send_partition(data, table_name, instance_details):
         """
         Ships partition to slave executor, formats insert statements and executes them in parallel
         :param line: Current .DAT line
         :param table: Table data being loaded into
         :return:
         """
-        di = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-                               user=ev_loader.var_get('user'),
-                               host=ev_loader.var_get('host'),
-                               service=ev_loader.var_get('service'),
-                               port=ev_loader.var_get('port'),
-                               password=ev_loader.var_get('password'))
+        di = DatabaseInterface(instance_name=instance_details[0],
+                               user=instance_details[1],
+                               host=instance_details[2],
+                               service=instance_details[3],
+                               port=instance_details[4],
+                               password=instance_details[5])
         di.connect()
         for dataline in data:
             l_line = SparkMaps.__parse_data_line(dataline=dataline)

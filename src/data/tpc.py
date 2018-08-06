@@ -217,10 +217,15 @@ class FileLoader:
         rdd_file = self.__spark_context.textFile(path, self.__ev_loader.var_get('spark_rdd_partitions')) # Materializes an RDD, but does not compute due to lazy evaluation
         print('Hello')
         print(rdd_file.first())
-        ev_loader = self.__ev_loader
+        instance_details = [self.__ev_loader.var_get('instance_name'),
+                            self.__ev_loader.var_get('user'),
+                            self.__ev_loader.var_get('host'),
+                            self.__ev_loader.var_get('service'),
+                            self.__ev_loader.var_get('port'),
+                            self.__ev_loader.var_get('password')]
         rdd_file.foreach(lambda line: SparkMaps.send_partition(data=line,
-                                                                        table_name=table_name,
-                                                                        ev_loader=ev_loader))
+                                                               table_name=table_name,
+                                                               instance_details=instance_details))
         # rdd_file.foreachRDD(lambda rdd: rdd.foreachPartition(lambda line : SparkMaps.send_partition(data=line,
         #                                                                                        table_name=table_name,
         #                                                                                        ev_loader=ev_loader)))
