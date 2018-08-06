@@ -35,9 +35,6 @@ class DatabaseInterface:
         # if self.__logger is None:
         #     raise ValueError("Logger context was not declared!")
     #
-    def __clean_query(self, v_sql):
-        return v_sql.replace("\n"," ")
-    #
     def __schema_names(self, schema):
         """
         Returns CX_Oracle table description, and returns the table column names as a list
@@ -122,7 +119,6 @@ class DatabaseInterface:
         :return:
         """
         cursor = self.conn.cursor()
-        #dml = self.__clean_query(dml)
         try:
             if params is None:
                 cursor.execute(dml)
