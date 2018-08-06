@@ -33,7 +33,7 @@ si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir)
 ev_loader = si.get_global_config()
 db_conn = si.initialize_database()
 db_conn.connect()
-spark_context = si.initialize_spark().get_spark_context()
+spark_session = si.initialize_spark().get_spark_session()
 logger = si.initialize_logger()
 
 from src.data.tpc import TPC_Wrapper, FileLoader
@@ -58,7 +58,7 @@ SCRIPT EXECUTION - Data Loading
 """
 fl = FileLoader(ev_loader=ev_loader,
                 logger=logger,
-                spark_context=spark_context)
+                spark_session=spark_session)
 if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
     #
     # Check whether schema needs creating - executed only if relevant tables are not found

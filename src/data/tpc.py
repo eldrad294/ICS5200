@@ -200,10 +200,10 @@ class FileLoader:
     for TPC generated data, allowing .dat files to be parsed, and loaded into database tables. It utilizes the Spark
     toolset to manipulate file un/loading in an efficient manner.
     """
-    def __init__(self, ev_loader, logger, spark_context):
+    def __init__(self, ev_loader, logger, spark_session):
         self.__ev_loader = ev_loader
         self.__logger = logger
-        self.__spark_context = spark_context
+        self.__spark_session = spark_session
     #
     def load_data(self, path, table_name):
         """
@@ -214,7 +214,7 @@ class FileLoader:
         :param spark_context: Spark connection context
         :return:
         """
-        rdd_file = self.__spark_context.textFile(path, self.__ev_loader.var_get('spark_rdd_partitions')) # Materializes an RDD, but does not compute due to lazy evaluation
+        rdd_file = self.__spark_session.textFile(path, self.__ev_loader.var_get('spark_rdd_partitions')) # Materializes an RDD, but does not compute due to lazy evaluation
         # mapped_rdd_file = rdd_file.map(lambda x: x.split('\n')) # Split line by line - does not compute immediately due to lazy evaluation
         # mapped_rdd_file.foreach(lambda line : SparkMaps.build_insert(dataline=line,
         #                                                              table_name=table_name))

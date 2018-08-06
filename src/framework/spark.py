@@ -1,6 +1,7 @@
 #
 # Module Imports
 from pyspark.conf import SparkConf
+from pyspark.sql import SparkSession
 from pyspark.context import SparkContext
 #
 class Spark:
@@ -34,6 +35,9 @@ class Spark:
         # Initialize Spark Context
         self.__spark_context = self.__create_Spark_context()
         self.display_spark_context()
+        #
+        # Initialize Spark Session
+        self.__spark_session = self.__create_Spark_session()
     #
     def __validate(self):
         if self.__app_name is None:
@@ -79,12 +83,22 @@ class Spark:
         sc = SparkContext(conf=conf)
         return sc
     #
+    def __create_Spark_session(self):
+        return SparkSession(self.__spark_context)
+    #
     def get_spark_context(self):
         """
         Returns instance of Spark Context
         :return:
         """
         return self.__spark_context
+    #
+    def get_spark_session(self):
+        """
+        Returns instnace of Spark Session
+        :return:
+        """
+        return self.__spark_session
     #
     def display_spark_context(self):
         """
