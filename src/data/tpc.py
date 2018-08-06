@@ -218,7 +218,7 @@ class FileLoader:
         print('Hello')
         print(rdd_file.first())
         ev_loader = self.__ev_loader
-        rdd_file.foreachpartition(lambda line: SparkMaps.send_partition(data=line,
+        rdd_file.foreach(lambda line: SparkMaps.send_partition(data=line,
                                                                         table_name=table_name,
                                                                         ev_loader=ev_loader))
         # rdd_file.foreachRDD(lambda rdd: rdd.foreachPartition(lambda line : SparkMaps.send_partition(data=line,
