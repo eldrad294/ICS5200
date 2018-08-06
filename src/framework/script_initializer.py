@@ -83,10 +83,11 @@ class ScriptInitializer:
                             'spark_max_result_size':spark_max_result_size,
                             'spark_cores_max':spark_cores_max,
                             'spark_driver_memory':spark_driver_memory,
-                            'spark_logConf':spark_logConf})
+                            'spark_logConf':spark_logConf,
+                            'log_file_path':ev_loader.var_get(var_name="project_dir") + "/log/" +
+                                          ev_loader.var_get('log_file_name') + "_" + ev_loader.var_get("user")})
         #
-        self.logger = Logger(log_file_path=ev_loader.var_get(var_name="project_dir") + "/log/" +
-                                          ev_loader.var_get('log_file_name') + "_" + ev_loader.var_get("user"),
+        self.logger = Logger(log_file_path=ev_loader.var_get('log_file_path'),
                              write_to_disk=ev_loader.var_get('write_to_disk'),
                              write_to_screen=ev_loader.var_get('write_to_screen'))
         #
