@@ -32,6 +32,7 @@ class ScriptInitializer:
         spark_max_result_size = str(g_config.get_value('SparkContext','spark_max_result_size'))
         spark_cores_max = str(g_config.get_value('SparkContext','spark_cores_max'))
         spark_driver_memory = str(g_config.get_value('SparkContext','spark_driver_memory'))
+        spark_default_parallelism = str(g_config.get_value('SparkContext','spark_default_parallelism'))
         spark_logConf = str(g_config.get_value('SparkContext','spark_logConf'))
         #
         write_to_disk = str(g_config.get_value("EnvironmentSettings","write_to_disk"))
@@ -82,6 +83,7 @@ class ScriptInitializer:
                             'spark_max_result_size':spark_max_result_size,
                             'spark_cores_max':spark_cores_max,
                             'spark_driver_memory':spark_driver_memory,
+                            'spark_default_parallelism':spark_default_parallelism,
                             'spark_logConf':spark_logConf,
                             'log_file_path':project_dir + "/log/" + log_file_name + "_" + user})
         #
@@ -105,6 +107,7 @@ class ScriptInitializer:
                            spark_max_result_size=ev_loader.var_get('spark_max_result_size'),
                            spark_cores_max=ev_loader.var_get('spark_cores_max'),
                            spark_driver_memory=ev_loader.var_get('spark_driver_memory'),
+                           spark_default_parallelism=ev_loader.var_get('spark_default_parallelism'),
                            spark_logConf=ev_loader.var_get('spark_logConf'),
                            logger=self.logger)
         self.ev_loader = ev_loader

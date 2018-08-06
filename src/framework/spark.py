@@ -18,6 +18,7 @@ class Spark:
                  spark_max_result_size,
                  spark_cores_max,
                  spark_driver_memory,
+                 spark_default_parallelism,
                  spark_logConf,
                  logger):
         self.__app_name = app_name
@@ -28,6 +29,7 @@ class Spark:
         self.__spark_max_result_size = spark_max_result_size
         self.__spark_cores_max = spark_cores_max
         self.__spark_driver_memory = spark_driver_memory
+        self.__spark_default_parallelism = spark_default_parallelism
         self.__spark_logConf = spark_logConf
         self.__logger = logger
         #
@@ -57,6 +59,8 @@ class Spark:
             raise ValueError('Spark Cores Max config was not declared!')
         elif self.__spark_driver_memory is None:
             raise ValueError('Spark Driver Memory config was not declared!')
+        elif self.__spark_default_parallelism is None:
+            raise ValueError('Spark Default Parallelism was not declared!')
         elif self.__spark_logConf is None:
             raise ValueError('Spark Log Conf config was not declared!')
         elif self.__logger is None:
@@ -80,6 +84,7 @@ class Spark:
         conf.set('spark.driver.maxResultSize', str(self.__spark_max_result_size))
         conf.set('spark.cores.max', str(self.__spark_cores_max))
         conf.set('spark.driver.memory', str(self.__spark_driver_memory))
+        conf.set('spark.default.parallelism', str(self.__spark_default_parallelism))
         conf.set('spark.logConf', self.__spark_logConf.title())
         sc = SparkContext(conf=conf)
         return sc
