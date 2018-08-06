@@ -78,6 +78,7 @@ class Spark:
     def __create_Spark_context(self):
         """
         Initializes Spark Context
+        https://spark.apache.org/docs/latest/configuration.html
         :return:
         """
         conf = SparkConf()
