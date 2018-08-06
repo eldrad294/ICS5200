@@ -237,6 +237,6 @@ class FileLoader:
                             self.__ev_loader.var_get('service'),
                             self.__ev_loader.var_get('port'),
                             self.__ev_loader.var_get('password')]
-        rdd_file.rdd.foreachPartition(lambda line: SparkMaps.send_partition(data=line,
+        rdd_file.foreachPartition(lambda line: SparkMaps.send_partition(data=line,
                                                                 table_name=table_name,
                                                                 instance_details=instance_details))
