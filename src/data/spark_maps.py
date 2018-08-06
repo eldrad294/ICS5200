@@ -21,6 +21,8 @@ class SparkMaps:
                                service=instance_details[3],
                                port=instance_details[4],
                                password=instance_details[5])
+        print(data)
+        print(data.first())
         di.connect()
         for dataline in data:
             l_line = SparkMaps.__parse_data_line(dataline=dataline)
