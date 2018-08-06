@@ -37,7 +37,7 @@ class SparkMaps:
             di.execute_dml(dml, l_line)
             j += 1
         di.commit()
-        print('Committed batch! ' + str(j))
+        print('Committed ' + str(j) + ' rows for table ' + table_name)
         di.close()
     #
     @staticmethod
