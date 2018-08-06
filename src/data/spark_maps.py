@@ -8,7 +8,7 @@ class SparkMaps:
     """
     #
     @staticmethod
-    def send_partition(data, table_name, instance_details):
+    def send_partition(data_line, table_name, instance_details):
         """
         Ships partition to slave executor, formats insert statements and executes them in parallel
         :param line: Current .DAT line
@@ -22,18 +22,17 @@ class SparkMaps:
                                port=instance_details[4],
                                password=instance_details[5])
         di.connect()
-        for d in data:
-            print(d)
-        l_line = SparkMaps.__parse_data_line(dataline=data)
-        dml = "INSERT INTO " + table_name + " VALUES ("
-        for i in range(len(l_line)):
-            if i == 0:
-                dml += " :" + str(i+1) + " "
-            else:
-                dml += ", :" + str(i+1) + " "
-        dml += ")"
-        print(dml)
-        di.execute_dml(dml, l_line)
+        for data in data_line:
+            l_line = SparkMaps.__parse_data_line(dataline=data)
+            dml = "INSERT INTO " + table_name + " VALUES ("
+            for i in range(len(l_line)):
+                if i == 0:
+                    dml += " :" + str(i+1) + " "
+                else:
+                    dml += ", :" + str(i+1) + " "
+            dml += ")"
+            print(dml)
+            di.execute_dml(dml, l_line)
         di.commit()
         di.close()
     #
