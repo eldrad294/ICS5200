@@ -35,7 +35,7 @@ db_conn = si.initialize_database()
 db_conn.connect()
 spark = si.initialize_spark()
 spark_context = spark.get_spark_context()
-spark_session = spark.get_spark_context()
+spark_streaming = spark.get_spark_streaming()
 logger = si.initialize_logger()
 
 from src.data.tpc import TPC_Wrapper, FileLoader
@@ -61,7 +61,7 @@ SCRIPT EXECUTION - Data Loading
 fl = FileLoader(ev_loader=ev_loader,
                 logger=logger,
                 spark_context=spark_context,
-                spark_session=spark_session)
+                spark_streaming=spark_streaming)
 if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
     #
     # Check whether schema needs creating - executed only if relevant tables are not found

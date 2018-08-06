@@ -3,6 +3,7 @@
 from pyspark.conf import SparkConf
 from pyspark.sql import SparkSession
 from pyspark.context import SparkContext
+from pyspark.streaming import StreamingContext
 #
 class Spark:
     """
@@ -38,6 +39,9 @@ class Spark:
         #
         # Initialize Spark Session
         self.__spark_session = self.__create_Spark_session()
+        #
+        # Initialize Spark Streaming
+        self.__spark_streaming = self.__create_Spark_streaming()
     #
     def __validate(self):
         if self.__app_name is None:
@@ -86,19 +90,26 @@ class Spark:
     def __create_Spark_session(self):
         return SparkSession(self.__spark_context)
     #
+    def __create_Spark_streaming(self):
+        return StreamingContext(self.__spark_context)
+    #
     def get_spark_context(self):
         """
-        Returns instance of Spark Context
-        :return:
+        :return: Instance of Spark Context
         """
         return self.__spark_context
     #
     def get_spark_session(self):
         """
-        Returns instnace of Spark Session
-        :return:
+        :return: Instance of Spark Session
         """
         return self.__spark_session
+    #
+    def get_spark_streaming(self):
+        """
+        :return: Instance of Spark Streaming
+        """
+        return self.__spark_streaming
     #
     def display_spark_context(self):
         """

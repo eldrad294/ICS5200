@@ -8,13 +8,11 @@ class SparkMaps:
     """
     #
     @staticmethod
-    def build_insert(data, table_name, ev_loader):
+    def send_partition(data, table_name, ev_loader):
         """
-        Formats insert statement
+        Ships partition to slave executor, formats insert statements and executes them in parallel
         :param line: Current .DAT line
         :param table: Table data being loaded into
-        :param db_conn: Database connection context
-        :param spark_context: Spark connection context
         :return:
         """
         di = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
