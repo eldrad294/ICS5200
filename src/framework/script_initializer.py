@@ -1,8 +1,3 @@
-"""
---------------------------
-SCRIPT WARM UP
---------------------------
-"""
 import os
 from src.framework.env_var_loader import ev_loader, ConfigParser
 from src.framework.logger import Logger
@@ -10,6 +5,10 @@ from src.framework.db_interface import DatabaseInterface
 from src.framework.spark import Spark
 #
 class ScriptInitializer:
+    """
+    This class serves as a wrapper to all scripts. The class, when initialized, will establish all the required config
+    for the environment to operate. This class should be initialized only once, at the beginning of every script.
+    """
     #
     def __init__(self, project_dir, src_dir):
         #

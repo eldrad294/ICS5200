@@ -7,7 +7,7 @@ class Logger:
     This class serves to log script messages.
 
     The core method is the 'log' method, allowing two modes of functionality:
-    1) Log to disk (log Files)
+    1) Log to disk (log files)
     2) Log to screen (log to screen)
     """
     #

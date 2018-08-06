@@ -21,6 +21,7 @@ class LoadTPCData:
         start_time = time.time()
         #
         # Establish slave logger
+        print(logger_details)
         logger = Logger(log_file_path=logger_details[0],
                         write_to_disk=logger_details[1],
                         write_to_screen=logger_details[2])
