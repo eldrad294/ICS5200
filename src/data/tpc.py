@@ -210,8 +210,6 @@ class FileLoader:
         Loads data into memory using Spark RDDs, and inserts into Oracle DB
         :param path: data file path
         :param table_name: table/file name to be inserted inti / loaded from
-        :param database_context: Oracle connection context
-        :param spark_context: Spark connection context
         :return:
         """
         #
