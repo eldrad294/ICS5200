@@ -59,6 +59,7 @@ class DatabaseInterface:
             if self.__logger is not None:
                 self.__logger.log("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
         except Exception as e:
+            print("EXCEPTION HERE:::" + str(e))
             if self.__logger is not None:
                 self.__logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
     #
@@ -110,6 +111,7 @@ class DatabaseInterface:
         :return:
         """
         cursor = None
+        print('ENTRY!!!!!!')
         try:
             cursor = self.conn.cursor()
             if params is None:
