@@ -10,18 +10,22 @@ class LoadTPCData:
     """
     #
     @staticmethod
-    def send_partition(data_line, table_name, logger_details, instance_details):
+    def send_partition(data_line, table_name, logger_details, instance_details, oracle_path_details):
         """
         Ships partition to slave executor, formats insert statements and executes them in parallel
         :param line: Current .DAT line
         :param table: Table data being loaded into
         :param instance_details: List containing instance details
+        :param oracle_path_details: List of Oracle instance path + libs
         :return:
         """
-        os.environ['ORACLE_HOME'] = '/oracle/product/11.2.0/dbhome_1'
-        os.environ['LD_LIBRARY_PATH'] = '/oracle/product/11.2.0/dbhome_1/lib'
-        os.environ['PATH'] = '/home/gabriels/ICS5200/venv/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/oracle/product/11.2.0/dbhome_1/bin:/home/gabriels/.local/bin:/home/gabriels/bin'
+        # os.environ['ORACLE_HOME'] = '/oracle/product/11.2.0/dbhome_1'
+        # os.environ['LD_LIBRARY_PATH'] = '/oracle/product/11.2.0/dbhome_1/lib'
+        # os.environ['PATH'] = '/home/gabriels/ICS5200/venv/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/oracle/product/11.2.0/dbhome_1/bin:/home/gabriels/.local/bin:/home/gabriels/bin'
 
+        os.environ['ORACLE_HOME'] = oracle_path_details[0]
+        os.environ['LD_LIBRARY_PATH'] = oracle_path_details[1]
+        #
         start_time = time.time()
         #
         # Establish slave logger

@@ -229,8 +229,13 @@ class FileLoader:
                           self.__ev_loader.var_get('write_to_disk'),
                           self.__ev_loader.var_get('write_to_screen')]
         #
+        # Pass Oracle path config, to allow Spark executors to make reference to database instance
+        oracle_path_details = [self.__ev_loader.var_get('oracle_home'),
+                               self.__ev_loader.var_get('ld_library_path')]
+        #
         # Carry out Spark action on established RDDs
         rdd_file.foreachPartition(lambda line: LoadTPCData.send_partition(data_line=line,
                                                                           table_name=table_name,
                                                                           logger_details=logger_details,
-                                                                          instance_details=instance_details))
+                                                                          instance_details=instance_details,
+                                                                          oracle_path_details=oracle_path_details))

@@ -145,3 +145,9 @@ class Spark:
     #
     def __initiate_slave_node(self):
         pass
+    #
+    def __kill_spark_nodes(self):
+        pass
+    #
+    def __del__(self):
+        pass

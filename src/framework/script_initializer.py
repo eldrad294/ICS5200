@@ -21,7 +21,11 @@ class ScriptInitializer:
         os.environ['PYSPARK_DRIVER_PYTHON'] = project_dir + '/venv/bin/python3'
         os.environ['SPARK_YARN_USER_ENV'] = project_dir + '/venv/bin/python3'
         #
-        # Loading of program config
+        # Loading of Oracle config
+        oracle_home = str(g_config.get_value('Oracle','oracle_home'))
+        ld_library_path = str(g_config.get_value('Oracle','ld_library_path'))
+        #
+        # Loading of database config
         user = str(g_config.get_value('DatabaseConnectionString','user'))
         host = str(g_config.get_value('DatabaseConnectionString','host'))
         service = str(g_config.get_value('DatabaseConnectionString','service'))
@@ -68,6 +72,8 @@ class ScriptInitializer:
                             'write_to_disk':write_to_disk,
                             'write_to_screen':write_to_screen,
                             'log_file_name':log_file_name,
+                            'oracle_home':oracle_home,
+                            'ld_library_path':ld_library_path,
                             'instance_name':instance_name,
                             'host':host,
                             'service':service,
