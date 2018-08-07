@@ -27,7 +27,7 @@ class Spark:
                  logger):
         self.__app_name = app_name
         self.__master = master
-        self.__spark_scheduling_mode = spark_scheduling_mode
+        self.__spark_scheduling_mode = spark_scheduling_mode.upper()
         self.__spark_submit_deployMode = spark_submit_deployMode
         self.__spark_rdd_partitions = spark_rdd_partitions
         self.__spark_executor_instances = spark_executor_instances
