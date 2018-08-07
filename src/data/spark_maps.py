@@ -1,6 +1,6 @@
 #
 # Module Imports
-import time
+
 #
 class LoadTPCData:
     """
@@ -18,6 +18,7 @@ class LoadTPCData:
         """
         from src.framework.db_interface import DatabaseInterface
         from src.framework.logger import Logger
+        import time
         start_time = time.time()
         #
         # Establish slave logger
