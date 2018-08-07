@@ -129,7 +129,8 @@ class DatabaseInterface:
         Commits transaction/s
         :return:
         """
-        self.__conn.commit()
+        if self.__conn is not None:
+            self.__conn.commit()
     #
     def executeScriptsFromFile(self, filename):
         """
