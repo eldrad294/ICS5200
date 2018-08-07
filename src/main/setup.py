@@ -29,10 +29,10 @@ sys.path.append(project_dir)
 sys.path.append(src_dir)
 #
 from src.framework.script_initializer import ScriptInitializer
+from src.framework.db_interface import ConnectionPool
 si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir)
 ev_loader = si.get_global_config()
-db_conn = si.initialize_database()
-#db_conn.connect()
+db_conn = ConnectionPool.claim_from_pool()[2]
 spark_context = si.initialize_spark().get_spark_context()
 logger = si.initialize_logger()
 

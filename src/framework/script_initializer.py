@@ -147,13 +147,6 @@ class ScriptInitializer:
         """
         return self.logger
     #
-    def initialize_database(self):
-        """
-        Database connection Initialization
-        :return:
-        """
-        return ConnectionPool.claim_from_pool()
-    #
     def initialize_spark(self):
         """
         Spark Context Initialization
