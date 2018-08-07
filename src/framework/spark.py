@@ -23,6 +23,7 @@ class Spark:
                  spark_default_parallelism,
                  spark_shuffle_partitions,
                  spark_logConf,
+                 spark_python_worker_reuse,
                  logger):
         self.__app_name = app_name
         self.__master = master
@@ -36,6 +37,7 @@ class Spark:
         self.__spark_default_parallelism = spark_default_parallelism
         self.__spark_shuffle_partitions = spark_shuffle_partitions
         self.__spark_logConf = spark_logConf
+        self.__spark_python_worker_reuse = spark_python_worker_reuse
         self.__logger = logger
         #
         self.__validate()
@@ -78,6 +80,8 @@ class Spark:
             raise ValueError('Spark Shuffle Partitions was not declared!')
         elif self.__spark_logConf is None:
             raise ValueError('Spark Log Conf config was not declared!')
+        elif self.__spark_python_worker_reuse is None:
+            raise ValueError('Spark Spark Python Worker Reuse was not declared!')
         elif self.__logger is None:
             raise ValueError("Logger context was not declared!")
     #
@@ -101,7 +105,7 @@ class Spark:
         conf.set('spark.driver.memory', str(self.__spark_driver_memory))
         conf.set('spark.default.parallelism', str(self.__spark_default_parallelism))
         conf.set('spark.sql.shuffle.partitions', str(self.__spark_shuffle_partitions))
-        conf.set('spark.python.worker.reuse','true')
+        conf.set('spark.python.worker.reuse',str(self.__spark_python_worker_reuse))
         conf.set('spark.logConf', self.__spark_logConf.title())
         sc = SparkContext(conf=conf)
         return sc

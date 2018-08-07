@@ -46,6 +46,7 @@ class ScriptInitializer:
         spark_default_parallelism = int(g_config.get_value('SparkContext','spark_default_parallelism'))
         spark_shuffle_partitions = int(g_config.get_value('SparkContext','spark_shuffle_partitions'))
         spark_logConf = str(g_config.get_value('SparkContext','spark_logConf'))
+        spark_python_worker_reuse = str(g_config.get_value('SparkContext','spark_python_worker_reuse'))
         #
         write_to_disk = str(g_config.get_value("EnvironmentSettings","write_to_disk"))
         write_to_screen = str(g_config.get_value("EnvironmentSettings","write_to_screen"))
@@ -101,6 +102,7 @@ class ScriptInitializer:
                             'spark_default_parallelism':spark_default_parallelism,
                             'spark_shuffle_partitions':spark_shuffle_partitions,
                             'spark_logConf':spark_logConf,
+                            'spark_python_worker_reuse':spark_python_worker_reuse,
                             'log_file_path':project_dir + "/log/" + log_file_name + "_" + user})
         #
         self.logger = Logger(log_file_path=ev_loader.var_get('log_file_path'),
@@ -113,7 +115,7 @@ class ScriptInitializer:
                               'service':ev_loader.var_get('service'),
                               'port':ev_loader.var_get('port'),
                               'password':ev_loader.var_get('password')}
-        ConnectionPool.create_connection_pool(max_connections=50,
+        ConnectionPool.create_connection_pool(max_connections=1,
                                               connection_details=connection_details,
                                               logger=self.logger)
         #
@@ -137,6 +139,7 @@ class ScriptInitializer:
                            spark_default_parallelism=ev_loader.var_get('spark_default_parallelism'),
                            spark_shuffle_partitions=ev_loader.var_get('spark_shuffle_partitions'),
                            spark_logConf=ev_loader.var_get('spark_logConf'),
+                           spark_python_worker_reuse=ev_loader.var_get('spark_python_worker_reuse'),
                            logger=self.logger)
         self.ev_loader = ev_loader
     #
