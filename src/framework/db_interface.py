@@ -115,15 +115,13 @@ class DatabaseInterface:
         """
         cursor = None
         try:
-            print(dml)
             cursor = self.__conn.cursor()
-            print('Entry! HERE')
             if params is None:
                 cursor.execute(dml)
             else:
                 cursor.execute(dml, params)
         except Exception as e:
-            print(str(e))
+            #print(str(e))
             if self.__logger is not None:
                 self.__logger.log('Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
                         str(dml) + ' ]')
