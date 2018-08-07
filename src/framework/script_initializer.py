@@ -116,7 +116,6 @@ class ScriptInitializer:
         ConnectionPool.create_connection_pool(max_connections=25,
                                               connection_details=connection_details,
                                               logger=self.logger)
-        self.db_conn = ConnectionPool.claim_from_pool()
         #
         # self.db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
         #                                  user=ev_loader.var_get('user'),
@@ -153,7 +152,7 @@ class ScriptInitializer:
         Database connection Initialization
         :return:
         """
-        return self.db_conn
+        return ConnectionPool.claim_from_pool()
     #
     def initialize_spark(self):
         """
