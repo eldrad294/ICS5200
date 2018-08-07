@@ -73,10 +73,9 @@ class DatabaseInterface:
         :param describe: Defines whether table description is also returned
         :return:
         """
-        cursor = self.conn.cursor()
-        result, description = None, None
-        #query = self.__clean_query(query)
+        cursor, result, description = None, None, None
         try:
+            cursor = self.conn.cursor()
             if fetch_single is True:
                 if params is None:
                     result = cursor.execute(query).fetchone()
@@ -110,9 +109,9 @@ class DatabaseInterface:
         :param params: dictionary of bind variables
         :return:
         """
-        print('HEEEELOOOOOO')
-        cursor = self.conn.cursor()
+        cursor = None
         try:
+            cursor = self.conn.cursor()
             if params is None:
                 cursor.execute(dml)
             else:
