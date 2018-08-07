@@ -1,35 +1,35 @@
--- 
--- Legal Notice 
--- 
--- This document and associated source code (the "Work") is a part of a 
--- benchmark specification maintained by the TPC. 
--- 
--- The TPC reserves all right, title, and interest to the Work as provided 
--- under U.S. and international laws, including without limitation all patent 
--- and trademark rights therein. 
--- 
--- No Warranty 
--- 
--- 1.1 TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE INFORMATION 
---     CONTAINED HEREIN IS PROVIDED "AS IS" AND WITH ALL FAULTS, AND THE 
---     AUTHORS AND DEVELOPERS OF THE WORK HEREBY DISCLAIM ALL OTHER 
---     WARRANTIES AND CONDITIONS, EITHER EXPRESS, IMPLIED OR STATUTORY, 
---     INCLUDING, BUT NOT LIMITED TO, ANY (IF ANY) IMPLIED WARRANTIES, 
---     DUTIES OR CONDITIONS OF MERCHANTABILITY, OF FITNESS FOR A PARTICULAR 
---     PURPOSE, OF ACCURACY OR COMPLETENESS OF RESPONSES, OF RESULTS, OF 
---     WORKMANLIKE EFFORT, OF LACK OF VIRUSES, AND OF LACK OF NEGLIGENCE. 
---     ALSO, THERE IS NO WARRANTY OR CONDITION OF TITLE, QUIET ENJOYMENT, 
---     QUIET POSSESSION, CORRESPONDENCE TO DESCRIPTION OR NON-INFRINGEMENT 
---     WITH REGARD TO THE WORK. 
--- 1.2 IN NO EVENT WILL ANY AUTHOR OR DEVELOPER OF THE WORK BE LIABLE TO 
---     ANY OTHER PARTY FOR ANY DAMAGES, INCLUDING BUT NOT LIMITED TO THE 
---     COST OF PROCURING SUBSTITUTE GOODS OR SERVICES, LOST PROFITS, LOSS 
---     OF USE, LOSS OF DATA, OR ANY INCIDENTAL, CONSEQUENTIAL, DIRECT, 
+--
+-- Legal Notice
+--
+-- This document and associated source code (the "Work") is a part of a
+-- benchmark specification maintained by the TPC.
+--
+-- The TPC reserves all right, title, and interest to the Work as provided
+-- under U.S. and international laws, including without limitation all patent
+-- and trademark rights therein.
+--
+-- No Warranty
+--
+-- 1.1 TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE INFORMATION
+--     CONTAINED HEREIN IS PROVIDED "AS IS" AND WITH ALL FAULTS, AND THE
+--     AUTHORS AND DEVELOPERS OF THE WORK HEREBY DISCLAIM ALL OTHER
+--     WARRANTIES AND CONDITIONS, EITHER EXPRESS, IMPLIED OR STATUTORY,
+--     INCLUDING, BUT NOT LIMITED TO, ANY (IF ANY) IMPLIED WARRANTIES,
+--     DUTIES OR CONDITIONS OF MERCHANTABILITY, OF FITNESS FOR A PARTICULAR
+--     PURPOSE, OF ACCURACY OR COMPLETENESS OF RESPONSES, OF RESULTS, OF
+--     WORKMANLIKE EFFORT, OF LACK OF VIRUSES, AND OF LACK OF NEGLIGENCE.
+--     ALSO, THERE IS NO WARRANTY OR CONDITION OF TITLE, QUIET ENJOYMENT,
+--     QUIET POSSESSION, CORRESPONDENCE TO DESCRIPTION OR NON-INFRINGEMENT
+--     WITH REGARD TO THE WORK.
+-- 1.2 IN NO EVENT WILL ANY AUTHOR OR DEVELOPER OF THE WORK BE LIABLE TO
+--     ANY OTHER PARTY FOR ANY DAMAGES, INCLUDING BUT NOT LIMITED TO THE
+--     COST OF PROCURING SUBSTITUTE GOODS OR SERVICES, LOST PROFITS, LOSS
+--     OF USE, LOSS OF DATA, OR ANY INCIDENTAL, CONSEQUENTIAL, DIRECT,
 --     INDIRECT, OR SPECIAL DAMAGES WHETHER UNDER CONTRACT, TORT, WARRANTY,
---     OR OTHERWISE, ARISING IN ANY WAY OUT OF THIS OR ANY OTHER AGREEMENT 
---     RELATING TO THE WORK, WHETHER OR NOT SUCH AUTHOR OR DEVELOPER HAD 
---     ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES. 
--- 
+--     OR OTHERWISE, ARISING IN ANY WAY OUT OF THIS OR ANY OTHER AGREEMENT
+--     RELATING TO THE WORK, WHETHER OR NOT SUCH AUTHOR OR DEVELOPER HAD
+--     ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.
+--
 -- Contributors:
 -- Gradient Systems
 --
@@ -38,8 +38,8 @@ create table dbgen_version
     dv_version                varchar(16)                   ,
     dv_create_date            varchar(10)                   ,
     dv_create_time            varchar(10)                   ,
-    dv_cmdline_args           varchar(200)                  
-);
+    dv_cmdline_args           varchar(200)
+) nologging;
 
 create table customer_address
 (
@@ -57,7 +57,7 @@ create table customer_address
     ca_gmt_offset             decimal(5,2)                  ,
     ca_location_type          char(20)                      ,
     primary key (ca_address_sk)
-);
+) nologging;
 
 create table customer_demographics
 (
@@ -71,7 +71,7 @@ create table customer_demographics
     cd_dep_employed_count     integer                       ,
     cd_dep_college_count      integer                       ,
     primary key (cd_demo_sk)
-);
+) nologging;
 
 create table date_dim
 (
@@ -104,7 +104,7 @@ create table date_dim
     d_current_quarter         char(1)                       ,
     d_current_year            char(1)                       ,
     primary key (d_date_sk)
-);
+) nologging;
 
 create table warehouse
 (
@@ -123,7 +123,7 @@ create table warehouse
     w_country                 varchar(20)                   ,
     w_gmt_offset              decimal(5,2)                  ,
     primary key (w_warehouse_sk)
-);
+) nologging;
 
 create table ship_mode
 (
@@ -134,7 +134,7 @@ create table ship_mode
     sm_carrier                char(20)                      ,
     sm_contract               char(20)                      ,
     primary key (sm_ship_mode_sk)
-);
+) nologging;
 
 create table time_dim
 (
@@ -149,7 +149,7 @@ create table time_dim
     t_sub_shift               char(20)                      ,
     t_meal_time               char(20)                      ,
     primary key (t_time_sk)
-);
+) nologging;
 
 create table reason
 (
@@ -157,7 +157,7 @@ create table reason
     r_reason_id               char(16)              not null,
     r_reason_desc             char(100)                     ,
     primary key (r_reason_sk)
-);
+) nologging;
 
 create table income_band
 (
@@ -165,7 +165,7 @@ create table income_band
     ib_lower_bound            integer                       ,
     ib_upper_bound            integer                       ,
     primary key (ib_income_band_sk)
-);
+) nologging;
 
 create table item
 (
@@ -192,7 +192,7 @@ create table item
     i_manager_id              integer                       ,
     i_product_name            char(50)                      ,
     primary key (i_item_sk)
-);
+) nologging;
 
 create table store
 (
@@ -226,7 +226,7 @@ create table store
     s_gmt_offset              decimal(5,2)                  ,
     s_tax_precentage          decimal(5,2)                  ,
     primary key (s_store_sk)
-);
+) nologging;
 
 create table call_center
 (
@@ -262,7 +262,7 @@ create table call_center
     cc_gmt_offset             decimal(5,2)                  ,
     cc_tax_percentage         decimal(5,2)                  ,
     primary key (cc_call_center_sk)
-);
+) nologging;
 
 create table customer
 (
@@ -285,7 +285,7 @@ create table customer
     c_email_address           char(50)                      ,
     c_last_review_date        char(10)                      ,
     primary key (c_customer_sk)
-);
+) nologging;
 
 create table web_site
 (
@@ -316,7 +316,7 @@ create table web_site
     web_gmt_offset            decimal(5,2)                  ,
     web_tax_percentage        decimal(5,2)                  ,
     primary key (web_site_sk)
-);
+) nologging;
 
 create table store_returns
 (
@@ -341,7 +341,7 @@ create table store_returns
     sr_store_credit           decimal(7,2)                  ,
     sr_net_loss               decimal(7,2)                  ,
     primary key (sr_item_sk, sr_ticket_number)
-);
+) nologging;
 
 create table household_demographics
 (
@@ -351,7 +351,7 @@ create table household_demographics
     hd_dep_count              integer                       ,
     hd_vehicle_count          integer                       ,
     primary key (hd_demo_sk)
-);
+) nologging;
 
 create table web_page
 (
@@ -370,7 +370,7 @@ create table web_page
     wp_image_count            integer                       ,
     wp_max_ad_count           integer                       ,
     primary key (wp_web_page_sk)
-);
+) nologging;
 
 create table promotion
 (
@@ -394,7 +394,7 @@ create table promotion
     p_purpose                 char(15)                      ,
     p_discount_active         char(1)                       ,
     primary key (p_promo_sk)
-);
+) nologging;
 
 create table catalog_page
 (
@@ -408,7 +408,7 @@ create table catalog_page
     cp_description            varchar(100)                  ,
     cp_type                   varchar(100)                  ,
     primary key (cp_catalog_page_sk)
-);
+) nologging;
 
 create table inventory
 (
@@ -417,7 +417,7 @@ create table inventory
     inv_warehouse_sk          integer               not null,
     inv_quantity_on_hand      integer                       ,
     primary key (inv_date_sk, inv_item_sk, inv_warehouse_sk)
-);
+) nologging;
 
 create table catalog_returns
 (
@@ -449,7 +449,7 @@ create table catalog_returns
     cr_store_credit           decimal(7,2)                  ,
     cr_net_loss               decimal(7,2)                  ,
     primary key (cr_item_sk, cr_order_number)
-);
+) nologging;
 
 create table web_returns
 (
@@ -478,7 +478,7 @@ create table web_returns
     wr_account_credit         decimal(7,2)                  ,
     wr_net_loss               decimal(7,2)                  ,
     primary key (wr_item_sk, wr_order_number)
-);
+) nologging;
 
 create table web_sales
 (
@@ -517,7 +517,7 @@ create table web_sales
     ws_net_paid_inc_ship_tax  decimal(7,2)                  ,
     ws_net_profit             decimal(7,2)                  ,
     primary key (ws_item_sk, ws_order_number)
-);
+) nologging;
 
 create table catalog_sales
 (
@@ -556,7 +556,7 @@ create table catalog_sales
     cs_net_paid_inc_ship_tax  decimal(7,2)                  ,
     cs_net_profit             decimal(7,2)                  ,
     primary key (cs_item_sk, cs_order_number)
-);
+) nologging;
 
 create table store_sales
 (
@@ -584,5 +584,4 @@ create table store_sales
     ss_net_paid_inc_tax       decimal(7,2)                  ,
     ss_net_profit             decimal(7,2)                  ,
     primary key (ss_item_sk, ss_ticket_number)
-);
-
+) nologging;
