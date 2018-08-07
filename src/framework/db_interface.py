@@ -193,12 +193,12 @@ class ConnectionPool:
             raise ValueError('No connection details were specified!')
         #
         for i in range(max_connections):
-            conn = DatabaseInterface(instance_name=connection_details('instance_name'),
-                                     user=connection_details('user'),
-                                     host=connection_details('host'),
-                                     service=connection_details('service'),
-                                     port=connection_details('port'),
-                                     password=connection_details('password'),
+            conn = DatabaseInterface(instance_name=connection_details['instance_name'],
+                                     user=connection_details['user'],
+                                     host=connection_details['host'],
+                                     service=connection_details['service'],
+                                     port=connection_details['port'],
+                                     password=connection_details['password'],
                                      logger=self.logger)
             conn_list = [i,0,conn] # id, status {0,1}, connection
             ConnectionPool.__pool.append(conn_list)
