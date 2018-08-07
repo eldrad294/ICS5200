@@ -199,7 +199,7 @@ class ConnectionPool:
                                      service=connection_details['service'],
                                      port=connection_details['port'],
                                      password=connection_details['password'],
-                                     logger=self.logger)
+                                     logger=logger)
             conn_list = [i,0,conn] # id, status {0,1}, connection
             ConnectionPool.__pool.append(conn_list)
         logger.log('Connection pool instantiated with [' + max_connections + '] connections')
