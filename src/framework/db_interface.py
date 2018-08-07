@@ -60,9 +60,9 @@ class DatabaseInterface:
             if self.__logger is not None:
                 self.__logger.log("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
         except Exception as e:
-            print(str(e))
-            if self.__logger is not None:
-                self.__logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
+            raise Exception("Couldn't connect to database: [" + str(e) + "]")
+            # if self.__logger is not None:
+            #     self.__logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
     #
     def execute_query(self, query, params=None, fetch_single=False, describe=False):
         """
@@ -132,7 +132,10 @@ class DatabaseInterface:
         Commits transaction/s
         :return:
         """
-        self.__conn.commit()
+        try:
+            self.__conn.commit()
+        except Exception as e:
+            raise Exception("Couldn't commit transaction to database: [" + str(e) + "]")
     #
     def executeScriptsFromFile(self, filename):
         """
@@ -160,9 +163,11 @@ class DatabaseInterface:
         Closes instance connection to Oracle database
         :return:
         """
-        self.__conn.close()
-        if self.__logger is not None:
-            self.__logger.log("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
+        try:
+            if self.__conn is not None:
+                self.__conn.close()
+        except Exception as e:
+            raise Exception("Couldn't close connection: [" + str(e) + "]")
     #
     def get_connection_details(self):
         return {'instance_name':self.__instance_name,
