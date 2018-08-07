@@ -88,6 +88,7 @@ class Spark:
         """
         Initializes Spark Context
         https://spark.apache.org/docs/latest/configuration.html
+        http://alexanderwaldin.github.io/pyspark-quickstart-guide.html
         :return:
         """
         conf = SparkConf()

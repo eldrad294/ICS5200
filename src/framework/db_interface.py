@@ -56,7 +56,10 @@ class DatabaseInterface:
         """
         conn_str = self.__user + "/" + self.__password + "@" + self.__host + ":" + self.__port + "/" + self.__service
         try:
+            print('Attempting to connect')
             self.__conn = cx_Oracle.connect(conn_str, encoding = "UTF-8", nencoding = "UTF-8")
+            print('Connected!')
+            print(self.__conn)
             if self.__logger is not None:
                 self.__logger.log("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
         except Exception as e:
