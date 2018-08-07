@@ -13,6 +13,7 @@ class DatabaseInterface:
         self.__port = str(port)
         self.__password = str(password) # Required to execute under nohup instead of manual user input,
         self.__logger = logger
+        self.__conn = None
         #
         # Validates connection config
         self.__validate_db_config()
