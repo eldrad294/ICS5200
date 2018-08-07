@@ -2,7 +2,7 @@
 # Module Imports
 from src.framework.db_interface import DatabaseInterface
 from src.framework.logger import Logger
-import time
+import time, os
 #
 class LoadTPCData:
     """
@@ -18,6 +18,10 @@ class LoadTPCData:
         :param instance_details: List containing instance details
         :return:
         """
+        os.environ['ORACLE_HOME'] = '/oracle/product/11.2.0/dbhome_1'
+        os.environ['LD_LIBRARY_PATH'] = '/oracle/product/11.2.0/dbhome_1/lib'
+        os.environ['PATH'] = '/home/gabriels/ICS5200/venv/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/oracle/product/11.2.0/dbhome_1/bin:/home/gabriels/.local/bin:/home/gabriels/bin'
+
         start_time = time.time()
         #
         # Establish slave logger
