@@ -24,16 +24,19 @@ class ScriptInitializer:
         password = str(g_config.get_value('DatabaseConnectionString','password'))
         instance_name = str(g_config.get_value('DatabaseConnectionString','instance_name'))
         #
+        # Spark Config
         app_name = str(g_config.get_value('SparkContext','app_name'))
         master = str(g_config.get_value('SparkContext','master'))
+        spark_submit_deployMode = str(g_config.get_value('SparkContext','spark_submit_deployMode'))
         spark_rdd_partitions = int(g_config.get_value('SparkContext','spark_rdd_partitions'))
+        spark_executor_instances = int(g_config.get_value('SparkContext','spark_executor_instances'))
         spark_executor_memory = str(g_config.get_value('SparkContext','spark_executor_memory'))
-        spark_executor_cores = str(g_config.get_value('SparkContext','spark_executor_cores'))
+        spark_executor_cores = int(g_config.get_value('SparkContext','spark_executor_cores'))
         spark_max_result_size = str(g_config.get_value('SparkContext','spark_max_result_size'))
-        spark_cores_max = str(g_config.get_value('SparkContext','spark_cores_max'))
+        spark_cores_max = int(g_config.get_value('SparkContext','spark_cores_max'))
         spark_driver_memory = str(g_config.get_value('SparkContext','spark_driver_memory'))
-        spark_default_parallelism = str(g_config.get_value('SparkContext','spark_default_parallelism'))
-        spark_shuffle_partitions = str(g_config.get_value('SparkContext','spark_shuffle_partitions'))
+        spark_default_parallelism = int(g_config.get_value('SparkContext','spark_default_parallelism'))
+        spark_shuffle_partitions = int(g_config.get_value('SparkContext','spark_shuffle_partitions'))
         spark_logConf = str(g_config.get_value('SparkContext','spark_logConf'))
         #
         write_to_disk = str(g_config.get_value("EnvironmentSettings","write_to_disk"))
@@ -78,7 +81,9 @@ class ScriptInitializer:
                             'tpce_sql_generation_bool':tpce_sql_generation_bool,
                             'app_name':app_name.upper(),
                             'master':master,
+                            'spark_submit_deployMode':spark_submit_deployMode,
                             'spark_rdd_partitions':spark_rdd_partitions,
+                            'spark_executor_instances':spark_executor_instances
                             'spark_executor_memory':spark_executor_memory,
                             'spark_executor_cores':spark_executor_cores,
                             'spark_max_result_size':spark_max_result_size,
@@ -103,7 +108,9 @@ class ScriptInitializer:
         #
         self.spark = Spark(app_name=ev_loader.var_get('app_name'),
                            master=ev_loader.var_get('master'),
+                           spark_submit_deployMode=ev_loader.var_get('spark_submit_deployMode'),
                            spark_rdd_partitions=ev_loader.var_get('spark_rdd_partitions'),
+                           spark_executor_instances=ev_loader.var_get('spark_executor_instances'),
                            spark_executor_memory=ev_loader.var_get('spark_executor_memory'),
                            spark_executor_cores=ev_loader.var_get('spark_executor_cores'),
                            spark_max_result_size=ev_loader.var_get('spark_max_result_size'),

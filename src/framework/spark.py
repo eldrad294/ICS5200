@@ -12,7 +12,9 @@ class Spark:
     def __init__(self,
                  app_name,
                  master,
+                 spark_submit_deployMode,
                  spark_rdd_partitions,
+                 spark_executor_instances,
                  spark_executor_memory,
                  spark_executor_cores,
                  spark_max_result_size,
@@ -24,7 +26,9 @@ class Spark:
                  logger):
         self.__app_name = app_name
         self.__master = master
+        self.__spark_submit_deployMode = spark_submit_deployMode
         self.__spark_rdd_partitions = spark_rdd_partitions
+        self.__spark_executor_instances = spark_executor_instances
         self.__spark_executor_memory = spark_executor_memory
         self.__spark_executor_cores = spark_executor_cores
         self.__spark_max_result_size = spark_max_result_size
@@ -49,8 +53,12 @@ class Spark:
             raise ValueError('App Name config was not defined for Spark context!')
         elif self.__master is None:
             raise ValueError('Master config was not declared for Spark context!')
+        elif self.__spark_submit_deployMode is None:
+            raise ValueError('Spark Deploy Mode was not declared for Spark context!')
         elif self.__spark_rdd_partitions is None:
             raise ValueError('RDD Spark RDD partition config was not established!')
+        elif self.__spark_executor_instances is None:
+            raise ValueError('Spark Executor Instances config was not established!')
         elif self.__spark_driver_memory is None:
             raise ValueError('Spark Executor Memory config was not declared!')
         elif self.__spark_executor_cores is None:
@@ -84,6 +92,8 @@ class Spark:
         conf = SparkConf()
         conf.setAppName(self.__app_name)
         conf.setMaster(self.__master)
+        conf.set('spark.submit.deployMode', str(self.__spark_submit_deployMode))
+        conf.set('spark.executor.instances', str(self.__spark_executor_instances))
         conf.set('spark.executor.memory', str(self.__spark_driver_memory))
         conf.set('spark.executor.cores', str(self.__spark_executor_cores))
         conf.set('spark.driver.maxResultSize', str(self.__spark_max_result_size))
