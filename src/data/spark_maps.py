@@ -48,7 +48,9 @@ class LoadTPCData:
             dml += ")"
             di.execute_dml(dml, l_line)
             row_count += 1
+        print('before commit..')
         di.commit() # Commit once after every RDD batch
+        print('after commit..')
         di.close()
         #
         end_time = time.time()

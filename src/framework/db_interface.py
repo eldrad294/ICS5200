@@ -54,15 +54,12 @@ class DatabaseInterface:
         Establishes instance connection to Oracle database
         :return:
         """
-        print("Attempting to connect..")
         conn_str = self.__user + "/" + self.__password + "@" + self.__host + ":" + self.__port + "/" + self.__service
         try:
             self.__conn = cx_Oracle.connect(conn_str, encoding = "UTF-8", nencoding = "UTF-8")
-            print('Connected!')
             if self.__logger is not None:
                 self.__logger.log("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
         except Exception as e:
-            print(str(e))
             if self.__logger is not None:
                 self.__logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
     #
@@ -116,12 +113,12 @@ class DatabaseInterface:
         cursor = None
         try:
             cursor = self.__conn.cursor()
+            print(dml)
             if params is None:
                 cursor.execute(dml)
             else:
                 cursor.execute(dml, params)
         except Exception as e:
-            print(str(e))
             if self.__logger is not None:
                 self.__logger.log('Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
                         str(dml) + ' ]')
@@ -134,8 +131,7 @@ class DatabaseInterface:
         Commits transaction/s
         :return:
         """
-        if self.__conn is not None:
-            self.__conn.commit()
+        self.__conn.commit()
     #
     def executeScriptsFromFile(self, filename):
         """
