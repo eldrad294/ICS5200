@@ -113,7 +113,7 @@ class ScriptInitializer:
                               'service':ev_loader.var_get('service'),
                               'port':ev_loader.var_get('port'),
                               'password':ev_loader.var_get('password')}
-        ConnectionPool.create_connection_pool(max_connections=25,
+        ConnectionPool.create_connection_pool(max_connections=50,
                                               connection_details=connection_details,
                                               logger=self.logger)
         #

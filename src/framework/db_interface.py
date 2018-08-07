@@ -219,7 +219,7 @@ class ConnectionPool:
                 ConnectionPool.__pool[i][1] = 1
                 return ConnectionPool.__pool[i] # Returns Connection List
         else:
-            raise Exception('Connection pool busy..all connections are currently active')
+            raise Exception('Connection pool busy..all [' + str(len(ConnectionPool.__pool)) + '] connections are currently active!')
     #
     @staticmethod
     def return_to_pool(conn):
