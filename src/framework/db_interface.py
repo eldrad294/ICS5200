@@ -202,13 +202,13 @@ class ConnectionPool:
                                      logger=logger)
             conn_list = [i,0,conn] # id, status {0,1}, connection
             ConnectionPool.__pool.append(conn_list)
-        logger.log('Connection pool instantiated with [' + max_connections + '] connections')
+        logger.log('Connection pool instantiated with [' + str(max_connections) + '] connections')
     #
     @staticmethod
     def close_connection_pool():
         for conn_list in ConnectionPool.__pool:
-            conn = conn_list[2]
-            conn.close()
+            if conn_list[1] == 1:
+                conn_list[2].close()
     #
     @staticmethod
     def claim_from_pool():
