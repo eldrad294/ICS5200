@@ -83,7 +83,7 @@ class ScriptInitializer:
                             'master':master,
                             'spark_submit_deployMode':spark_submit_deployMode,
                             'spark_rdd_partitions':spark_rdd_partitions,
-                            'spark_executor_instances':spark_executor_instances
+                            'spark_executor_instances':spark_executor_instances,
                             'spark_executor_memory':spark_executor_memory,
                             'spark_executor_cores':spark_executor_cores,
                             'spark_max_result_size':spark_max_result_size,
