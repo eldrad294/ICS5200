@@ -112,6 +112,7 @@ class DatabaseInterface:
         """
         cursor = None
         try:
+            print('Cursor Entry!!!')
             cursor = self.__conn.cursor()
             print(dml)
             if params is None:
