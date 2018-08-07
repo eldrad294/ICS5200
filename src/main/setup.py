@@ -17,7 +17,7 @@ SCRIPT WARM UP - Module Import & Path Configuration
 """
 #
 # Module Imports
-import sys
+import sys, threading
 from os.path import dirname, abspath
 #
 # Retrieving relative paths for project directory
@@ -77,8 +77,12 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
     file_names = tpc.get_data_file_list(tpc_type="TPC-DS")
     #
     for i in range(len(file_names)):
-        fl.load_data(path=ev_loader.var_get('data_generated_directory') + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i],
-                     table_name=table_names[i])
+        threading.Thread(target=fl.load_data,
+                         args=(ev_loader.var_get('data_generated_directory') + "/TPC-DS/" +
+                               ev_loader.var_get('user') + "/" + file_names[i], table_names[i]),
+                         name="thread_"+table_names[i]).start()
+        # fl.load_data(path=ev_loader.var_get('data_generated_directory') + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i],
+        #              table_name=table_names[i])
     #
     # Check whether indexes needs creating - executed only if relevant indexes are not found
     sql_statement = "select count(*) from user_indexes where index_name = 'SS_SOLD_DATE_SK_INDEX'"
