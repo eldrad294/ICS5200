@@ -60,9 +60,9 @@ class DatabaseInterface:
             if self.__logger is not None:
                 self.__logger.log("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
         except Exception as e:
+            if self.__logger is not None:
+                self.__logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
             raise Exception("Couldn't connect to database: [" + str(e) + "]")
-            # if self.__logger is not None:
-            #     self.__logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
     #
     def execute_query(self, query, params=None, fetch_single=False, describe=False):
         """
@@ -177,22 +177,55 @@ class DatabaseInterface:
 #
 class ConnectionPool:
     """
-    Connection pool clas
+    Connection pool class
     """
     #
     __pool = []
     #
     @staticmethod
-    def create_connection_pool(max_connections):
+    def create_connection_pool(max_connections, connection_details, logger):
         max_connections = int(max_connections)
         if max_connections is None:
             raise ValueError('Maximum connection pool size must be declared!')
         if max_connections > 40 or max_connections < 1:
-            raise ValueErrpr('Connection pool size must be between 1 and 40')
+            raise ValueError('Connection pool size must be between 1 and 40!')
+        if len(connection_details) == 0 or connection_details is None:
+            raise ValueError('No connection details were specified!')
         #
-        for i in range(0,max_connections):
-            ConnectionPool.__pool.append()
-
+        for i in range(max_connections):
+            conn = DatabaseInterface(instance_name=connection_details('instance_name'),
+                                     user=connection_details('user'),
+                                     host=connection_details('host'),
+                                     service=connection_details('service'),
+                                     port=connection_details('port'),
+                                     password=connection_details('password'),
+                                     logger=self.logger)
+            conn_list = [i,0,conn] # id, status {0,1}, connection
+            ConnectionPool.__pool.append(conn_list)
+        logger.log('Connection pool instantiated with [' + max_connections + '] connections')
+    #
+    @staticmethod
+    def close_connection_pool():
+        for conn_list in ConnectionPool.__pool:
+            conn = conn_list[2]
+            conn.close()
+    #
+    @staticmethod
+    def claim_from_pool():
+        for i, conn_list in enumerate(ConnectionPool.__pool):
+            status = conn_list[1]
+            if status == 0:
+                ConnectionPool.__pool[i][1] = 1
+                return ConnectionPool.__pool[i] # Returns Connection List
+        else:
+            raise Exception('Connection pool busy..all connections are currently active')
+    #
+    @staticmethod
+    def return_to_pool(conn):
+        conn_list = ConnectionPool.__pool[id]
+        if conn_list[conn[0]][1] == 1:
+            conn.close()
+            ConnectionPool.__pool[conn[0]][1] = 0
 """
 Follow below example:
 ---------------------

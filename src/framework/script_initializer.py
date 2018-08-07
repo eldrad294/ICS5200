@@ -1,7 +1,7 @@
 import os
 from src.framework.env_var_loader import ev_loader, ConfigParser
 from src.framework.logger import Logger
-from src.framework.db_interface import DatabaseInterface
+from src.framework.db_interface import DatabaseInterface, ConnectionPool
 from src.framework.spark import Spark
 #
 class ScriptInitializer:
@@ -107,13 +107,24 @@ class ScriptInitializer:
                              write_to_disk=ev_loader.var_get('write_to_disk'),
                              write_to_screen=ev_loader.var_get('write_to_screen'))
         #
-        self.db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-                                         user=ev_loader.var_get('user'),
-                                         host=ev_loader.var_get('host'),
-                                         service=ev_loader.var_get('service'),
-                                         port=ev_loader.var_get('port'),
-                                         password=ev_loader.var_get('password'),
-                                         logger=self.logger)
+        connection_details = {'instance_name':ev_loader.var_get('instance_name'),
+                              'user':ev_loader.var_get('user'),
+                              'host':ev_loader.var_get('host'),
+                              'service':ev_loader.var_get('service'),
+                              'port':ev_loader.var_get('port'),
+                              'password':ev_loader.var_get('password')}
+        ConnectionPool.create_connection_pool(max_connections=25,
+                                              connection_details=connection_details,
+                                              logger=self.logger)
+        self.db_conn = ConnectionPool.claim_from_pool()
+        #
+        # self.db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
+        #                                  user=ev_loader.var_get('user'),
+        #                                  host=ev_loader.var_get('host'),
+        #                                  service=ev_loader.var_get('service'),
+        #                                  port=ev_loader.var_get('port'),
+        #                                  password=ev_loader.var_get('password'),
+        #                                  logger=self.logger)
         #
         self.spark = Spark(app_name=ev_loader.var_get('app_name'),
                            master=ev_loader.var_get('master'),
