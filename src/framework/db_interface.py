@@ -164,8 +164,7 @@ class DatabaseInterface:
         :return:
         """
         try:
-            if self.__conn is not None:
-                self.__conn.close()
+            self.__conn.close()
         except Exception as e:
             raise Exception("Couldn't close connection: [" + str(e) + "]")
     #

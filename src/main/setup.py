@@ -101,5 +101,6 @@ if ev_loader.var_get('tpcds_sql_generation_bool') == 'True':
     tpc.split_tpc_sql_file(tpc_type='TPC-DS')
 if ev_loader.var_get('tpce_sql_generation_bool') == 'True':
     raise NotImplementedError("This logic is not yet implemented!")
-#
+
+db_conn.close()
 logger.log("Script Complete!\n-------------------------------------")
