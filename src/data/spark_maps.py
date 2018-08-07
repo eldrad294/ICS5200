@@ -1,6 +1,6 @@
 #
 # Module Imports
-from src.framework.db_interface import DatabaseInterface
+from src.framework.db_interface import ConnectionPool
 from src.framework.logger import Logger
 import time, os
 #
@@ -31,13 +31,15 @@ class LoadTPCData:
         logger.log('Starting data migration into table [' + table_name + ']')
         #
         # Establish slave database context
-        di = DatabaseInterface(instance_name=instance_details[0],
-                               user=instance_details[1],
-                               host=instance_details[2],
-                               service=instance_details[3],
-                               port=instance_details[4],
-                               password=instance_details[5])
-        di.connect()
+        # di = DatabaseInterface(instance_name=instance_details[0],
+        #                        user=instance_details[1],
+        #                        host=instance_details[2],
+        #                        service=instance_details[3],
+        #                        port=instance_details[4],
+        #                        password=instance_details[5])
+        # di.connect()
+        conn = ConnectionPool.claim_from_pool()
+        di = conn[2]
         #
         # Iterate over RDD partition
         row_count = 0
@@ -53,7 +55,8 @@ class LoadTPCData:
             di.execute_dml(dml, l_line)
             row_count += 1
         di.commit() # Commit once after every RDD batch
-        di.close()
+        ConnectionPool.return_to_pool(conn)
+        #di.close()
         #
         end_time = time.time()
         logger.log('Committed ' + str(row_count) + ' rows for table ' + table_name + " | " + str(end_time-start_time) + " seconds")
