@@ -110,9 +110,11 @@ class DatabaseInterface:
         :param params: dictionary of bind variables
         :return:
         """
+        print('Entry1')
         cursor = None
+        print('Entry2')
         try:
-            print('Cursor Entry!!!')
+            print('Entry3')
             cursor = self.__conn.cursor()
             print(dml)
             if params is None:
