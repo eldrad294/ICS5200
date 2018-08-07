@@ -215,8 +215,6 @@ class FileLoader:
         #
         # Materializes an RDD, but does not compute due to lazy evaluation
         rdd_file = self.__spark_context.textFile(path, self.__ev_loader.var_get('spark_rdd_partitions'))
-        #rdd_file2 = rdd_file.repartition(self.__ev_loader.var_get('spark_rdd_partitions'))
-        #rdd_file2 = self.__spark_context.parallelize(rdd_file.collect())
         #
         # Pass database context details, to allow Spark executors to create their own connections
         instance_details = [self.__ev_loader.var_get('instance_name'),
@@ -232,7 +230,7 @@ class FileLoader:
                           self.__ev_loader.var_get('write_to_screen')]
         #
         # Carry out Spark action on established RDDs
-        rdd_file.foreachPartition(lambda line: LoadTPCData.send_partition(data_line=line,
+        rdd_file.foreachPartitionAsync(lambda line: LoadTPCData.send_partition(data_line=line,
                                                                           table_name=table_name,
                                                                           logger_details=logger_details,
                                                                           instance_details=instance_details))
