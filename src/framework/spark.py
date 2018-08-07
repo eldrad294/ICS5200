@@ -80,11 +80,6 @@ class Spark:
             raise ValueError('Spark Log Conf config was not declared!')
         elif self.__logger is None:
             raise ValueError("Logger context was not declared!")
-        #
-        try:
-            self.__spark_rdd_partitions = int(self.__spark_rdd_partitions)
-        except ValueError:
-            raise ValueError('RDD Parallelism degree must be a numeric value')
     #
     def __create_Spark_context(self):
         """
