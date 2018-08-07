@@ -213,6 +213,9 @@ class ConnectionPool:
     #
     @staticmethod
     def claim_from_pool():
+        if len(ConnectionPool.__pool) == 0:
+            raise Exception('Connection pool is empty!')
+        #
         for i, conn_list in enumerate(ConnectionPool.__pool):
             status = conn_list[1]
             if status == 0:
