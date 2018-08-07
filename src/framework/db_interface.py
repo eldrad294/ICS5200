@@ -187,8 +187,8 @@ class ConnectionPool:
         max_connections = int(max_connections)
         if max_connections is None:
             raise ValueError('Maximum connection pool size must be declared!')
-        if max_connections > 40 or max_connections < 1:
-            raise ValueError('Connection pool size must be between 1 and 40!')
+        if max_connections > 210 or max_connections < 1:
+            raise ValueError('Connection pool size must be between 1 and 210!')
         if len(connection_details) == 0 or connection_details is None:
             raise ValueError('No connection details were specified!')
         #
