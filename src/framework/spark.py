@@ -150,4 +150,8 @@ class Spark:
         pass
     #
     def __del__(self):
-        pass
+        """
+        Before destructing object, ensure that Spark master + slave nodes are killed
+        :return:
+        """
+        self.__kill_spark_nodes()

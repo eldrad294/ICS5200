@@ -37,7 +37,6 @@ class ScriptInitializer:
         app_name = str(g_config.get_value('SparkContext','app_name'))
         master = str(g_config.get_value('SparkContext','master'))
         spark_submit_deployMode = str(g_config.get_value('SparkContext','spark_submit_deployMode'))
-        spark_rdd_partitions = int(g_config.get_value('SparkContext','spark_rdd_partitions'))
         spark_executor_instances = int(g_config.get_value('SparkContext','spark_executor_instances'))
         spark_executor_memory = str(g_config.get_value('SparkContext','spark_executor_memory'))
         spark_executor_cores = int(g_config.get_value('SparkContext','spark_executor_cores'))
@@ -93,7 +92,6 @@ class ScriptInitializer:
                             'app_name':app_name.upper(),
                             'master':master,
                             'spark_submit_deployMode':spark_submit_deployMode,
-                            'spark_rdd_partitions':spark_rdd_partitions,
                             'spark_executor_instances':spark_executor_instances,
                             'spark_executor_memory':spark_executor_memory,
                             'spark_executor_cores':spark_executor_cores,
@@ -120,7 +118,6 @@ class ScriptInitializer:
         self.spark = Spark(app_name=ev_loader.var_get('app_name'),
                            master=ev_loader.var_get('master'),
                            spark_submit_deployMode=ev_loader.var_get('spark_submit_deployMode'),
-                           spark_rdd_partitions=ev_loader.var_get('spark_rdd_partitions'),
                            spark_executor_instances=ev_loader.var_get('spark_executor_instances'),
                            spark_executor_memory=ev_loader.var_get('spark_executor_memory'),
                            spark_executor_cores=ev_loader.var_get('spark_executor_cores'),
