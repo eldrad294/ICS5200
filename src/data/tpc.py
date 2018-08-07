@@ -214,7 +214,7 @@ class FileLoader:
         """
         #
         # Materializes an RDD, but does not compute due to lazy evaluation
-        rdd_file = self.__spark_context.textFile(path, self.__ev_loader.var_get('spark_rdd_partitions')).collect()
+        rdd_file = self.__spark_context.textFile(path, self.__ev_loader.var_get('spark_rdd_partitions'))
         rdd_file2 = self.__spark_context.parallelize(rdd_file)
         #
         # Pass database context details, to allow Spark executors to create their own connections
