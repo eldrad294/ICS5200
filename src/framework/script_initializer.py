@@ -27,6 +27,7 @@ class ScriptInitializer:
         # Spark Config
         app_name = str(g_config.get_value('SparkContext','app_name'))
         master = str(g_config.get_value('SparkContext','master'))
+        spark_scheduling_mode = str(g_config.get_value('SparkContext','spark_scheduling_mode')).upper()
         spark_submit_deployMode = str(g_config.get_value('SparkContext','spark_submit_deployMode'))
         spark_rdd_partitions = int(g_config.get_value('SparkContext','spark_rdd_partitions'))
         spark_executor_instances = int(g_config.get_value('SparkContext','spark_executor_instances'))
@@ -81,6 +82,7 @@ class ScriptInitializer:
                             'tpce_sql_generation_bool':tpce_sql_generation_bool,
                             'app_name':app_name.upper(),
                             'master':master,
+                            'spark_scheduling_mode':spark_scheduling_mode,
                             'spark_submit_deployMode':spark_submit_deployMode,
                             'spark_rdd_partitions':spark_rdd_partitions,
                             'spark_executor_instances':spark_executor_instances,
@@ -108,6 +110,7 @@ class ScriptInitializer:
         #
         self.spark = Spark(app_name=ev_loader.var_get('app_name'),
                            master=ev_loader.var_get('master'),
+                           spark_scheduling_mode=ev_loader.var_get('spark_scheduling_mode'),
                            spark_submit_deployMode=ev_loader.var_get('spark_submit_deployMode'),
                            spark_rdd_partitions=ev_loader.var_get('spark_rdd_partitions'),
                            spark_executor_instances=ev_loader.var_get('spark_executor_instances'),
