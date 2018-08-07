@@ -1,6 +1,6 @@
 #
 # Module Imports
-from src.framework.db_interface import ConnectionPool
+from src.framework.db_interface import DatabaseInterface
 from src.framework.logger import Logger
 import time, os
 #
