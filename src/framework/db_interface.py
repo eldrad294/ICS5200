@@ -174,6 +174,25 @@ class DatabaseInterface:
                 'host':self.__host,
                 'service':self.__service,
                 'port':self.__port}
+#
+class ConnectionPool:
+    """
+    Connection pool clas
+    """
+    #
+    __pool = []
+    #
+    @staticmethod
+    def create_connection_pool(max_connections):
+        max_connections = int(max_connections)
+        if max_connections is None:
+            raise ValueError('Maximum connection pool size must be declared!')
+        if max_connections > 40 or max_connections < 1:
+            raise ValueErrpr('Connection pool size must be between 1 and 40')
+        #
+        for i in range(0,max_connections):
+            ConnectionPool.__pool.append()
+
 """
 Follow below example:
 ---------------------
