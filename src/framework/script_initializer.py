@@ -20,6 +20,7 @@ class ScriptInitializer:
         os.environ['PYSPARK_DRIVER_PYTHON'] = '/home/gabriels/ICS5200/venv/bin/python3'
         os.environ['SPARK_YARN_USER_ENV'] = '/home/gabriels/ICS5200/venv/bin/python3'
         os.environ['ORACLE_HOME'] = '/oracle/product/11.2.0/dbhome_1'
+        os.environ['LD_LIBRARY_PATH'] = '/oracle/product/11.2.0/dbhome_1/lib'
         #
         # Loading of program config
         user = str(g_config.get_value('DatabaseConnectionString','user'))
