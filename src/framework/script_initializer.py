@@ -16,6 +16,10 @@ class ScriptInitializer:
         config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'main/config.ini')
         g_config = ConfigParser(config_file)
         #
+        os.environ['PYSPARK_PYTHON'] = '/home/gabriels/ICS5200/venv/bin/python3'
+        os.environ['PYSPARK_DRIVER_PYTHON'] = '/home/gabriels/ICS5200/venv/bin/python3'
+        os.environ['SPARK_YARN_USER_ENV'] = '/home/gabriels/ICS5200/venv/bin/python3'
+        #
         # Loading of program config
         user = str(g_config.get_value('DatabaseConnectionString','user'))
         host = str(g_config.get_value('DatabaseConnectionString','host'))
