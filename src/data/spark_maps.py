@@ -1,6 +1,8 @@
 #
 # Module Imports
-
+from src.framework.db_interface import DatabaseInterface
+from src.framework.logger import Logger
+import time
 #
 class LoadTPCData:
     """
@@ -16,9 +18,6 @@ class LoadTPCData:
         :param instance_details: List containing instance details
         :return:
         """
-        from src.framework.db_interface import DatabaseInterface
-        from src.framework.logger import Logger
-        import time
         start_time = time.time()
         #
         # Establish slave logger

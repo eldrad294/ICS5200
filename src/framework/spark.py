@@ -3,6 +3,7 @@
 from pyspark.conf import SparkConf
 from pyspark.sql import SparkSession
 from pyspark.context import SparkContext
+import os
 #
 class Spark:
     """
@@ -92,6 +93,7 @@ class Spark:
         conf = SparkConf()
         conf.setAppName(self.__app_name)
         conf.setMaster(self.__master)
+        conf.setExecutorEnv("PYTHONPATH", "$PYTHONPATH:"+os.path.abspath(os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir), os.pardir)))
         conf.set('spark.submit.deployMode', str(self.__spark_submit_deployMode))
         conf.set('spark.executor.instances', str(self.__spark_executor_instances))
         conf.set('spark.executor.memory', str(self.__spark_driver_memory))
