@@ -42,6 +42,12 @@ class Spark:
         #
         self.__validate()
         #
+        # Initiate master node
+        self.__initiate_master_node()
+        #
+        # Inititate slave node
+        self.__initiate_slave_node()
+        #
         # Initialize Spark Context
         self.__spark_context = self.__create_Spark_context()
         self.display_spark_context()
@@ -133,3 +139,9 @@ class Spark:
         #
         for conf in self.__spark_context.getConf().getAll():
             self.__logger.log(conf)
+    #
+    def __initiate_master_node(self):
+        pass
+    #
+    def __initiate_slave_node(self):
+        pass
