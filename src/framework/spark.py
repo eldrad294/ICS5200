@@ -101,6 +101,7 @@ class Spark:
         conf.set('spark.driver.memory', str(self.__spark_driver_memory))
         conf.set('spark.default.parallelism', str(self.__spark_default_parallelism))
         conf.set('spark.sql.shuffle.partitions', str(self.__spark_shuffle_partitions))
+        conf.set('spark.python.worker.reuse','true')
         conf.set('spark.logConf', self.__spark_logConf.title())
         sc = SparkContext(conf=conf)
         return sc

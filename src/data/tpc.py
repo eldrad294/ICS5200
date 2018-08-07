@@ -234,7 +234,7 @@ class FileLoader:
                                self.__ev_loader.var_get('ld_library_path')]
         #
         # Carry out Spark action on established RDDs
-        rdd_file.foreachPartition(lambda iter: LoadTPCData.send_partition(data=iter,
+        rdd_file.foreachPartition(lambda iter, : LoadTPCData.send_partition(data=iter,
                                                                           table_name=table_name,
                                                                           logger_details=logger_details,
                                                                           instance_details=instance_details,
