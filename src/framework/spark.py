@@ -14,7 +14,6 @@ class Spark:
                  app_name,
                  master,
                  spark_submit_deployMode,
-                 spark_rdd_partitions,
                  spark_executor_instances,
                  spark_executor_memory,
                  spark_executor_cores,
@@ -28,7 +27,6 @@ class Spark:
         self.__app_name = app_name
         self.__master = master
         self.__spark_submit_deployMode = spark_submit_deployMode
-        self.__spark_rdd_partitions = spark_rdd_partitions
         self.__spark_executor_instances = spark_executor_instances
         self.__spark_executor_memory = spark_executor_memory
         self.__spark_executor_cores = spark_executor_cores
@@ -62,8 +60,6 @@ class Spark:
             raise ValueError('Master config was not declared for Spark context!')
         elif self.__spark_submit_deployMode is None:
             raise ValueError('Spark Deploy Mode was not declared for Spark context!')
-        elif self.__spark_rdd_partitions is None:
-            raise ValueError('RDD Spark RDD partition config was not established!')
         elif self.__spark_executor_instances is None:
             raise ValueError('Spark Executor Instances config was not established!')
         elif self.__spark_driver_memory is None:
