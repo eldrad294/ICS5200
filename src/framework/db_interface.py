@@ -55,11 +55,10 @@ class DatabaseInterface:
         """
         conn_str = self.__user + "/" + self.__password + "@" + self.__host + ":" + self.__port + "/" + self.__service
         try:
-            self.conn = cx_Oracle.connect(conn_str, encoding = "UTF-8", nencoding = "UTF-8")
+            self.__conn = cx_Oracle.connect(conn_str, encoding = "UTF-8", nencoding = "UTF-8")
             if self.__logger is not None:
                 self.__logger.log("Connected to database [" + self.__instance_name + "] with user [" + self.__user + "]")
         except Exception as e:
-            print("EXCEPTION HERE:::" + str(e))
             if self.__logger is not None:
                 self.__logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
     #
@@ -76,7 +75,7 @@ class DatabaseInterface:
         """
         cursor, result, description = None, None, None
         try:
-            cursor = self.conn.cursor()
+            cursor = self.__conn.cursor()
             if fetch_single is True:
                 if params is None:
                     result = cursor.execute(query).fetchone()
@@ -111,9 +110,8 @@ class DatabaseInterface:
         :return:
         """
         cursor = None
-        print('ENTRY!!!!!!')
         try:
-            cursor = self.conn.cursor()
+            cursor = self.__conn.cursor()
             if params is None:
                 cursor.execute(dml)
             else:
@@ -131,7 +129,7 @@ class DatabaseInterface:
         Commits transaction/s
         :return:
         """
-        self.conn.commit()
+        self.__conn.commit()
     #
     def executeScriptsFromFile(self, filename):
         """
@@ -159,7 +157,7 @@ class DatabaseInterface:
         Closes instance connection to Oracle database
         :return:
         """
-        self.conn.close()
+        self.__conn.close()
         if self.__logger is not None:
             self.__logger.log("Connection closed to database [" + self.__instance_name + "] with user [" + self.__user + "]")
     #
