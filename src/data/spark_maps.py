@@ -10,7 +10,7 @@ class LoadTPCData:
     """
     #
     @staticmethod
-    def send_partition(data_line, table_name, logger_details, instance_details, oracle_path_details):
+    def send_partition(data, table_name, logger_details, instance_details, oracle_path_details):
         """
         Ships partition to slave executor, formats insert statements and executes them in parallel
         :param line: Current .DAT line
@@ -19,48 +19,47 @@ class LoadTPCData:
         :param oracle_path_details: List of Oracle instance path + libs
         :return:
         """
-        # os.environ['ORACLE_HOME'] = '/oracle/product/11.2.0/dbhome_1'
-        # os.environ['LD_LIBRARY_PATH'] = '/oracle/product/11.2.0/dbhome_1/lib'
-        # os.environ['PATH'] = '/home/gabriels/ICS5200/venv/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/oracle/product/11.2.0/dbhome_1/bin:/home/gabriels/.local/bin:/home/gabriels/bin'
-
-        os.environ['ORACLE_HOME'] = oracle_path_details[0]
-        os.environ['LD_LIBRARY_PATH'] = oracle_path_details[1]
-        #
-        start_time = time.time()
         #
         # Establish slave logger
         logger = Logger(log_file_path=logger_details[0],
                         write_to_disk=logger_details[1],
                         write_to_screen=logger_details[2])
         logger.log('Starting data migration into table [' + table_name + ']')
-        #
-        # Establish slave database context
-        di = DatabaseInterface(instance_name=instance_details[0],
-                               user=instance_details[1],
-                               host=instance_details[2],
-                               service=instance_details[3],
-                               port=instance_details[4],
-                               password=instance_details[5])
-        di.connect()
-        #
-        # Iterate over RDD partition
-        row_count = 0
-        for data in data_line:
-            l_line = LoadTPCData.__parse_data_line(dataline=data)
-            dml = "INSERT INTO " + table_name + " VALUES ("
-            for i in range(len(l_line)):
-                if i == 0:
-                    dml += " :" + str(i+1) + " "
-                else:
-                    dml += ", :" + str(i+1) + " "
-            dml += ")"
-            di.execute_dml(dml, l_line)
-            row_count += 1
-        di.commit() # Commit once after every RDD batch
-        di.close()
-        #
-        end_time = time.time()
-        logger.log('Committed ' + str(row_count) + ' rows for table ' + table_name + " | " + str(end_time-start_time) + " seconds")
+        if len(data) != 0:
+            os.environ['ORACLE_HOME'] = oracle_path_details[0]
+            os.environ['LD_LIBRARY_PATH'] = oracle_path_details[1]
+            #
+            start_time = time.time()
+            #
+            # Establish slave database context
+            di = DatabaseInterface(instance_name=instance_details[0],
+                                   user=instance_details[1],
+                                   host=instance_details[2],
+                                   service=instance_details[3],
+                                   port=instance_details[4],
+                                   password=instance_details[5])
+            di.connect()
+            #
+            # Iterate over RDD partition
+            row_count = 0
+            for data_line in data:
+                l_line = LoadTPCData.__parse_data_line(dataline=data_line)
+                dml = "INSERT INTO " + table_name + " VALUES ("
+                for i in range(len(l_line)):
+                    if i == 0:
+                        dml += " :" + str(i+1) + " "
+                    else:
+                        dml += ", :" + str(i+1) + " "
+                dml += ")"
+                di.execute_dml(dml, l_line)
+                row_count += 1
+            di.commit() # Commit once after every RDD batch
+            di.close()
+            #
+            end_time = time.time()
+            logger.log('Committed ' + str(row_count) + ' rows for table ' + table_name + " | " + str(end_time-start_time) + " seconds")
+        else:
+            logger.log('Table ' + table_name + ' was found empty..skipping it..')
     #
     @staticmethod
     def __parse_data_line(dataline):
