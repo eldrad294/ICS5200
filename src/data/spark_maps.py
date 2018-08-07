@@ -1,7 +1,7 @@
 #
 # Module Imports
-from src.framework.db_interface import DatabaseInterface
-from src.framework.logger import Logger
+from framework.db_interface import DatabaseInterface
+from framework.logger import Logger
 import time
 #
 class LoadTPCData:

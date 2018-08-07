@@ -76,19 +76,9 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
     # Retrieve all eligible data files
     file_names = tpc.get_data_file_list(tpc_type="TPC-DS")
     #
-    #thread_pool = []
     for i in range(len(file_names)):
-        # t = threading.Thread(target=fl.load_data,
-        #                      args=(ev_loader.var_get('data_generated_directory') + "/TPC-DS/" +
-        #                            ev_loader.var_get('user') + "/" + file_names[i], table_names[i]),
-        #                      name="thread_"+table_names[i])
-        # t.start()
-        # thread_pool.append(t)
         fl.load_data(path=ev_loader.var_get('data_generated_directory') + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i],
                      table_name=table_names[i])
-    # Barrier waiting for all threads to synchronize
-    # for t in thread_pool:
-    #     t.join()
     #
     # Check whether indexes needs creating - executed only if relevant indexes are not found
     sql_statement = "select count(*) from user_indexes where index_name = 'SS_SOLD_DATE_SK_INDEX'"
