@@ -49,10 +49,18 @@ class TPC_Wrapper:
                        str(self.__ev_loader.var_get('data_size')) + "]..")
             output = os.system(sys)
             if output != 0:
-                raise Exception("Terminating process!")
+                raise Exception("Exception raised during generation of TPC files..Terminating process!")
             #
             self.__logger.log(self.__supported_tpc_types[0] + " data generated for [" + str(self.__ev_loader.var_get('data_size'))
                        + "] Gigabytes using parallel degree [" + str(self.__ev_loader.var_get('parallel_degree')) + "]")
+            #
+            for file in self.get_data_file_list(tpc_type=tpc_type):
+                newfilename = self.__rename(file)
+                rename_cmd = "mv " + data_generated_path + "/" + file + " " + data_generated_path + "/" + newfilename
+                output = os.system(rename_cmd)
+                if output != 0:
+                    raise Exception("Exception raised during renaming of TPC files..Terminating process!")
+
         elif tpc_type == self.__supported_tpc_types[1]:
             raise NotImplementedError("TPC-E not supported yet!")
     #
@@ -187,7 +195,6 @@ class TPC_Wrapper:
         file_list = os.listdir(self.__ev_loader.var_get('data_generated_directory') + "/" + tpc_type + "/" + self.__ev_loader.var_get('user'))
         if file_list is None or len(file_list) < 1:
             raise Exception("No data files where found!")
-        #
         return file_list
     #
     def get_file_extension_list(self, tpc_type=None):
@@ -207,6 +214,34 @@ class TPC_Wrapper:
         if len(file_names) != len(file_extensions):
             raise ValueError("File name list does not match list of file extensions!")
         return file_names, file_extensions
+    #
+    def __rename(self, oldfilename):
+        """
+        Renames file as follows:
+        warehouse_1_20.dat > warehouse.dat
+        :param oldfilename:
+        :return:
+        """
+        counter = 0
+        delim_count = 0
+        delimeter = "_"
+        newfilename = ""
+        #
+        for i in oldfilename:
+            if delimeter == i:
+                delim_count += 1
+        #
+        for i in oldfilename:
+            if i == delimeter:
+                counter += 1
+            if delim_count == 3:
+                if counter > 1:
+                    break
+            elif delim_count == 2:
+                if counter > 0:
+                    break
+            newfilename += i
+        return newfilename + ".dat"
 #
 class FileLoader:
     """
