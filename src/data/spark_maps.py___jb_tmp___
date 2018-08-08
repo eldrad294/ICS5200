@@ -68,7 +68,6 @@ class LoadTPCData:
             #di.execute_dml(dml, l_line)
             row_count += 1
         print(dml)
-        print(values_bank[0])
         di.execute_many_dml(dml=dml, data=values_bank) # Bulk Insert
         di.commit() # Commit once after every RDD batch
         di.close()
