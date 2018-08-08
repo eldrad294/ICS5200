@@ -157,7 +157,7 @@ class Spark:
         :return:
         """
         master_cmd = self.__spark_installation_path + '/sbin/start-master.sh'
-        os.chdir(self.__home_dir)
+        #os.chdir(self.__home_dir)
         output = os.system(master_cmd)
         if output != 0:
             raise Exception("Terminating process!")
@@ -170,7 +170,7 @@ class Spark:
         """
         master_cmd = self.__spark_installation_path + '/sbin/start-slave.sh spark://' + self.__host_ip + ':7077'
         os.chdir(self.__home_dir)
-        output = os.system(master_cmd)
+        #output = os.system(master_cmd)
         if output != 0:
             raise Exception("Terminating process!")
         self.__logger.log('Enabled slave node..')
@@ -182,7 +182,7 @@ class Spark:
         """
         try:
             kill_cmd = self.__spark_installation_path + "/sbin/stop-all.sh"
-            os.chdir(self.__home_dir)
+            #os.chdir(self.__home_dir)
             output = os.system(kill_cmd)
             if output != 0:
                 raise Exception("Terminating process!")
