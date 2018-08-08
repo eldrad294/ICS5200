@@ -105,4 +105,5 @@ if ev_loader.var_get('tpce_sql_generation_bool') == 'True':
     raise NotImplementedError("This logic is not yet implemented!")
 #
 ConnectionPool.close_connection_pool()
+spark_context.kill_spark_nodes()
 logger.log("Script Complete!\n-------------------------------------")

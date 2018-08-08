@@ -49,7 +49,7 @@ class Spark:
         self.__validate()
         #
         # Cleanup from prior runs
-        self.__kill_spark_nodes()
+        self.kill_spark_nodes()
         #
         # Initiate master node
         self.__initiate_master_node()
@@ -152,6 +152,10 @@ class Spark:
             self.__logger.log(conf)
     #
     def __initiate_master_node(self):
+        """
+        Initiates Spark master node
+        :return:
+        """
         master_cmd = self.__spark_installation_path + '/sbin/start-master.sh'
         os.chdir(self.__home_dir)
         output = os.system(master_cmd)
@@ -160,6 +164,10 @@ class Spark:
         self.__logger.log('Enabled master node..')
     #
     def __initiate_slave_node(self):
+        """
+        Initiates Spark slave node
+        :return:
+        """
         master_cmd = self.__spark_installation_path + '/sbin/start-slave.sh spark://' + self.__host_ip + ':7077'
         os.chdir(self.__home_dir)
         output = os.system(master_cmd)
@@ -167,7 +175,11 @@ class Spark:
             raise Exception("Terminating process!")
         self.__logger.log('Enabled slave node..')
     #
-    def __kill_spark_nodes(self):
+    def kill_spark_nodes(self):
+        """
+        Cleans Spark processes by killing them
+        :return:
+        """
         try:
             kill_cmd = self.__spark_installation_path + "/sbin/stop-all.sh"
             os.chdir(self.__home_dir)
@@ -177,10 +189,3 @@ class Spark:
             self.__logger.log('Gracefully disabled Spark nodes..')
         except Exception as e:
             self.__logger('Attempted to terminate prior Spark nodes but failed!' + str(e))
-    #
-    def __del__(self):
-        """
-        Before destructing object, ensure that Spark master + slave nodes are killed
-        :return:
-        """
-        #self.__kill_spark_nodes()
