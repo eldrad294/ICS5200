@@ -79,10 +79,14 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
     file_names = tpc.get_data_file_list(tpc_type="TPC-DS")
     #
     for i in range(len(file_names)):
+        #
+        # Loads data into Oracle Instance
         fl.load_data(path=ev_loader.var_get('data_generated_directory') + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i],
                      table_name=table_names[i])
+        #
+        # Deletes generated data file
         if ev_loader.var_get('data_retain_bool') == 'False':
-            pass
+            tpc.delete_data(tpc_type="TPC-DS",table_name=table_names[i])
     #
     # Check whether indexes needs creating - executed only if relevant indexes are not found
     sql_statement = "select count(*) from user_indexes where index_name = 'SS_SOLD_DATE_SK_INDEX'"
