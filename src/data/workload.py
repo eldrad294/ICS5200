@@ -4,7 +4,7 @@ from src.framework.logger import logger
 from src.framework.config_parser import g_config
 import random
 #
-class Workload:
+class RealisticWorkload:
     """
     THIS CLASS IS UNDER DEV AND THEREFORE STILL A WORKS IN PROGRESS
     -------------------

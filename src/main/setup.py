@@ -38,7 +38,8 @@ db_conn = ConnectionPool.claim_from_pool()[2]
 spark_context = si.initialize_spark().get_spark_context()
 logger = si.initialize_logger()
 
-from src.data.tpc import TPC_Wrapper, FileLoader
+from src.data.tpc import TPC_Wrapper
+from src.data.loading import FileLoader
 #
 # TPC Wrapper Initialization
 tpc = TPC_Wrapper(ev_loader=ev_loader,

@@ -132,8 +132,6 @@ class DatabaseInterface:
             cursor = self.__conn.cursor()
             cursor.executemany(dml, data)
         except Exception as e:
-            print(dml)
-            print(data[0])
             print(str(e))
             if self.__logger is not None:
                 self.__logger.log(
