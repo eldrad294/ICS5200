@@ -225,15 +225,4 @@ alter index C_CURRENT_HDEMO_SK_INDEX noparallel;
 alter index C_CURRENT_ADDR_SK_INDEX noparallel;
 alter index C_FIRST_SHIPTO_DATE_SK_INDEX noparallel;
 alter index C_FIRST_SALES_DATE_SK_INDEX noparallel;
-alter index SYS_C0014386;
-alter index SYS_C0014383;
-alter index SYS_C0014380;
-alter index SYS_C0014377;
-alter index SYS_C0014375;
-alter index SYS_C0014372;
-alter index SYS_C0014369;
-alter index SYS_C0014366;
-alter index SYS_C0014363;
-alter index SYS_C0014360;
-alter index SYS_C0014358;
 
