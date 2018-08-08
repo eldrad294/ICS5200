@@ -127,6 +127,20 @@ class DatabaseInterface:
             if cursor is not None:
                 cursor.close()
     #
+    def execute_many_dml(self, dml, data):
+        cursor = None
+        try:
+            cursor.self.__conn.cursor()
+            cursor.executemany(dml, data)
+        except Exception as e:
+            if self.__logger is not None:
+                self.__logger.log(
+                    'Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
+                    str(dml) + ' ]')
+        finally:
+            if cursor is not None:
+                cursor.close()
+    #
     def commit(self):
         """
         Commits transaction/s
