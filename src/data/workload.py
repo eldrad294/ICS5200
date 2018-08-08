@@ -6,7 +6,7 @@ import random
 #
 class QueryBenchmark:
     """
-    This class serves to house a number of benchmark related modules, used to test TPC
+    This class serves to house a number of benchmark related methods, used to test TPC queries
     """
     def __init__(self):
         pass
