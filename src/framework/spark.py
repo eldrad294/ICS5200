@@ -165,12 +165,15 @@ class Spark:
         self.__logger.log('Enabled slave node..')
     #
     def __kill_spark_nodes(self):
-        kill_cmd = self.__spark_installation_path + "/sbin/stop-all.sh"
-        os.chdir(self.__home_dir)
-        output = os.system(kill_cmd)
-        if output != 0:
-            raise Exception("Terminating process!")
-        self.__logger.log('Gracefully disabled Spark nodes..')
+        try:
+            kill_cmd = self.__spark_installation_path + "/sbin/stop-all.sh"
+            os.chdir(self.__home_dir)
+            output = os.system(kill_cmd)
+            if output != 0:
+                raise Exception("Terminating process!")
+            self.__logger.log('Gracefully disabled Spark nodes..')
+        except Exception as e:
+            self.__logger('Attempted to terminate prior Spark nodes but failed!' + str(e))
     #
     def __del__(self):
         """
