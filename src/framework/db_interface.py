@@ -131,13 +131,7 @@ class DatabaseInterface:
         try:
             cursor = self.__conn.cursor()
             cursor.executemany(dml, data)
-            print(dml)
-            print('-----------')
-            print(data)
         except Exception as e:
-            print(dml)
-            print(data)
-            print(str(e))
             if self.__logger is not None:
                 self.__logger.log(
                     'Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
