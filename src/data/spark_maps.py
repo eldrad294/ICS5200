@@ -89,14 +89,14 @@ class LoadTPCData:
             if i != delimeter:
                 value += i
             else:
-                try:
-                    value = int(value)
-                except Exception:
-                    try:
-                        value = float(value)
-                    except Exception:
-                        pass
-                #
-                list_line.append(value)
+                # try:
+                #     value = int(value)
+                # except Exception:
+                #     try:
+                #         value = float(value)
+                #     except Exception:
+                #         pass
+                # #
+                list_line.append(str(value))
                 value = ""
         return tuple(list_line)
