@@ -17,6 +17,7 @@ class ScriptInitializer:
         g_config = ConfigParser(config_file)
         #
         # Environment var loading
+        os.system('sudo ' + src_dir + '/main/setup.py')
         os.environ['PYSPARK_PYTHON'] = project_dir + '/venv/bin/python3'
         os.environ['PYSPARK_DRIVER_PYTHON'] = project_dir + '/venv/bin/python3'
         os.environ['SPARK_YARN_USER_ENV'] = project_dir + '/venv/bin/python3'
