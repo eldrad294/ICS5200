@@ -9,7 +9,7 @@ class QueryBenchmark:
     This class serves to house a number of benchmark related methods, used to test TPC queries
     """
     def __init__(self):
-        pass
+        raise Exception('This class cannot be instantiated!')
 #
 class RealisticWorkload:
     """

@@ -162,7 +162,7 @@ class TPC_Wrapper:
         if file_name is None:
             raise ValueError('Datafile/table-name must be declared!')
         delete_cmd = "rm " + self.__ev_loader.var_get('data_generated_directory') + "/" + tpc_type + "/" + \
-                     self.__ev_loader.var_get('user') + "/" + file_name + ".dat"
+                     self.__ev_loader.var_get('user') + "/" + file_name
         output = os.system(delete_cmd)
         if output != 0:
             raise Exception("Terminating process!")

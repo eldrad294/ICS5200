@@ -197,6 +197,9 @@ class ConnectionPool:
     #
     __pool = []
     #
+    def __init__(self):
+        raise Exception('This class cannot be instantiated!')
+    #
     @staticmethod
     def create_connection_pool(max_connections, connection_details, logger):
         max_connections = int(max_connections)
