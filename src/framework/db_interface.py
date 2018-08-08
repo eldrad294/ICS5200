@@ -130,7 +130,7 @@ class DatabaseInterface:
     def execute_many_dml(self, dml, data):
         cursor = None
         try:
-            cursor.self.__conn.cursor()
+            cursor = self.__conn.cursor()
             cursor.executemany(dml, data)
             print(dml)
             print('-----------')
