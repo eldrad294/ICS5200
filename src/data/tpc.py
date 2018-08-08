@@ -38,7 +38,7 @@ class TPC_Wrapper:
                 os.makedirs(data_generated_path)
             os.chdir(dsdgen)
             #
-            if self.__ev_loader.var_get('parallel_degree') > 0:
+            if self.__ev_loader.var_get('parallel_degree') == 0:
                 sys = "./dsdgen -scale " + str(self.__ev_loader.var_get('data_size')) + " -dir " + data_generated_path + " -FORCE"
             elif self.__ev_loader.var_get('parallel_degree') > 1:
                 sys = "./dsdgen -f -scale " + str(self.__ev_loader.var_get('data_size')) + " -dir " + data_generated_path \
