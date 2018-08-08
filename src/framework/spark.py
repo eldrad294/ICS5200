@@ -28,22 +28,22 @@ class Spark:
                  spark_logConf,
                  spark_python_worker_reuse,
                  logger):
-        self.__app_name = app_name
-        self.__master = master
+        self.__app_name = str(app_name)
+        self.__master = str(master)
         self.__home_dir = home_dir
         self.__host_ip = host_ip
-        self.__spark_installation_path = spark_installation_path
-        self.__spark_submit_deployMode = spark_submit_deployMode
-        self.__spark_executor_instances = spark_executor_instances
-        self.__spark_executor_memory = spark_executor_memory
-        self.__spark_executor_cores = spark_executor_cores
-        self.__spark_max_result_size = spark_max_result_size
-        self.__spark_cores_max = spark_cores_max
-        self.__spark_driver_memory = spark_driver_memory
-        self.__spark_default_parallelism = spark_default_parallelism
-        self.__spark_shuffle_partitions = spark_shuffle_partitions
-        self.__spark_logConf = spark_logConf
-        self.__spark_python_worker_reuse = spark_python_worker_reuse
+        self.__spark_installation_path = str(spark_installation_path)
+        self.__spark_submit_deployMode = str(spark_submit_deployMode)
+        self.__spark_executor_instances = int(spark_executor_instances)
+        self.__spark_executor_memory = str(spark_executor_memory)
+        self.__spark_executor_cores = int(spark_executor_cores)
+        self.__spark_max_result_size = str(spark_max_result_size)
+        self.__spark_cores_max = int(spark_cores_max)
+        self.__spark_driver_memory = str(spark_driver_memory)
+        self.__spark_default_parallelism = int(spark_default_parallelism)
+        self.__spark_shuffle_partitions = int(spark_shuffle_partitions)
+        self.__spark_logConf = str(spark_logConf).title()
+        self.__spark_python_worker_reuse = str(spark_python_worker_reuse).title()
         self.__logger = logger
         #
         self.__validate()

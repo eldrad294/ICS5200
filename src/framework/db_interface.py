@@ -6,7 +6,7 @@ import getpass
 class DatabaseInterface:
     #
     def __init__(self, instance_name=None, user=None, host=None, service=None, port=None, password=None, logger=None):
-        self.__instance_name = instance_name
+        self.__instance_name = str(instance_name)
         self.__user = str(user)
         self.__host = str(host)
         self.__service = str(service)
