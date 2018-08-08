@@ -42,20 +42,34 @@ class LoadTPCData:
         # Retrieve columns required for batch insert
         sql = "select column_name from user_tab_columns where table_name = '" + table_name.upper() + "'";
         res = di.execute_query(query=sql, describe=False)
+        column_names = "("
+        for i, item in enumerate(res):
+            if i == 0:
+                column_names += str(item[0])
+            else:
+                column_names += ',' + str(item[0])
+        else:
+            column_names += ')'
         #
         # Iterate over RDD partition
         row_count = 0
-        for data_line in data:
+        values_bank = []
+        dml = "INSERT INTO " + table_name + " " + column_names + " VALUES ("
+        for count, data_line in enumerate(data):
             l_line = LoadTPCData.__parse_data_line(dataline=data_line)
-            dml = "INSERT INTO " + table_name + " VALUES ("
-            for i in range(len(l_line)):
-                if i == 0:
-                    dml += " :" + str(i+1) + " "
-                else:
-                    dml += ", :" + str(i+1) + " "
-            dml += ")"
-            di.execute_dml(dml, l_line)
+            if count <= 1:
+                for i in range(len(l_line)):
+                    if i == 0:
+                        dml += " :" + str(i+1) + " "
+                    else:
+                        dml += ", :" + str(i+1) + " "
+                dml += ")"
+            values_bank.append(l_line)
+            #di.execute_dml(dml, l_line)
             row_count += 1
+        print(dml)
+        print(values_bank[0])
+        di.execute_many_dml(dml=dml, data=values_bank) # Bulk Insert
         di.commit() # Commit once after every RDD batch
         di.close()
         #
