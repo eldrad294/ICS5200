@@ -177,4 +177,4 @@ class Spark:
         Before destructing object, ensure that Spark master + slave nodes are killed
         :return:
         """
-        self.__kill_spark_nodes()
+        #self.__kill_spark_nodes()
