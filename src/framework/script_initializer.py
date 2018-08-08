@@ -10,7 +10,7 @@ class ScriptInitializer:
     for the environment to operate. This class should be initialized only once, at the beginning of every script.
     """
     #
-    def __init__(self, project_dir, src_dir):
+    def __init__(self, project_dir, src_dir, home_dir):
         #
         # Defines config object
         config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'main/config.ini')
@@ -36,6 +36,7 @@ class ScriptInitializer:
         # Spark Config
         app_name = str(g_config.get_value('SparkContext','app_name'))
         master = str(g_config.get_value('SparkContext','master'))
+        spark_installation_path = str(g_config.get_value('SparkContext','spark_installation_path'))
         spark_submit_deployMode = str(g_config.get_value('SparkContext','spark_submit_deployMode'))
         spark_executor_instances = int(g_config.get_value('SparkContext','spark_executor_instances'))
         spark_executor_memory = str(g_config.get_value('SparkContext','spark_executor_memory'))
@@ -68,6 +69,8 @@ class ScriptInitializer:
         # Load into global dictionary
         ev_loader.var_load({'project_dir':project_dir,
                             'src_dir':src_dir,
+                            'home_dir':home_dir,
+                            'spark_installation_path':spark_installation_path,
                             'user':user,
                             'write_to_disk':write_to_disk,
                             'write_to_screen':write_to_screen,
@@ -129,6 +132,9 @@ class ScriptInitializer:
         #
         self.spark = Spark(app_name=ev_loader.var_get('app_name'),
                            master=ev_loader.var_get('master'),
+                           home_dir=ev_loader.var_get('home_dir'),
+                           host_ip=ev_loader.var_get('host'),
+                           spark_installation_path=ev_loader.var_get('spark_installation_path'),
                            spark_submit_deployMode=ev_loader.var_get('spark_submit_deployMode'),
                            spark_executor_instances=ev_loader.var_get('spark_executor_instances'),
                            spark_executor_memory=ev_loader.var_get('spark_executor_memory'),

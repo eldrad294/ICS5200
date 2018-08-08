@@ -235,7 +235,7 @@ class FileLoader:
         #
         # Carry out Spark action on established RDDs
         rdd_file.foreachPartition(lambda iter, : LoadTPCData.send_partition(data=iter,
-                                                                          table_name=table_name,
-                                                                          logger_details=logger_details,
-                                                                          instance_details=instance_details,
-                                                                          oracle_path_details=oracle_path_details))
+                                                                            table_name=table_name,
+                                                                            logger_details=logger_details,
+                                                                            instance_details=instance_details,
+                                                                            oracle_path_details=oracle_path_details))

@@ -13,6 +13,9 @@ class Spark:
     def __init__(self,
                  app_name,
                  master,
+                 home_dir,
+                 host_ip,
+                 spark_installation_path,
                  spark_submit_deployMode,
                  spark_executor_instances,
                  spark_executor_memory,
@@ -27,6 +30,9 @@ class Spark:
                  logger):
         self.__app_name = app_name
         self.__master = master
+        self.__home_dir = home_dir
+        self.__host_ip = host_ip
+        self.__spark_installation_path = spark_installation_path
         self.__spark_submit_deployMode = spark_submit_deployMode
         self.__spark_executor_instances = spark_executor_instances
         self.__spark_executor_memory = spark_executor_memory
@@ -60,6 +66,12 @@ class Spark:
             raise ValueError('App Name config was not defined for Spark context!')
         elif self.__master is None:
             raise ValueError('Master config was not declared for Spark context!')
+        elif self.__home_dir is None:
+            raise ValueError('Home directory was not established!')
+        elif self.__host_ip is None:
+            raise ValueError('Host IP was not established!')
+        elif self.__spark_installation_path is None:
+            raise ValueError('Spark Installation path was not declared!')
         elif self.__spark_submit_deployMode is None:
             raise ValueError('Spark Deploy Mode was not declared for Spark context!')
         elif self.__spark_executor_instances is None:
@@ -137,13 +149,28 @@ class Spark:
             self.__logger.log(conf)
     #
     def __initiate_master_node(self):
-        pass
+        master_cmd = self.__spark_installation_path + '/bin/start-master.sh'
+        os.chdir(self.__home_dir)
+        output = os.system(master_cmd)
+        if output != 0:
+            raise Exception("Terminating process!")
+        self.__logger.log('Enabled master node..')
     #
     def __initiate_slave_node(self):
-        pass
+        master_cmd = self.__spark_installation_path + '/bin/start-slave.sh spark://' + self.__host_ip + ':7077'
+        os.chdir(self.__home_dir)
+        output = os.system(master_cmd)
+        if output != 0:
+            raise Exception("Terminating process!")
+        self.__logger.log('Enabled slave node..')
     #
     def __kill_spark_nodes(self):
-        pass
+        kill_cmd = self.__spark_installation_path + "/bin/stop-all.sh"
+        os.chdir(self.__home_dir)
+        output = os.system(kill_cmd)
+        if output != 0:
+            raise Exception("Terminating process!")
+        self.__logger.log('Gracefully disabled Spark nodes..')
     #
     def __del__(self):
         """
