@@ -37,15 +37,13 @@ class TPC_Wrapper:
                 os.makedirs(data_generated_path)
             os.chdir(dsdgen)
             #
-            print("DATA SIZE: >>>> " + str(self.__ev_loader.var_get('data_size')))
             if self.__ev_loader.var_get('parallel_degree') == 0:
                 sys = "./dsdgen -scale " + str(self.__ev_loader.var_get('data_size')) + " -dir " + data_generated_path + " -FORCE"
-            elif self.__ev_loader.var_get('parallel_degree') > 1:
+            elif self.__ev_loader.var_get('parallel_degree') > 0:
                 sys = "./dsdgen -f -scale " + str(self.__ev_loader.var_get('data_size')) + " -dir " + data_generated_path \
                       + " -parallel " + str(self.__ev_loader.var_get('parallel_degree')) + " -FORCE"
             else:
                 raise Exception("Parallel degree not supported!")
-            print(sys)
             self.__logger.log("Generating " + self.__supported_tpc_types[0] + " data for volumes of [" +
                        str(self.__ev_loader.var_get('data_size')) + "]..")
             output = os.system(sys)
