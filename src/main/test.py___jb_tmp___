@@ -42,7 +42,7 @@ db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                                  password=ev_loader.var_get('password'),
                                  logger=logger)
 db_conn.connect()
-sql = "select column from user_tab_columns where table_name = 'INVENTORY'";
+sql = "select column_name from user_tab_columns where table_name = 'INVENTORY'";
 res = db_conn.execute_query(query=sql, describe=False)
 for item in res:
     print(item[0])
