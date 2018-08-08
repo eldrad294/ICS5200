@@ -4,6 +4,13 @@ from src.framework.logger import logger
 from src.framework.config_parser import g_config
 import random
 #
+class QueryBenchmark:
+    """
+    This class serves to house a number of benchmark related modules, used to test TPC
+    """
+    def __init__(self):
+        pass
+#
 class RealisticWorkload:
     """
     THIS CLASS IS UNDER DEV AND THEREFORE STILL A WORKS IN PROGRESS
