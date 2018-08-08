@@ -48,6 +48,9 @@ class Spark:
         #
         self.__validate()
         #
+        # Cleanup from prior runs
+        self.__kill_spark_nodes()
+        #
         # Initiate master node
         self.__initiate_master_node()
         #
