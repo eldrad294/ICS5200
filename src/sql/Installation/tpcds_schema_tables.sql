@@ -40,7 +40,6 @@ create table dbgen_version
     dv_create_time            varchar(10)                   ,
     dv_cmdline_args           varchar(200)
 ) nologging;
-
 create table customer_address
 (
     ca_address_sk             integer               not null,
@@ -58,7 +57,6 @@ create table customer_address
     ca_location_type          char(20)                      ,
     primary key (ca_address_sk)
 ) nologging;
-
 create table customer_demographics
 (
     cd_demo_sk                integer               not null,
@@ -72,7 +70,6 @@ create table customer_demographics
     cd_dep_college_count      integer                       ,
     primary key (cd_demo_sk)
 ) nologging;
-
 create table date_dim
 (
     d_date_sk                 integer               not null,
@@ -105,7 +102,6 @@ create table date_dim
     d_current_year            char(1)                       ,
     primary key (d_date_sk)
 ) nologging;
-
 create table warehouse
 (
     w_warehouse_sk            integer               not null,
@@ -124,7 +120,6 @@ create table warehouse
     w_gmt_offset              decimal(15,5)                 ,
     primary key (w_warehouse_sk)
 ) nologging;
-
 create table ship_mode
 (
     sm_ship_mode_sk           integer               not null,
@@ -150,7 +145,6 @@ create table time_dim
     t_meal_time               char(20)                      ,
     primary key (t_time_sk)
 ) nologging;
-
 create table reason
 (
     r_reason_sk               integer               not null,
@@ -166,7 +160,6 @@ create table income_band
     ib_upper_bound            integer                       ,
     primary key (ib_income_band_sk)
 ) nologging;
-
 create table item
 (
     i_item_sk                 integer               not null,
@@ -193,7 +186,6 @@ create table item
     i_product_name            char(50)                      ,
     primary key (i_item_sk)
 ) nologging;
-
 create table store
 (
     s_store_sk                integer               not null,
@@ -227,7 +219,6 @@ create table store
     s_tax_precentage          decimal(15,5)                 ,
     primary key (s_store_sk)
 ) nologging;
-
 create table call_center
 (
     cc_call_center_sk         integer               not null,
@@ -263,7 +254,6 @@ create table call_center
     cc_tax_percentage         decimal(15,5)                 ,
     primary key (cc_call_center_sk)
 ) nologging;
-
 create table customer
 (
     c_customer_sk             integer               not null,
@@ -286,7 +276,6 @@ create table customer
     c_last_review_date        char(10)                      ,
     primary key (c_customer_sk)
 ) nologging;
-
 create table web_site
 (
     web_site_sk               integer               not null,
@@ -317,7 +306,6 @@ create table web_site
     web_tax_percentage        decimal(15,5)                 ,
     primary key (web_site_sk)
 ) nologging;
-
 create table store_returns
 (
     sr_returned_date_sk       integer                       ,
@@ -342,7 +330,6 @@ create table store_returns
     sr_net_loss               decimal(15,5)                 ,
     primary key (sr_item_sk, sr_ticket_number)
 ) nologging;
-
 create table household_demographics
 (
     hd_demo_sk                integer               not null,
@@ -352,7 +339,6 @@ create table household_demographics
     hd_vehicle_count          integer                       ,
     primary key (hd_demo_sk)
 ) nologging;
-
 create table web_page
 (
     wp_web_page_sk            integer               not null,
@@ -371,7 +357,6 @@ create table web_page
     wp_max_ad_count           integer                       ,
     primary key (wp_web_page_sk)
 ) nologging;
-
 create table promotion
 (
     p_promo_sk                integer               not null,
@@ -395,7 +380,6 @@ create table promotion
     p_discount_active         char(1)                       ,
     primary key (p_promo_sk)
 ) nologging;
-
 create table catalog_page
 (
     cp_catalog_page_sk        integer               not null,
@@ -418,7 +402,6 @@ create table inventory
     inv_quantity_on_hand      integer                       ,
     primary key (inv_date_sk, inv_item_sk, inv_warehouse_sk)
 ) nologging;
-
 create table catalog_returns
 (
     cr_returned_date_sk       integer                       ,
@@ -450,7 +433,6 @@ create table catalog_returns
     cr_net_loss               decimal(15,5)                 ,
     primary key (cr_item_sk, cr_order_number)
 ) nologging;
-
 create table web_returns
 (
     wr_returned_date_sk       integer                       ,
@@ -479,7 +461,6 @@ create table web_returns
     wr_net_loss               decimal(15,5)                 ,
     primary key (wr_item_sk, wr_order_number)
 ) nologging;
-
 create table web_sales
 (
     ws_sold_date_sk           integer                       ,
@@ -518,7 +499,6 @@ create table web_sales
     ws_net_profit             decimal(15,5)                 ,
     primary key (ws_item_sk, ws_order_number)
 ) nologging;
-
 create table catalog_sales
 (
     cs_sold_date_sk           integer                       ,
@@ -557,7 +537,6 @@ create table catalog_sales
     cs_net_profit             decimal(15,5)                 ,
     primary key (cs_item_sk, cs_order_number)
 ) nologging;
-
 create table store_sales
 (
     ss_sold_date_sk           integer                       ,
