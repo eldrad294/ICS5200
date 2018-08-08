@@ -86,7 +86,7 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
         #
         # Deletes generated data file
         if ev_loader.var_get('data_retain_bool') == 'False':
-            tpc.delete_data(tpc_type="TPC-DS",table_name=table_names[i])
+            tpc.delete_data(tpc_type="TPC-DS",file_name=file_names[i])
     #
     # Check whether indexes needs creating - executed only if relevant indexes are not found
     sql_statement = "select count(*) from user_indexes where index_name = 'SS_SOLD_DATE_SK_INDEX'"

@@ -147,19 +147,19 @@ class TPC_Wrapper:
                     f.write(sql+";")
                 self.__logger.log("Generated query_" + str(i+1) + ".sql")
     #
-    def delete_data(self, tpc_type=None, table_name=None):
+    def delete_data(self, tpc_type=None, file_name=None):
         """
         Deletes datafile
         :return:
         """
-        if table_name is None:
+        if file_name is None:
             raise ValueError('Datafile/table-name must be declared!')
         delete_cmd = self.__ev_loader.var_get('data_generated_directory') + "/" + tpc_type + "/" + \
-                     self.__ev_loader.var_get('user') + "/" + table_name + ".dat"
+                     self.__ev_loader.var_get('user') + "/" + file_name + ".dat"
         output = os.system(delete_cmd)
         if output != 0:
             raise Exception("Terminating process!")
-        self.__logger.log('Deleted file ' + table_name)
+        self.__logger.log('Deleted file ' + file_name)
     #
     def __validate_input(self, tpc_type=None):
         """
