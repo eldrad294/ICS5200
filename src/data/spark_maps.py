@@ -38,8 +38,10 @@ class LoadTPCData:
                                port=instance_details[4],
                                password=instance_details[5])
         di.connect()
-        # conn = ConnectionPool.claim_from_pool()
-        # di = conn[2]
+        #
+        # Retrieve columns required for batch insert
+        sql = "select column_name from user_tab_columns where table_name = '" + table_name.upper() + "'";
+        res = di.execute_query(query=sql, describe=False)
         #
         # Iterate over RDD partition
         row_count = 0
@@ -55,7 +57,6 @@ class LoadTPCData:
             di.execute_dml(dml, l_line)
             row_count += 1
         di.commit() # Commit once after every RDD batch
-        #ConnectionPool.return_to_pool(conn)
         di.close()
         #
         end_time = time.time()
