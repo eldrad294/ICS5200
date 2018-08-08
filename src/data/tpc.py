@@ -147,6 +147,14 @@ class TPC_Wrapper:
                     f.write(sql+";")
                 self.__logger.log("Generated query_" + str(i+1) + ".sql")
     #
+    def delete_data(self, table_name):
+        """
+        Deletes datafile
+        :return:
+        """
+        pass
+
+    #
     def __validate_input(self, tpc_type=None):
         """
         Validates that all input is configured as expected

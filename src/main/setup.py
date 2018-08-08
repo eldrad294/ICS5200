@@ -81,6 +81,8 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
     for i in range(len(file_names)):
         fl.load_data(path=ev_loader.var_get('data_generated_directory') + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i],
                      table_name=table_names[i])
+        if ev_loader.var_get('data_retain_bool') == 'False':
+            pass
     #
     # Check whether indexes needs creating - executed only if relevant indexes are not found
     sql_statement = "select count(*) from user_indexes where index_name = 'SS_SOLD_DATE_SK_INDEX'"

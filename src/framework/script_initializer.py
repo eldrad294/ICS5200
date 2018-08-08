@@ -53,6 +53,8 @@ class ScriptInitializer:
         write_to_screen = str(g_config.get_value("EnvironmentSettings","write_to_screen"))
         log_file_name = str(g_config.get_value("EnvironmentSettings","log_file_name"))
         #
+        # Data Generation Config
+        data_retain_bool = str(g_config.get_value('DataGeneration','data_retain')).title()
         tpcds_generation_bool = str(g_config.get_value('DataGeneration','tpcds_data_generation').title())
         tpce_generation_bool = str(g_config.get_value('DataGeneration','tpce_data_generation').title())
         data_generated_directory = str(g_config.get_value('DataGeneration','data_generated_directory'))
@@ -82,6 +84,7 @@ class ScriptInitializer:
                             'service':service,
                             'port':port,
                             'password':password,
+                            'data_retain_bool':data_retain_bool,
                             'tpcds_generation_bool':tpcds_generation_bool,
                             'tpce_generation_bool':tpce_generation_bool,
                             'data_generated_directory':data_generated_directory,
