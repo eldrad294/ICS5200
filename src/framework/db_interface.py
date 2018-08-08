@@ -136,6 +136,7 @@ class DatabaseInterface:
             print('-----------')
             print(data)
         except Exception as e:
+            print(str(e))
             if self.__logger is not None:
                 self.__logger.log(
                     'Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
