@@ -17,7 +17,9 @@ class ScriptInitializer:
         g_config = ConfigParser(config_file)
         #
         # Environment var loading
-        os.system('sudo ' + src_dir + '/main/setup.py')
+        os.system('sudo ' + home_dir + '/tools/spark-2.3.1-bin-hadoop2.7/sbin/start-master.sh')
+        os.system('sudo ' + home_dir + '/tools/spark-2.3.1-bin-hadoop2.7/sbin/start-slave.sh')
+        os.system('sudo ' + home_dir + '/tools/spark-2.3.1-bin-hadoop2.7/sbin/stop-all.sh')
         os.environ['PYSPARK_PYTHON'] = project_dir + '/venv/bin/python3'
         os.environ['PYSPARK_DRIVER_PYTHON'] = project_dir + '/venv/bin/python3'
         os.environ['SPARK_YARN_USER_ENV'] = project_dir + '/venv/bin/python3'
