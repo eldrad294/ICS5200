@@ -149,7 +149,7 @@ class Spark:
             self.__logger.log(conf)
     #
     def __initiate_master_node(self):
-        master_cmd = self.__spark_installation_path + '/bin/start-master.sh'
+        master_cmd = self.__spark_installation_path + '/sbin/start-master.sh'
         os.chdir(self.__home_dir)
         output = os.system(master_cmd)
         if output != 0:
@@ -157,7 +157,7 @@ class Spark:
         self.__logger.log('Enabled master node..')
     #
     def __initiate_slave_node(self):
-        master_cmd = self.__spark_installation_path + '/bin/start-slave.sh spark://' + self.__host_ip + ':7077'
+        master_cmd = self.__spark_installation_path + '/sbin/start-slave.sh spark://' + self.__host_ip + ':7077'
         os.chdir(self.__home_dir)
         output = os.system(master_cmd)
         if output != 0:
@@ -165,7 +165,7 @@ class Spark:
         self.__logger.log('Enabled slave node..')
     #
     def __kill_spark_nodes(self):
-        kill_cmd = self.__spark_installation_path + "/bin/stop-all.sh"
+        kill_cmd = self.__spark_installation_path + "/sbin/stop-all.sh"
         os.chdir(self.__home_dir)
         output = os.system(kill_cmd)
         if output != 0:
