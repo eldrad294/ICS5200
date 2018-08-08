@@ -22,7 +22,7 @@ class FileLoader:
         """
         #
         # Materializes an RDD, but does not compute due to lazy evaluation
-        rdd_file = self.__spark_context.textFile(path, int(self.__ev_loader.var_get('spark_cores_max')) * 4)
+        rdd_file = self.__spark_context.textFile(path, int(self.__ev_loader.var_get('spark_cores_max')) * 10)
         #
         # Pass database context details, to allow Spark executors to create their own connections
         instance_details = [self.__ev_loader.var_get('instance_name'),
