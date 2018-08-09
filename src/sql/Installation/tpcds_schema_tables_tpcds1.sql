@@ -39,7 +39,7 @@ create table dbgen_version
     dv_create_date            varchar(10)                   ,
     dv_create_time            varchar(10)                   ,
     dv_cmdline_args           varchar(200)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table customer_address
 (
     ca_address_sk             integer               not null,
@@ -56,7 +56,7 @@ create table customer_address
     ca_gmt_offset             decimal(15,5)                 ,
     ca_location_type          char(20)                      ,
     primary key (ca_address_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table customer_demographics
 (
     cd_demo_sk                integer               not null,
@@ -69,7 +69,7 @@ create table customer_demographics
     cd_dep_employed_count     integer                       ,
     cd_dep_college_count      integer                       ,
     primary key (cd_demo_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table date_dim
 (
     d_date_sk                 integer               not null,
@@ -101,7 +101,7 @@ create table date_dim
     d_current_quarter         char(1)                       ,
     d_current_year            char(1)                       ,
     primary key (d_date_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table warehouse
 (
     w_warehouse_sk            integer               not null,
@@ -119,7 +119,7 @@ create table warehouse
     w_country                 varchar(20)                   ,
     w_gmt_offset              decimal(15,5)                 ,
     primary key (w_warehouse_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table ship_mode
 (
     sm_ship_mode_sk           integer               not null,
@@ -129,7 +129,7 @@ create table ship_mode
     sm_carrier                char(20)                      ,
     sm_contract               char(20)                      ,
     primary key (sm_ship_mode_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 
 create table time_dim
 (
@@ -144,14 +144,14 @@ create table time_dim
     t_sub_shift               char(20)                      ,
     t_meal_time               char(20)                      ,
     primary key (t_time_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table reason
 (
     r_reason_sk               integer               not null,
     r_reason_id               char(16)              not null,
     r_reason_desc             char(100)                     ,
     primary key (r_reason_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 
 create table income_band
 (
@@ -159,7 +159,7 @@ create table income_band
     ib_lower_bound            integer                       ,
     ib_upper_bound            integer                       ,
     primary key (ib_income_band_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table item
 (
     i_item_sk                 integer               not null,
@@ -185,7 +185,7 @@ create table item
     i_manager_id              integer                       ,
     i_product_name            char(50)                      ,
     primary key (i_item_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table store
 (
     s_store_sk                integer               not null,
@@ -218,7 +218,7 @@ create table store
     s_gmt_offset              decimal(15,5)                 ,
     s_tax_precentage          decimal(15,5)                 ,
     primary key (s_store_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table call_center
 (
     cc_call_center_sk         integer               not null,
@@ -253,7 +253,7 @@ create table call_center
     cc_gmt_offset             decimal(15,5)                 ,
     cc_tax_percentage         decimal(15,5)                 ,
     primary key (cc_call_center_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table customer
 (
     c_customer_sk             integer               not null,
@@ -275,7 +275,7 @@ create table customer
     c_email_address           char(50)                      ,
     c_last_review_date        char(10)                      ,
     primary key (c_customer_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table web_site
 (
     web_site_sk               integer               not null,
@@ -305,7 +305,7 @@ create table web_site
     web_gmt_offset            decimal(15,5)                 ,
     web_tax_percentage        decimal(15,5)                 ,
     primary key (web_site_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table store_returns
 (
     sr_returned_date_sk       integer                       ,
@@ -329,7 +329,7 @@ create table store_returns
     sr_store_credit           decimal(15,5)                 ,
     sr_net_loss               decimal(15,5)                 ,
     primary key (sr_item_sk, sr_ticket_number)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table household_demographics
 (
     hd_demo_sk                integer               not null,
@@ -338,7 +338,7 @@ create table household_demographics
     hd_dep_count              integer                       ,
     hd_vehicle_count          integer                       ,
     primary key (hd_demo_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table web_page
 (
     wp_web_page_sk            integer               not null,
@@ -356,7 +356,7 @@ create table web_page
     wp_image_count            integer                       ,
     wp_max_ad_count           integer                       ,
     primary key (wp_web_page_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table promotion
 (
     p_promo_sk                integer               not null,
@@ -379,7 +379,7 @@ create table promotion
     p_purpose                 char(15)                      ,
     p_discount_active         char(1)                       ,
     primary key (p_promo_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table catalog_page
 (
     cp_catalog_page_sk        integer               not null,
@@ -392,7 +392,7 @@ create table catalog_page
     cp_description            varchar(100)                  ,
     cp_type                   varchar(100)                  ,
     primary key (cp_catalog_page_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 
 create table inventory
 (
@@ -401,7 +401,7 @@ create table inventory
     inv_warehouse_sk          integer               not null,
     inv_quantity_on_hand      integer                       ,
     primary key (inv_date_sk, inv_item_sk, inv_warehouse_sk)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table catalog_returns
 (
     cr_returned_date_sk       integer                       ,
@@ -432,7 +432,7 @@ create table catalog_returns
     cr_store_credit           decimal(15,5)                 ,
     cr_net_loss               decimal(15,5)                 ,
     primary key (cr_item_sk, cr_order_number)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table web_returns
 (
     wr_returned_date_sk       integer                       ,
@@ -460,7 +460,7 @@ create table web_returns
     wr_account_credit         decimal(15,5)                 ,
     wr_net_loss               decimal(15,5)                 ,
     primary key (wr_item_sk, wr_order_number)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table web_sales
 (
     ws_sold_date_sk           integer                       ,
@@ -498,7 +498,7 @@ create table web_sales
     ws_net_paid_inc_ship_tax  decimal(15,5)                 ,
     ws_net_profit             decimal(15,5)                 ,
     primary key (ws_item_sk, ws_order_number)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table catalog_sales
 (
     cs_sold_date_sk           integer                       ,
@@ -536,7 +536,7 @@ create table catalog_sales
     cs_net_paid_inc_ship_tax  decimal(15,5)                 ,
     cs_net_profit             decimal(15,5)                 ,
     primary key (cs_item_sk, cs_order_number)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
 create table store_sales
 (
     ss_sold_date_sk           integer                       ,
@@ -563,4 +563,4 @@ create table store_sales
     ss_net_paid_inc_tax       decimal(15,5)                 ,
     ss_net_profit             decimal(15,5)                 ,
     primary key (ss_item_sk, ss_ticket_number)
-) tablespace tpcds50 nologging;
+) tablespace tpcds1 nologging;
