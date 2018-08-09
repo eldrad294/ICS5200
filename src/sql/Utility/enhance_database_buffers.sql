@@ -35,4 +35,5 @@ alter database add logfile group 3  '/mnt/raid5/oradata/gabsam/redo03.log' size 
 -- Enhance Log Buffer Size
 -- https://community.toadworld.com/platforms/oracle/w/wiki/1328.redo-log-buffer-modifying-the-size
 select name, value from v$parameter where name = 'log_buffer';
-alter system set log_buffer=1073741824 scope=spfile;
+--alter system set log_buffer=1073741824 scope=spfile;
+alter system set log_buffer=104857600 scope=spfile;
