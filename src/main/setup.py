@@ -94,7 +94,7 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
     result = int(db_conn.execute_query(sql_statement, fetch_single=True)[0])
     if result < 1:
         logger.log('Starting schema indexes creation..')
-        db_conn.executeScriptsFromFile(ev_loader.var_get("src_dir") + "/sql/Installation/schema_indexes_" + ev_loader.var_get['user'] + ".sql")
+        db_conn.executeScriptsFromFile(ev_loader.var_get("src_dir") + "/sql/Installation/schema_indexes_" + ev_loader.var_get('user') + ".sql")
         logger.log('TPC-DS indexes generation successful!')
     else:
         logger.log('Skipping schema creation..TPC-DS indexes already exist!')
