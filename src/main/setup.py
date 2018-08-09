@@ -68,7 +68,7 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
     sql_statement = "select count(*) from user_tables where table_name = 'DBGEN_VERSION'"
     result = int(db_conn.execute_query(sql_statement, fetch_single=True)[0])
     if result < 1:
-        db_conn.executeScriptsFromFile(ev_loader.var_get("src_dir") + "/sql/Installation/schema_tables_" + ev_loader.var_get['user'] + ".sql")
+        db_conn.executeScriptsFromFile(ev_loader.var_get("src_dir") + "/sql/Installation/schema_tables_" + ev_loader.var_get('user') + ".sql")
         logger.log('TPC-DS table generation successful!')
     else:
         logger.log('Skipping schema creation..TPC-DS tables already exist!')
