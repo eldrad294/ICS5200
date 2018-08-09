@@ -55,7 +55,7 @@ class LoadTPCData:
         # Iterate over RDD partition
         row_count = 0
         values_bank = []
-        dml = "INSERT /*+APPEND*/ INTO " + table_name + " " + column_names + " VALUES ("
+        dml = "INSERT INTO " + table_name + " " + column_names + " VALUES ("
         for count, data_line in enumerate(data):
             l_line = LoadTPCData.__parse_data_line(dataline=data_line)
             if count < 1:
