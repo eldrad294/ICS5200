@@ -1,6 +1,4 @@
 --http://databasequest.blogspot.com/2016/12/resize-or-increase-redo-log-size.html
-set linesize 500
-column REDOLOG_FILE_NAME format a60
 SELECT
     a.GROUP#,
     a.THREAD#,
@@ -32,4 +30,9 @@ alter database drop logfile group 6;
 --
 alter database add logfile group 1  '/mnt/raid5/oradata/gabsam/redo01.log' size 2g reuse;
 alter database add logfile group 2  '/mnt/raid5/oradata/gabsam/redo02.log' size 2g reuse;
-alter database add logfile group 3  '/mnt/raid5/oradata/gabsam/redo03.logg' size 2g reuse;
+alter database add logfile group 3  '/mnt/raid5/oradata/gabsam/redo03.log' size 2g reuse;
+--
+-- Enhance Log Buffer Size
+-- https://community.toadworld.com/platforms/oracle/w/wiki/1328.redo-log-buffer-modifying-the-size
+select name, value from v$parameter where name = 'log_buffer';
+alter system set log_buffer=1073741824 scope=spfile;
