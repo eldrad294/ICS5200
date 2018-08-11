@@ -55,6 +55,6 @@ class BarCharts:
         )
         config = None
         fig = go.Figure(data=data, layout=layout)
-        plot(fig, config=config, filename=self.__save_path + "/REP_TPC_DESCRIBE_" + str(tpc_type) + "_.html")
+        plot(fig, config=config, filename=self.__save_path + "/REP_TPC_DESCRIBE_" + str(tpc_type) + "_.html", auto_open=False)
         #
         self.__logger.log('Report generation complete')
