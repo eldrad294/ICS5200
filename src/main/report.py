@@ -6,6 +6,9 @@ connection_details = {'instance_name':'gabsam',
                               'service':'gabsam',
                               'port':'1521',
                               'password':'tpc'}
+logger = Logger(log_file_path=None,
+                     write_to_disk='false',
+                     write_to_screen=ev_loader.var_get('write_to_screen'))
 ConnectionPool.create_connection_pool(max_connections=1,
                                       connection_details=connection_details,
                                       logger=logger)
