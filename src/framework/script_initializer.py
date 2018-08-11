@@ -69,6 +69,9 @@ class ScriptInitializer:
         tpcds_sql_generation_bool = str(g_config.get_value('DataGeneration','tpcds_sql_generation').title())
         tpce_sql_generation_bool = str(g_config.get_value('DataGeneration','tpce_sql_generation').title())
         #
+        # Report Generation
+        report_save_path = str(g_config.get_value('ReportGeneration','report_save_path'))
+        #
         # Load into global dictionary
         ev_loader.var_load({'project_dir':project_dir,
                             'src_dir':src_dir,
@@ -110,7 +113,8 @@ class ScriptInitializer:
                             'spark_shuffle_partitions':spark_shuffle_partitions,
                             'spark_logConf':spark_logConf,
                             'spark_python_worker_reuse':spark_python_worker_reuse,
-                            'log_file_path':project_dir + "/log/" + log_file_name + "_" + user})
+                            'log_file_path':project_dir + "/log/" + log_file_name + "_" + user,
+                            'report_save_path':report_save_path})
         #
         self.logger = Logger(log_file_path=ev_loader.var_get('log_file_path'),
                              write_to_disk=ev_loader.var_get('write_to_disk'),
