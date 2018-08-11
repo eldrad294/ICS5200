@@ -1,0 +1,1 @@
+REP_TPC_DESCRIBE = "select * from REP_TPC_DESCRIBE"
