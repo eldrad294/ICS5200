@@ -40,3 +40,9 @@ SCRIPT EXECUTION - Report Generation
 """
 bc = BarCharts(ConnectionPool.claim_from_pool())
 bc.generate_REP_TPC_DESCRIBE()
+"""
+SCRIPT CLOSEUP - Cleanup
+"""
+ConnectionPool.close_connection_pool()
+# si.initialize_spark().kill_spark_nodes()
+logger.log("Script Complete!\n-------------------------------------")
