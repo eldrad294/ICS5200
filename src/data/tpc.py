@@ -90,10 +90,10 @@ class TPC_Wrapper:
             #
             sys = "./dsqgen -DIRECTORY " + self.__ev_loader.var_get('project_dir') + "/data/TPC-DS/query_templates -INPUT " + \
                   self.__ev_loader.var_get('project_dir') + "/data/TPC-DS/query_templates/templates.lst -VERBOSE Y -QUALIFY Y " \
-                  "-SCALE " + str(self.__ev_loader.var_get('parallel_degree')) + " -DIALECT oracle -OUTPUT " + sql_generated_path
+                  "-SCALE " + str(self.__ev_loader.var_get('data_size')) + " -DIALECT oracle -OUTPUT " + sql_generated_path
             output = os.system(sys)
             if output != 0:
-                raise Exception("An exception arose during dsqgen invocation..terminating process!")
+                raise Exception("An exception arose during dsqgen invocation, raising error [" + str(output) + "] for the command [" + sys + "]..terminating process!")
                 #
             self.__logger.log(self.__supported_tpc_types[0] + " SQLs generated for dataset of [" + str(
                 self.__ev_loader.var_get('data_size')) + "] Gigabytes")
