@@ -39,7 +39,7 @@ SCRIPT EXECUTION - Report Generation
 ----------------------------------
 """
 from src.reports.bar import BarCharts
-bc = BarCharts(ConnectionPool.claim_from_pool())
+bc = BarCharts(db_conn)
 bc.generate_REP_TPC_DESCRIBE()
 """
 SCRIPT CLOSEUP - Cleanup
