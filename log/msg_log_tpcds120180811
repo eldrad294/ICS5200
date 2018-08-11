@@ -297,3 +297,66 @@
 2018-08-11 16:49:36: Starting generation of report..
 2018-08-11 16:50:36: Report generation complete
 2018-08-11 16:50:36: Starting generation of report..
+2018-08-11 16:58:59: Connected to database [gabsam] with user [tpcds1]
+2018-08-11 16:58:59: Connection pool instantiated with [1] connections
+2018-08-11 16:59:03: Gracefully disabled Spark nodes..
+2018-08-11 16:59:06: Enabled master node..
+2018-08-11 16:59:09: Enabled slave node..
+2018-08-11 16:59:11: ('spark.cores.max', '20')
+2018-08-11 16:59:11: ('spark.executor.memory', '2g')
+2018-08-11 16:59:11: ('spark.driver.port', '34401')
+2018-08-11 16:59:11: ('spark.executor.id', 'driver')
+2018-08-11 16:59:11: ('spark.python.worker.reuse', 'True')
+2018-08-11 16:59:11: ('spark.driver.maxResultSize', '1g')
+2018-08-11 16:59:11: ('spark.default.parallelism', '80')
+2018-08-11 16:59:11: ('spark.sql.shuffle.partitions', '80')
+2018-08-11 16:59:11: ('spark.executor.instances', '20')
+2018-08-11 16:59:11: ('spark.app.id', 'app-20180811165911-0000')
+2018-08-11 16:59:11: ('spark.logConf', 'False')
+2018-08-11 16:59:11: ('spark.rdd.compress', 'True')
+2018-08-11 16:59:11: ('spark.driver.host', 'tempvcenter.rs2.com')
+2018-08-11 16:59:11: ('spark.driver.memory', '2g')
+2018-08-11 16:59:11: ('spark.serializer.objectStreamReset', '100')
+2018-08-11 16:59:11: ('spark.executor.cores', '1')
+2018-08-11 16:59:11: ('spark.master', 'spark://cisk.rs2.com:7077')
+2018-08-11 16:59:11: ('spark.submit.deployMode', 'client')
+2018-08-11 16:59:11: ('spark.executorEnv.PYTHONPATH', '$PYTHONPATH:/home/gabriels/ICS5200')
+2018-08-11 16:59:11: ('spark.ui.showConsoleProgress', 'true')
+2018-08-11 16:59:11: ('spark.app.name', 'ICS5200')
+2018-08-11 16:59:12: Starting generation of report..
+2018-08-11 17:02:00: Connected to database [gabsam] with user [tpcds1]
+2018-08-11 17:02:00: Connection pool instantiated with [1] connections
+2018-08-11 17:02:03: Gracefully disabled Spark nodes..
+2018-08-11 17:02:06: Enabled master node..
+2018-08-11 17:02:09: Enabled slave node..
+2018-08-11 17:02:11: ('spark.cores.max', '20')
+2018-08-11 17:02:11: ('spark.executor.memory', '2g')
+2018-08-11 17:02:11: ('spark.driver.host', 'cisk.rs2.com')
+2018-08-11 17:02:11: ('spark.executor.id', 'driver')
+2018-08-11 17:02:11: ('spark.python.worker.reuse', 'True')
+2018-08-11 17:02:11: ('spark.driver.maxResultSize', '1g')
+2018-08-11 17:02:11: ('spark.app.id', 'app-20180811170211-0000')
+2018-08-11 17:02:11: ('spark.sql.shuffle.partitions', '80')
+2018-08-11 17:02:11: ('spark.default.parallelism', '80')
+2018-08-11 17:02:11: ('spark.driver.port', '35153')
+2018-08-11 17:02:11: ('spark.executor.instances', '20')
+2018-08-11 17:02:11: ('spark.logConf', 'False')
+2018-08-11 17:02:11: ('spark.rdd.compress', 'True')
+2018-08-11 17:02:11: ('spark.driver.memory', '2g')
+2018-08-11 17:02:11: ('spark.serializer.objectStreamReset', '100')
+2018-08-11 17:02:11: ('spark.executor.cores', '1')
+2018-08-11 17:02:11: ('spark.master', 'spark://cisk.rs2.com:7077')
+2018-08-11 17:02:11: ('spark.submit.deployMode', 'client')
+2018-08-11 17:02:11: ('spark.executorEnv.PYTHONPATH', '$PYTHONPATH:/home/gabriels/ICS5200')
+2018-08-11 17:02:11: ('spark.ui.showConsoleProgress', 'true')
+2018-08-11 17:02:11: ('spark.app.name', 'ICS5200')
+2018-08-11 17:02:12: Starting generation of report..
+2018-08-11 17:02:13: Report generation complete
+2018-08-11 17:02:13: Starting generation of report..
+2018-08-11 17:02:13: Report generation complete
+2018-08-11 17:02:13: Starting generation of report..
+2018-08-11 17:02:13: Report generation complete
+2018-08-11 17:02:13: Starting generation of report..
+2018-08-11 17:02:13: Report generation complete
+2018-08-11 17:02:13: Script Complete!
+-------------------------------------
