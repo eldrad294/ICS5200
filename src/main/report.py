@@ -1,4 +1,5 @@
 from src.reports.bar import BarCharts
+from src.framework.logger import Logger
 from src.framework.db_interface import ConnectionPool
 connection_details = {'instance_name':'gabsam',
                               'user':'tpcds1',
@@ -8,7 +9,7 @@ connection_details = {'instance_name':'gabsam',
                               'password':'tpc'}
 logger = Logger(log_file_path=None,
                      write_to_disk='false',
-                     write_to_screen=ev_loader.var_get('write_to_screen'))
+                     write_to_screen='true')
 ConnectionPool.create_connection_pool(max_connections=1,
                                       connection_details=connection_details,
                                       logger=logger)
