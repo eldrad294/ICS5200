@@ -1,13 +1,25 @@
 from plotly.offline import plot
-import plotly.graph_objs as go
 from plotly.graph_objs import *
+import plotly.graph_objs as go
+import os
 #
 class BarCharts:
     #
     def __init__(self, db_conn, logger, save_path):
+        """
+        This constructor should eventually move to a parent class, to allow report generation classes to inherit config
+        from a single class
+        :param db_conn:
+        :param logger:
+        :param save_path:
+        """
         self.__db_conn = db_conn
         self.__logger = logger
         self.__save_path = save_path
+        #
+        # Checks if report generation directory exists, otherwise creates it
+        if os.path.isdir(self.__save_path) is False:
+            os.mkdir(self.__save_path)
     #
     def generate_REP_TPC_DESCRIBE(self, tpc_type='tpcds1'):
         """
