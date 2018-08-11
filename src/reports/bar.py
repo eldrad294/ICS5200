@@ -31,8 +31,8 @@ class BarCharts:
         cur, schema = self.__db_conn.execute_query(query="select * from REP_TPC_DESCRIBE where tpctype='" + tpc_type.upper() + "'",
                                                    describe=True)
         #
-        print(schema)
-        print(cur)
+        # print(schema)
+        # print(cur)
         table_name, row_count, index_count = [], [], []
         for row in cur:
             table_name.append(row[1])
@@ -55,6 +55,6 @@ class BarCharts:
         )
         config = None
         fig = go.Figure(data=data, layout=layout)
-        plot(fig, config=config, filename=self.__save_path + "/REP_TPC_DESCRIBE_" + str(tpc_type) + "_.html", auto_open=False)
+        plot(fig, config=config, filename=self.__save_path + "/REP_TPC_DESCRIBE_" + str(tpc_type) + ".html", auto_open=False)
         #
         self.__logger.log('Report generation complete')
