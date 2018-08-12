@@ -1,0 +1,6 @@
+2018-08-12 12:21:08 WARN  NativeCodeLoader:62 - Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+dsdgen Population Generator (Version 2.8.0)
+Copyright Transaction Processing Performance Council (TPC) 2001 - 2018
+Warning: Selected scale factor is NOT valid for result publication
