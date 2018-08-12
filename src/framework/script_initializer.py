@@ -22,8 +22,8 @@ class ScriptInitializer:
         os.environ['SPARK_YARN_USER_ENV'] = project_dir + '/venv/bin/python3'
         #
         # Loading of Oracle config
-        oracle_home = str(g_config.get_value('Oracle','oracle_home'))
-        ld_library_path = str(g_config.get_value('Oracle','ld_library_path'))
+        # oracle_home = str(g_config.get_value('Oracle','oracle_home'))
+        # ld_library_path = str(g_config.get_value('Oracle','ld_library_path'))
         #
         # Loading of database config
         user = g_config.get_value('DatabaseConnectionString','user')
