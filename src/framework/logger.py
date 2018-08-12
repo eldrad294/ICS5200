@@ -35,7 +35,7 @@ class Logger:
         Deletes all active logs
         :return:
         """
-        del_cmd = 'rm -f ' + self.__log_file_path + '/msg_log_tpcds* nohup_output_tpcds*'
+        del_cmd = 'rm -f ' + self.__log_file_path + '/msg_log* nohup_output*'
         output = os.system(del_cmd)
         if output != 0:
             raise Exception("Terminating process!")
