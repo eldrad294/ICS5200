@@ -157,6 +157,7 @@ class Spark:
         :return:
         """
         master_cmd = self.__spark_installation_path + '/sbin/start-master.sh'
+        print(master_cmd)
         #os.chdir(self.__home_dir)
         output = os.system(master_cmd)
         if output != 0:
@@ -169,6 +170,7 @@ class Spark:
         :return:
         """
         master_cmd = self.__spark_installation_path + '/sbin/start-slave.sh spark://' + self.__host_ip + ':7077'
+        print(master_cmd)
         #os.chdir(self.__home_dir)
         output = os.system(master_cmd)
         if output != 0:
@@ -182,6 +184,7 @@ class Spark:
         """
         try:
             kill_cmd = self.__spark_installation_path + "/sbin/stop-all.sh"
+            print(kill_cmd)
             #os.chdir(self.__home_dir)
             output = os.system(kill_cmd)
             if output != 0:
