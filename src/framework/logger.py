@@ -39,8 +39,6 @@ class Logger:
         output = os.system(del_cmd)
         if output != 0:
             raise Exception("Terminating process!")
-        self.__logger.log('Enabled master node..')
-
     #
     def log(self, msg):
         """
