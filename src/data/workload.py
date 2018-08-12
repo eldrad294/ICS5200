@@ -4,14 +4,6 @@ from src.framework.logger import logger
 from src.framework.config_parser import g_config
 import random
 #
-class QueryBenchmark:
-    """
-    This class serves to house a number of benchmark related methods, used to test TPC queries
-    """
-    #
-    def __init__(self):
-        raise Exception('This class cannot be instantiated!')
-#
 class RealisticWorkload:
     """
     THIS CLASS IS UNDER DEV AND THEREFORE STILL A WORKS IN PROGRESS
