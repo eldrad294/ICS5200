@@ -47,15 +47,15 @@ class Spark:
         self.__logger = logger
         #
         self.__validate()
-        #
-        # Cleanup from prior runs
-        self.kill_spark_nodes()
-        #
-        # Initiate master node
-        self.__initiate_master_node()
-        #
-        # Inititate slave node
-        self.__initiate_slave_node()
+        # #
+        # # Cleanup from prior runs
+        # self.kill_spark_nodes()
+        # #
+        # # Initiate master node
+        # self.__initiate_master_node()
+        # #
+        # # Inititate slave node
+        # self.__initiate_slave_node()
         #
         # Initialize Spark Context
         self.__spark_context = self.__create_Spark_context()
