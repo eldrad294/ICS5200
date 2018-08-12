@@ -156,7 +156,7 @@ class Spark:
         Initiates Spark master node
         :return:
         """
-        master_cmd = self.__spark_installation_path + '/sbin/start-master.sh'
+        master_cmd = "sudo " + self.__spark_installation_path + '/sbin/start-master.sh'
         #os.chdir(self.__home_dir)
         output = os.system(master_cmd)
         if output != 0:
@@ -168,7 +168,7 @@ class Spark:
         Initiates Spark slave node
         :return:
         """
-        master_cmd = self.__spark_installation_path + '/sbin/start-slave.sh spark://' + self.__host_ip + ':7077'
+        master_cmd = "sudo " + self.__spark_installation_path + '/sbin/start-slave.sh spark://' + self.__host_ip + ':7077'
         #os.chdir(self.__home_dir)
         output = os.system(master_cmd)
         if output != 0:
@@ -181,7 +181,7 @@ class Spark:
         :return:
         """
         try:
-            kill_cmd = self.__spark_installation_path + "/sbin/stop-all.sh"
+            kill_cmd = "sudo " + self.__spark_installation_path + "/sbin/stop-all.sh"
             #os.chdir(self.__home_dir)
             output = os.system(kill_cmd)
             if output != 0:
