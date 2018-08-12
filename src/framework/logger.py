@@ -29,6 +29,18 @@ class Logger:
         """
         return datetime.datetime.today().strftime('%Y%m%d')
     #
+    def del_logs(self):
+        """
+        Deletes all active logs
+        :return:
+        """
+        del_cmd = 'rm -f ' + self.__log_file_path + '/msg_log_tpcds* nohup_output_tpcds*'
+        output = os.system(del_cmd)
+        if output != 0:
+            raise Exception("Terminating process!")
+        self.__logger.log('Enabled master node..')
+
+    #
     def log(self, msg):
         """
         Method invoked to either log to disk, or log to screen, or both
