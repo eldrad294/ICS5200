@@ -105,7 +105,7 @@ class DatabaseInterface:
     #
     def execute_dml(self, dml, params=None):
         """
-        Statement wrapper methodm invokled to pass dml statements to the connected database instance.
+        Statement wrapper method invoked to pass dml statements to the connected database instance.
         Expected to return no results from query execution
         :param dml: (insert, update, delete, merge, explain plan for, etc...)
         :param params: dictionary of bind variables
