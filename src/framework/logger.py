@@ -15,6 +15,7 @@ class Logger:
         self.__log_file_path = str(log_file_path) + self.__getDate()
         self.__write_to_disk = str(write_to_disk).title()
         self.__write_to_screen = str(write_to_screen).title()
+        self.__del_logs() # Clean prior log generations
     #
     def __getTimeStamp(self):
         """
@@ -29,7 +30,7 @@ class Logger:
         """
         return datetime.datetime.today().strftime('%Y%m%d')
     #
-    def del_logs(self):
+    def __del_logs(self):
         """
         Deletes all active logs
         :return:

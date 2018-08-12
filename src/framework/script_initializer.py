@@ -119,7 +119,6 @@ class ScriptInitializer:
         self.logger = Logger(log_file_path=ev_loader.var_get('log_file_path'),
                              write_to_disk=ev_loader.var_get('write_to_disk'),
                              write_to_screen=ev_loader.var_get('write_to_screen'))
-        self.logger.del_logs() # Clean prior log generations
         #
         connection_details = {'instance_name':ev_loader.var_get('instance_name'),
                               'user':ev_loader.var_get('user'),
