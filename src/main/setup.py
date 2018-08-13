@@ -2,12 +2,19 @@
 --------------------------
 This script is used to generate and load TPC data into TPC (DS or E) schema
 The script will:
-* Generate TPC-E/TPC-DS dat files , according to specified size. A file will be generated per table withing schema
-* Generate TPC-E/TPC-DS schema, mainly the tables
-* Load each dat file in memory using Spark RDDs.
-* The loaded data is dumped into an Oracle instance
-* Create indexes on oracle instance
-* Generate TPC-E/TPC-DS SQL/DML
+1) Generate TPC-E/TPC-DS dat files , according to specified size. A file will be generated per table withing schema
+2) Generate TPC-E/TPC-DS schema, mainly the tables
+3) Load each dat file in memory using Spark RDDs.
+4) The loaded data is dumped into an Oracle instance
+5) Create indexes on oracle instance
+6) Generate TPC-E/TPC-DS SQL/DML
+--------------------------
+NB: ENSURE FOLLOWING CONFIG IS ESTABLISHED AND PROPERLY CONFIGURED src/main/config.ini:
+1) DatabaseConnectionString.User
+2) DataGeneration.DataRetain
+3) DataGeneration.tpcds_data_generation
+4) DataGeneration.data_size
+5) DataLoading.tpcds_loading
 --------------------------
 """
 """

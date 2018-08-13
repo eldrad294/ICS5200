@@ -1,6 +1,21 @@
 """
 --------------------------
-This script is used to execute all TPC provided queries and benchmark them accordingly
+This script is used to execute all TPC provided queries and benchmark them accordingly. The script behaves as follows:
+1) Drop all schema optimizer statistics on TPCDSX schema
+2) Execute all TPC Queries generated for TPCDSX. Each query execution plan is extracted and returned/saved to disk
+   inside table REP_EXECUTION_PLANS
+3) Execute all TPC DML generated for TPCDSX. Each dml execution plan is extracted and returned/saved to disk
+   inside table REP_EXECUTION_PLANS
+4) Repeat Step 2 and 3 for n iterations, as established from config
+5) Generate schema wide optimizer statistics for TPCDSX
+6) Execute all TPC Queries generated for TPCDSX. Each query execution plan is extracted and returned/saved to disk
+   inside table REP_EXECUTION_PLANS
+7) Execute all TPC DML generated for TPCDSX. Each dml execution plan is extracted and returned/saved to disk
+   inside table REP_EXECUTION_PLANS
+--------------------------
+NB: ENSURE FOLLOWING CONFIG IS ESTABLISHED AND PROPERLY CONFIGURED src/main/config.ini:
+1) DatabaseConnectionString.user
+2) Benchmark.iterations
 --------------------------
 """
 """
@@ -10,7 +25,7 @@ SCRIPT WARM UP - Module Import & Path Configuration
 """
 #
 # Module Imports
-import sys
+import sys, os
 from os.path import dirname, abspath
 #
 # Retrieving relative paths for project directory
@@ -30,6 +45,8 @@ ev_loader = si.get_global_config()
 db_conn = ConnectionPool.claim_from_pool()[2]
 spark_context = si.initialize_spark().get_spark_context()
 logger = si.initialize_logger()
+from src.utils.plan_interface import XPlan
+xp = XPlan(db_conn=db_conn,logger=logger)
 """
 ------------------------------------------------------------
 SCRIPT EXECUTION - Benchmark Start - Without Optimizer Stats
@@ -53,10 +70,14 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
     # Execute All Queries
     for j, filename in enumerate(os.listdir(query_path)):
         if j != 0:
-            db_conn.executeScriptsFromFile(query_path + filename)
+            with open(query_path + filename) as file:
+                data = file.read()
+                xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
     # Execute All DML
     for filename in os.listdir(dml_path):
-        db_conn.executeScriptsFromFile(dml_path + filename)
+        with open(dml_path + filename) as file:
+            data = file.read()
+            xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
 """
 ------------------------------------------------------------
@@ -73,8 +94,12 @@ for i in range(1, ev_loader.var_get('iterations')+1):
     # Execute All Queries
     for j, filename in enumerate(os.listdir(query_path)):
         if j != 0:
-            db_conn.executeScriptsFromFile(query_path + filename)
+            with open(query_path + filename) as file:
+                data = file.read()
+                xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
     # Execute All DML
     for filename in os.listdir(dml_path):
-        db_conn.executeScriptsFromFile(dml_path + filename)
+        with open(dml_path + filename) as file:
+            data = file.read()
+            xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")

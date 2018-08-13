@@ -6,9 +6,14 @@ class XPlan:
     This class serves as an interface to Oracle's explain plan generation utility, providing wrapper methods so as to
     invoke oracle explain plan generation packages, and return data in a formatted, cleaned manner.
     """
-    def __init__(self, db_conn):
+    def __init__(self, db_conn, logger):
         self.__db_conn = db_conn
+        self.__logger = logger
         self.__execution_plan_hint = "/*ICS5200_MONITOR_HINT*/"
+        self.__report_execution_plan = 'REP_EXECUTION_PLANS'
+        #
+        # Create reporting table
+        self.__create_REP_EXECUTION_PLANS()
     #
     def __explain_plan_syntax(self, p_sql):
         return "explain plan for " + str(p_sql)
@@ -41,26 +46,34 @@ class XPlan:
                 ") " \
                 "order by id"
     #
-    def __query_execution_plan(self):
+    def __query_execution_plan(self, save_to_disk=False):
         """
         Ensures that latest execution plan metrics are returned from Oracle's v$sqlarea view, distinguished by latest
         hint found within the view. The query identifies queries using a hint (SQL Comment), and retrieves the most
         latest one from the view.
         :return:
         """
-        return "select * " \
-               "from v$sqlarea " \
-               "where sql_id = ( " \
-               "  select sql_id " \
-               "  from ( " \
-               "    select SQL_ID " \
-               "    from v$sql " \
-               "    where sql_fulltext like '%ICS5200_MONITOR_HINT%' " \
-               "    and sql_fulltext not like '%v$sql%' " \
-               "    and sql_fulltext not like '%V$SQL%' " \
-               "    order by last_active_time desc " \
-               "  ) where rownum = 1 " \
-               ")"
+        if save_to_disk:
+            return "insert into " + self.__report_execution_plan + " " \
+                   "select * " \
+                   "from( " \
+                   "select * " \
+                   "from v$sql " \
+                   "where sql_text like '%" + self.__execution_plan_hint + "%' " \
+                   "and sql_text not like '%v_sql%' " \
+                   "and sql_text not like '%V_SQL%' " \
+                   "order by last_active_time desc " \
+                   ") where rownum <= 1"
+        else:
+            return  "select * " \
+                    "from( " \
+                    "select * " \
+                    "from v$sql " \
+                    "where sql_text like '%" + self.__execution_plan_hint + "%' " \
+                    "and sql_text not like '%v_sql%' " \
+                    "and sql_text not like '%V_SQL%' " \
+                    "order by last_active_time desc " \
+                    ") where rownum <= 1"
     #
     def __select_relevant_columns(self, plan, schema, selection):
         """
@@ -88,6 +101,18 @@ class XPlan:
         else:
             return temp_plan
     #
+    def __create_REP_EXECUTION_PLANS(self):
+        """
+        Creates reporting table REP_EXECUTION_PLANS to save v$sql execution metrics
+        :return:
+        """
+        sql_statement = "select count(*) from dba_tables where table_name = '" + self.__report_execution_plan + "'"
+        result = int(self.__db_conn.execute_query(query=sql_statement, fetch_single=True)[0])
+        if result == 0:
+            dml_statement = "create table REP_EXECUTION_PLANS as select * from v$sql where 1=0"
+            self.__db_conn.execute_dml(dml=dml_statement)
+            self.__logger.log('Created table')
+    #
     def generateExplainPlan(self, sql, binds=None, selection=None):
         """
         Retrieves Explain Plan - Query is not executed for explain plan retrieval
@@ -108,25 +133,32 @@ class XPlan:
         #
         return plan
     #
-    def generateExecutionPlan(self, sql, binds=None, selection=None):
+    def generateExecutionPlan(self, sql, binds=None, selection=None, save_to_disk=False):
         """
         Retrieves Execution Plan - Query is executed for execution plan retrieval
         :param sql: SQL under evaluation
         :param binds: Accepts query bind parameters as a tuple
         :param selection: Accepts list of column names which will be returned for the explain plan generation. If left
                           empty, selection is assumed to return all execution plan columns
+        :param save_to_disk: Default set to False. Determines whether explain plan results are saved to disk, if param
+                             is set to true. Otherwise return table results.
         :return: Execution plan in dictionary format
         """
         sql = self.__execution_plan_syntax(sql)
         #
         self.__db_conn.execute_dml(dml=sql, params=binds)
         #
-        plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(), describe=True)
-        #
-        # Retrieves relavent columns specified in selection list
-        plan = self.__select_relevant_columns(plan=plan, schema=schema, selection=selection)
-        #
-        return plan
+        if save_to_disk:
+            self.__db_conn.execute_dml(dml=self.__query_execution_plan(save_to_disk=True), describe=False)
+            self.__db_conn.commit()
+        else:
+            plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(save_to_disk=False),
+                                                        describe=True)
+            #
+            # Retrieves relavent columns specified in selection list
+            plan = self.__select_relevant_columns(plan=plan, schema=schema, selection=selection)
+            #
+            return plan
 #
 """
 EXAMPLE
