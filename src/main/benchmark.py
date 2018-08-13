@@ -47,7 +47,7 @@ spark_context = si.initialize_spark().get_spark_context()
 logger = si.initialize_logger()
 from src.utils.plan_control import XPlan
 from src.utils.stats_control import OptimizerStatistics
-xp = XPlan(db_conn=db_conn,logger=logger)
+xp = XPlan(db_conn=db_conn, logger=logger)
 """
 ------------------------------------------------------------
 SCRIPT EXECUTION - Benchmark Start - Without Optimizer Stats

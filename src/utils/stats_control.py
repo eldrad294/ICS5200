@@ -8,7 +8,7 @@ class OptimizerStatistics:
                                        logger=logger,
                                        tpc_type=tpctype)
         #
-        params = [None, False, 'FOR ALL COLUMNS SIZE 1', 60, 'DEFAULT', False]
+        params = [None, False, 'FOR ALL COLUMNS SIZE 1', 60, 'DEFAULT', True, None, None, 'GATHER', None, tpctype.upper()]
         db_conn.execute_proc(name='dbms_stats.gather_database_stats',
                              parameters=params)
     #
@@ -18,7 +18,7 @@ class OptimizerStatistics:
                                        logger=logger,
                                        tpc_type=tpctype)
         #
-        params = ['NULL','NULL','NULL', False, False]
+        params = [None,None,tpctype.upper(), False, False]
         db_conn.execute_proc(name='dbms_stats.delete_database_stats',
                              parameters=params)
     #
