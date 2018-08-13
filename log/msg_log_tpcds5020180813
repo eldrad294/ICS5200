@@ -178,3 +178,5 @@
 2018-08-13 19:59:28: Generated query_104.sql
 2018-08-13 19:59:28: Script Complete!
 -------------------------------------
+2018-08-13 20:00:51: Connected to database [gabsam] with user [tpcds50]
+2018-08-13 20:00:51: Connection pool instantiated with [1] connections
