@@ -8,7 +8,8 @@ class OptimizerStatistics:
                                        logger=logger,
                                        tpc_type=tpctype)
         #
-        params = [None, False, 'FOR ALL COLUMNS SIZE 1', 60, 'DEFAULT', True, None, None, 'GATHER', None, tpctype.upper()]
+        params = {"statown": tpctype.upper(),
+                  "degree":60}
         db_conn.execute_proc(name='dbms_stats.gather_database_stats',
                              parameters=params)
     #
