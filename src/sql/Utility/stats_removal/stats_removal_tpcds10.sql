@@ -1,1 +1,0 @@
-execute dbms_stats.delete_database_stats(statown=>'tpcds10');

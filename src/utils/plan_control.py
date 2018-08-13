@@ -159,7 +159,6 @@ class XPlan:
             plan = self.__select_relevant_columns(plan=plan, schema=schema, selection=selection)
             #
             return plan
-#
 """
 EXAMPLE
 ----------------------------------------

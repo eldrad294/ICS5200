@@ -45,7 +45,8 @@ ev_loader = si.get_global_config()
 db_conn = ConnectionPool.claim_from_pool()[2]
 spark_context = si.initialize_spark().get_spark_context()
 logger = si.initialize_logger()
-from src.utils.plan_interface import XPlan
+from src.utils.plan_control import XPlan
+from src.utils.stats_control import OptimizerStatistics
 xp = XPlan(db_conn=db_conn,logger=logger)
 """
 ------------------------------------------------------------
@@ -60,7 +61,9 @@ if result == 0:
     raise Exception('[' + ev_loader.var_get('user') + '] schema tables were not found..terminating script!')
 #
 # Strip optimizer stats
-db_conn.executeScriptsFromFile(ev_loader.var_get("src_dir") + "/sql/Utility/stats_removal/stats_removal_" + ev_loader.var_get('user') + ".sql")
+OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
+                                                logger=logger,
+                                                tpctype=ev_loader.var_get('user'))
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
 #
 # Execute Queries + DML for n number of iterations
@@ -86,7 +89,9 @@ SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 """
 #
 # Gather optimizer stats
-db_conn.executeScriptsFromFile(ev_loader.var_get("src_dir") + "/sql/Utility/stats_generation/stats_generation_" + ev_loader.var_get('user') + ".sql")
+OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
+                                                  logger=logger,
+                                                  tpctype=ev_loader.var_get('user'))
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
 #
 # Execute Queries + DML for n number of iterations
