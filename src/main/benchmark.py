@@ -74,16 +74,16 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
     # Execute All Queries
     for j, filename in enumerate(os.listdir(query_path)):
         if j != 0:
+            logger.log('Generating execution metrics for [' + filename + ']..')
             with open(query_path + filename) as file:
                 data = file.read()
                 xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
-            logger.log('Generated execution metrics for [' + filename + ']')
     # Execute All DML
     for filename in os.listdir(dml_path):
+        logger.log('Generating execution metrics for [' + filename + ']..')
         with open(dml_path + filename) as file:
             data = file.read()
             xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
-        logger.log('Generated execution metrics for [' + filename + ']')
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
 """
 ------------------------------------------------------------
@@ -103,14 +103,14 @@ for i in range(1, ev_loader.var_get('iterations')+1):
     # Execute All Queries
     for j, filename in enumerate(os.listdir(query_path)):
         if j != 0:
+            logger.log('Generating execution metrics for [' + filename + ']..')
             with open(query_path + filename) as file:
                 data = file.read()
                 xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
-            logger.log('Generated execution metrics for [' + filename + ']')
     # Execute All DML
     for filename in os.listdir(dml_path):
+        logger.log('Generating execution metrics for [' + filename + ']..')
         with open(dml_path + filename) as file:
             data = file.read()
             xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
-        logger.log('Generated execution metrics for [' + filename + ']')
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
