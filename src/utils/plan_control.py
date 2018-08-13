@@ -109,10 +109,10 @@ class XPlan:
         sql_statement = "select count(*) from dba_tables where table_name = '" + self.__report_execution_plan + "'"
         result = int(self.__db_conn.execute_query(query=sql_statement, fetch_single=True)[0])
         if result == 0:
+            self.__logger.log('Creating table [' + self.__report_execution_plan + ']..')
             dml_statement = "create table " + self.__report_execution_plan + " tablespace users as " \
-                                                                             "(select * from v$sql where 1=0);"
+                                                                             "select * from v$sql where 1=0"
             self.__db_conn.execute_dml(dml=dml_statement)
-            self.__logger.log('Created table ['+self.__report_execution_plan+']..')
         else:
             self.__logger.log('Table ['+self.__report_execution_plan+'] already exists..')
     #
