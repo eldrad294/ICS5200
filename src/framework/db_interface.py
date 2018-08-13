@@ -141,16 +141,22 @@ class DatabaseInterface:
             if cursor is not None:
                 cursor.close()
     #
-    def execute_proc(self, proc_name, params):
+    def execute_proc(self, name, parameters):
+        """
+
+        :param name: Name of procedure
+        :param parameters: Name of parameters
+        :return:
+        """
         cursor = None
         try:
             cursor = self.__conn.cursor()
-            cursor.callproc(procname=proc_name, parameters=params)
+            cursor.callproc(name=name, parameters=parameters)
         except Exception as e:
             if self.__logger is not None:
                 self.__logger.log(
                     'Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
-                    str(proc_name) + ' ] with params ' + params)
+                    str(name) + ' ] with params ' + str(parameters))
         finally:
             if cursor is not None:
                 cursor.close()
