@@ -111,7 +111,7 @@ class XPlan:
         if result == 0:
             dml_statement = "create table REP_EXECUTION_PLANS as select * from v$sql where 1=0"
             self.__db_conn.execute_dml(dml=dml_statement)
-            self.__logger.log('Created table')
+            self.__logger.log('Created table ['+self.__report_execution_plan+']')
     #
     def generateExplainPlan(self, sql, binds=None, selection=None):
         """
@@ -149,7 +149,7 @@ class XPlan:
         self.__db_conn.execute_dml(dml=sql, params=binds)
         #
         if save_to_disk:
-            self.__db_conn.execute_dml(dml=self.__query_execution_plan(save_to_disk=True), describe=False)
+            self.__db_conn.execute_dml(dml=self.__query_execution_plan(save_to_disk=True))
             self.__db_conn.commit()
         else:
             plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(save_to_disk=False),
