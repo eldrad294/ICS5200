@@ -145,13 +145,13 @@ class DatabaseInterface:
         """
 
         :param name: Name of procedure
-        :param parameters: Name of parameters
+        :param parameters: Dictionary of parameters
         :return:
         """
         cursor = None
         try:
             cursor = self.__conn.cursor()
-            cursor.callproc(name=name, parameters=parameters)
+            cursor.callproc(name=name, keywordParameters=parameters)
         except Exception as e:
             if self.__logger is not None:
                 self.__logger.log(

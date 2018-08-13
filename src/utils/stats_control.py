@@ -18,7 +18,7 @@ class OptimizerStatistics:
                                        logger=logger,
                                        tpc_type=tpctype)
         #
-        params = [None,None,tpctype.upper(), False, False]
+        params = {"statown":tpctype.upper()}
         db_conn.execute_proc(name='dbms_stats.delete_database_stats',
                              parameters=params)
     #
