@@ -114,7 +114,7 @@ class XPlan:
             self.__db_conn.execute_dml(dml=dml_statement)
             self.__logger.log('Created table ['+self.__report_execution_plan+']..')
         else:
-            self.__logger('Table ['+self.__report_execution_plan+'] already exists..')
+            self.__logger.log('Table ['+self.__report_execution_plan+'] already exists..')
     #
     def generateExplainPlan(self, sql, binds=None, selection=None):
         """
