@@ -12,7 +12,7 @@ begin
   Declare config parameters downhere
   */
   --
-  v_tpc_type := 'tpcds10';
+  v_tpc_type := 'tpcds1';
   --
   -----------------------------------
   -- DO NOT CHANGE BELOW THIS LINE --
@@ -47,10 +47,11 @@ begin
 	 			  where tablespace_name = upper(v_tpc_type))
 	  loop
 	    --
-	    v_dml := 'select count(*) from '||rec.table_name;
+	    v_dml := 'select count(*) from '||upper(v_tpc_type)||'.'||rec.table_name;
 	    execute immediate v_dml into row_count;
 	    --
-	    v_dml := 'select count(*) from dba_indexes where table_name = '''|| upper(rec.table_name)||'''';
+	    --dbms_output.put_line('1');
+	    v_dml := 'select count(*) from dba_indexes where table_name = '''|| upper(rec.table_name)||''' and table_owner = '''||upper(v_tpc_type)||'''';
 	    execute immediate v_dml into idx_count;
 	    --
 	    v_dml := 'insert into REP_TPC_DESCRIBE values ('''||upper(v_tpc_type)||''','''||upper(rec.table_name)||''','||row_count||','||idx_count||')';

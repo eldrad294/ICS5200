@@ -8,6 +8,20 @@ select * from DBA_DATA_FILES;
 NB: Ensure that physical datafiles are deleted before running this script:
 1) CISK> cd /mnt/raid5/oradata/gabsam/
 2) CISK> sudo rm -f tpcds*
+
+NB: Monitor tablespace usage through:
+select a.tablespace_name                                              name,
+       b.tablespace_name                                              dummy,
+       sum(b.bytes)/count( distinct a.file_id||'.'||a.block_id )      bytes,
+       sum(b.bytes)/count( distinct a.file_id||'.'||a.block_id ) -
+       sum(a.bytes)/count( distinct b.file_id )              used,
+       sum(a.bytes)/count( distinct b.file_id )                       free,
+       100 * ( (sum(b.bytes)/count( distinct a.file_id||'.'||a.block_id )) -
+               (sum(a.bytes)/count( distinct b.file_id ) )) /
+       (sum(b.bytes)/count( distinct a.file_id||'.'||a.block_id )) pct_used
+from sys.dba_free_space a, sys.dba_data_files b
+where a.tablespace_name = b.tablespace_name
+group by a.tablespace_name, b.tablespace_name;
 */
 CREATE TABLESPACE tpcds1   DATAFILE '/mnt/raid5/oradata/gabsam/tpcds1_01.dbf' SIZE 5M AUTOEXTEND ON NEXT 1024K MAXSIZE UNLIMITED;
 CREATE TABLESPACE tpcds10  DATAFILE '/mnt/raid5/oradata/gabsam/tpcds10_01.dbf' SIZE 5M AUTOEXTEND ON NEXT 1024K MAXSIZE UNLIMITED;
