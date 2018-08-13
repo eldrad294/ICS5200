@@ -146,7 +146,7 @@ class TPC_Wrapper:
             with open(query0_path) as f:
                 read_data = f.read()
             #
-            read_data = read_data.replace("\n","")
+            read_data = read_data.replace("\n"," ")
             #
             sql_list = read_data.split(";")
             for i, sql in enumerate(sql_list):

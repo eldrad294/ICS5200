@@ -160,7 +160,6 @@ class DatabaseInterface:
         finally:
             if cursor is not None:
                 cursor.close()
-
     #
     def commit(self):
         """

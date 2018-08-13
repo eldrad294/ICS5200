@@ -61,6 +61,7 @@ if result == 0:
     raise Exception('[' + ev_loader.var_get('user') + '] schema tables were not found..terminating script!')
 #
 # Strip optimizer stats
+logger.log('Starting optimizer stats dropping..')
 OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
                                                 logger=logger,
                                                 tpctype=ev_loader.var_get('user'))
@@ -89,6 +90,7 @@ SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 """
 #
 # Gather optimizer stats
+logger.log('Starting optimizer stats generation..')
 OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
                                                   logger=logger,
                                                   tpctype=ev_loader.var_get('user'))
