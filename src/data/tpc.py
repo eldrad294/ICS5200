@@ -151,7 +151,7 @@ class TPC_Wrapper:
             sql_list = read_data.split(";")
             for i, sql in enumerate(sql_list):
                 with open(self.__ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + self.__ev_loader.var_get("user") + "/Query/query_"+str(i+1)+".sql", "w") as f:
-                    f.write(sql+";")
+                    f.write(sql)
                 self.__logger.log("Generated query_" + str(i+1) + ".sql")
     #
     def delete_data(self, tpc_type=None, file_name=None):
