@@ -18,7 +18,7 @@ class OptimizerStatistics:
                                        logger=logger,
                                        tpc_type=tpctype)
         #
-        params = ['','','', False, False]
+        params = ['NULL','NULL','NULL', False, False]
         db_conn.execute_proc(name='dbms_stats.delete_database_stats',
                              parameters=params)
     #
