@@ -65,47 +65,46 @@ OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
                                                 logger=logger,
                                                 tpctype=ev_loader.var_get('user'))
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
-#
-# Execute Queries + DML for n number of iterations
-query_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Query/"
-dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/DML/"
-for i in range(1, ev_loader.var_get('iterations') + 1):
-    # Execute All Queries
-    for j, filename in enumerate(os.listdir(query_path)):
-        if j != 0:
-            with open(query_path + filename) as file:
-                data = file.read()
-                xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
-    # Execute All DML
-    for filename in os.listdir(dml_path):
-        with open(dml_path + filename) as file:
-            data = file.read()
-            xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
-    logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
-"""
-------------------------------------------------------------
-SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
-------------------------------------------------------------
-"""
-#
-# Gather optimizer stats
-OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
-                                                  logger=logger,
-                                                  tpctype=ev_loader.var_get('user'))
-logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
-exit()
-#
-# Execute Queries + DML for n number of iterations
-for i in range(1, ev_loader.var_get('iterations')+1):
-    # Execute All Queries
-    for j, filename in enumerate(os.listdir(query_path)):
-        if j != 0:
-            with open(query_path + filename) as file:
-                data = file.read()
-                xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
-    # Execute All DML
-    for filename in os.listdir(dml_path):
-        with open(dml_path + filename) as file:
-            data = file.read()
-            xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
-    logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
+# #
+# # Execute Queries + DML for n number of iterations
+# query_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Query/"
+# dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/DML/"
+# for i in range(1, ev_loader.var_get('iterations') + 1):
+#     # Execute All Queries
+#     for j, filename in enumerate(os.listdir(query_path)):
+#         if j != 0:
+#             with open(query_path + filename) as file:
+#                 data = file.read()
+#                 xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
+#     # Execute All DML
+#     for filename in os.listdir(dml_path):
+#         with open(dml_path + filename) as file:
+#             data = file.read()
+#             xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
+#     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
+# """
+# ------------------------------------------------------------
+# SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
+# ------------------------------------------------------------
+# """
+# #
+# # Gather optimizer stats
+# OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
+#                                                   logger=logger,
+#                                                   tpctype=ev_loader.var_get('user'))
+# logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
+# #
+# # Execute Queries + DML for n number of iterations
+# for i in range(1, ev_loader.var_get('iterations')+1):
+#     # Execute All Queries
+#     for j, filename in enumerate(os.listdir(query_path)):
+#         if j != 0:
+#             with open(query_path + filename) as file:
+#                 data = file.read()
+#                 xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
+#     # Execute All DML
+#     for filename in os.listdir(dml_path):
+#         with open(dml_path + filename) as file:
+#             data = file.read()
+#             xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
+#     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
