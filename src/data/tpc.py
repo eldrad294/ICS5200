@@ -151,6 +151,11 @@ class TPC_Wrapper:
             sql_list = read_data.split(";")
             for i, sql in enumerate(sql_list):
                 with open(self.__ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + self.__ev_loader.var_get("user") + "/Query/query_"+str(i+1)+".sql", "w") as f:
+                    #
+                    # Transform queries utilizing data logic so as to use 'to_date' instead of cast
+                    sql = self.__convert_cast_to_date(sql=sql)
+                    #
+                    # Write to file
                     f.write(sql)
                 self.__logger.log("Generated query_" + str(i+1) + ".sql")
     #
@@ -213,6 +218,14 @@ class TPC_Wrapper:
         if len(file_names) != len(file_extensions):
             raise ValueError("File name list does not match list of file extensions!")
         return file_names, file_extensions
+    #
+    def __convert_cast_to_date(self, sql):
+        if 'days' in sql and 'cast(' in sql:
+            sql = sql.replace(" days","")
+            sql = sql.replace("as date",",'yyyy-mm-dd'")
+            sql = sql.replace("cast","to_date")
+        return sql
+
     #
     def __rename(self, oldfilename):
         """
