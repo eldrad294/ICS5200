@@ -93,6 +93,7 @@ OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
                                                   logger=logger,
                                                   tpctype=ev_loader.var_get('user'))
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
+exit()
 #
 # Execute Queries + DML for n number of iterations
 for i in range(1, ev_loader.var_get('iterations')+1):
