@@ -235,6 +235,7 @@ class TPC_Wrapper:
             sql = sql.replace("(cast('", "to_char((to_date('")
             sql = sql.replace("cast('","to_char(to_date('")
             sql = sql.replace("cast ('","to_char(to_date('")
+            sql = sql.replace("cast(d_date","to_char(to_date(d_date")
         else:
             raise NotImplementedError('This logic is not yet supported!')
         return sql
