@@ -79,7 +79,9 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
             data = file.read()
             sql_list = data.split(';')
             for sql in sql_list:
+                print(sql)
                 sql = sql.replace("\n"," ")
+                print(sql)
                 xp.generateExecutionPlan(sql=sql, binds=None, selection=None, save_to_disk=True)
     # Execute All DML
     for filename in os.listdir(dml_path):
