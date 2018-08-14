@@ -220,10 +220,17 @@ class TPC_Wrapper:
         return file_names, file_extensions
     #
     def __convert_cast_to_date(self, sql, tpc_type):
+        """
+        This method attempts to fix SQL syntax produced from TPC-DS
+        :param sql:
+        :param tpc_type:
+        :return:
+        """
         if tpc_type == self.__supported_tpc_types[0]:
             sql = sql.replace("cast(d_date as date)","to_char(to_date(d_date,'yyyy/mm/dd'),'yyyy-mm-dd')")
             sql = sql.replace(" days)","),'yyyy-mm-dd')")
             sql = sql.replace("as date) +",",'yyyy/mm/dd') +")
+            sql = sql.replace("as date) -", ",'yyyy/mm/dd') -")
             sql = sql.replace("as date)", ",'yyyy/mm/dd'),'yyyy-mm-dd')")
             sql = sql.replace("(cast('", "to_char((to_date('")
             sql = sql.replace("cast('","to_char(to_date('")
