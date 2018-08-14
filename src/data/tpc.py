@@ -220,10 +220,9 @@ class TPC_Wrapper:
         return file_names, file_extensions
     #
     def __convert_cast_to_date(self, sql):
-        if "days" in sql and "cast('" in sql:
-            sql = sql.replace(" days","")
-            sql = sql.replace("as date)",",'yyyy-mm-dd')")
-            sql = sql.replace("cast('","to_date")
+        sql = sql.replace(" days","")
+        sql = sql.replace("as date)",",'yyyy-mm-dd')")
+        sql = sql.replace("cast('","to_date('")
         return sql
 
     #
