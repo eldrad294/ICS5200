@@ -54,8 +54,8 @@ from
   ,customer_address
   ,call_center
 where
-    d_date between '[YEAR]-[MONTH]-01' and 
-           (cast('[YEAR]-[MONTH]-01' as date) + 60 days)
+    d_date between to_char(to_date('[YEAR]-[MONTH]-01','yyyy/mm/dd'),'yyyy-mm-dd') and
+           (to_char(to_date('[YEAR]-[MONTH]-01','yyyy/mm/dd') + 60,'yyyy-mm-dd'))
 and cs1.cs_ship_date_sk = d_date_sk
 and cs1.cs_ship_addr_sk = ca_address_sk
 and ca_state = '[STATE]'
