@@ -227,10 +227,10 @@ class TPC_Wrapper:
         :return:
         """
         if tpc_type == self.__supported_tpc_types[0]:
-            sql = sql.replace("cast(d_date as date)","to_char(to_date(d_date,'yyyy/mm/dd'),'yyyy-mm-dd')")
+            #sql = sql.replace("cast(d_date as date)","to_char(to_date(d_date,'yyyy/mm/dd'),'yyyy-mm-dd')")
             sql = sql.replace(" days)","),'yyyy-mm-dd')")
             sql = sql.replace("as date) +",",'yyyy/mm/dd') +")
-            sql = sql.replace("as date) -", ",'yyyy/mm/dd') -")
+            sql = sql.replace("as date) -",",'yyyy/mm/dd') -")
             sql = sql.replace("as date)", ",'yyyy/mm/dd'),'yyyy-mm-dd')")
             sql = sql.replace("(cast('", "to_char((to_date('")
             sql = sql.replace("cast('","to_char(to_date('")
