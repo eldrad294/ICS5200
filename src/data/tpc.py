@@ -153,7 +153,7 @@ class TPC_Wrapper:
                 with open(self.__ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + self.__ev_loader.var_get("user") + "/Query/query_"+str(i+1)+".sql", "w") as f:
                     #
                     # Transform queries utilizing data logic so as to use 'to_date' instead of cast
-                    sql = self.__convert_cast_to_date(sql=sql,tpc_type=tpc_type)
+                    #sql = self.__convert_cast_to_date(sql=sql,tpc_type=tpc_type)
                     #
                     # Write to file
                     f.write(sql)
