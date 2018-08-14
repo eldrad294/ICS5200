@@ -224,7 +224,7 @@ class TPC_Wrapper:
         sql = sql.replace("as date) +",",'yyyy/mm/dd') +")
         sql = sql.replace("as date)", ",'yyyy/mm/dd'),'yyyy-mm-dd')")
         sql = sql.replace("(cast('", "to_char((to_date('")
-        sql = sql.replace("cast('","to_char((to_date('")
+        sql = sql.replace("cast('","to_char(to_date('")
         return sql
     #
     def __rename(self, oldfilename):
