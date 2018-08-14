@@ -1,1 +1,25 @@
-    select * from (select     cd_gender,   cd_marital_status,   cd_education_status,   count(*) cnt1,   cd_purchase_estimate,   count(*) cnt2,   cd_credit_rating,   count(*) cnt3  from   customer c,customer_address ca,customer_demographics  where   c.c_current_addr_sk = ca.ca_address_sk and   ca_state in ('WV','LA','NC') and   cd_demo_sk = c.c_current_cdemo_sk and    exists (select *           from store_sales,date_dim           where c.c_customer_sk = ss_customer_sk and                 ss_sold_date_sk = d_date_sk and                 d_year = 1999 and                 d_moy between 2 and 2+2) and    (not exists (select *             from web_sales,date_dim             where c.c_customer_sk = ws_bill_customer_sk and                   ws_sold_date_sk = d_date_sk and                   d_year = 1999 and                   d_moy between 2 and 2+2) and     not exists (select *              from catalog_sales,date_dim             where c.c_customer_sk = cs_ship_customer_sk and                   cs_sold_date_sk = d_date_sk and                   d_year = 1999 and                   d_moy between 2 and 2+2))  group by cd_gender,           cd_marital_status,           cd_education_status,           cd_purchase_estimate,           cd_credit_rating  order by cd_gender,           cd_marital_status,           cd_education_status,           cd_purchase_estimate,           cd_credit_rating   ) where rownum <= 100
+select c_last_name
+       ,c_first_name
+       ,c_salutation
+       ,c_preferred_cust_flag 
+       ,ss_ticket_number
+       ,cnt from
+   (select ss_ticket_number
+          ,ss_customer_sk
+          ,count(*) cnt
+    from store_sales,date_dim,store,household_demographics
+    where store_sales.ss_sold_date_sk = date_dim.d_date_sk
+    and store_sales.ss_store_sk = store.s_store_sk  
+    and store_sales.ss_hdemo_sk = household_demographics.hd_demo_sk
+    and date_dim.d_dom between 1 and 2 
+    and (household_demographics.hd_buy_potential = '501-1000' or
+         household_demographics.hd_buy_potential = '5001-10000')
+    and household_demographics.hd_vehicle_count > 0
+    and case when household_demographics.hd_vehicle_count > 0 then 
+             household_demographics.hd_dep_count/ household_demographics.hd_vehicle_count else null end > 1
+    and date_dim.d_year in (1999,1999+1,1999+2)
+    and store.s_county in ('Williamson County','Williamson County','Williamson County','Williamson County')
+    group by ss_ticket_number,ss_customer_sk) dj,customer
+    where ss_customer_sk = c_customer_sk
+      and cnt between 1 and 5
+    order by cnt desc, c_last_name asc;

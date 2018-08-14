@@ -1,1 +1,64 @@
-    select * from (select    c_last_name,c_first_name,substr(s_city,1,30),ss_ticket_number,amt,profit   from    (select ss_ticket_number           ,ss_customer_sk           ,store.s_city           ,sum(ss_coupon_amt) amt           ,sum(ss_net_profit) profit     from store_sales,date_dim,store,household_demographics     where store_sales.ss_sold_date_sk = date_dim.d_date_sk     and store_sales.ss_store_sk = store.s_store_sk       and store_sales.ss_hdemo_sk = household_demographics.hd_demo_sk     and (household_demographics.hd_dep_count = 2 or household_demographics.hd_vehicle_count > 3)     and date_dim.d_dow = 1     and date_dim.d_year in (1999,1999+1,1999+2)      and store.s_number_employees between 200 and 295     group by ss_ticket_number,ss_customer_sk,ss_addr_sk,store.s_city) ms,customer     where ss_customer_sk = c_customer_sk  order by c_last_name,c_first_name,substr(s_city,1,30), profit  ) where rownum <= 100
+with sr_items as
+ (select i_item_id item_id,
+        sum(sr_return_quantity) sr_item_qty
+ from store_returns,
+      item,
+      date_dim
+ where sr_item_sk = i_item_sk
+ and   d_date    in 
+	(select d_date
+	from date_dim
+	where d_week_seq in 
+		(select d_week_seq
+		from date_dim
+	  where d_date in ('1998-02-25','1998-10-20','1998-11-12')))
+ and   sr_returned_date_sk   = d_date_sk
+ group by i_item_id),
+ cr_items as
+ (select i_item_id item_id,
+        sum(cr_return_quantity) cr_item_qty
+ from catalog_returns,
+      item,
+      date_dim
+ where cr_item_sk = i_item_sk
+ and   d_date    in 
+	(select d_date
+	from date_dim
+	where d_week_seq in 
+		(select d_week_seq
+		from date_dim
+	  where d_date in ('1998-02-25','1998-10-20','1998-11-12')))
+ and   cr_returned_date_sk   = d_date_sk
+ group by i_item_id),
+ wr_items as
+ (select i_item_id item_id,
+        sum(wr_return_quantity) wr_item_qty
+ from web_returns,
+      item,
+      date_dim
+ where wr_item_sk = i_item_sk
+ and   d_date    in 
+	(select d_date
+	from date_dim
+	where d_week_seq in 
+		(select d_week_seq
+		from date_dim
+		where d_date in ('1998-02-25','1998-10-20','1998-11-12')))
+ and   wr_returned_date_sk   = d_date_sk
+ group by i_item_id)
+ select * from ( select  sr_items.item_id
+       ,sr_item_qty
+       ,sr_item_qty/(sr_item_qty+cr_item_qty+wr_item_qty)/3.0 * 100 sr_dev
+       ,cr_item_qty
+       ,cr_item_qty/(sr_item_qty+cr_item_qty+wr_item_qty)/3.0 * 100 cr_dev
+       ,wr_item_qty
+       ,wr_item_qty/(sr_item_qty+cr_item_qty+wr_item_qty)/3.0 * 100 wr_dev
+       ,(sr_item_qty+cr_item_qty+wr_item_qty)/3.0 average
+ from sr_items
+     ,cr_items
+     ,wr_items
+ where sr_items.item_id=cr_items.item_id
+   and sr_items.item_id=wr_items.item_id 
+ order by sr_items.item_id
+         ,sr_item_qty
+  ) where rownum <= 100;

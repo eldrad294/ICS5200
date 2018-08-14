@@ -1,1 +1,25 @@
-    select * from (select  i_item_id        ,i_item_desc        ,i_current_price  from item, inventory, date_dim, catalog_sales  where i_current_price between 29 and 29 + 30  and inv_item_sk = i_item_sk  and d_date_sk=inv_date_sk  and d_date between cast('2002-03-29' as date) and (cast('2002-03-29' as date) +  60 days)  and i_manufact_id in (705,742,777,944)  and inv_quantity_on_hand between 100 and 500  and cs_item_sk = i_item_sk  group by i_item_id,i_item_desc,i_current_price  order by i_item_id   ) where rownum <= 100
+select * from (select  
+   w_state
+  ,i_item_id
+  ,sum(case when (cast(d_date as date) < cast ('2001-05-02' as date)) 
+ 		then cs_sales_price - coalesce(cr_refunded_cash,0) else 0 end) as sales_before
+  ,sum(case when (cast(d_date as date) >= cast ('2001-05-02' as date)) 
+ 		then cs_sales_price - coalesce(cr_refunded_cash,0) else 0 end) as sales_after
+ from
+   catalog_sales left outer join catalog_returns on
+       (cs_order_number = cr_order_number 
+        and cs_item_sk = cr_item_sk)
+  ,warehouse 
+  ,item
+  ,date_dim
+ where
+     i_current_price between 0.99 and 1.49
+ and i_item_sk          = cs_item_sk
+ and cs_warehouse_sk    = w_warehouse_sk 
+ and cs_sold_date_sk    = d_date_sk
+ and d_date between (cast ('2001-05-02' as date) - 30 days)
+                and (cast ('2001-05-02' as date) + 30 days) 
+ group by
+    w_state,i_item_id
+ order by w_state,i_item_id
+ ) where rownum <= 100;

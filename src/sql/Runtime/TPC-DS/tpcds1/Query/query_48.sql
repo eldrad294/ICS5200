@@ -1,1 +1,64 @@
-    select * from (select  asceding.rnk, i1.i_product_name best_performing, i2.i_product_name worst_performing from(select *      from (select item_sk,rank() over (order by rank_col asc) rnk            from (select ss_item_sk item_sk,avg(ss_net_profit) rank_col                   from store_sales ss1                  where ss_store_sk = 4                  group by ss_item_sk                  having avg(ss_net_profit) > 0.9*(select avg(ss_net_profit) rank_col                                                   from store_sales                                                   where ss_store_sk = 4                                                     and ss_hdemo_sk is null                                                   group by ss_store_sk))V1)V11      where rnk  < 11) asceding,     (select *      from (select item_sk,rank() over (order by rank_col desc) rnk            from (select ss_item_sk item_sk,avg(ss_net_profit) rank_col                  from store_sales ss1                  where ss_store_sk = 4                  group by ss_item_sk                  having avg(ss_net_profit) > 0.9*(select avg(ss_net_profit) rank_col                                                   from store_sales                                                   where ss_store_sk = 4                                                     and ss_hdemo_sk is null                                                   group by ss_store_sk))V2)V21      where rnk  < 11) descending, item i1, item i2 where asceding.rnk = descending.rnk    and i1.i_item_sk=asceding.item_sk   and i2.i_item_sk=descending.item_sk order by asceding.rnk  ) where rownum <= 100
+select sum (ss_quantity)
+ from store_sales, store, customer_demographics, customer_address, date_dim
+ where s_store_sk = ss_store_sk
+ and  ss_sold_date_sk = d_date_sk and d_year = 1999
+ and  
+ (
+  (
+   cd_demo_sk = ss_cdemo_sk
+   and 
+   cd_marital_status = 'U'
+   and 
+   cd_education_status = 'Secondary'
+   and 
+   ss_sales_price between 100.00 and 150.00  
+   )
+ or
+  (
+  cd_demo_sk = ss_cdemo_sk
+   and 
+   cd_marital_status = 'W'
+   and 
+   cd_education_status = 'Advanced Degree'
+   and 
+   ss_sales_price between 50.00 and 100.00   
+  )
+ or 
+ (
+  cd_demo_sk = ss_cdemo_sk
+  and 
+   cd_marital_status = 'D'
+   and 
+   cd_education_status = '2 yr Degree'
+   and 
+   ss_sales_price between 150.00 and 200.00  
+ )
+ )
+ and
+ (
+  (
+  ss_addr_sk = ca_address_sk
+  and
+  ca_country = 'United States'
+  and
+  ca_state in ('MT', 'PA', 'IL')
+  and ss_net_profit between 0 and 2000  
+  )
+ or
+  (ss_addr_sk = ca_address_sk
+  and
+  ca_country = 'United States'
+  and
+  ca_state in ('OR', 'GA', 'MO')
+  and ss_net_profit between 150 and 3000 
+  )
+ or
+  (ss_addr_sk = ca_address_sk
+  and
+  ca_country = 'United States'
+  and
+  ca_state in ('TX', 'AR', 'CA')
+  and ss_net_profit between 50 and 25000 
+  )
+ )
+;

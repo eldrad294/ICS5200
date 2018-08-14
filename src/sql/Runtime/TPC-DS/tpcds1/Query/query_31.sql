@@ -1,1 +1,49 @@
-    select * from (select  * from (select avg(ss_list_price) B1_LP             ,count(ss_list_price) B1_CNT             ,count(distinct ss_list_price) B1_CNTD       from store_sales       where ss_quantity between 0 and 5         and (ss_list_price between 107 and 107+10               or ss_coupon_amt between 1319 and 1319+1000              or ss_wholesale_cost between 60 and 60+20)) B1,      (select avg(ss_list_price) B2_LP             ,count(ss_list_price) B2_CNT             ,count(distinct ss_list_price) B2_CNTD       from store_sales       where ss_quantity between 6 and 10         and (ss_list_price between 23 and 23+10           or ss_coupon_amt between 825 and 825+1000           or ss_wholesale_cost between 43 and 43+20)) B2,      (select avg(ss_list_price) B3_LP             ,count(ss_list_price) B3_CNT             ,count(distinct ss_list_price) B3_CNTD       from store_sales       where ss_quantity between 11 and 15         and (ss_list_price between 74 and 74+10           or ss_coupon_amt between 4381 and 4381+1000           or ss_wholesale_cost between 57 and 57+20)) B3,      (select avg(ss_list_price) B4_LP             ,count(ss_list_price) B4_CNT             ,count(distinct ss_list_price) B4_CNTD       from store_sales       where ss_quantity between 16 and 20         and (ss_list_price between 89 and 89+10           or ss_coupon_amt between 3117 and 3117+1000           or ss_wholesale_cost between 68 and 68+20)) B4,      (select avg(ss_list_price) B5_LP             ,count(ss_list_price) B5_CNT             ,count(distinct ss_list_price) B5_CNTD       from store_sales       where ss_quantity between 21 and 25         and (ss_list_price between 58 and 58+10           or ss_coupon_amt between 9402 and 9402+1000           or ss_wholesale_cost between 38 and 38+20)) B5,      (select avg(ss_list_price) B6_LP             ,count(ss_list_price) B6_CNT             ,count(distinct ss_list_price) B6_CNTD       from store_sales       where ss_quantity between 26 and 30         and (ss_list_price between 64 and 64+10           or ss_coupon_amt between 5792 and 5792+1000           or ss_wholesale_cost between 73 and 73+20)) B6  ) where rownum <= 100
+with ss as
+ (select ca_county,d_qoy, d_year,sum(ss_ext_sales_price) as store_sales
+ from store_sales,date_dim,customer_address
+ where ss_sold_date_sk = d_date_sk
+  and ss_addr_sk=ca_address_sk
+ group by ca_county,d_qoy, d_year),
+ ws as
+ (select ca_county,d_qoy, d_year,sum(ws_ext_sales_price) as web_sales
+ from web_sales,date_dim,customer_address
+ where ws_sold_date_sk = d_date_sk
+  and ws_bill_addr_sk=ca_address_sk
+ group by ca_county,d_qoy, d_year)
+ select 
+        ss1.ca_county
+       ,ss1.d_year
+       ,ws2.web_sales/ws1.web_sales web_q1_q2_increase
+       ,ss2.store_sales/ss1.store_sales store_q1_q2_increase
+       ,ws3.web_sales/ws2.web_sales web_q2_q3_increase
+       ,ss3.store_sales/ss2.store_sales store_q2_q3_increase
+ from
+        ss ss1
+       ,ss ss2
+       ,ss ss3
+       ,ws ws1
+       ,ws ws2
+       ,ws ws3
+ where
+    ss1.d_qoy = 1
+    and ss1.d_year = 1999
+    and ss1.ca_county = ss2.ca_county
+    and ss2.d_qoy = 2
+    and ss2.d_year = 1999
+ and ss2.ca_county = ss3.ca_county
+    and ss3.d_qoy = 3
+    and ss3.d_year = 1999
+    and ss1.ca_county = ws1.ca_county
+    and ws1.d_qoy = 1
+    and ws1.d_year = 1999
+    and ws1.ca_county = ws2.ca_county
+    and ws2.d_qoy = 2
+    and ws2.d_year = 1999
+    and ws1.ca_county = ws3.ca_county
+    and ws3.d_qoy = 3
+    and ws3.d_year =1999
+    and case when ws1.web_sales > 0 then ws2.web_sales/ws1.web_sales else null end 
+       > case when ss1.store_sales > 0 then ss2.store_sales/ss1.store_sales else null end
+    and case when ws2.web_sales > 0 then ws3.web_sales/ws2.web_sales else null end
+       > case when ss2.store_sales > 0 then ss3.store_sales/ss2.store_sales else null end
+ order by store_q2_q3_increase;
