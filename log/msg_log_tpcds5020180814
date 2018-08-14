@@ -358,3 +358,388 @@
 2018-08-14 12:21:52: Generated query_104.sql
 2018-08-14 12:21:52: Script Complete!
 -------------------------------------
+2018-08-14 13:06:08: Connected to database [gabsam] with user [tpcds50]
+2018-08-14 13:06:08: Connection pool instantiated with [1] connections
+2018-08-14 13:06:11: ('spark.cores.max', '20')
+2018-08-14 13:06:11: ('spark.executor.memory', '2g')
+2018-08-14 13:06:11: ('spark.executor.id', 'driver')
+2018-08-14 13:06:11: ('spark.python.worker.reuse', 'True')
+2018-08-14 13:06:11: ('spark.driver.maxResultSize', '1g')
+2018-08-14 13:06:11: ('spark.default.parallelism', '80')
+2018-08-14 13:06:11: ('spark.sql.shuffle.partitions', '80')
+2018-08-14 13:06:11: ('spark.executor.instances', '20')
+2018-08-14 13:06:11: ('spark.driver.port', '9795')
+2018-08-14 13:06:11: ('spark.logConf', 'False')
+2018-08-14 13:06:11: ('spark.rdd.compress', 'True')
+2018-08-14 13:06:11: ('spark.driver.host', 'tempvcenter.rs2.com')
+2018-08-14 13:06:11: ('spark.driver.memory', '2g')
+2018-08-14 13:06:11: ('spark.serializer.objectStreamReset', '100')
+2018-08-14 13:06:11: ('spark.executor.cores', '1')
+2018-08-14 13:06:11: ('spark.master', 'spark://cisk.rs2.com:7077')
+2018-08-14 13:06:11: ('spark.submit.deployMode', 'client')
+2018-08-14 13:06:11: ('spark.app.id', 'app-20180814130610-0053')
+2018-08-14 13:06:11: ('spark.executorEnv.PYTHONPATH', '$PYTHONPATH:/home/gabriels/ICS5200')
+2018-08-14 13:06:11: ('spark.ui.showConsoleProgress', 'true')
+2018-08-14 13:06:11: ('spark.app.name', 'ICS5200')
+2018-08-14 13:06:11: TPC-DS SQLs generated for dataset of [50] Gigabytes
+2018-08-14 13:06:11: Successfully migrated catv_up.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated ccv_up.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated custv_up.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_c.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_c_t.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_ca.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_ca_t.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_ca_v.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_cc.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_cc_s.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_cc_t.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_cp.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_cp_t.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_i.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_i_s.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_i_t.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_p.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_p_t.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_s.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_s_s.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_s_t.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_w.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_w_t.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_wp.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_wp_s.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_wp_t.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_ws.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_ws_s.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated dm_ws_t.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated itemv_up.sql under src/ tree..
+2018-08-14 13:06:11: Successfully migrated iv_up.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated lf_cr.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated lf_cr_t.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated lf_cs.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated lf_cs_t.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated lf_sr.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated lf_sr_t.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated lf_ss.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated lf_ss_t.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated lf_wr.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated lf_wr_t.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated lf_ws.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated lf_ws_t.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated promv_up.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated storv_up.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated websv_up.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated webv_up.sql under src/ tree..
+2018-08-14 13:06:12: Successfully migrated wrhsv_up.sql under src/ tree..
+2018-08-14 13:06:12: Successfully finished migrating DML scripts!
+2018-08-14 13:06:12: Starting TPC-DS sql splitting
+2018-08-14 13:06:12: Generated query_1.sql
+2018-08-14 13:06:12: Generated query_2.sql
+2018-08-14 13:06:12: Generated query_3.sql
+2018-08-14 13:06:12: Generated query_4.sql
+2018-08-14 13:06:12: Generated query_5.sql
+2018-08-14 13:06:12: Generated query_6.sql
+2018-08-14 13:06:12: Generated query_7.sql
+2018-08-14 13:06:12: Generated query_8.sql
+2018-08-14 13:06:12: Generated query_9.sql
+2018-08-14 13:06:12: Generated query_10.sql
+2018-08-14 13:06:12: Generated query_11.sql
+2018-08-14 13:06:12: Generated query_12.sql
+2018-08-14 13:06:12: Generated query_13.sql
+2018-08-14 13:06:12: Generated query_14.sql
+2018-08-14 13:06:12: Generated query_15.sql
+2018-08-14 13:06:12: Generated query_16.sql
+2018-08-14 13:06:12: Generated query_17.sql
+2018-08-14 13:06:12: Generated query_18.sql
+2018-08-14 13:06:12: Generated query_19.sql
+2018-08-14 13:06:12: Generated query_20.sql
+2018-08-14 13:06:12: Generated query_21.sql
+2018-08-14 13:06:12: Generated query_22.sql
+2018-08-14 13:06:12: Generated query_23.sql
+2018-08-14 13:06:12: Generated query_24.sql
+2018-08-14 13:06:12: Generated query_25.sql
+2018-08-14 13:06:12: Generated query_26.sql
+2018-08-14 13:06:12: Generated query_27.sql
+2018-08-14 13:06:12: Generated query_28.sql
+2018-08-14 13:06:12: Generated query_29.sql
+2018-08-14 13:06:12: Generated query_30.sql
+2018-08-14 13:06:12: Generated query_31.sql
+2018-08-14 13:06:12: Generated query_32.sql
+2018-08-14 13:06:12: Generated query_33.sql
+2018-08-14 13:06:12: Generated query_34.sql
+2018-08-14 13:06:12: Generated query_35.sql
+2018-08-14 13:06:12: Generated query_36.sql
+2018-08-14 13:06:12: Generated query_37.sql
+2018-08-14 13:06:12: Generated query_38.sql
+2018-08-14 13:06:12: Generated query_39.sql
+2018-08-14 13:06:12: Generated query_40.sql
+2018-08-14 13:06:12: Generated query_41.sql
+2018-08-14 13:06:12: Generated query_42.sql
+2018-08-14 13:06:12: Generated query_43.sql
+2018-08-14 13:06:12: Generated query_44.sql
+2018-08-14 13:06:12: Generated query_45.sql
+2018-08-14 13:06:12: Generated query_46.sql
+2018-08-14 13:06:12: Generated query_47.sql
+2018-08-14 13:06:12: Generated query_48.sql
+2018-08-14 13:06:12: Generated query_49.sql
+2018-08-14 13:06:12: Generated query_50.sql
+2018-08-14 13:06:12: Generated query_51.sql
+2018-08-14 13:06:12: Generated query_52.sql
+2018-08-14 13:06:12: Generated query_53.sql
+2018-08-14 13:06:12: Generated query_54.sql
+2018-08-14 13:06:12: Generated query_55.sql
+2018-08-14 13:06:12: Generated query_56.sql
+2018-08-14 13:06:12: Generated query_57.sql
+2018-08-14 13:06:12: Generated query_58.sql
+2018-08-14 13:06:12: Generated query_59.sql
+2018-08-14 13:06:12: Generated query_60.sql
+2018-08-14 13:06:12: Generated query_61.sql
+2018-08-14 13:06:12: Generated query_62.sql
+2018-08-14 13:06:12: Generated query_63.sql
+2018-08-14 13:06:12: Generated query_64.sql
+2018-08-14 13:06:12: Generated query_65.sql
+2018-08-14 13:06:12: Generated query_66.sql
+2018-08-14 13:06:12: Generated query_67.sql
+2018-08-14 13:06:12: Generated query_68.sql
+2018-08-14 13:06:12: Generated query_69.sql
+2018-08-14 13:06:12: Generated query_70.sql
+2018-08-14 13:06:12: Generated query_71.sql
+2018-08-14 13:06:12: Generated query_72.sql
+2018-08-14 13:06:12: Generated query_73.sql
+2018-08-14 13:06:12: Generated query_74.sql
+2018-08-14 13:06:12: Generated query_75.sql
+2018-08-14 13:06:12: Generated query_76.sql
+2018-08-14 13:06:12: Generated query_77.sql
+2018-08-14 13:06:12: Generated query_78.sql
+2018-08-14 13:06:12: Generated query_79.sql
+2018-08-14 13:06:12: Generated query_80.sql
+2018-08-14 13:06:12: Generated query_81.sql
+2018-08-14 13:06:12: Generated query_82.sql
+2018-08-14 13:06:12: Generated query_83.sql
+2018-08-14 13:06:12: Generated query_84.sql
+2018-08-14 13:06:12: Generated query_85.sql
+2018-08-14 13:06:12: Generated query_86.sql
+2018-08-14 13:06:12: Generated query_87.sql
+2018-08-14 13:06:12: Generated query_88.sql
+2018-08-14 13:06:12: Generated query_89.sql
+2018-08-14 13:06:12: Generated query_90.sql
+2018-08-14 13:06:12: Generated query_91.sql
+2018-08-14 13:06:12: Generated query_92.sql
+2018-08-14 13:06:12: Generated query_93.sql
+2018-08-14 13:06:12: Generated query_94.sql
+2018-08-14 13:06:12: Generated query_95.sql
+2018-08-14 13:06:12: Generated query_96.sql
+2018-08-14 13:06:12: Generated query_97.sql
+2018-08-14 13:06:12: Generated query_98.sql
+2018-08-14 13:06:12: Generated query_99.sql
+2018-08-14 13:06:12: Generated query_100.sql
+2018-08-14 13:06:12: Generated query_101.sql
+2018-08-14 13:06:12: Generated query_102.sql
+2018-08-14 13:06:12: Generated query_103.sql
+2018-08-14 13:06:12: Generated query_104.sql
+2018-08-14 13:06:12: Script Complete!
+-------------------------------------
+2018-08-14 13:06:40: Connected to database [gabsam] with user [tpcds50]
+2018-08-14 13:06:40: Connection pool instantiated with [1] connections
+2018-08-14 13:06:43: ('spark.cores.max', '20')
+2018-08-14 13:06:43: ('spark.executor.memory', '2g')
+2018-08-14 13:06:43: ('spark.driver.host', 'cisk.rs2.com')
+2018-08-14 13:06:43: ('spark.executor.id', 'driver')
+2018-08-14 13:06:43: ('spark.python.worker.reuse', 'True')
+2018-08-14 13:06:43: ('spark.driver.maxResultSize', '1g')
+2018-08-14 13:06:43: ('spark.default.parallelism', '80')
+2018-08-14 13:06:43: ('spark.sql.shuffle.partitions', '80')
+2018-08-14 13:06:43: ('spark.executor.instances', '20')
+2018-08-14 13:06:43: ('spark.app.id', 'app-20180814130642-0054')
+2018-08-14 13:06:43: ('spark.logConf', 'False')
+2018-08-14 13:06:43: ('spark.rdd.compress', 'True')
+2018-08-14 13:06:43: ('spark.driver.memory', '2g')
+2018-08-14 13:06:43: ('spark.driver.port', '22169')
+2018-08-14 13:06:43: ('spark.serializer.objectStreamReset', '100')
+2018-08-14 13:06:43: ('spark.executor.cores', '1')
+2018-08-14 13:06:43: ('spark.master', 'spark://cisk.rs2.com:7077')
+2018-08-14 13:06:43: ('spark.submit.deployMode', 'client')
+2018-08-14 13:06:43: ('spark.executorEnv.PYTHONPATH', '$PYTHONPATH:/home/gabriels/ICS5200')
+2018-08-14 13:06:43: ('spark.ui.showConsoleProgress', 'true')
+2018-08-14 13:06:43: ('spark.app.name', 'ICS5200')
+2018-08-14 13:06:43: Table [REP_EXECUTION_PLANS] already exists..
+2018-08-14 13:06:43: Generating execution metrics for [query_1.sql]..
+2018-08-14 13:10:51: Connected to database [gabsam] with user [tpcds50]
+2018-08-14 13:10:51: Connection pool instantiated with [1] connections
+2018-08-14 13:10:54: ('spark.cores.max', '20')
+2018-08-14 13:10:54: ('spark.executor.memory', '2g')
+2018-08-14 13:10:54: ('spark.driver.host', 'cisk.rs2.com')
+2018-08-14 13:10:54: ('spark.executor.id', 'driver')
+2018-08-14 13:10:54: ('spark.python.worker.reuse', 'True')
+2018-08-14 13:10:54: ('spark.driver.port', '33304')
+2018-08-14 13:10:54: ('spark.driver.maxResultSize', '1g')
+2018-08-14 13:10:54: ('spark.sql.shuffle.partitions', '80')
+2018-08-14 13:10:54: ('spark.default.parallelism', '80')
+2018-08-14 13:10:54: ('spark.executor.instances', '20')
+2018-08-14 13:10:54: ('spark.app.id', 'app-20180814131053-0058')
+2018-08-14 13:10:54: ('spark.logConf', 'False')
+2018-08-14 13:10:54: ('spark.rdd.compress', 'True')
+2018-08-14 13:10:54: ('spark.driver.memory', '2g')
+2018-08-14 13:10:54: ('spark.serializer.objectStreamReset', '100')
+2018-08-14 13:10:54: ('spark.executor.cores', '1')
+2018-08-14 13:10:54: ('spark.master', 'spark://cisk.rs2.com:7077')
+2018-08-14 13:10:54: ('spark.submit.deployMode', 'client')
+2018-08-14 13:10:54: ('spark.executorEnv.PYTHONPATH', '$PYTHONPATH:/home/gabriels/ICS5200')
+2018-08-14 13:10:54: ('spark.ui.showConsoleProgress', 'true')
+2018-08-14 13:10:54: ('spark.app.name', 'ICS5200')
+2018-08-14 13:10:54: TPC-DS SQLs generated for dataset of [50] Gigabytes
+2018-08-14 13:10:54: Successfully migrated catv_up.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated ccv_up.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated custv_up.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_c.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_c_t.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_ca.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_ca_t.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_ca_v.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_cc.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_cc_s.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_cc_t.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_cp.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_cp_t.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_i.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_i_s.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_i_t.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_p.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_p_t.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_s.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_s_s.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_s_t.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_w.sql under src/ tree..
+2018-08-14 13:10:54: Successfully migrated dm_w_t.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated dm_wp.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated dm_wp_s.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated dm_wp_t.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated dm_ws.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated dm_ws_s.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated dm_ws_t.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated itemv_up.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated iv_up.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated lf_cr.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated lf_cr_t.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated lf_cs.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated lf_cs_t.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated lf_sr.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated lf_sr_t.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated lf_ss.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated lf_ss_t.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated lf_wr.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated lf_wr_t.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated lf_ws.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated lf_ws_t.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated promv_up.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated storv_up.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated websv_up.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated webv_up.sql under src/ tree..
+2018-08-14 13:10:55: Successfully migrated wrhsv_up.sql under src/ tree..
+2018-08-14 13:10:55: Successfully finished migrating DML scripts!
+2018-08-14 13:10:55: Starting TPC-DS sql splitting
+2018-08-14 13:10:55: Generated query_1.sql
+2018-08-14 13:10:55: Generated query_2.sql
+2018-08-14 13:10:55: Generated query_3.sql
+2018-08-14 13:10:55: Generated query_4.sql
+2018-08-14 13:10:55: Generated query_5.sql
+2018-08-14 13:10:55: Generated query_6.sql
+2018-08-14 13:10:55: Generated query_7.sql
+2018-08-14 13:10:55: Generated query_8.sql
+2018-08-14 13:10:55: Generated query_9.sql
+2018-08-14 13:10:55: Generated query_10.sql
+2018-08-14 13:10:55: Generated query_11.sql
+2018-08-14 13:10:55: Generated query_12.sql
+2018-08-14 13:10:55: Generated query_13.sql
+2018-08-14 13:10:55: Generated query_14.sql
+2018-08-14 13:10:55: Generated query_15.sql
+2018-08-14 13:10:55: Generated query_16.sql
+2018-08-14 13:10:55: Generated query_17.sql
+2018-08-14 13:10:55: Generated query_18.sql
+2018-08-14 13:10:55: Generated query_19.sql
+2018-08-14 13:10:55: Generated query_20.sql
+2018-08-14 13:10:55: Generated query_21.sql
+2018-08-14 13:10:55: Generated query_22.sql
+2018-08-14 13:10:55: Generated query_23.sql
+2018-08-14 13:10:55: Generated query_24.sql
+2018-08-14 13:10:55: Generated query_25.sql
+2018-08-14 13:10:55: Generated query_26.sql
+2018-08-14 13:10:55: Generated query_27.sql
+2018-08-14 13:10:55: Generated query_28.sql
+2018-08-14 13:10:55: Generated query_29.sql
+2018-08-14 13:10:55: Generated query_30.sql
+2018-08-14 13:10:55: Generated query_31.sql
+2018-08-14 13:10:55: Generated query_32.sql
+2018-08-14 13:10:55: Generated query_33.sql
+2018-08-14 13:10:55: Generated query_34.sql
+2018-08-14 13:10:55: Generated query_35.sql
+2018-08-14 13:10:55: Generated query_36.sql
+2018-08-14 13:10:55: Generated query_37.sql
+2018-08-14 13:10:55: Generated query_38.sql
+2018-08-14 13:10:55: Generated query_39.sql
+2018-08-14 13:10:55: Generated query_40.sql
+2018-08-14 13:10:55: Generated query_41.sql
+2018-08-14 13:10:55: Generated query_42.sql
+2018-08-14 13:10:55: Generated query_43.sql
+2018-08-14 13:10:55: Generated query_44.sql
+2018-08-14 13:10:55: Generated query_45.sql
+2018-08-14 13:10:55: Generated query_46.sql
+2018-08-14 13:10:55: Generated query_47.sql
+2018-08-14 13:10:55: Generated query_48.sql
+2018-08-14 13:10:55: Generated query_49.sql
+2018-08-14 13:10:55: Generated query_50.sql
+2018-08-14 13:10:55: Generated query_51.sql
+2018-08-14 13:10:55: Generated query_52.sql
+2018-08-14 13:10:55: Generated query_53.sql
+2018-08-14 13:10:55: Generated query_54.sql
+2018-08-14 13:10:55: Generated query_55.sql
+2018-08-14 13:10:55: Generated query_56.sql
+2018-08-14 13:10:55: Generated query_57.sql
+2018-08-14 13:10:55: Generated query_58.sql
+2018-08-14 13:10:55: Generated query_59.sql
+2018-08-14 13:10:55: Generated query_60.sql
+2018-08-14 13:10:55: Generated query_61.sql
+2018-08-14 13:10:55: Generated query_62.sql
+2018-08-14 13:10:55: Generated query_63.sql
+2018-08-14 13:10:55: Generated query_64.sql
+2018-08-14 13:10:55: Generated query_65.sql
+2018-08-14 13:10:55: Generated query_66.sql
+2018-08-14 13:10:55: Generated query_67.sql
+2018-08-14 13:10:55: Generated query_68.sql
+2018-08-14 13:10:55: Generated query_69.sql
+2018-08-14 13:10:55: Generated query_70.sql
+2018-08-14 13:10:55: Generated query_71.sql
+2018-08-14 13:10:55: Generated query_72.sql
+2018-08-14 13:10:55: Generated query_73.sql
+2018-08-14 13:10:55: Generated query_74.sql
+2018-08-14 13:10:55: Generated query_75.sql
+2018-08-14 13:10:55: Generated query_76.sql
+2018-08-14 13:10:55: Generated query_77.sql
+2018-08-14 13:10:55: Generated query_78.sql
+2018-08-14 13:10:55: Generated query_79.sql
+2018-08-14 13:10:55: Generated query_80.sql
+2018-08-14 13:10:55: Generated query_81.sql
+2018-08-14 13:10:55: Generated query_82.sql
+2018-08-14 13:10:55: Generated query_83.sql
+2018-08-14 13:10:55: Generated query_84.sql
+2018-08-14 13:10:55: Generated query_85.sql
+2018-08-14 13:10:55: Generated query_86.sql
+2018-08-14 13:10:55: Generated query_87.sql
+2018-08-14 13:10:55: Generated query_88.sql
+2018-08-14 13:10:55: Generated query_89.sql
+2018-08-14 13:10:55: Generated query_90.sql
+2018-08-14 13:10:55: Generated query_91.sql
+2018-08-14 13:10:55: Generated query_92.sql
+2018-08-14 13:10:55: Generated query_93.sql
+2018-08-14 13:10:55: Generated query_94.sql
+2018-08-14 13:10:55: Generated query_95.sql
+2018-08-14 13:10:55: Generated query_96.sql
+2018-08-14 13:10:55: Generated query_97.sql
+2018-08-14 13:10:55: Generated query_98.sql
+2018-08-14 13:10:55: Generated query_99.sql
+2018-08-14 13:10:55: Generated query_100.sql
+2018-08-14 13:10:55: Generated query_101.sql
+2018-08-14 13:10:55: Generated query_102.sql
+2018-08-14 13:10:55: Generated query_103.sql
+2018-08-14 13:10:55: Generated query_104.sql
+2018-08-14 13:10:55: Script Complete!
+-------------------------------------
