@@ -77,7 +77,9 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
         with open(query_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
             data = file.read()
-            xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
+            sql_list = data.split(';')
+            for sql in sql_list:
+                xp.generateExecutionPlan(sql=sql, binds=None, selection=None, save_to_disk=True)
     # Execute All DML
     for filename in os.listdir(dml_path):
         with open(dml_path + filename) as file:
@@ -105,7 +107,9 @@ for i in range(1, ev_loader.var_get('iterations')+1):
         with open(query_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
             data = file.read()
-            xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
+            sql_list = data.split(';')
+            for sql in sql_list:
+                xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
     # Execute All DML
     for filename in os.listdir(dml_path):
         with open(dml_path + filename) as file:
