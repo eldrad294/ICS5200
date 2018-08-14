@@ -74,8 +74,8 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
     # Execute All Queries
     for j in range(1, 104):
         filename = 'query_'+str(j)+'.sql'
-        logger.log('Generating execution metrics for [' + filename + ']..')
         with open(query_path + filename) as file:
+            logger.log('Generating execution metrics for [' + filename + ']..')
             data = file.read()
             xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
     # Execute All DML
