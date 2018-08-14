@@ -42,7 +42,7 @@
             ,sum(case when (to_char(to_date(d_date,'yyyy/mm/dd'),'yyyy-mm-dd') < to_char(to_date('[SALES_DATE]','yyyy/mm/dd'),'yyyy-mm-dd'))
 	                then inv_quantity_on_hand 
                       else 0 end) as inv_before
-            ,sum(case when (to_char(_to_date(d_date,'yyyy/mm/dd'),'yyyy-mm-dd') >= to_char(to_date('[SALES_DATE]','yyyy/mm/dd'),'yyyy-mm-dd'))
+            ,sum(case when (to_char(to_date(d_date,'yyyy/mm/dd'),'yyyy-mm-dd') >= to_char(to_date('[SALES_DATE]','yyyy/mm/dd'),'yyyy-mm-dd'))
                       then inv_quantity_on_hand 
                       else 0 end) as inv_after
    from inventory
