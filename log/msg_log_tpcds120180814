@@ -7536,3 +7536,241 @@
 2018-08-14 22:32:21: Skipped DML instruction due to following exception: [ORA-00911: invalid character] - Instruction: [ select /*ICS5200_MONITOR_HINT*/ avg(ss_quantity) ,avg(ss_ext_sales_price) ,avg(ss_ext_wholesale_cost) ,sum(ss_ext_wholesale_cost) from store_sales ,store ,customer_demographics ,household_demographics ,customer_address ,date_dim where s_store_sk = ss_store_sk and ss_sold_date_sk = d_date_sk and d_year = 2001 and((ss_hdemo_sk=hd_demo_sk and cd_demo_sk = ss_cdemo_sk and cd_marital_status = 'M' and cd_education_status = 'College' and ss_sales_price between 100.00 and 150.00 and hd_dep_count = 3 )or (ss_hdemo_sk=hd_demo_sk and cd_demo_sk = ss_cdemo_sk and cd_marital_status = 'D' and cd_education_status = 'Primary' and ss_sales_price between 50.00 and 100.00 and hd_dep_count = 1 ) or (ss_hdemo_sk=hd_demo_sk and cd_demo_sk = ss_cdemo_sk and cd_marital_status = 'W' and cd_education_status = '2 yr Degree' and ss_sales_price between 150.00 and 200.00 and hd_dep_count = 1 )) and((ss_addr_sk = ca_address_sk and ca_country = 'United States' and ca_state in ('IL', 'TN', 'TX') and ss_net_profit between 100 and 200 ) or (ss_addr_sk = ca_address_sk and ca_country = 'United States' and ca_state in ('WY', 'OH', 'ID') and ss_net_profit between 150 and 300 ) or (ss_addr_sk = ca_address_sk and ca_country = 'United States' and ca_state in ('MS', 'SC', 'IA') and ss_net_profit between 50 and 250 )) ; ]
 2018-08-14 22:32:22: Generating execution metrics for [query_14.sql]..
 2018-08-14 22:32:22: Skipped DML instruction due to following exception: [ORA-00911: invalid character] - Instruction: [ with /*ICS5200_MONITOR_HINT*/ cross_items as (select i_item_sk ss_item_sk from item, (select iss.i_brand_id brand_id ,iss.i_class_id class_id ,iss.i_category_id category_id from store_sales ,item iss ,date_dim d1 where ss_item_sk = iss.i_item_sk and ss_sold_date_sk = d1.d_date_sk and d1.d_year between 1999 AND 1999 + 2 intersect select ics.i_brand_id ,ics.i_class_id ,ics.i_category_id from catalog_sales ,item ics ,date_dim d2 where cs_item_sk = ics.i_item_sk and cs_sold_date_sk = d2.d_date_sk and d2.d_year between 1999 AND 1999 + 2 intersect select iws.i_brand_id ,iws.i_class_id ,iws.i_category_id from web_sales ,item iws ,date_dim d3 where ws_item_sk = iws.i_item_sk and ws_sold_date_sk = d3.d_date_sk and d3.d_year between 1999 AND 1999 + 2) where i_brand_id = brand_id and i_class_id = class_id and i_category_id = category_id ), avg_sales as (select avg(quantity*list_price) average_sales from (select ss_quantity quantity ,ss_list_price list_price from store_sales ,date_dim where ss_sold_date_sk = d_date_sk and d_year between 1999 and 1999 + 2 union all select cs_quantity quantity ,cs_list_price list_price from catalog_sales ,date_dim where cs_sold_date_sk = d_date_sk and d_year between 1999 and 1999 + 2 union all select ws_quantity quantity ,ws_list_price list_price from web_sales ,date_dim where ws_sold_date_sk = d_date_sk and d_year between 1999 and 1999 + 2) x) select * from ( select channel, i_brand_id,i_class_id,i_category_id,sum(sales), sum(number_sales) from( select 'store' channel, i_brand_id,i_class_id ,i_category_id,sum(ss_quantity*ss_list_price) sales , count(*) number_sales from store_sales ,item ,date_dim where ss_item_sk in (select ss_item_sk from cross_items) and ss_item_sk = i_item_sk and ss_sold_date_sk = d_date_sk and d_year = 1999+2 and d_moy = 11 group by i_brand_id,i_class_id,i_category_id having sum(ss_quantity*ss_list_price) > (select average_sales from avg_sales) union all select 'catalog' channel, i_brand_id,i_class_id,i_category_id, sum(cs_quantity*cs_list_price) sales, count(*) number_sales from catalog_sales ,item ,date_dim where cs_item_sk in (select ss_item_sk from cross_items) and cs_item_sk = i_item_sk and cs_sold_date_sk = d_date_sk and d_year = 1999+2 and d_moy = 11 group by i_brand_id,i_class_id,i_category_id having sum(cs_quantity*cs_list_price) > (select average_sales from avg_sales) union all select 'web' channel, i_brand_id,i_class_id,i_category_id, sum(ws_quantity*ws_list_price) sales , count(*) number_sales from web_sales ,item ,date_dim where ws_item_sk in (select ss_item_sk from cross_items) and ws_item_sk = i_item_sk and ws_sold_date_sk = d_date_sk and d_year = 1999+2 and d_moy = 11 group by i_brand_id,i_class_id,i_category_id having sum(ws_quantity*ws_list_price) > (select average_sales from avg_sales) ) y group by rollup (channel, i_brand_id,i_class_id,i_category_id) order by channel,i_brand_id,i_class_id,i_category_id ) where rownum <= 100; with cross_items as (select i_item_sk ss_item_sk from item, (select iss.i_brand_id brand_id ,iss.i_class_id class_id ,iss.i_category_id category_id from store_sales ,item iss ,date_dim d1 where ss_item_sk = iss.i_item_sk and ss_sold_date_sk = d1.d_date_sk and d1.d_year between 1999 AND 1999 + 2 intersect select ics.i_brand_id ,ics.i_class_id ,ics.i_category_id from catalog_sales ,item ics ,date_dim d2 where cs_item_sk = ics.i_item_sk and cs_sold_date_sk = d2.d_date_sk and d2.d_year between 1999 AND 1999 + 2 intersect select iws.i_brand_id ,iws.i_class_id ,iws.i_category_id from web_sales ,item iws ,date_dim d3 where ws_item_sk = iws.i_item_sk and ws_sold_date_sk = d3.d_date_sk and d3.d_year between 1999 AND 1999 + 2) x where i_brand_id = brand_id and i_class_id = class_id and i_category_id = category_id ), avg_sales as (select avg(quantity*list_price) average_sales from (select ss_quantity quantity ,ss_list_price list_price from store_sales ,date_dim where ss_sold_date_sk = d_date_sk and d_year between 1999 and 1999 + 2 union all select cs_quantity quantity ,cs_list_price list_price from catalog_sales ,date_dim where cs_sold_date_sk = d_date_sk and d_year between 1999 and 1999 + 2 union all select ws_quantity quantity ,ws_list_price list_price from web_sales ,date_dim where ws_sold_date_sk = d_date_sk and d_year between 1999 and 1999 + 2) x) select * from ( select this_year.* from (select 'store' channel, i_brand_id,i_class_id,i_category_id ,sum(ss_quantity*ss_list_price) sales, count(*) number_sales from store_sales ,item ,date_dim where ss_item_sk in (select ss_item_sk from cross_items) and ss_item_sk = i_item_sk and ss_sold_date_sk = d_date_sk and d_week_seq = (select d_week_seq from date_dim where d_year = 1999 + 1 and d_moy = 12 and d_dom = 3) group by i_brand_id,i_class_id,i_category_id having sum(ss_quantity*ss_list_price) > (select average_sales from avg_sales)) this_year, (select 'store' channel, i_brand_id,i_class_id ,i_category_id, sum(ss_quantity*ss_list_price) sales, count(*) number_sales from store_sales ,item ,date_dim where ss_item_sk in (select ss_item_sk from cross_items) and ss_item_sk = i_item_sk and ss_sold_date_sk = d_date_sk and d_week_seq = (select d_week_seq from date_dim where d_year = 1999 and d_moy = 12 and d_dom = 3) group by i_brand_id,i_class_id,i_category_id having sum(ss_quantity*ss_list_price) > (select average_sales from avg_sales)) last_year where this_year.i_brand_id= last_year.i_brand_id and this_year.i_class_id = last_year.i_class_id and this_year.i_category_id = last_year.i_category_id order by this_year.channel, this_year.i_brand_id, this_year.i_class_id, this_year.i_category_id ) where rownum <= 100; ]
+2018-08-14 22:46:01: Connected to database [gabsam] with user [tpcds1]
+2018-08-14 22:46:01: Connection pool instantiated with [1] connections
+2018-08-14 22:46:04: ('spark.cores.max', '20')
+2018-08-14 22:46:04: ('spark.executor.memory', '2g')
+2018-08-14 22:46:04: ('spark.executor.id', 'driver')
+2018-08-14 22:46:04: ('spark.python.worker.reuse', 'True')
+2018-08-14 22:46:04: ('spark.driver.port', '9961')
+2018-08-14 22:46:04: ('spark.driver.maxResultSize', '1g')
+2018-08-14 22:46:04: ('spark.default.parallelism', '80')
+2018-08-14 22:46:04: ('spark.sql.shuffle.partitions', '80')
+2018-08-14 22:46:04: ('spark.executor.instances', '20')
+2018-08-14 22:46:04: ('spark.app.id', 'app-20180814224603-0041')
+2018-08-14 22:46:04: ('spark.logConf', 'False')
+2018-08-14 22:46:04: ('spark.rdd.compress', 'True')
+2018-08-14 22:46:04: ('spark.driver.host', 'tempvcenter.rs2.com')
+2018-08-14 22:46:04: ('spark.driver.memory', '2g')
+2018-08-14 22:46:04: ('spark.serializer.objectStreamReset', '100')
+2018-08-14 22:46:04: ('spark.executor.cores', '1')
+2018-08-14 22:46:04: ('spark.master', 'spark://cisk.rs2.com:7077')
+2018-08-14 22:46:04: ('spark.submit.deployMode', 'client')
+2018-08-14 22:46:04: ('spark.executorEnv.PYTHONPATH', '$PYTHONPATH:/home/gabriels/ICS5200')
+2018-08-14 22:46:04: ('spark.ui.showConsoleProgress', 'true')
+2018-08-14 22:46:04: ('spark.app.name', 'ICS5200')
+2018-08-14 22:46:04: TPC-DS SQLs generated for dataset of [1] Gigabytes
+2018-08-14 22:46:04: Successfully migrated catv_up.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated ccv_up.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated custv_up.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_c.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_c_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_ca.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_ca_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_ca_v.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_cc.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_cc_s.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_cc_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_cp.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_cp_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_i.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_i_s.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_i_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_p.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_p_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_s.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_s_s.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_s_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_w.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_w_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_wp.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_wp_s.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_wp_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_ws.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_ws_s.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated dm_ws_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated itemv_up.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated iv_up.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated lf_cr.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated lf_cr_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated lf_cs.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated lf_cs_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated lf_sr.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated lf_sr_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated lf_ss.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated lf_ss_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated lf_wr.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated lf_wr_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated lf_ws.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated lf_ws_t.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated promv_up.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated storv_up.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated websv_up.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated webv_up.sql under src/ tree..
+2018-08-14 22:46:04: Successfully migrated wrhsv_up.sql under src/ tree..
+2018-08-14 22:46:04: Successfully finished migrating DML scripts!
+2018-08-14 22:46:04: Starting TPC-DS sql splitting
+2018-08-14 22:46:04: Generated query_1.sql
+2018-08-14 22:46:04: Generated query_2.sql
+2018-08-14 22:46:04: Generated query_3.sql
+2018-08-14 22:46:04: Generated query_4.sql
+2018-08-14 22:46:04: Generated query_5.sql
+2018-08-14 22:46:04: Generated query_6.sql
+2018-08-14 22:46:04: Generated query_7.sql
+2018-08-14 22:46:04: Generated query_8.sql
+2018-08-14 22:46:04: Generated query_9.sql
+2018-08-14 22:46:04: Generated query_10.sql
+2018-08-14 22:46:04: Generated query_11.sql
+2018-08-14 22:46:04: Generated query_12.sql
+2018-08-14 22:46:04: Generated query_13.sql
+2018-08-14 22:46:04: Generated query_14.sql
+2018-08-14 22:46:04: Generated query_15.sql
+2018-08-14 22:46:04: Generated query_16.sql
+2018-08-14 22:46:04: Generated query_17.sql
+2018-08-14 22:46:04: Generated query_18.sql
+2018-08-14 22:46:04: Generated query_19.sql
+2018-08-14 22:46:04: Generated query_20.sql
+2018-08-14 22:46:04: Generated query_21.sql
+2018-08-14 22:46:04: Generated query_22.sql
+2018-08-14 22:46:04: Generated query_23.sql
+2018-08-14 22:46:04: Generated query_24.sql
+2018-08-14 22:46:04: Generated query_25.sql
+2018-08-14 22:46:04: Generated query_26.sql
+2018-08-14 22:46:04: Generated query_27.sql
+2018-08-14 22:46:04: Generated query_28.sql
+2018-08-14 22:46:04: Generated query_29.sql
+2018-08-14 22:46:04: Generated query_30.sql
+2018-08-14 22:46:04: Generated query_31.sql
+2018-08-14 22:46:04: Generated query_32.sql
+2018-08-14 22:46:04: Generated query_33.sql
+2018-08-14 22:46:04: Generated query_34.sql
+2018-08-14 22:46:04: Generated query_35.sql
+2018-08-14 22:46:04: Generated query_36.sql
+2018-08-14 22:46:04: Generated query_37.sql
+2018-08-14 22:46:04: Generated query_38.sql
+2018-08-14 22:46:04: Generated query_39.sql
+2018-08-14 22:46:04: Generated query_40.sql
+2018-08-14 22:46:04: Generated query_41.sql
+2018-08-14 22:46:04: Generated query_42.sql
+2018-08-14 22:46:04: Generated query_43.sql
+2018-08-14 22:46:04: Generated query_44.sql
+2018-08-14 22:46:04: Generated query_45.sql
+2018-08-14 22:46:04: Generated query_46.sql
+2018-08-14 22:46:04: Generated query_47.sql
+2018-08-14 22:46:04: Generated query_48.sql
+2018-08-14 22:46:04: Generated query_49.sql
+2018-08-14 22:46:04: Generated query_50.sql
+2018-08-14 22:46:04: Generated query_51.sql
+2018-08-14 22:46:04: Generated query_52.sql
+2018-08-14 22:46:04: Generated query_53.sql
+2018-08-14 22:46:04: Generated query_54.sql
+2018-08-14 22:46:04: Generated query_55.sql
+2018-08-14 22:46:04: Generated query_56.sql
+2018-08-14 22:46:04: Generated query_57.sql
+2018-08-14 22:46:04: Generated query_58.sql
+2018-08-14 22:46:04: Generated query_59.sql
+2018-08-14 22:46:04: Generated query_60.sql
+2018-08-14 22:46:04: Generated query_61.sql
+2018-08-14 22:46:04: Generated query_62.sql
+2018-08-14 22:46:04: Generated query_63.sql
+2018-08-14 22:46:04: Generated query_64.sql
+2018-08-14 22:46:04: Generated query_65.sql
+2018-08-14 22:46:04: Generated query_66.sql
+2018-08-14 22:46:04: Generated query_67.sql
+2018-08-14 22:46:04: Generated query_68.sql
+2018-08-14 22:46:04: Generated query_69.sql
+2018-08-14 22:46:04: Generated query_70.sql
+2018-08-14 22:46:04: Generated query_71.sql
+2018-08-14 22:46:04: Generated query_72.sql
+2018-08-14 22:46:04: Generated query_73.sql
+2018-08-14 22:46:04: Generated query_74.sql
+2018-08-14 22:46:04: Generated query_75.sql
+2018-08-14 22:46:04: Generated query_76.sql
+2018-08-14 22:46:04: Generated query_77.sql
+2018-08-14 22:46:04: Generated query_78.sql
+2018-08-14 22:46:04: Generated query_79.sql
+2018-08-14 22:46:04: Generated query_80.sql
+2018-08-14 22:46:04: Generated query_81.sql
+2018-08-14 22:46:04: Generated query_82.sql
+2018-08-14 22:46:04: Generated query_83.sql
+2018-08-14 22:46:04: Generated query_84.sql
+2018-08-14 22:46:04: Generated query_85.sql
+2018-08-14 22:46:04: Generated query_86.sql
+2018-08-14 22:46:04: Generated query_87.sql
+2018-08-14 22:46:04: Generated query_88.sql
+2018-08-14 22:46:04: Generated query_89.sql
+2018-08-14 22:46:04: Generated query_90.sql
+2018-08-14 22:46:04: Generated query_91.sql
+2018-08-14 22:46:04: Generated query_92.sql
+2018-08-14 22:46:04: Generated query_93.sql
+2018-08-14 22:46:04: Generated query_94.sql
+2018-08-14 22:46:04: Generated query_95.sql
+2018-08-14 22:46:04: Generated query_96.sql
+2018-08-14 22:46:04: Generated query_97.sql
+2018-08-14 22:46:04: Generated query_98.sql
+2018-08-14 22:46:04: Generated query_99.sql
+2018-08-14 22:46:04: Script Complete!
+-------------------------------------
+2018-08-14 22:46:15: Connected to database [gabsam] with user [tpcds1]
+2018-08-14 22:46:15: Connection pool instantiated with [1] connections
+2018-08-14 22:46:17: ('spark.cores.max', '20')
+2018-08-14 22:46:17: ('spark.executor.memory', '2g')
+2018-08-14 22:46:17: ('spark.driver.host', 'cisk.rs2.com')
+2018-08-14 22:46:17: ('spark.app.id', 'app-20180814224617-0042')
+2018-08-14 22:46:17: ('spark.executor.id', 'driver')
+2018-08-14 22:46:17: ('spark.python.worker.reuse', 'True')
+2018-08-14 22:46:17: ('spark.driver.maxResultSize', '1g')
+2018-08-14 22:46:17: ('spark.default.parallelism', '80')
+2018-08-14 22:46:17: ('spark.sql.shuffle.partitions', '80')
+2018-08-14 22:46:17: ('spark.executor.instances', '20')
+2018-08-14 22:46:17: ('spark.driver.port', '13707')
+2018-08-14 22:46:17: ('spark.logConf', 'False')
+2018-08-14 22:46:17: ('spark.rdd.compress', 'True')
+2018-08-14 22:46:17: ('spark.driver.memory', '2g')
+2018-08-14 22:46:17: ('spark.serializer.objectStreamReset', '100')
+2018-08-14 22:46:17: ('spark.executor.cores', '1')
+2018-08-14 22:46:17: ('spark.master', 'spark://cisk.rs2.com:7077')
+2018-08-14 22:46:17: ('spark.submit.deployMode', 'client')
+2018-08-14 22:46:17: ('spark.executorEnv.PYTHONPATH', '$PYTHONPATH:/home/gabriels/ICS5200')
+2018-08-14 22:46:17: ('spark.ui.showConsoleProgress', 'true')
+2018-08-14 22:46:17: ('spark.app.name', 'ICS5200')
+2018-08-14 22:46:17: Table [REP_EXECUTION_PLANS] already exists..
+2018-08-14 22:46:17: Generating execution metrics for [query_1.sql]..
+2018-08-14 22:46:18: Generating execution metrics for [query_2.sql]..
+2018-08-14 22:46:22: Generating execution metrics for [query_3.sql]..
+2018-08-14 22:46:22: Generating execution metrics for [query_4.sql]..
+2018-08-14 22:46:27: Generating execution metrics for [query_5.sql]..
+2018-08-14 22:46:31: Generating execution metrics for [query_6.sql]..
+2018-08-14 22:46:31: Generating execution metrics for [query_7.sql]..
+2018-08-14 22:46:31: Generating execution metrics for [query_8.sql]..
+2018-08-14 22:46:31: Generating execution metrics for [query_9.sql]..
+2018-08-14 22:46:34: Generating execution metrics for [query_10.sql]..
+2018-08-14 22:46:34: Generating execution metrics for [query_11.sql]..
+2018-08-14 22:46:37: Generating execution metrics for [query_12.sql]..
+2018-08-14 22:46:37: Generating execution metrics for [query_13.sql]..
+2018-08-14 22:46:40: Generating execution metrics for [query_14.sql]..
+2018-08-14 22:46:40: Skipped DML instruction due to following exception: [ORA-00933: SQL command not properly ended] - Instruction: [ with /*ICS5200_MONITOR_HINT*/ cross_items as (select i_item_sk ss_item_sk from item, (select iss.i_brand_id brand_id ,iss.i_class_id class_id ,iss.i_category_id category_id from store_sales ,item iss ,date_dim d1 where ss_item_sk = iss.i_item_sk and ss_sold_date_sk = d1.d_date_sk and d1.d_year between 1999 AND 1999 + 2 intersect select ics.i_brand_id ,ics.i_class_id ,ics.i_category_id from catalog_sales ,item ics ,date_dim d2 where cs_item_sk = ics.i_item_sk and cs_sold_date_sk = d2.d_date_sk and d2.d_year between 1999 AND 1999 + 2 intersect select iws.i_brand_id ,iws.i_class_id ,iws.i_category_id from web_sales ,item iws ,date_dim d3 where ws_item_sk = iws.i_item_sk and ws_sold_date_sk = d3.d_date_sk and d3.d_year between 1999 AND 1999 + 2) where i_brand_id = brand_id and i_class_id = class_id and i_category_id = category_id ), avg_sales as (select avg(quantity*list_price) average_sales from (select ss_quantity quantity ,ss_list_price list_price from store_sales ,date_dim where ss_sold_date_sk = d_date_sk and d_year between 1999 and 1999 + 2 union all select cs_quantity quantity ,cs_list_price list_price from catalog_sales ,date_dim where cs_sold_date_sk = d_date_sk and d_year between 1999 and 1999 + 2 union all select ws_quantity quantity ,ws_list_price list_price from web_sales ,date_dim where ws_sold_date_sk = d_date_sk and d_year between 1999 and 1999 + 2) x) select * from ( select channel, i_brand_id,i_class_id,i_category_id,sum(sales), sum(number_sales) from( select 'store' channel, i_brand_id,i_class_id ,i_category_id,sum(ss_quantity*ss_list_price) sales , count(*) number_sales from store_sales ,item ,date_dim where ss_item_sk in (select ss_item_sk from cross_items) and ss_item_sk = i_item_sk and ss_sold_date_sk = d_date_sk and d_year = 1999+2 and d_moy = 11 group by i_brand_id,i_class_id,i_category_id having sum(ss_quantity*ss_list_price) > (select average_sales from avg_sales) union all select 'catalog' channel, i_brand_id,i_class_id,i_category_id, sum(cs_quantity*cs_list_price) sales, count(*) number_sales from catalog_sales ,item ,date_dim where cs_item_sk in (select ss_item_sk from cross_items) and cs_item_sk = i_item_sk and cs_sold_date_sk = d_date_sk and d_year = 1999+2 and d_moy = 11 group by i_brand_id,i_class_id,i_category_id having sum(cs_quantity*cs_list_price) > (select average_sales from avg_sales) union all select 'web' channel, i_brand_id,i_class_id,i_category_id, sum(ws_quantity*ws_list_price) sales , count(*) number_sales from web_sales ,item ,date_dim where ws_item_sk in (select ss_item_sk from cross_items) and ws_item_sk = i_item_sk and ws_sold_date_sk = d_date_sk and d_year = 1999+2 and d_moy = 11 group by i_brand_id,i_class_id,i_category_id having sum(ws_quantity*ws_list_price) > (select average_sales from avg_sales) ) y group by rollup (channel, i_brand_id,i_class_id,i_category_id) order by channel,i_brand_id,i_class_id,i_category_id ) where rownum <= 100 with cross_items as (select i_item_sk ss_item_sk from item, (select iss.i_brand_id brand_id ,iss.i_class_id class_id ,iss.i_category_id category_id from store_sales ,item iss ,date_dim d1 where ss_item_sk = iss.i_item_sk and ss_sold_date_sk = d1.d_date_sk and d1.d_year between 1999 AND 1999 + 2 intersect select ics.i_brand_id ,ics.i_class_id ,ics.i_category_id from catalog_sales ,item ics ,date_dim d2 where cs_item_sk = ics.i_item_sk and cs_sold_date_sk = d2.d_date_sk and d2.d_year between 1999 AND 1999 + 2 intersect select iws.i_brand_id ,iws.i_class_id ,iws.i_category_id from web_sales ,item iws ,date_dim d3 where ws_item_sk = iws.i_item_sk and ws_sold_date_sk = d3.d_date_sk and d3.d_year between 1999 AND 1999 + 2) x where i_brand_id = brand_id and i_class_id = class_id and i_category_id = category_id ), avg_sales as (select avg(quantity*list_price) average_sales from (select ss_quantity quantity ,ss_list_price list_price from store_sales ,date_dim where ss_sold_date_sk = d_date_sk and d_year between 1999 and 1999 + 2 union all select cs_quantity quantity ,cs_list_price list_price from catalog_sales ,date_dim where cs_sold_date_sk = d_date_sk and d_year between 1999 and 1999 + 2 union all select ws_quantity quantity ,ws_list_price list_price from web_sales ,date_dim where ws_sold_date_sk = d_date_sk and d_year between 1999 and 1999 + 2) x) select * from ( select this_year.* from (select 'store' channel, i_brand_id,i_class_id,i_category_id ,sum(ss_quantity*ss_list_price) sales, count(*) number_sales from store_sales ,item ,date_dim where ss_item_sk in (select ss_item_sk from cross_items) and ss_item_sk = i_item_sk and ss_sold_date_sk = d_date_sk and d_week_seq = (select d_week_seq from date_dim where d_year = 1999 + 1 and d_moy = 12 and d_dom = 3) group by i_brand_id,i_class_id,i_category_id having sum(ss_quantity*ss_list_price) > (select average_sales from avg_sales)) this_year, (select 'store' channel, i_brand_id,i_class_id ,i_category_id, sum(ss_quantity*ss_list_price) sales, count(*) number_sales from store_sales ,item ,date_dim where ss_item_sk in (select ss_item_sk from cross_items) and ss_item_sk = i_item_sk and ss_sold_date_sk = d_date_sk and d_week_seq = (select d_week_seq from date_dim where d_year = 1999 and d_moy = 12 and d_dom = 3) group by i_brand_id,i_class_id,i_category_id having sum(ss_quantity*ss_list_price) > (select average_sales from avg_sales)) last_year where this_year.i_brand_id= last_year.i_brand_id and this_year.i_class_id = last_year.i_class_id and this_year.i_category_id = last_year.i_category_id order by this_year.channel, this_year.i_brand_id, this_year.i_class_id, this_year.i_category_id ) where rownum <= 100 ]
+2018-08-14 22:46:40: Generating execution metrics for [query_15.sql]..
+2018-08-14 22:46:40: Generating execution metrics for [query_16.sql]..
+2018-08-14 22:46:41: Generating execution metrics for [query_17.sql]..
+2018-08-14 22:46:41: Generating execution metrics for [query_18.sql]..
+2018-08-14 22:46:42: Generating execution metrics for [query_19.sql]..
+2018-08-14 22:46:42: Generating execution metrics for [query_20.sql]..
+2018-08-14 22:46:42: Generating execution metrics for [query_21.sql]..
+2018-08-14 22:46:42: Generating execution metrics for [query_22.sql]..
+2018-08-14 22:46:47: Generating execution metrics for [query_23.sql]..
+2018-08-14 22:46:47: Skipped DML instruction due to following exception: [ORA-00933: SQL command not properly ended] - Instruction: [ with /*ICS5200_MONITOR_HINT*/ frequent_ss_items as (select substr(i_item_desc,1,30) itemdesc,i_item_sk item_sk,d_date solddate,count(*) cnt from store_sales ,date_dim ,item where ss_sold_date_sk = d_date_sk and ss_item_sk = i_item_sk and d_year in (2000,2000+1,2000+2,2000+3) group by substr(i_item_desc,1,30),i_item_sk,d_date having count(*) >4), max_store_sales as (select max(csales) tpcds_cmax from (select c_customer_sk,sum(ss_quantity*ss_sales_price) csales from store_sales ,customer ,date_dim where ss_customer_sk = c_customer_sk and ss_sold_date_sk = d_date_sk and d_year in (2000,2000+1,2000+2,2000+3) group by c_customer_sk)), best_ss_customer as (select c_customer_sk,sum(ss_quantity*ss_sales_price) ssales from store_sales ,customer where ss_customer_sk = c_customer_sk group by c_customer_sk having sum(ss_quantity*ss_sales_price) > (95/100.0) * (select * from max_store_sales)) select * from ( select sum(sales) from (select cs_quantity*cs_list_price sales from catalog_sales ,date_dim where d_year = 2000 and d_moy = 7 and cs_sold_date_sk = d_date_sk and cs_item_sk in (select item_sk from frequent_ss_items) and cs_bill_customer_sk in (select c_customer_sk from best_ss_customer) union all select ws_quantity*ws_list_price sales from web_sales ,date_dim where d_year = 2000 and d_moy = 7 and ws_sold_date_sk = d_date_sk and ws_item_sk in (select item_sk from frequent_ss_items) and ws_bill_customer_sk in (select c_customer_sk from best_ss_customer)) ) where rownum <= 100 with frequent_ss_items as (select substr(i_item_desc,1,30) itemdesc,i_item_sk item_sk,d_date solddate,count(*) cnt from store_sales ,date_dim ,item where ss_sold_date_sk = d_date_sk and ss_item_sk = i_item_sk and d_year in (2000,2000 + 1,2000 + 2,2000 + 3) group by substr(i_item_desc,1,30),i_item_sk,d_date having count(*) >4), max_store_sales as (select max(csales) tpcds_cmax from (select c_customer_sk,sum(ss_quantity*ss_sales_price) csales from store_sales ,customer ,date_dim where ss_customer_sk = c_customer_sk and ss_sold_date_sk = d_date_sk and d_year in (2000,2000+1,2000+2,2000+3) group by c_customer_sk)), best_ss_customer as (select c_customer_sk,sum(ss_quantity*ss_sales_price) ssales from store_sales ,customer where ss_customer_sk = c_customer_sk group by c_customer_sk having sum(ss_quantity*ss_sales_price) > (95/100.0) * (select * from max_store_sales)) select * from ( select c_last_name,c_first_name,sales from (select c_last_name,c_first_name,sum(cs_quantity*cs_list_price) sales from catalog_sales ,customer ,date_dim where d_year = 2000 and d_moy = 7 and cs_sold_date_sk = d_date_sk and cs_item_sk in (select item_sk from frequent_ss_items) and cs_bill_customer_sk in (select c_customer_sk from best_ss_customer) and cs_bill_customer_sk = c_customer_sk group by c_last_name,c_first_name union all select c_last_name,c_first_name,sum(ws_quantity*ws_list_price) sales from web_sales ,customer ,date_dim where d_year = 2000 and d_moy = 7 and ws_sold_date_sk = d_date_sk and ws_item_sk in (select item_sk from frequent_ss_items) and ws_bill_customer_sk in (select c_customer_sk from best_ss_customer) and ws_bill_customer_sk = c_customer_sk group by c_last_name,c_first_name) order by c_last_name,c_first_name,sales ) where rownum <= 100 ]
+2018-08-14 22:46:48: Generating execution metrics for [query_24.sql]..
+2018-08-14 22:46:48: Skipped DML instruction due to following exception: [ORA-00933: SQL command not properly ended] - Instruction: [ with /*ICS5200_MONITOR_HINT*/ ssales as (select c_last_name ,c_first_name ,s_store_name ,ca_state ,s_state ,i_color ,i_current_price ,i_manager_id ,i_units ,i_size ,sum(ss_net_paid) netpaid from store_sales ,store_returns ,store ,item ,customer ,customer_address where ss_ticket_number = sr_ticket_number and ss_item_sk = sr_item_sk and ss_customer_sk = c_customer_sk and ss_item_sk = i_item_sk and ss_store_sk = s_store_sk and c_current_addr_sk = ca_address_sk and c_birth_country <> upper(ca_country) and s_zip = ca_zip and s_market_id=5 group by c_last_name ,c_first_name ,s_store_name ,ca_state ,s_state ,i_color ,i_current_price ,i_manager_id ,i_units ,i_size) select c_last_name ,c_first_name ,s_store_name ,sum(netpaid) paid from ssales where i_color = 'aquamarine' group by c_last_name ,c_first_name ,s_store_name having sum(netpaid) > (select 0.05*avg(netpaid) from ssales) order by c_last_name ,c_first_name ,s_store_name with ssales as (select c_last_name ,c_first_name ,s_store_name ,ca_state ,s_state ,i_color ,i_current_price ,i_manager_id ,i_units ,i_size ,sum(ss_net_paid) netpaid from store_sales ,store_returns ,store ,item ,customer ,customer_address where ss_ticket_number = sr_ticket_number and ss_item_sk = sr_item_sk and ss_customer_sk = c_customer_sk and ss_item_sk = i_item_sk and ss_store_sk = s_store_sk and c_current_addr_sk = ca_address_sk and c_birth_country <> upper(ca_country) and s_zip = ca_zip and s_market_id = 5 group by c_last_name ,c_first_name ,s_store_name ,ca_state ,s_state ,i_color ,i_current_price ,i_manager_id ,i_units ,i_size) select c_last_name ,c_first_name ,s_store_name ,sum(netpaid) paid from ssales where i_color = 'seashell' group by c_last_name ,c_first_name ,s_store_name having sum(netpaid) > (select 0.05*avg(netpaid) from ssales) order by c_last_name ,c_first_name ,s_store_name ]
+2018-08-14 22:46:48: Generating execution metrics for [query_25.sql]..
+2018-08-14 22:46:48: Generating execution metrics for [query_26.sql]..
+2018-08-14 22:46:48: Generating execution metrics for [query_27.sql]..
+2018-08-14 22:46:49: Generating execution metrics for [query_28.sql]..
+2018-08-14 22:46:51: Generating execution metrics for [query_29.sql]..
+2018-08-14 22:46:51: Generating execution metrics for [query_30.sql]..
+2018-08-14 22:46:51: Skipped DML instruction due to following exception: [ORA-00904: "C_LAST_REVIEW_DATE_SK": invalid identifier] - Instruction: [ with /*ICS5200_MONITOR_HINT*/ customer_total_return as (select wr_returning_customer_sk as ctr_customer_sk ,ca_state as ctr_state, sum(wr_return_amt) as ctr_total_return from web_returns ,date_dim ,customer_address where wr_returned_date_sk = d_date_sk and d_year =2000 and wr_returning_addr_sk = ca_address_sk group by wr_returning_customer_sk ,ca_state) select * from ( select c_customer_id,c_salutation,c_first_name,c_last_name,c_preferred_cust_flag ,c_birth_day,c_birth_month,c_birth_year,c_birth_country,c_login,c_email_address ,c_last_review_date_sk,ctr_total_return from customer_total_return ctr1 ,customer_address ,customer where ctr1.ctr_total_return > (select avg(ctr_total_return)*1.2 from customer_total_return ctr2 where ctr1.ctr_state = ctr2.ctr_state) and ca_address_sk = c_current_addr_sk and ca_state = 'AR' and ctr1.ctr_customer_sk = c_customer_sk order by c_customer_id,c_salutation,c_first_name,c_last_name,c_preferred_cust_flag ,c_birth_day,c_birth_month,c_birth_year,c_birth_country,c_login,c_email_address ,c_last_review_date_sk,ctr_total_return ) where rownum <= 100 ]
+2018-08-14 22:46:51: Generating execution metrics for [query_31.sql]..
+2018-08-14 22:46:52: Generating execution metrics for [query_32.sql]..
+2018-08-14 22:46:52: Generating execution metrics for [query_33.sql]..
+2018-08-14 22:46:53: Generating execution metrics for [query_34.sql]..
+2018-08-14 22:46:53: Generating execution metrics for [query_35.sql]..
