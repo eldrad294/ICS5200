@@ -72,12 +72,12 @@ query_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.v
 dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/DML/"
 for i in range(1, ev_loader.var_get('iterations') + 1):
     # Execute All Queries
-    for j, filename in enumerate(os.listdir(query_path)):
-        if j != 0:
-            logger.log('Generating execution metrics for [' + filename + ']..')
-            with open(query_path + filename) as file:
-                data = file.read()
-                xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
+    for j in range(1, 104):
+        filename = 'query_'+str(j)+'.sql'
+        logger.log('Generating execution metrics for [' + filename + ']..')
+        with open(query_path + filename) as file:
+            data = file.read()
+            xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
     # Execute All DML
     for filename in os.listdir(dml_path):
         logger.log('Generating execution metrics for [' + filename + ']..')
@@ -101,12 +101,11 @@ SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 # Execute Queries + DML for n number of iterations
 for i in range(1, ev_loader.var_get('iterations')+1):
     # Execute All Queries
-    for j, filename in enumerate(os.listdir(query_path)):
-        if j != 0:
-            logger.log('Generating execution metrics for [' + filename + ']..')
-            with open(query_path + filename) as file:
-                data = file.read()
-                xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
+    for filename in os.listdir(query_path):
+        logger.log('Generating execution metrics for [' + filename + ']..')
+        with open(query_path + filename) as file:
+            data = file.read()
+            xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
     # Execute All DML
     for filename in os.listdir(dml_path):
         logger.log('Generating execution metrics for [' + filename + ']..')
