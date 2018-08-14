@@ -78,7 +78,6 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
             logger.log('Generating execution metrics for [' + filename + ']..')
             data = file.read()
             sql_list = data.split(';')
-            print(sql_list)
             for sql in sql_list:
                 sql = sql.replace("\n", " ")
                 if sql.isspace() is not True and sql != "":
