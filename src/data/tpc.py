@@ -153,7 +153,7 @@ class TPC_Wrapper:
                 with open(self.__ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + self.__ev_loader.var_get("user") + "/Query/query_"+str(i+1)+".sql", "w") as f:
                     #
                     # Transform queries utilizing data logic so as to use 'to_date' instead of cast
-                    sql = self.__convert_cast_to_date(sql=sql)
+                    sql = self.__convert_cast_to_date(sql=sql,tpc_type=tpc_type)
                     #
                     # Write to file
                     f.write(sql)
@@ -219,12 +219,17 @@ class TPC_Wrapper:
             raise ValueError("File name list does not match list of file extensions!")
         return file_names, file_extensions
     #
-    def __convert_cast_to_date(self, sql):
-        sql = sql.replace(" days)","),'yyyy-mm-dd')")
-        sql = sql.replace("as date) +",",'yyyy/mm/dd') +")
-        sql = sql.replace("as date)", ",'yyyy/mm/dd'),'yyyy-mm-dd')")
-        sql = sql.replace("(cast('", "to_char((to_date('")
-        sql = sql.replace("cast('","to_char(to_date('")
+    def __convert_cast_to_date(self, sql, tpc_type):
+        if tpc_type == self.__supported_tpc_types[0]:
+            sql = sql.replace(" days)","),'yyyy-mm-dd')")
+            sql = sql.replace("as date) +",",'yyyy/mm/dd') +")
+            sql = sql.replace("as date)", ",'yyyy/mm/dd'),'yyyy-mm-dd')")
+            sql = sql.replace("(cast('", "to_char((to_date('")
+            sql = sql.replace("cast('","to_char(to_date('")
+            sql = sql.replace("cast ('","to_char(to_date('")
+            sql = sql.replace("cast(d_date","to_char(to_date(d_date")
+        else:
+            raise NotImplementedError('This logic is not yet supported!')
         return sql
     #
     def __rename(self, oldfilename):
