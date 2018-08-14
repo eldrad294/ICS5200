@@ -146,9 +146,9 @@ class TPC_Wrapper:
             with open(query0_path) as f:
                 read_data = f.read()
             #
-            read_data = read_data.replace("\n"," ")
+            #read_data = read_data.replace("\n"," ")
             #
-            sql_list = read_data.split(";")
+            sql_list = read_data.split("\n\n\n\n")
             for i, sql in enumerate(sql_list):
                 with open(self.__ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + self.__ev_loader.var_get("user") + "/Query/query_"+str(i+1)+".sql", "w") as f:
                     #
