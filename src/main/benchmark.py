@@ -81,7 +81,7 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
             print(sql_list)
             for sql in sql_list:
                 sql = sql.replace("\n", " ")
-                if sql.isspace() is False:
+                if sql.isspace() is not True and sql != "":
                     xp.generateExecutionPlan(sql=sql, binds=None, selection=None, save_to_disk=True)
     # Execute All DML
     for filename in os.listdir(dml_path):
@@ -113,7 +113,7 @@ for i in range(1, ev_loader.var_get('iterations')+1):
             sql_list = data.split(';')
             for sql in sql_list:
                 sql = sql.replace("\n", " ")
-                if sql.isspace() is False:
+                if sql.isspace() is not True and sql != "":
                     xp.generateExecutionPlan(sql=sql, binds=None, selection=None, save_to_disk=True)
     # Execute All DML
     for filename in os.listdir(dml_path):
