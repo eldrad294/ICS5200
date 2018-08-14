@@ -79,10 +79,9 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
             data = file.read()
             sql_list = data.split(';')
             for sql in sql_list:
-                print(sql)
-                sql = sql.replace("\n"," ")
-                print(sql)
-                xp.generateExecutionPlan(sql=sql, binds=None, selection=None, save_to_disk=True)
+                sql = sql.replace("\n", " ")
+                if sql.isspace() is False:
+                    xp.generateExecutionPlan(sql=sql, binds=None, selection=None, save_to_disk=True)
     # Execute All DML
     for filename in os.listdir(dml_path):
         with open(dml_path + filename) as file:
@@ -113,7 +112,8 @@ for i in range(1, ev_loader.var_get('iterations')+1):
             sql_list = data.split(';')
             for sql in sql_list:
                 sql = sql.replace("\n", " ")
-                xp.generateExecutionPlan(sql=sql, binds=None, selection=None, save_to_disk=True)
+                if sql.isspace() is False:
+                    xp.generateExecutionPlan(sql=sql, binds=None, selection=None, save_to_disk=True)
     # Execute All DML
     for filename in os.listdir(dml_path):
         with open(dml_path + filename) as file:
