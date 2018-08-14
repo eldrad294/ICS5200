@@ -37,7 +37,7 @@
  with wscs as
  (select sold_date_sk
         ,sales_price
-  (from  select ws_sold_date_sk sold_date_sk
+  from  (select ws_sold_date_sk sold_date_sk
               ,ws_ext_sales_price sales_price
         from web_sales 
         union all
