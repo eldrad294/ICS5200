@@ -10,9 +10,9 @@ create table custv tablespace tpcds_benchmark as
         ,cust_first_name c_first_name
         ,cust_last_name c_last_name
         ,cust_preffered_flag c_preferred_cust_flag
-        ,extract(day from cast(cust_birth_date as date)) c_birth_day
-        ,extract(month from cast(cust_birth_date as date)) c_birth_month
-        ,extract(year from cast(cust_birth_date as date)) c_birth_year
+        ,extract(day from to_date(cust_birth_date,'yyyy/mm/dd')) c_birth_day
+        ,extract(month from to_date(cust_birth_date,'yyyy/mm/dd')) c_birth_month
+        ,extract(year from to_date(cust_birth_date,'yyyy/mm/dd')) c_birth_year
         ,cust_birth_country c_birth_country
         ,cust_login_id c_login
         ,cust_email_address c_email_address
@@ -25,9 +25,8 @@ from
         ,income_band ib
         ,date_dim d1
         ,date_dim d2
-where   
-        cust_gender = cd_gender
-        and cust_marital_status = cd_marital_status
+where
+        cust_marital_status = cd_marital_status
         and cust_educ_status = cd_education_status
         and cust_purch_est = cd_purchase_estimate
         and cust_credit_rating = cd_credit_rating
