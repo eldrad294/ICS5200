@@ -90,7 +90,7 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
             data = file.read()
             if xp.check_if_plsql_block(statement=data):
                 # Executes statement as a pl/sql block
-                xp.generateExecutionPlan(sql='"""' + data + '"""', binds=None, selection=None, transaction_name=filename)
+                xp.generateExecutionPlan(sql=data, binds=None, selection=None, transaction_name=filename)
             else:
                 # Executes statements as a series of sql statements
                 dml_list = data.split(';')
