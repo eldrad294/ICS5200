@@ -4,7 +4,6 @@ select count(*)
 from promv s,promotion d
 where s.P_PROMO_ID=d.P_PROMO_ID;
 
-SET SERVEROUTPUT ON;
 DECLARE
    max_sk NUMBER;
 BEGIN

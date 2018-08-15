@@ -1,4 +1,3 @@
-SET SERVEROUTPUT ON;
 BEGIN
   FOR c_rec IN (SELECT C_CUSTOMER_ID
                       ,C_CURRENT_CDEMO_SK
