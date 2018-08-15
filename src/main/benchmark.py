@@ -73,16 +73,16 @@ query_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.v
 dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/DML/"
 for i in range(1, ev_loader.var_get('iterations') + 1):
     # Execute All Queries
-    for j in range(1, 100):
-        filename = 'query_'+str(j)+'.sql'
-        with open(query_path + filename) as file:
-            logger.log('Generating execution metrics for [' + filename + ']..')
-            data = file.read()
-            sql_list = data.split(';')
-            for sql in sql_list:
-                sql = sql.replace("\n", " ")
-                if sql.isspace() is not True and sql != "":
-                    xp.generateExecutionPlan(sql=sql, binds=None, selection=None, transaction_name=filename)
+    # for j in range(1, 100):
+    #     filename = 'query_'+str(j)+'.sql'
+    #     with open(query_path + filename) as file:
+    #         logger.log('Generating execution metrics for [' + filename + ']..')
+    #         data = file.read()
+    #         sql_list = data.split(';')
+    #         for sql in sql_list:
+    #             sql = sql.replace("\n", " ")
+    #             if sql.isspace() is not True and sql != "":
+    #                 xp.generateExecutionPlan(sql=sql, binds=None, selection=None, transaction_name=filename)
     # Execute All DML
     for filename in os.listdir(dml_path):
         with open(dml_path + filename) as file:
@@ -115,16 +115,16 @@ SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 # Execute Queries + DML for n number of iterations
 for i in range(1, ev_loader.var_get('iterations')+1):
     # Execute All Queries
-    for j in range(1, 100):
-        filename = 'query_' + str(j) + '.sql'
-        with open(query_path + filename) as file:
-            logger.log('Generating execution metrics for [' + filename + ']..')
-            data = file.read()
-            sql_list = data.split(';')
-            for sql in sql_list:
-                sql = sql.replace("\n", " ")
-                if sql.isspace() is not True and sql != "":
-                    xp.generateExecutionPlan(sql=sql, binds=None, selection=None, transaction_name=filename)
+    # for j in range(1, 100):
+    #     filename = 'query_' + str(j) + '.sql'
+    #     with open(query_path + filename) as file:
+    #         logger.log('Generating execution metrics for [' + filename + ']..')
+    #         data = file.read()
+    #         sql_list = data.split(';')
+    #         for sql in sql_list:
+    #             sql = sql.replace("\n", " ")
+    #             if sql.isspace() is not True and sql != "":
+    #                 xp.generateExecutionPlan(sql=sql, binds=None, selection=None, transaction_name=filename)
     # Execute All DML
     for filename in os.listdir(dml_path):
         with open(dml_path + filename) as file:
