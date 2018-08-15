@@ -1,5 +1,6 @@
 #
 # Module Imports
+import hashlib
 #
 class XPlan:
     """
@@ -47,24 +48,29 @@ class XPlan:
                 ") " \
                 "order by id"
     #
-    def __query_execution_plan(self, save_to_disk=False):
+    def __query_execution_plan(self, transaction_name=None, md5_sum=None):
         """
         Ensures that latest execution plan metrics are returned from Oracle's v$sqlarea view, distinguished by latest
         hint found within the view. The query identifies queries using a hint (SQL Comment), and retrieves the most
         latest one from the view.
+        :param transaction_name - Name to store inside reporting table for specific transaction
+        :param md5_sum - Md5 Hash sum of sql
         :return:
         """
-        if save_to_disk:
-            return "insert into " + self.__report_execution_plan + " " \
-                   "select * " \
-                   "from( " \
-                   "select * " \
-                   "from v$sql " \
-                   "where sql_text like '%" + self.__execution_plan_hint + "%' " \
-                   "and sql_text not like '%v_sql%' " \
-                   "and sql_text not like '%V_SQL%' " \
-                   "order by last_active_time desc " \
-                   ") where rownum <= 1"
+        if transaction_name is not None:
+            if md5_sum is not None:
+                return "insert into " + self.__report_execution_plan + " " \
+                       "select *, '" + transaction_name + "', '" + md5_sum + "'" \
+                       "from( " \
+                       "select * " \
+                       "from v$sql " \
+                       "where sql_text like '%" + self.__execution_plan_hint + "%' " \
+                       "and sql_text not like '%v_sql%' " \
+                       "and sql_text not like '%V_SQL%' " \
+                       "order by last_active_time desc " \
+                       ") where rownum <= 1"
+            else:
+                raise ValueError("md5_sum was not specified!")
         else:
             return  "select * " \
                     "from( " \
@@ -104,7 +110,10 @@ class XPlan:
     #
     def __create_REP_EXECUTION_PLANS(self):
         """
-        Creates reporting table REP_EXECUTION_PLANS to save v$sql execution metrics
+        Creates reporting table REP_EXECUTION_PLANS to save v$sql execution metrics.
+        The table is a replica of v$sql, with two additional columns:
+        1) TPC_TRANSACTION_NAME - Contains name of TPC Transaction
+        2) STATEMENT_HASH_SUM - Contains md5 hash sum for a particular statement
         :return:
         """
         sql_statement = "select count(*) from dba_tables where table_name = '" + self.__report_execution_plan + "'"
@@ -115,12 +124,26 @@ class XPlan:
                 self.__db_conn.execute_dml(dml=dml_statement)
                 self.__logger.log('Dropped table ' + self.__report_execution_plan + " for cleanup..")
             #
+            # Creates Reporting Table
             self.__logger.log('Creating table [' + self.__report_execution_plan + ']..')
             dml_statement = "create table " + self.__report_execution_plan + " tablespace users as " \
                                                                              "select * from v$sql where 1=0"
             self.__db_conn.execute_dml(dml=dml_statement)
+            #
+            # Adds column 'TPC_STATEMENT_NAME'
+            dml_statement = "alter table " + self.__report_execution_plan + " add TPC_TRANSACTION_NAME varchar2(20)"
+            self.__db_conn.execute_dml(dml=dml_statement)
+            #
+            # Adds column 'STATEMENT_HASH_SUM'
+            dml_statement = "alter table " + self.__report_execution_plan + " add STATEMENT_HASH_SUM varchar2(4000)"
+            self.__db_conn.execute_dml(dml=dml_statement)
         else:
             self.__logger.log('Table ['+self.__report_execution_plan+'] already exists..')
+    #
+    def check_if_plsql_block(self, statement):
+        if 'begin' in statement.lower() and 'end' in statement.lower():
+            return True
+        return False
     #
     def generateExplainPlan(self, sql, binds=None, selection=None):
         """
@@ -142,26 +165,31 @@ class XPlan:
         #
         return plan
     #
-    def generateExecutionPlan(self, sql, binds=None, selection=None, save_to_disk=False):
+    def generateExecutionPlan(self, sql, binds=None, selection=None, transaction_name=None):
         """
         Retrieves Execution Plan - Query is executed for execution plan retrieval
         :param sql: SQL under evaluation
         :param binds: Accepts query bind parameters as a tuple
         :param selection: Accepts list of column names which will be returned for the explain plan generation. If left
                           empty, selection is assumed to return all execution plan columns
-        :param save_to_disk: Default set to False. Determines whether explain plan results are saved to disk, if param
-                             is set to true. Otherwise return table results.
+        :param transaction_name: Default set to None. If not specified (None), execution plan is returned to driver.
+                                 Otherwise, the execution plan is saved to disk, in addition to the transaction name
+                                 insie of a report table.
         :return: Execution plan in dictionary format
         """
         sql = self.__execution_plan_syntax(sql)
+        if transaction_name is None:
+            sql_md5 = None
+        else:
+            sql_md5 = hashlib.md5(sql).hexdigest()
         #
         self.__db_conn.execute_dml(dml=sql, params=binds)
         #
-        if save_to_disk:
-            self.__db_conn.execute_dml(dml=self.__query_execution_plan(save_to_disk=True))
+        if transaction_name is not None:
+            self.__db_conn.execute_dml(dml=self.__query_execution_plan(transaction_name=transaction_name, md5_sum=sql_md5))
             self.__db_conn.commit()
         else:
-            plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(save_to_disk=False),
+            plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(transaction_name=False, md5_sum=sql_md5),
                                                         describe=True)
             #
             # Retrieves relavent columns specified in selection list

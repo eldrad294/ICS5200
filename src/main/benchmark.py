@@ -82,17 +82,22 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
             for sql in sql_list:
                 sql = sql.replace("\n", " ")
                 if sql.isspace() is not True and sql != "":
-                    xp.generateExecutionPlan(sql=sql, binds=None, selection=None, save_to_disk=True)
+                    xp.generateExecutionPlan(sql=sql, binds=None, selection=None, transaction_name=filename)
     # Execute All DML
     for filename in os.listdir(dml_path):
         with open(dml_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
             data = file.read()
-            dml_list = data.split(';')
-            for dml in dml_list:
-                dml = dml.replace("\n"," ")
-                if dml.isspace() is not True and dml != "":
-                    xp.generateExecutionPlan(sql=dml, binds=None, selection=None, save_to_disk=True)
+            if xp.check_if_plsql_block(statement=data):
+                # Executes statement as a pl/sql block
+                xp.generateExecutionPlan(sql=data, binds=None, selection=None, transaction_name=filename)
+            else:
+                # Executes statements as a series of sql statements
+                dml_list = data.split(';')
+                for dml in dml_list:
+                    dml = dml.replace("\n"," ")
+                    if dml.isspace() is not True and dml != "":
+                        xp.generateExecutionPlan(sql=dml, binds=None, selection=None, transaction_name=filename)
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
 """
 ------------------------------------------------------------
@@ -119,15 +124,20 @@ for i in range(1, ev_loader.var_get('iterations')+1):
             for sql in sql_list:
                 sql = sql.replace("\n", " ")
                 if sql.isspace() is not True and sql != "":
-                    xp.generateExecutionPlan(sql=sql, binds=None, selection=None, save_to_disk=True)
+                    xp.generateExecutionPlan(sql=sql, binds=None, selection=None, transaction_name=filename)
     # Execute All DML
     for filename in os.listdir(dml_path):
         with open(dml_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
             data = file.read()
-            dml_list = data.split(';')
-            for dml in dml_list:
-                dml = dml.replace("\n"," ")
-                if dml.isspace() is not True and dml != "":
-                    xp.generateExecutionPlan(sql=dml, binds=None, selection=None, save_to_disk=True)
+            if xp.check_if_plsql_block(statement=data):
+                # Executes statement as a pl/sql block
+                xp.generateExecutionPlan(sql=data, binds=None, selection=None, transaction_name=filename)
+            else:
+                # Executes statements as a series of sql statements
+                dml_list = data.split(';')
+                for dml in dml_list:
+                    dml = dml.replace("\n"," ")
+                    if dml.isspace() is not True and dml != "":
+                        xp.generateExecutionPlan(sql=dml, binds=None, selection=None, transaction_name=filename)
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
