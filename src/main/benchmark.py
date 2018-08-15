@@ -68,9 +68,11 @@ if result == 0:
 #                                                 tpctype=ev_loader.var_get('user'))
 # logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
 #
-# Execute Queries + DML for n number of iterations
 query_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Query/"
 dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/DML/"
+#
+# Execute Queries + DML for n number of iterations
+dml_bank = []
 for i in range(1, ev_loader.var_get('iterations') + 1):
     # Execute All Queries
     # for j in range(1, 100):
@@ -86,18 +88,23 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
     # Execute All DML
     for filename in os.listdir(dml_path):
         with open(dml_path + filename) as file:
-            logger.log('Generating execution metrics for [' + filename + ']..')
             data = file.read()
             if xp.check_if_plsql_block(statement=data):
-                # Executes statement as a pl/sql block
-                xp.generateExecutionPlan(sql=data, binds=None, selection=None, transaction_name=filename)
+                # Stores pl/sql blocks so as to execute them all at the very end of this batch
+                dml_bank.append([filename,data])
             else:
                 # Executes statements as a series of sql statements
+                logger.log('Generating execution metrics for [' + filename + ']..')
                 dml_list = data.split(';')
                 for dml in dml_list:
                     dml = dml.replace("\n"," ")
                     if dml.isspace() is not True and dml != "":
                         xp.generateExecutionPlan(sql=dml, binds=None, selection=None, transaction_name=filename)
+    #
+    # Execute PL/SQL Blocks at the very end of batch
+    for row in dml_bank:
+        logger.log('Generating execution metrics for [' + row[0] + ']..')
+        xp.generateExecutionPlan(sql=row[1], binds=None, selection=None, transaction_name=row[0])
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
 """
 ------------------------------------------------------------
@@ -113,6 +120,7 @@ SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 # logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
 #
 # Execute Queries + DML for n number of iterations
+dml_bank=[]
 for i in range(1, ev_loader.var_get('iterations')+1):
     # Execute All Queries
     # for j in range(1, 100):
@@ -128,16 +136,21 @@ for i in range(1, ev_loader.var_get('iterations')+1):
     # Execute All DML
     for filename in os.listdir(dml_path):
         with open(dml_path + filename) as file:
-            logger.log('Generating execution metrics for [' + filename + ']..')
             data = file.read()
             if xp.check_if_plsql_block(statement=data):
-                # Executes statement as a pl/sql block
-                xp.generateExecutionPlan(sql=data, binds=None, selection=None, transaction_name=filename)
+                # Stores pl/sql blocks so as to execute them all at the very end of this batch
+                dml_bank.append([filename, data])
             else:
+                logger.log('Generating execution metrics for [' + filename + ']..')
                 # Executes statements as a series of sql statements
                 dml_list = data.split(';')
                 for dml in dml_list:
                     dml = dml.replace("\n"," ")
                     if dml.isspace() is not True and dml != "":
                         xp.generateExecutionPlan(sql=dml, binds=None, selection=None, transaction_name=filename)
+    #
+    # Execute PL/SQL Blocks at the very end of batch
+    for row in dml_bank:
+        logger.log('Generating execution metrics for [' + row[0] + ']..')
+        xp.generateExecutionPlan(sql=row[1], binds=None, selection=None, transaction_name=row[0])
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
