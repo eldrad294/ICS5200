@@ -72,7 +72,7 @@ query_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.v
 dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/DML/"
 for i in range(1, ev_loader.var_get('iterations') + 1):
     # Execute All Queries
-    for j in range(1, 104):
+    for j in range(1, 99):
         filename = 'query_'+str(j)+'.sql'
         with open(query_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
@@ -105,7 +105,8 @@ SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 # Execute Queries + DML for n number of iterations
 for i in range(1, ev_loader.var_get('iterations')+1):
     # Execute All Queries
-    for filename in os.listdir(query_path):
+    for j in range(1, 99):
+        filename = 'query_' + str(j) + '.sql'
         with open(query_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
             data = file.read()
