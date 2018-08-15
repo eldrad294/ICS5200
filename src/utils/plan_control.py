@@ -60,10 +60,10 @@ class XPlan:
         if transaction_name is not None:
             if md5_sum is not None:
                 return "insert into " + self.__report_execution_plan + " " \
-                       "select *, '" + transaction_name + "', '" + md5_sum + "' " \
-                       "from( " \
                        "select * " \
-                       "from v$sql " \
+                       "from( " \
+                       "select vs.*, '" + transaction_name + "', '" + md5_sum + "' " \
+                       "from v$sql vs" \
                        "where sql_text like '%" + self.__execution_plan_hint + "%' " \
                        "and sql_text not like '%v_sql%' " \
                        "and sql_text not like '%V_SQL%' " \
