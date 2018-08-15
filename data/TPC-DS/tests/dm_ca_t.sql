@@ -10,14 +10,11 @@ create table cadrv tablespace tpcds_benchmark as
       ,cust_state ca_state
       ,cust_zip ca_zip
       ,cust_country ca_country
-      ,zipg_gmt_offset ca_gmt_offset
       ,cust_loc_type ca_location_type
 from s_customer_m  
     ,customer
     ,customer_address
-    ,s_zip_to_gmt_m 
-where cust_zip = zipg_zip
-  and cust_customer_id = c_customer_id
+where cust_customer_id = c_customer_id
   and c_current_addr_sk = ca_address_sk);
 
 select count(*) from s_customer_m;
