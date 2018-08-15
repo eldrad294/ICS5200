@@ -63,7 +63,7 @@ class XPlan:
                        "select * " \
                        "from( " \
                        "select vs.*, '" + transaction_name + "', '" + md5_sum + "' " \
-                       "from v$sql vs" \
+                       "from v$sql vs " \
                        "where sql_text like '%" + self.__execution_plan_hint + "%' " \
                        "and sql_text not like '%v_sql%' " \
                        "and sql_text not like '%V_SQL%' " \
