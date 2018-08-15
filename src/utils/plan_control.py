@@ -181,7 +181,7 @@ class XPlan:
         if transaction_name is None:
             sql_md5 = None
         else:
-            sql_md5 = hashlib.md5(sql).hexdigest()
+            sql_md5 = hashlib.md5(sql).encode('utf-8').hexdigest()
         #
         self.__db_conn.execute_dml(dml=sql, params=binds)
         #
