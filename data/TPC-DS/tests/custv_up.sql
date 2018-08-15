@@ -1,5 +1,5 @@
 drop table s_customer;
-create table s_customer tablespace tpcds_benchmark as
+create table s_customer_m tablespace tpcds_benchmark as
 (select C_CUSTOMER_ID CUST_CUSTOMER_ID
        ,C_SALUTATION CUST_SALUTATION
        ,C_LAST_NAME CUST_LAST_NAME
@@ -45,9 +45,9 @@ from customer
 where c_current_addr_sk = ca_address_sk 
   and d1.d_date_sk = C_FIRST_SHIPTO_DATE_SK
   and d2.d_date_sk = C_FIRST_SALES_DATE_SK
-  and extract (day from d3.d_date) = c_birth_day
-  and extract (month from d3.d_date) = c_birth_month
-  and extract (year from d3.d_date) = c_birth_year
+  and extract (day from to_date(d3.d_date,'yyyy-mm-dd')) = c_birth_day
+  and extract (month from to_date(d3.d_date,'yyyy-mm-dd')) = c_birth_month
+  and extract (year from to_date(d3.d_date,'yyyy-mm-dd')) = c_birth_year
   and C_CURRENT_CDEMO_SK = cd_demo_sk
   and C_CURRENT_HDEMO_SK = hd_demo_sk
   and HD_INCOME_BAND_SK = IB_INCOME_BAND_SK
