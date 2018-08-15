@@ -74,6 +74,7 @@ class ScriptInitializer:
         #
         # Benchmark
         iterations = int(g_config.get_value('Benchmark','iterations'))
+        erase_prior_metrics = str(g_config.get_value('Benchmark', 'erase_prior_metrics')).title()
         #
         # Load into global dictionary
         ev_loader.var_load({'project_dir':project_dir,
@@ -118,7 +119,8 @@ class ScriptInitializer:
                             'spark_python_worker_reuse':spark_python_worker_reuse,
                             'log_file_path':project_dir + "/log/" + log_file_name + "_" + user,
                             'report_save_path':report_save_path,
-                            'iterations':iterations})
+                            'iterations':iterations,
+                            'erase_prior_metrics':erase_prior_metrics})
         #
         self.logger = Logger(log_file_path=ev_loader.var_get('log_file_path'),
                              write_to_disk=ev_loader.var_get('write_to_disk'),

@@ -1,5 +1,5 @@
 drop table itemv;
-create table itemv as
+create table itemv tablespace tpcds_benchmark as
 select item_seq.nextVal i_item_sk
       ,item_item_id i_item_id
       ,sysdate i_rec_start_date

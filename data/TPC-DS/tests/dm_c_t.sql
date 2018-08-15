@@ -1,6 +1,6 @@
 drop table custv;
-create table custv as
-select   cust_customer_id c_customer_id
+create table custv tablespace tpcds_benchmark as
+(select   cust_customer_id c_customer_id
         ,cd_demo_sk c_current_cdemo_sk
         ,hd_demo_sk c_current_hdemo_sk
         ,ca_address_sk c_current_addr_sk
@@ -41,6 +41,6 @@ where
         and cust_vehicle_cnt = hd_vehicle_count
         and d1.d_date = cust_first_purchase_date
         and d2.d_date = cust_first_shipto_date
-;
+);
 select count(*) from s_customer_m;
 select count(*) from custv;

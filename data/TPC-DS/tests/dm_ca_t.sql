@@ -1,6 +1,6 @@
 drop table cadrv;
-create table cadrv as
-select ca_address_id ca_address_id
+create table cadrv tablespace tpcds_benchmark as
+(select ca_address_id ca_address_id
       ,cust_street_number ca_street_number
       ,concat(concat(rtrim(cust_street_name1),' '),rtrim(cust_street_name2)) ca_street_name
       ,cust_street_type ca_street_type
@@ -18,7 +18,7 @@ from s_customer_m
     ,s_zip_to_gmt_m 
 where cust_zip = zipg_zip
   and cust_customer_id = c_customer_id
-  and c_current_addr_sk = ca_address_sk;
+  and c_current_addr_sk = ca_address_sk);
 
 select count(*) from s_customer_m;
 select count(*) from cadrv;

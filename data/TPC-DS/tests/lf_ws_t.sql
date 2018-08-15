@@ -1,7 +1,7 @@
 update s_web_order_m set word_order_date = null where word_order_date like '%-47%';
 update s_web_order_lineitem_m set wlin_ship_date = null where wlin_ship_date like '%-47%';
 drop table wsv;
-create table wsv as
+create table wsv tablespace tpcds_benchmark as
 select  d1.d_date_sk ws_sold_date_sk, 
         t_time_sk ws_sold_time_sk, 
         d2.d_date_sk ws_ship_date_sk,

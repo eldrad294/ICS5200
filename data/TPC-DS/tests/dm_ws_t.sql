@@ -1,5 +1,5 @@
 drop table websv;
-create table websv as
+create table websv tablespace tpcds_benchmark as
 select web_site_seq.nextVal web_site_sk
       ,wsit_web_site_id web_site_id
       ,sysdate web_rec_start_date

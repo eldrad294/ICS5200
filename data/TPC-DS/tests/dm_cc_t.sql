@@ -1,9 +1,9 @@
 drop table ccv;
-create table CCV as
-select  callcenter_seq.nextval cc_call_center_sk
+create table CCV tablespace tpcds_benchmark as
+(select  callcenter_seq.nextval cc_call_center_sk
         ,call_center_id cc_call_center_id
         ,sysdate cc_rec_start_date
-        ,cast(NULL as date) cc_rec_end_date
+        ,to_char(to_date(sysdate,'yyyy/mm/dd'),'yyyy-mm-dd') cc_rec_end_date
         ,d1.d_date_sk cc_closed_date_sk
         ,d2.d_date_sk cc_open_date_sk
         ,call_center_name cc_name
@@ -31,10 +31,10 @@ select  callcenter_seq.nextval cc_call_center_sk
         ,cc_country
         ,cc_gmt_offset
         ,call_center_tax_percentage cc_tax_percentage
-from    s_call_center_m left outer join date_dim d2 on d2.d_date = cast(call_closed_date as date)
-                      left outer join date_dim d1 on d1.d_date = cast(call_open_date as date),
+from    s_call_center_m left outer join date_dim d2 on d2.d_date = to_char(to_date(call_closed_date,'yyyy/mm/dd'),'yyyy-mm-dd')
+                      left outer join date_dim d1 on d1.d_date = to_char(to_date(call_open_date,'yyyy/mm/dd'),'yyyy-mm-dd'),
         call_center
 where  call_center_id = cc_call_center_id
-   and cc_rec_end_date is null;
+   and cc_rec_end_date is null);
 select count(*) from s_call_center_m;
 select count(*) from ccv;

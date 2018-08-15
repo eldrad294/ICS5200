@@ -1,5 +1,5 @@
 drop table wrhsv;
-create  table wrhsv as
+create  table wrhsv tablespace tpcds_benchmark as
 select  wrhs_warehouse_id w_warehouse_id
        ,wrhs_warehouse_desc w_warehouse_name
        ,wrhs_warehouse_sq_ft w_warehouse_sq_ft

@@ -1,5 +1,5 @@
 drop table s_inventory;
-create table s_inventory as 
+create table s_inventory tablespace tpcds_benchmark as
 (select w_warehouse_id invn_warehouse_id 
        ,i_item_id invn_item_id
        ,d_date invn_date
@@ -16,3 +16,4 @@ create table s_inventory as
    and d_dom between 10 and 15
 );
 delete from s_inventory where (invn_warehouse_id,invn_item_id,invn_date) in (select invn_warehouse_id,invn_item_id,invn_date from (select invn_warehouse_id,invn_item_id,invn_date,count(*) from s_inventory group by invn_warehouse_id,invn_item_id,invn_date having count(*) > 1));
+commit;

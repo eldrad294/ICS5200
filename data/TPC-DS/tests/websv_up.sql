@@ -1,5 +1,5 @@
 drop table s_web_site;
-create table s_web_site as 
+create table s_web_site tablespace tpcds_benchmark as
 select * from
 (select web_site_id wsit_web_site_id
        ,d1.d_date wsit_open_date

@@ -1,5 +1,5 @@
 drop table s_customer;
-create table s_customer as
+create table s_customer tablespace tpcds_benchmark as
 (select C_CUSTOMER_ID CUST_CUSTOMER_ID
        ,C_SALUTATION CUST_SALUTATION
        ,C_LAST_NAME CUST_LAST_NAME

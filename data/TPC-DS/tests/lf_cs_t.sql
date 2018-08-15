@@ -2,7 +2,7 @@ update s_catalog_order_m set cord_order_date = '' where cord_order_date='-4713-1
 update s_catalog_order_lineitem_m set clin_ship_date = '' where clin_ship_date='-4713-11-2';
 
 drop table csv;
-create table csv as
+create table csv tablespace tpcds_benchmark as
 select d1.d_date_sk cs_sold_date_sk 
       ,t_time_sk cs_sold_time_sk 
       ,d2.d_date_sk cs_ship_date_sk

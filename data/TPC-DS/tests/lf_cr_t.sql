@@ -1,7 +1,7 @@
 drop table crv;
 --update call_center set CC_REC_END_date = null where CC_CALL_CENTER_SK in (3,6);
 update s_catalog_returns_m set cret_return_date = null where cret_return_date like '%-47%';
-create table crv as
+create table crv tablespace tpcds_benchmark as
 select d_date_sk cr_return_date_sk
       ,t_time_sk cr_return_time_sk
       ,0 CR_SHIP_DATE_SK

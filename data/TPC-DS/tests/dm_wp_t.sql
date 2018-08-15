@@ -1,5 +1,5 @@
 drop table webv;
-create table webv as
+create table webv tablespace tpcds_benchmark as
 select web_page_seq.nextVal wp_web_page_sk
       ,wpag_web_page_id wp_web_page_id
       ,sysdate wp_rec_start_date

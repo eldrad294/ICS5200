@@ -1,5 +1,5 @@
 drop table s_store;
-create table s_store as 
+create table s_store tablespace tpcds_benchmark as
 select * from 
 (select s_store_id stor_store_id
        --,stor_address_id

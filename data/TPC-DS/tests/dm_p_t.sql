@@ -1,5 +1,5 @@
 drop table promv;
-create table promv as
+create table promv tablespace tpcds_benchmark as
 select  prom_promotion_id p_promo_id
        ,d1.d_date_sk p_start_date_sk
        ,d2.d_date_sk p_end_date_sk

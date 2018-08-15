@@ -7,7 +7,3 @@ BEGIN
    dbms_output.put_line('max store sk '||max_sk);
    EXECUTE IMMEDIATE 'CREATE SEQUENCE store_seq INCREMENT BY 1 START WITH '||max_sk||' ORDER';
 END;
-
-.
-
-run;

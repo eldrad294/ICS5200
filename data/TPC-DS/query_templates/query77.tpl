@@ -69,7 +69,7 @@
       date_dim
  where cs_sold_date_sk = d_date_sk
        and d_date between to_char(to_date('[SALES_DATE]','yyyy/mm/dd'),'yyyy-mm-dd')
-                  and (to_char(to_date('[SALES_DATE]','yyyy/mm/dd') +  30,'yyyy-mm-dd')
+                  and (to_char(to_date('[SALES_DATE]','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
  group by cs_call_center_sk 
  ), 
  cr as
@@ -104,7 +104,7 @@
       web_page
  where wr_returned_date_sk = d_date_sk
        and d_date between to_char(to_date('[SALES_DATE]','yyyy/mm/dd'),'yyyy-mm-dd')
-                  and (to_char(to_date('[SALES_DATE]','yyyy/mm/dd') +  30,'yyyy-mm-dd')
+                  and (to_char(to_date('[SALES_DATE]','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
        and wr_web_page_sk = wp_web_page_sk
  group by wp_web_page_sk)
  [_LIMITA] select [_LIMITB] channel

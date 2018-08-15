@@ -1,5 +1,5 @@
 drop table s_call_center;
-create table s_call_center as 
+create table s_call_center  tablespace tpcds_benchmark as
 (select cc_call_center_id call_center_id 
        ,d1.d_date call_open_date
        ,d2.d_date call_closed_date

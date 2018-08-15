@@ -1,5 +1,5 @@
 drop table storv;
-create table storv as
+create table storv tablespace tpcds_benchmark as
 select store_seq.nextVal s_store_sk
       ,stor_store_id s_store_id
       ,sysdate s_rec_start_date

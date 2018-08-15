@@ -7,7 +7,3 @@ BEGIN
    dbms_output.put_line('max call center sk '||max_sk);
    EXECUTE IMMEDIATE 'CREATE SEQUENCE callcenter_seq INCREMENT BY 1 START WITH '||max_sk||' ORDER';
 END;
-
-.
-
-run;

@@ -1,5 +1,5 @@
 drop table srv;
-create table srv as
+create table srv tablespace tpcds_benchmark as
 select d_date_sk sr_returned_date_sk
       ,t_time_sk sr_return_time_sk
       ,i_item_sk sr_item_sk

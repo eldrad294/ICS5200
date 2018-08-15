@@ -40,7 +40,3 @@ BEGIN
   END LOOP;
 commit;
 END;
-
-.
-
-run;

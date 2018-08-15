@@ -27,6 +27,7 @@ CREATE TABLESPACE tpcds1   DATAFILE '/mnt/raid5/oradata/gabsam/tpcds1_01.dbf' SI
 CREATE TABLESPACE tpcds10  DATAFILE '/mnt/raid5/oradata/gabsam/tpcds10_01.dbf' SIZE 5M AUTOEXTEND ON NEXT 1024K MAXSIZE UNLIMITED;
 CREATE TABLESPACE tpcds50  DATAFILE '/mnt/raid5/oradata/gabsam/tpcds50_01.dbf' SIZE 5M AUTOEXTEND ON NEXT 1024K MAXSIZE UNLIMITED;
 CREATE TABLESPACE tpcds100 DATAFILE '/mnt/raid5/oradata/gabsam/tpcds100_01.dbf' SIZE 5M AUTOEXTEND ON NEXT 1024K MAXSIZE UNLIMITED;
+CREATE TABLESPACE tpcds_benchmark   DATAFILE '/mnt/raid5/oradata/gabsam/tpcds_benchmark_01.dbf' SIZE 5M AUTOEXTEND ON NEXT 1024K MAXSIZE UNLIMITED;
 /*
 Create datafiles
 */

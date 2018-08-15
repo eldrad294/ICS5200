@@ -16,6 +16,7 @@ This script is used to execute all TPC provided queries and benchmark them accor
 NB: ENSURE FOLLOWING CONFIG IS ESTABLISHED AND PROPERLY CONFIGURED src/main/config.ini:
 1) DatabaseConnectionString.user
 2) Benchmark.iterations
+3) Benchmark.erase_prior_metrics
 --------------------------
 """
 """
@@ -47,7 +48,7 @@ spark_context = si.initialize_spark().get_spark_context()
 logger = si.initialize_logger()
 from src.utils.plan_control import XPlan
 from src.utils.stats_control import OptimizerStatistics
-xp = XPlan(db_conn=db_conn, logger=logger)
+xp = XPlan(db_conn=db_conn, logger=logger, ev_loader=ev_loader)
 """
 ------------------------------------------------------------
 SCRIPT EXECUTION - Benchmark Start - Without Optimizer Stats
@@ -72,7 +73,7 @@ query_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.v
 dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/DML/"
 for i in range(1, ev_loader.var_get('iterations') + 1):
     # Execute All Queries
-    for j in range(1, 99):
+    for j in range(1, 100):
         filename = 'query_'+str(j)+'.sql'
         with open(query_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
@@ -87,7 +88,11 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
         with open(dml_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
             data = file.read()
-            xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
+            dml_list = data.split(';')
+            for dml in dml_list:
+                dml = dml.replace("\n"," ")
+                if dml.isspace() is not True and dml != "":
+                    xp.generateExecutionPlan(sql=dml, binds=None, selection=None, save_to_disk=True)
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
 """
 ------------------------------------------------------------
@@ -105,7 +110,7 @@ SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 # Execute Queries + DML for n number of iterations
 for i in range(1, ev_loader.var_get('iterations')+1):
     # Execute All Queries
-    for j in range(1, 99):
+    for j in range(1, 100):
         filename = 'query_' + str(j) + '.sql'
         with open(query_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
@@ -120,5 +125,9 @@ for i in range(1, ev_loader.var_get('iterations')+1):
         with open(dml_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
             data = file.read()
-            xp.generateExecutionPlan(sql=data, binds=None, selection=None, save_to_disk=True)
+            dml_list = data.split(';')
+            for dml in dml_list:
+                dml = dml.replace("\n"," ")
+                if dml.isspace() is not True and dml != "":
+                    xp.generateExecutionPlan(sql=dml, binds=None, selection=None, save_to_disk=True)
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")

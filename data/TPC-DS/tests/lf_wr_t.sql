@@ -1,6 +1,6 @@
 update s_web_returns_m set wret_return_date = null where wret_return_date like '%-47%';
 drop table wrv;
-create table wrv as
+create table wrv tablespace tpcds_benchmark as
 select d_date_sk wr_return_date_sk
       ,t_time_sk wr_return_time_sk
       ,i_item_sk wr_item_sk

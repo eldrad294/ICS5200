@@ -6,9 +6,10 @@ class XPlan:
     This class serves as an interface to Oracle's explain plan generation utility, providing wrapper methods so as to
     invoke oracle explain plan generation packages, and return data in a formatted, cleaned manner.
     """
-    def __init__(self, db_conn, logger):
+    def __init__(self, db_conn, logger, ev_loader):
         self.__db_conn = db_conn
         self.__logger = logger
+        self.__ev_loader = ev_loader
         self.__execution_plan_hint = "/*ICS5200_MONITOR_HINT*/"
         self.__report_execution_plan = 'REP_EXECUTION_PLANS'
         #
@@ -109,6 +110,11 @@ class XPlan:
         sql_statement = "select count(*) from dba_tables where table_name = '" + self.__report_execution_plan + "'"
         result = int(self.__db_conn.execute_query(query=sql_statement, fetch_single=True)[0])
         if result == 0:
+            if self.__ev_loader == 'True':
+                dml_statement = "drop table " + self.__report_execution_plan
+                self.__db_conn.execute_dml(dml=dml_statement)
+                self.__logger.log('Dropped table ' + self.__report_execution_plan + " for cleanup..")
+            #
             self.__logger.log('Creating table [' + self.__report_execution_plan + ']..')
             dml_statement = "create table " + self.__report_execution_plan + " tablespace users as " \
                                                                              "select * from v$sql where 1=0"
