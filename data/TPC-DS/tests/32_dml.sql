@@ -19,6 +19,6 @@ select  prom_promotion_id p_promo_id
        ,prom_discount_active p_discount_active
 from    s_promotion left outer join date_dim d1 on prom_start_date = d1.d_date
                     left outer join date_dim d2 on prom_end_date = d2.d_date;
-select count(*) from s_promotion_m;
+select count(*) from s_promotion;
 select count(*) from promv;
 

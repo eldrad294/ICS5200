@@ -26,5 +26,5 @@ from s_item,
      item
 where item_item_id = i_item_id
   and i_rec_end_date is null;
-select count(*) from s_item_m;
+select count(*) from s_item;
 select count(*) from itemv;

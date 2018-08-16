@@ -16,5 +16,5 @@ select  wrhs_warehouse_id w_warehouse_id
 from    s_warehouse,
         warehouse
 where   wrhs_warehouse_id = w_warehouse_id;
-select count(*) from s_warehouse_m;
+select count(*) from s_warehouse;
 select count(*) from wrhsv;
