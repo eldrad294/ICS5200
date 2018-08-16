@@ -34,6 +34,7 @@ class ScriptInitializer:
         instance_name = g_config.get_value('DatabaseConnectionString','instance_name')
         #
         # Spark Config
+        enable_spark = g_config.get_value(('SparkContext','enable_spark')).title()
         app_name = g_config.get_value('SparkContext','app_name')
         master = g_config.get_value('SparkContext','master')
         spark_installation_path = g_config.get_value('SparkContext','spark_installation_path')
@@ -104,6 +105,7 @@ class ScriptInitializer:
                             'data_generated_dir':data_generated_dir,
                             'tpcds_sql_generation_bool':tpcds_sql_generation_bool,
                             'tpce_sql_generation_bool':tpce_sql_generation_bool,
+                            'enable_spark':enable_spark,
                             'app_name':app_name.upper(),
                             'master':master,
                             'spark_submit_deployMode':spark_submit_deployMode,
@@ -144,23 +146,24 @@ class ScriptInitializer:
         #                                  password=ev_loader.var_get('password'),
         #                                  logger=self.logger)
         #
-        self.spark = Spark(app_name=ev_loader.var_get('app_name'),
-                           master=ev_loader.var_get('master'),
-                           home_dir=ev_loader.var_get('home_dir'),
-                           host_ip=ev_loader.var_get('host'),
-                           spark_installation_path=ev_loader.var_get('spark_installation_path'),
-                           spark_submit_deployMode=ev_loader.var_get('spark_submit_deployMode'),
-                           spark_executor_instances=ev_loader.var_get('spark_executor_instances'),
-                           spark_executor_memory=ev_loader.var_get('spark_executor_memory'),
-                           spark_executor_cores=ev_loader.var_get('spark_executor_cores'),
-                           spark_max_result_size=ev_loader.var_get('spark_max_result_size'),
-                           spark_cores_max=ev_loader.var_get('spark_cores_max'),
-                           spark_driver_memory=ev_loader.var_get('spark_driver_memory'),
-                           spark_default_parallelism=ev_loader.var_get('spark_default_parallelism'),
-                           spark_shuffle_partitions=ev_loader.var_get('spark_shuffle_partitions'),
-                           spark_logConf=ev_loader.var_get('spark_logConf'),
-                           spark_python_worker_reuse=ev_loader.var_get('spark_python_worker_reuse'),
-                           logger=self.logger)
+        if ev_loader.var_get('enable_spark'):
+            self.spark = Spark(app_name=ev_loader.var_get('app_name'),
+                               master=ev_loader.var_get('master'),
+                               home_dir=ev_loader.var_get('home_dir'),
+                               host_ip=ev_loader.var_get('host'),
+                               spark_installation_path=ev_loader.var_get('spark_installation_path'),
+                               spark_submit_deployMode=ev_loader.var_get('spark_submit_deployMode'),
+                               spark_executor_instances=ev_loader.var_get('spark_executor_instances'),
+                               spark_executor_memory=ev_loader.var_get('spark_executor_memory'),
+                               spark_executor_cores=ev_loader.var_get('spark_executor_cores'),
+                               spark_max_result_size=ev_loader.var_get('spark_max_result_size'),
+                               spark_cores_max=ev_loader.var_get('spark_cores_max'),
+                               spark_driver_memory=ev_loader.var_get('spark_driver_memory'),
+                               spark_default_parallelism=ev_loader.var_get('spark_default_parallelism'),
+                               spark_shuffle_partitions=ev_loader.var_get('spark_shuffle_partitions'),
+                               spark_logConf=ev_loader.var_get('spark_logConf'),
+                               spark_python_worker_reuse=ev_loader.var_get('spark_python_worker_reuse'),
+                               logger=self.logger)
         self.ev_loader = ev_loader
     #
     def initialize_logger(self):
