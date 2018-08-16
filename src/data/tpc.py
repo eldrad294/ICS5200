@@ -1,7 +1,6 @@
 #
 # Module Imports
 from os.path import expanduser
-from natsort import natsorted
 import os
 home = expanduser("~")
 #
@@ -200,7 +199,7 @@ class TPC_Wrapper:
         file_list = os.listdir(self.__ev_loader.var_get('data_generated_directory') + "/" + tpc_type + "/" + self.__ev_loader.var_get('user'))
         if file_list is None or len(file_list) < 1:
             raise Exception("No data files where found!")
-        return natsorted(file_list)
+        return file_list
     #
     def get_file_extension_list(self, tpc_type=None):
         """
