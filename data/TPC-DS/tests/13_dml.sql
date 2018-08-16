@@ -6,7 +6,6 @@ BEGIN
 	into i_count
 	from all_sequences
 	where sequence_name = upper('store_seq');
-	--
 	if i_count >0 then
 	  execute immediate 'drop sequence store_seq';
 	end if;

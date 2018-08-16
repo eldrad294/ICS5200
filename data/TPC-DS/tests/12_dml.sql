@@ -6,7 +6,6 @@ BEGIN
    into i_count
    from all_sequences
    where sequence_name = upper('web_site_seq');
-   --
    if i_count > 0 then
      execute immediate 'drop sequence web_site_seq';
    end if;
