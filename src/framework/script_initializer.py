@@ -146,7 +146,7 @@ class ScriptInitializer:
         #                                  password=ev_loader.var_get('password'),
         #                                  logger=self.logger)
         #
-        if ev_loader.var_get('enable_spark'):
+        if ev_loader.var_get('enable_spark') == 'True':
             self.spark = Spark(app_name=ev_loader.var_get('app_name'),
                                master=ev_loader.var_get('master'),
                                home_dir=ev_loader.var_get('home_dir'),
