@@ -1,9 +1,3 @@
-
-select count(*) from promv;
-select count(*)
-from promv s,promotion d
-where s.P_PROMO_ID=d.P_PROMO_ID;
-
 DECLARE
    max_sk NUMBER;
 BEGIN
