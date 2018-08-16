@@ -1,4 +1,5 @@
 drop table cadrv;
+drop view cadrv;
 create table cadrv tablespace tpcds_benchmark as
 (select ca_address_id ca_address_id
       ,cust_street_number ca_street_number
