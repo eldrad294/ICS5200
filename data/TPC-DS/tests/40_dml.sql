@@ -1,3 +1,2 @@
-insert into catalog_sales (select * from csv);
+insert into store_returns (select * from srv);
 rollback;
-

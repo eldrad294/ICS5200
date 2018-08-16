@@ -84,7 +84,7 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
     #             if sql.isspace() is not True and sql != "":
     #                 xp.generateExecutionPlan(sql=sql, binds=None, selection=None, transaction_name=filename)
     # Execute All DML
-    for j in range(1, 49):
+    for j in range(1, 43):
         filename = str(j) + '_dml.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
         with open(dml_path + filename) as file:
@@ -127,7 +127,7 @@ for i in range(1, ev_loader.var_get('iterations')+1):
     #             if sql.isspace() is not True and sql != "":
     #                 xp.generateExecutionPlan(sql=sql, binds=None, selection=None, transaction_name=filename)
     # Execute All DML
-    for j in range(1, 49):
+    for j in range(1, 43):
         filename = str(j) + '_dml.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
         with open(dml_path + filename) as file:
