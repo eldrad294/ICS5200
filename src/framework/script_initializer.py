@@ -164,6 +164,8 @@ class ScriptInitializer:
                                spark_logConf=ev_loader.var_get('spark_logConf'),
                                spark_python_worker_reuse=ev_loader.var_get('spark_python_worker_reuse'),
                                logger=self.logger)
+        else:
+            self.spark = None
         self.ev_loader = ev_loader
     #
     def initialize_logger(self):
