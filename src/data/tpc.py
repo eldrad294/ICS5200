@@ -1,6 +1,7 @@
 #
 # Module Imports
 from os.path import expanduser
+from natsort import natsorted
 import os
 home = expanduser("~")
 #
@@ -107,9 +108,7 @@ class TPC_Wrapper:
             os.chdir(dml_data)
             #
             target_scripts = [] # Keeps reference of which DML scripts to move under src/
-            dirFiles = os.listdir(dml_data)
-            dirFiles.sort(key=lambda f: int(filter(str.isdigit, f) or -1))
-            for filename in dirFiles:
+            for filename in os.listdir(dml_data):
                 if filename.endswith(".sql"):
                     target_scripts.append(filename)
             #
@@ -201,7 +200,7 @@ class TPC_Wrapper:
         file_list = os.listdir(self.__ev_loader.var_get('data_generated_directory') + "/" + tpc_type + "/" + self.__ev_loader.var_get('user'))
         if file_list is None or len(file_list) < 1:
             raise Exception("No data files where found!")
-        return file_list
+        return natsorted(file_list)
     #
     def get_file_extension_list(self, tpc_type=None):
         """
