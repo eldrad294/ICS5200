@@ -108,7 +108,8 @@ class TPC_Wrapper:
             #
             target_scripts = [] # Keeps reference of which DML scripts to move under src/
             dirFiles = os.listdir(dml_data)
-            for filename in dirFiles.sort(key=lambda f: int(filter(str.isdigit, f) or -1)):
+            dirFiles.sort(key=lambda f: int(filter(str.isdigit, f) or -1))
+            for filename in dirFiles:
                 if filename.endswith(".sql"):
                     target_scripts.append(filename)
             #
