@@ -34,7 +34,7 @@ class ScriptInitializer:
         instance_name = g_config.get_value('DatabaseConnectionString','instance_name')
         #
         # Spark Config
-        enable_spark = g_config.get_value(('SparkContext','enable_spark')).title()
+        enable_spark = g_config.get_value('SparkContext','enable_spark').title()
         app_name = g_config.get_value('SparkContext','app_name')
         master = g_config.get_value('SparkContext','master')
         spark_installation_path = g_config.get_value('SparkContext','spark_installation_path')
