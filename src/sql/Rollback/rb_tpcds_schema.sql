@@ -26,3 +26,8 @@ drop table web_returns;
 drop table web_sales;
 drop table catalog_sales;
 drop table store_sales;
+/*
+Rollback script for Report tables
+*/
+drop table REP_EXECUTION_PLANS;
+drop table REP_TPC_DESCRIBE;
