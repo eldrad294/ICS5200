@@ -11,10 +11,9 @@ BEGIN
                        ,CA_STATE
                        ,CA_ZIP
                        ,CA_COUNTRY
-                       ,CA_GMT_OFFSET
                        ,CA_LOCATION_TYPE
                  from cadrv) LOOP
-    update customer_address set 
+    update customer_address set
  CA_STREET_NUMBER=ca_rec.CA_STREET_NUMBER
 ,CA_STREET_NAME=ca_rec.CA_STREET_NAME
 ,CA_STREET_TYPE=ca_rec.CA_STREET_TYPE
@@ -24,7 +23,6 @@ BEGIN
 ,CA_STATE=ca_rec.CA_STATE
 ,CA_ZIP=ca_rec.CA_ZIP
 ,CA_COUNTRY=ca_rec.CA_COUNTRY
-,CA_GMT_OFFSET=ca_rec.CA_GMT_OFFSET
 ,CA_LOCATION_TYPE=ca_rec.CA_LOCATION_TYPE
   where CA_ADDRESS_ID=ca_rec.CA_ADDRESS_ID;
   END LOOP;

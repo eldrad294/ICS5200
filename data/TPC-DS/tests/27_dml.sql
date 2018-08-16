@@ -33,6 +33,6 @@ from  s_store left outer join date_dim d1 on to_char(TO_DATE(stor_closed_date,'y
      ,store
 where  stor_store_id = s_store_id
    and s_rec_end_date is null;
-select 's_store_m '||count(*) from s_store_m;
+select 's_store_m '||count(*) from s_store;
 select 's_storv '||count(*) from storv;
 select 'null date_dim '||count(*) from storv where s_closed_date_sk is null;

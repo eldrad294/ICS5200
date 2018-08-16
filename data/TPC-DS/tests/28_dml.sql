@@ -36,5 +36,5 @@ from    s_call_center left outer join date_dim d2 on d2.d_date = to_char(to_date
         call_center
 where  call_center_id = cc_call_center_id
    and cc_rec_end_date is null);
-select count(*) from s_call_center_m;
+select count(*) from s_call_center;
 select count(*) from ccv;
