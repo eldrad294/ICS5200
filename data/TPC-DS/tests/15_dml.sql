@@ -1,10 +1,15 @@
-drop SEQUENCE item_seq;
 DECLARE
-   max_sk NUMBER;
+   i_count number;
 BEGIN
-   SELECT '1'
-   INTO max_sk
-   FROM dual;
-   EXECUTE IMMEDIATE 'CREATE SEQUENCE callcenter_seq INCREMENT BY 1 START WITH '||max_sk||' ORDER';
+   --
+   select count(*)
+   into i_count
+   from all_sequences
+   where sequence_name = upper('callcenter_seq');
+   --
+   if i_count > 0 then
+   --
+   		execute immediate 'drop sequence callcenter_seq';
+   end if;
+   EXECUTE IMMEDIATE 'CREATE SEQUENCE callcenter_seq INCREMENT BY 1 START WITH 1 ORDER';
 END;
-
