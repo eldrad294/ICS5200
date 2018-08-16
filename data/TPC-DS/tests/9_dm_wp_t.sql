@@ -13,7 +13,7 @@ select web_page_seq.nextVal wp_web_page_sk
       ,wpag_link_cnt wp_link_count
       ,wpag_image_cnt wp_image_count
       ,wpag_max_ad_cnt wp_max_ad_count
-from    s_web_page_m left outer join date_dim d1 on wpag_create_date = d1.d_date
+from    web_page left outer join date_dim d1 on wpag_create_date = d1.d_date
                      left outer join date_dim d2 on wpag_access_date = d2.d_date;
 select count(*) from s_web_page;
 select count(*) from webv;

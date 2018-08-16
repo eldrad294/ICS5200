@@ -1,5 +1,5 @@
 drop table storv;
-create table storv as
+create table storv tablespace tpcds_benchmark as
 select store_seq.nextVal s_store_sk
       ,stor_store_id s_store_id
       ,sysdate s_rec_start_date
@@ -29,7 +29,7 @@ select store_seq.nextVal s_store_sk
       ,s_country
       ,s_gmt_offset
       ,stor_tax_percentage s_tax_percentage
-from  s_store_m left outer join date_dim d1 on TO_DATE(stor_closed_date,'YYYY-MM-DD')= d1.d_date
+from  s_store left outer join date_dim d1 on to_char(TO_DATE(stor_closed_date,'yyyy/mm/dd'),'yyyy-mm-dd')= d1.d_date
      ,store
 where  stor_store_id = s_store_id
    and s_rec_end_date is null;

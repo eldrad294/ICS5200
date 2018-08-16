@@ -1,11 +1,11 @@
 drop table promv;
-create table promv as
+create table promv tablespace tpcds_benchmark as
 select  prom_promotion_id p_promo_id
        ,d1.d_date_sk p_start_date_sk
        ,d2.d_date_sk p_end_date_sk
        ,prom_cost p_cost
        ,prom_response_target p_response_target
-       ,prom_promotion_name p_promo_name
+       ,prom_promo_name
        ,prom_channel_dmail p_channel_dmail
        ,prom_channel_email p_channel_email
        ,prom_channel_catalog p_channel_catalog
@@ -17,7 +17,7 @@ select  prom_promotion_id p_promo_id
        ,prom_channel_details p_channel_details
        ,prom_purpose p_purpose
        ,prom_discount_active p_discount_active
-from    s_promotion_m left outer join date_dim d1 on prom_start_date = d1.d_date
+from    s_promotion left outer join date_dim d1 on prom_start_date = d1.d_date
                     left outer join date_dim d2 on prom_end_date = d2.d_date;
 select count(*) from s_promotion_m;
 select count(*) from promv;

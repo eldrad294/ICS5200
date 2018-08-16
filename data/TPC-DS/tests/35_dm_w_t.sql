@@ -13,7 +13,7 @@ select  wrhs_warehouse_id w_warehouse_id
        ,w_zip
        ,w_country
        ,w_gmt_offset
-from    s_warehouse_m,
+from    s_warehouse,
         warehouse
 where   wrhs_warehouse_id = w_warehouse_id;
 select count(*) from s_warehouse_m;

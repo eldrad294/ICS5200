@@ -30,8 +30,8 @@ create table CCV tablespace tpcds_benchmark as
         ,cc_zip
         ,cc_country
         ,cc_gmt_offset
-        ,call_center_tax_percentage cc_tax_percentage
-from    s_call_center_m left outer join date_dim d2 on d2.d_date = to_char(to_date(call_closed_date,'yyyy/mm/dd'),'yyyy-mm-dd')
+        ,cc_tax_percentage
+from    s_call_center left outer join date_dim d2 on d2.d_date = to_char(to_date(call_closed_date,'yyyy/mm/dd'),'yyyy-mm-dd')
                       left outer join date_dim d1 on d1.d_date = to_char(to_date(call_open_date,'yyyy/mm/dd'),'yyyy-mm-dd'),
         call_center
 where  call_center_id = cc_call_center_id

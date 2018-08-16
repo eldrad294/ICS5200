@@ -22,7 +22,7 @@ select item_seq.nextVal i_item_sk
       ,item_container i_container
       ,item_manager_id i_manager
       ,i_product_name
-from s_item_m,
+from s_item,
      item
 where item_item_id = i_item_id
   and i_rec_end_date is null;
