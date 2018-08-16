@@ -85,7 +85,8 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
     #             if sql.isspace() is not True and sql != "":
     #                 xp.generateExecutionPlan(sql=sql, binds=None, selection=None, transaction_name=filename)
     # Execute All DML
-    for filename in os.listdir(dml_path):
+    for j in range(1, 49):
+        filename = str(j) + '_dml.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
         with open(dml_path + filename) as file:
             data = file.read()
@@ -127,14 +128,15 @@ for i in range(1, ev_loader.var_get('iterations')+1):
     #             if sql.isspace() is not True and sql != "":
     #                 xp.generateExecutionPlan(sql=sql, binds=None, selection=None, transaction_name=filename)
     # Execute All DML
-    for filename in os.listdir(dml_path):
+    for j in range(1, 49):
+        filename = str(j) + '_dml.sql'
+        logger.log('Generating execution metrics for [' + filename + ']..')
         with open(dml_path + filename) as file:
             data = file.read()
             if xp.check_if_plsql_block(statement=data):
                 # Executes PL/SQL block
                 xp.generateExecutionPlan(sql=data, binds=None, selection=None, transaction_name=filename)
             else:
-                logger.log('Generating execution metrics for [' + filename + ']..')
                 # Executes statements as a series of sql statements
                 dml_list = data.split(';')
                 for dml in dml_list:
