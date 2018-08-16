@@ -178,7 +178,11 @@ class ScriptInitializer:
         Spark Context Initialization
         :return:
         """
-        return self.spark
+        if self.spark is not None:
+            return self.spark
+        else:
+            raise Exception('Spark context was skipped during script Initialization..Chnage setting from config.ini '
+                            '[SparkContext.enable_spark]')
     #
     def get_global_config(self):
         return self.ev_loader
