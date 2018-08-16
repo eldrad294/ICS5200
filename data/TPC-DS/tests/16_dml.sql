@@ -15,7 +15,7 @@ BEGIN
                  from cadrv) LOOP
     update customer_address set
  CA_STREET_NUMBER=ca_rec.CA_STREET_NUMBER
-,CA_STREET_NAME=ca_rec.CA_STREET_NAME
+,CA_STREET_NAME=substr(ca_rec.CA_STREET_NAME,60)
 ,CA_STREET_TYPE=ca_rec.CA_STREET_TYPE
 ,CA_SUITE_NUMBER=ca_rec.CA_SUITE_NUMBER
 ,CA_CITY=ca_rec.CA_CITY
