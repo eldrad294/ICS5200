@@ -167,6 +167,9 @@ class ScriptInitializer:
         else:
             self.spark = None
         self.ev_loader = ev_loader
+        #
+        # Displays run config
+        self.__display_config()
     #
     def initialize_logger(self):
         """
@@ -183,8 +186,14 @@ class ScriptInitializer:
         if self.spark is not None:
             return self.spark
         else:
-            raise Exception('Spark context was skipped during script Initialization..Chnage setting from config.ini '
+            raise Exception('Spark context was skipped during script Initialization..Change setting from config.ini '
                             '[SparkContext.enable_spark]')
     #
     def get_global_config(self):
         return self.ev_loader
+    #
+    def __display_config(self):
+        self.logger.log('----------------RUN CONFIG----------------')
+        for item,val in self.ev_loader.var_get():
+            self.logger.log(item + ' -> [' + val + ']')
+        self.logger.log('------------------------------------------')
