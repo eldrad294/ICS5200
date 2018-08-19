@@ -71,7 +71,7 @@ class LoadTPCData:
             if count % 1000 == 0 and count != 0:
                 di.execute_many_dml(dml=dml, data=values_bank)  # Bulk Insert
                 di.commit()  # Commit once after every RDD batch
-                logger.log('Committed Batch!')
+                logger.log('Committed 1000 batch for [' + table_name + ']')
                 values_bank = []
         #
         # Execute remaining rows
