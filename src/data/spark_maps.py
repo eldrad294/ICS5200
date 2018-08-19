@@ -42,7 +42,7 @@ class LoadTPCData:
         time.sleep(1) # back of time to allow time for connection to establish in case of very small data sets
         #
         # Retrieve columns required for batch insert
-        sql = "select column_name from user_tab_columns where table_name = '" + table_name.upper() + "'";
+        sql = "select column_name from user_tab_columns where table_name = '" + table_name.upper() + "' order by column_id";
         res = di.execute_query(query=sql, describe=False)
         column_names = "("
         for i, item in enumerate(res):
@@ -72,7 +72,7 @@ class LoadTPCData:
             values_bank.append(l_line)
             row_count += 1
         di.execute_many_dml(dml=dml, data=values_bank) # Bulk Insert
-        #di.commit() # Commit once after every RDD batch
+        di.commit() # Commit once after every RDD batch
         di.close()
         #
         end_time = time.time()
