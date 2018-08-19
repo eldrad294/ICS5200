@@ -65,9 +65,9 @@ class LoadTPCData:
             if count < 1:
                 for i in range(len(l_line)):
                     if i == 0:
-                        dml += " :" + str(i+1) + " "
+                        dml += ":" + str(i+1)
                     else:
-                        dml += ", :" + str(i+1) + " "
+                        dml += ",:" + str(i+1)
                 dml += ")"
             values_bank.append(l_line)
             row_count += 1
