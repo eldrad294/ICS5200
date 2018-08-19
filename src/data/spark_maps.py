@@ -71,8 +71,14 @@ class LoadTPCData:
                 dml += ")"
             values_bank.append(l_line)
             row_count += 1
-        di.execute_many_dml(dml=dml, data=values_bank) # Bulk Insert
-        di.commit() # Commit once after every RDD batch
+            if count % 10000 and count != 0:
+                di.execute_many_dml(dml=dml, data=values_bank)  # Bulk Insert
+                di.commit()  # Commit once after every RDD batch
+                values_bank = []
+        #
+        # Execute remaining rows
+        di.execute_many_dml(dml=dml, data=values_bank)  # Bulk Insert
+        di.commit()  # Commit once after every RDD batch
         di.close()
         #
         end_time = time.time()
@@ -95,10 +101,10 @@ class LoadTPCData:
             else:
                 try:
                     if Decimal(value) % 1 == 0:
-                        list_line.append([int(value)])
+                        list_line.append(int(value))
                     else:
-                        list_line.append([float(value)])
+                        list_line.append(float(value))
                 except Exception:
-                    list_line.append([str(value)])
+                    list_line.append(str(value))
                 value = ""
         return list_line
