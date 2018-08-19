@@ -37,7 +37,8 @@ class LoadTPCData:
                                host=instance_details[2],
                                service=instance_details[3],
                                port=instance_details[4],
-                               password=instance_details[5])
+                               password=instance_details[5],
+                               logger=logger)
         di.connect()
         time.sleep(1) # back of time to allow time for connection to establish in case of very small data sets
         #

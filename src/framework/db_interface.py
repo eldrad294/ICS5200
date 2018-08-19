@@ -132,13 +132,13 @@ class DatabaseInterface:
         try:
             cursor = self.__conn.cursor()
             #cursor.executemany(dml, data)
-            cursor.executemany(dml, data, batcherrors = True)
+            cursor.executemany(dml, data, batcherrors=True)
 
             #display the errors that have taken place
             errors = cursor.getbatcherrors()
-            print("number of errors which took place:" + str(len(errors)))
+            self.__logger.log("number of errors which took place:" + str(len(errors)))
             for error in errors:
-                print("Error " + str(error.message.rstrip()) + " at row offset " + str(error.offset))
+                self.__logger.log("Error " + str(error.message.rstrip()) + " at row offset " + str(error.offset))
         except Exception as e:
             if self.__logger is not None:
                 self.__logger.log(
