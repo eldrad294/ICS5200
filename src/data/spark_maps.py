@@ -109,7 +109,7 @@ class LoadTPCData:
                         list_line.append(str(value))
                 except Exception:
                     list_line.append(str(value))
-                else:
+                finally:
                     value = ""
         return list_line
     #
