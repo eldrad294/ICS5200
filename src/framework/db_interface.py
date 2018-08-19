@@ -134,16 +134,15 @@ class DatabaseInterface:
             #
             # where errors have taken place, the row count is 0; otherwise it is 1
             rowCounts = cursor.getarraydmlrowcounts()
-            print("Array DML row counts:", rowCounts)
+            self.__logger("Array DML row counts:" + str(rowCounts))
             #
             # display the errors that have taken place
             errors = cursor.getbatcherrors()
-            print("number of errors which took place:", len(errors))
+            self.__logger("number of errors which took place:" + str(len(errors)))
             for error in errors:
-                print("Error", error.message.rstrip(), "at row offset", error.offset)
+                self.__logger("Error " + str(error.message.rstrip()) + " at row offset " + str(error.offset))
 
         except Exception as e:
-            print(str(e))
             if self.__logger is not None:
                 self.__logger.log(
                     'Skipped DML instruction due to following exception: [' + str(e) + '] - Instruction: [' +
