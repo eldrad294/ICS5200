@@ -393,7 +393,6 @@ create table catalog_page
     cp_type                   varchar(100)                  ,
     primary key (cp_catalog_page_sk)
 ) tablespace tpcds1 nologging;
-
 create table inventory
 (
     inv_date_sk               integer               not null,
