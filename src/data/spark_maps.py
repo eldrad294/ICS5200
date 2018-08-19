@@ -60,6 +60,7 @@ class LoadTPCData:
         for count, data_line in enumerate(data):
             l_line = LoadTPCData.__parse_data_line(dataline=data_line)
             if table_name == 'TIME_DIM' or table_name == 'time_dim':
+                logger.log(dml)
                 logger.log(l_line)
             if count < 1:
                 for i in range(len(l_line)):
