@@ -112,22 +112,22 @@ class LoadTPCData:
                 else:
                     value = ""
         return list_line
-#
-def is_int(n):
-    try:
-        if '.' in str(n):
+    #
+    def is_int(n):
+        try:
+            if '.' in str(n):
+                return False
+            float_n = float(n)
+            int_n = int(float_n)
+        except ValueError:
             return False
-        float_n = float(n)
-        int_n = int(float_n)
-    except ValueError:
-        return False
-    else:
-        return float_n == int_n
+        else:
+            return float_n == int_n
 
-def is_float(n):
-    try:
-        float_n = float(n)
-    except ValueError:
-        return False
-    else:
-        return True
+    def is_float(n):
+        try:
+            float_n = float(n)
+        except ValueError:
+            return False
+        else:
+            return True
