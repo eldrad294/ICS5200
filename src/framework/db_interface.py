@@ -140,6 +140,7 @@ class DatabaseInterface:
             # for error in errors:
             #     self.__logger("Error " + str(error.message.rstrip()) + " at row offset " + str(error.offset))
             #
+            self.__conn.commit()
         except Exception as e:
             print(str(e))
             if self.__logger is not None:
