@@ -130,7 +130,18 @@ class DatabaseInterface:
         cursor = None
         try:
             cursor = self.__conn.cursor()
-            cursor.executemany(dml, data)
+            cursor.executemany(dml, data, batcherrors = True, arraydmlrowcounts = True)
+            #
+            # where errors have taken place, the row count is 0; otherwise it is 1
+            rowCounts = cursor.getarraydmlrowcounts()
+            print("Array DML row counts:", rowCounts)
+            #
+            # display the errors that have taken place
+            errors = cursor.getbatcherrors()
+            print("number of errors which took place:", len(errors))
+            for error in errors:
+                print("Error", error.message.rstrip(), "at row offset", error.offset)
+
         except Exception as e:
             print(str(e))
             if self.__logger is not None:
