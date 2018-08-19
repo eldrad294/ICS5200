@@ -136,9 +136,9 @@ class DatabaseInterface:
 
             #display the errors that have taken place
             errors = cursor.getbatcherrors()
-            self.__logger("number of errors which took place:" + str(len(errors)))
+            print("number of errors which took place:" + str(len(errors)))
             for error in errors:
-                self.__logger("Error " + str(error.message.rstrip()) + " at row offset " + str(error.offset))
+                print("Error " + str(error.message.rstrip()) + " at row offset " + str(error.offset))
         except Exception as e:
             if self.__logger is not None:
                 self.__logger.log(
