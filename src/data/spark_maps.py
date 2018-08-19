@@ -58,7 +58,8 @@ class LoadTPCData:
         dml = "INSERT INTO " + table_name + " " + column_names + " VALUES ("
         for count, data_line in enumerate(data):
             l_line = LoadTPCData.__parse_data_line(dataline=data_line)
-            logger.log(l_line)
+            if table_name == 'REASON' or table_name == 'reason':
+                logger.log(l_line)
             if count < 1:
                 for i in range(len(l_line)):
                     if i == 0:
