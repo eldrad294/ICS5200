@@ -95,10 +95,10 @@ class LoadTPCData:
             else:
                 try:
                     if Decimal(value) % 1 == 0:
-                        list_line.append(int(value))
+                        list_line.append([int(value)])
                     else:
-                        list_line.append(float(value))
+                        list_line.append([float(value)])
                 except Exception:
-                    list_line.append(str(value))
+                    list_line.append([str(value)])
                 value = ""
         return list_line
