@@ -101,4 +101,4 @@ class LoadTPCData:
                 except Exception:
                     list_line.append(str(value))
                 value = ""
-        return tuple(list_line)
+        return list_line
