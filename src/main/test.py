@@ -53,7 +53,7 @@ def __parse_data_line(dataline):
     return list_line
 #
 # Retrieve columns required for batch insert
-sql = "select column_name from user_tab_columns where table_name = '" + table_name.upper() + "' order by column_id";
+sql = "select column_name from user_tab_columns where table_name = 'INVENTORY' order by column_id";
 res = di.execute_query(query=sql, describe=False)
 column_names = "("
 for i, item in enumerate(res):
@@ -67,7 +67,7 @@ else:
 # Iterate over RDD partition
 row_count = 0
 values_bank = []
-dml = "INSERT INTO " + table_name + " " + column_names + " VALUES ("
+dml = "INSERT INTO INVENTORY " + column_names + " VALUES ("
 for count, data_line in enumerate(['2450815|1|1|211|','2450815|2|1|235|','2450815|4|1|859|']):
     l_line = __parse_data_line(dataline=data_line)
     if count < 1:
