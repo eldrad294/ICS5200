@@ -28,20 +28,6 @@ logger = si.initialize_logger()
 
 from src.framework.db_interface import DatabaseInterface
 #
-# TPC Wrapper Initialization
-tpc = TPC_Wrapper(ev_loader=ev_loader,
-                  logger=logger,
-                  database_context=db_conn)
-#
-db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-                                 user=ev_loader.var_get('user'),
-                                 host=ev_loader.var_get('host'),
-                                 service=ev_loader.var_get('service'),
-                                 port=ev_loader.var_get('port'),
-                                 password=ev_loader.var_get('password'),
-                                 logger=logger)
-db_conn.connect()
-#
 def __parse_data_line(dataline):
     """
     Iterates over input data line, and parses value into a list. Values are delimeted according to config file,
