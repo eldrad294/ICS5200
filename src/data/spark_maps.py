@@ -71,7 +71,7 @@ class LoadTPCData:
                 dml += ")"
             values_bank.append(l_line)
             row_count += 1
-            if count % 10000 and count != 0:
+            if count % 1000 and count != 0:
                 di.execute_many_dml(dml=dml, data=values_bank)  # Bulk Insert
                 di.commit()  # Commit once after every RDD batch
                 values_bank = []
