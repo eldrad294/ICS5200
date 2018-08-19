@@ -135,11 +135,11 @@ class DatabaseInterface:
             cursor.executemany(dml, data, batcherrors = True)
             #
             # display the errors that have taken place
-            print('Entry 1')
+            self.__logger.log('Entry 1')
             errors = cursor.getbatcherrors()
-            print('Entry 2')
+            self.__logger.log('Entry 2')
             self.__logger("number of errors which took place:" + str(len(errors)))
-            print('Entry 3')
+            self.__logger.log('Entry 3')
             for error in errors:
                 self.__logger("Error " + str(error.message.rstrip()) + " at row offset " + str(error.offset))
         except Exception as e:
