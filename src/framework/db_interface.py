@@ -131,7 +131,8 @@ class DatabaseInterface:
         cursor = None
         try:
             cursor = self.__conn.cursor()
-            cursor.executemany(dml, data)
+            cursor.prepare(dml)
+            cursor.executemany(None, data)
             # cursor.executemany(dml, data, batcherrors = True)
             # #
             # # display the errors that have taken place
@@ -178,6 +179,7 @@ class DatabaseInterface:
         try:
             self.__conn.commit()
         except Exception as e:
+            self.__logger.log("Couldn't commit transaction to database: [" + str(e) + "]")
             raise Exception("Couldn't commit transaction to database: [" + str(e) + "]")
     #
     def executeScriptsFromFile(self, filename):
