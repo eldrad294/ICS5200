@@ -37,7 +37,7 @@ class ScriptInitializer:
         enable_spark = g_config.get_value('SparkContext','enable_spark').title()
         app_name = g_config.get_value('SparkContext','app_name')
         master = g_config.get_value('SparkContext','master')
-        spark_installation_path = g_config.get_value('SparkContext','spark_installation_path')
+        spark_installation_path = home_dir + g_config.get_value('SparkContext','spark_installation_path')
         spark_submit_deployMode = g_config.get_value('SparkContext','spark_submit_deployMode')
         spark_executor_instances = g_config.get_value('SparkContext','spark_executor_instances')
         spark_executor_memory = g_config.get_value('SparkContext','spark_executor_memory')
@@ -59,7 +59,7 @@ class ScriptInitializer:
         tpcds_generation_bool = str(g_config.get_value('DataGeneration','tpcds_data_generation').title())
         tpce_generation_bool = str(g_config.get_value('DataGeneration','tpce_data_generation').title())
         data_generated_directory = str(g_config.get_value('DataGeneration','data_generated_directory'))
-        sql_generated_directory = str(g_config.get_value('DataGeneration', 'sql_generated_directory'))
+        sql_generated_directory = home_dir + str(g_config.get_value('DataGeneration', 'sql_generated_directory'))
         parallel_degree = int(g_config.get_value('DataGeneration', 'parallel_degree'))
         data_size = int(g_config.get_value('DataGeneration', 'data_size'))
         #
@@ -71,7 +71,7 @@ class ScriptInitializer:
         tpce_sql_generation_bool = str(g_config.get_value('DataGeneration','tpce_sql_generation').title())
         #
         # Report Generation
-        report_save_path = str(g_config.get_value('ReportGeneration','report_save_path'))
+        report_save_path = home + str(g_config.get_value('ReportGeneration','report_save_path'))
         #
         # Benchmark
         iterations = int(g_config.get_value('Benchmark','iterations'))
