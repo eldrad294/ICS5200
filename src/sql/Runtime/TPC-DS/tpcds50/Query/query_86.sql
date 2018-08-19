@@ -1,1 +1,23 @@
-    select * from (select  i_item_id        ,i_item_desc        ,i_current_price  from item, inventory, date_dim, store_sales  where i_current_price between 69 and 69+30  and inv_item_sk = i_item_sk  and d_date_sk=inv_date_sk  and d_date between to_char((to_date('1998-06-17' ,'yyyy/mm/dd') and (to_char((to_date('1998-06-17' ,'yyyy/mm/dd') +  60),'yyyy-mm-dd'  and i_manufact_id in (838,330,50,870)  and inv_quantity_on_hand between 100 and 500  and ss_item_sk = i_item_sk  group by i_item_id,i_item_desc,i_current_price  order by i_item_id   ) where rownum <= 100
+select * from (select   
+    sum(ws_net_paid) as total_sum
+   ,i_category
+   ,i_class
+   ,grouping(i_category)+grouping(i_class) as lochierarchy
+   ,rank() over (
+ 	partition by grouping(i_category)+grouping(i_class),
+ 	case when grouping(i_class) = 0 then i_category end 
+ 	order by sum(ws_net_paid) desc) as rank_within_parent
+ from
+    web_sales
+   ,date_dim       d1
+   ,item
+ where
+    d1.d_month_seq between 1206 and 1206+11
+ and d1.d_date_sk = ws_sold_date_sk
+ and i_item_sk  = ws_item_sk
+ group by rollup(i_category,i_class)
+ order by
+   lochierarchy desc,
+   case when lochierarchy = 0 then i_category end,
+   rank_within_parent
+  ) where rownum <= 100;

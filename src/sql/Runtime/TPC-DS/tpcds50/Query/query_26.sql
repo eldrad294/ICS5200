@@ -1,1 +1,18 @@
-    with ssales as (select c_last_name       ,c_first_name       ,s_store_name       ,ca_state       ,s_state       ,i_color       ,i_current_price       ,i_manager_id       ,i_units       ,i_size       ,sum(ss_net_profit) netpaid from store_sales     ,store_returns     ,store     ,item     ,customer     ,customer_address where ss_ticket_number = sr_ticket_number   and ss_item_sk = sr_item_sk   and ss_customer_sk = c_customer_sk   and ss_item_sk = i_item_sk   and ss_store_sk = s_store_sk   and c_current_addr_sk = ca_address_sk   and c_birth_country <> upper(ca_country)   and s_zip = ca_zip and s_market_id=10 group by c_last_name         ,c_first_name         ,s_store_name         ,ca_state         ,s_state         ,i_color         ,i_current_price         ,i_manager_id         ,i_units         ,i_size) select c_last_name       ,c_first_name       ,s_store_name       ,sum(netpaid) paid from ssales where i_color = 'dodger' group by c_last_name         ,c_first_name         ,s_store_name having sum(netpaid) > (select 0.05*avg(netpaid)                                  from ssales) order by c_last_name         ,c_first_name         ,s_store_name 
+select * from (select  i_item_id, 
+        avg(cs_quantity) agg1,
+        avg(cs_list_price) agg2,
+        avg(cs_coupon_amt) agg3,
+        avg(cs_sales_price) agg4 
+ from catalog_sales, customer_demographics, date_dim, item, promotion
+ where cs_sold_date_sk = d_date_sk and
+       cs_item_sk = i_item_sk and
+       cs_bill_cdemo_sk = cd_demo_sk and
+       cs_promo_sk = p_promo_sk and
+       cd_gender = 'F' and 
+       cd_marital_status = 'W' and
+       cd_education_status = '4 yr Degree' and
+       (p_channel_email = 'N' or p_channel_event = 'N') and
+       d_year = 2000 
+ group by i_item_id
+ order by i_item_id
+  ) where rownum <= 100;

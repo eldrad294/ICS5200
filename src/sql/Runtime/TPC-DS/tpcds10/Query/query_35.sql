@@ -1,1 +1,55 @@
-    select * from (select  sum(cs_ext_discount_amt)  as "excess discount amount"  from     catalog_sales     ,item     ,date_dim where i_manufact_id = 994 and i_item_sk = cs_item_sk  and d_date between '2001-03-14' and          (to_char((to_date('2001-03-14' ,'yyyy/mm/dd') + 90),'yyyy-mm-dd' and d_date_sk = cs_sold_date_sk  and cs_ext_discount_amt        > (           select              1.3 * avg(cs_ext_discount_amt)           from              catalog_sales             ,date_dim          where                cs_item_sk = i_item_sk            and d_date between '2001-03-14' and                              (to_char((to_date('2001-03-14' ,'yyyy/mm/dd') + 90),'yyyy-mm-dd'           and d_date_sk = cs_sold_date_sk        )   ) where rownum <= 100
+select * from (select   
+  ca_state,
+  cd_gender,
+  cd_marital_status,
+  cd_dep_count,
+  count(*) cnt1,
+  sum(cd_dep_count),
+  min(cd_dep_count),
+  stddev_samp(cd_dep_count),
+  cd_dep_employed_count,
+  count(*) cnt2,
+  sum(cd_dep_employed_count),
+  min(cd_dep_employed_count),
+  stddev_samp(cd_dep_employed_count),
+  cd_dep_college_count,
+  count(*) cnt3,
+  sum(cd_dep_college_count),
+  min(cd_dep_college_count),
+  stddev_samp(cd_dep_college_count)
+ from
+  customer c,customer_address ca,customer_demographics
+ where
+  c.c_current_addr_sk = ca.ca_address_sk and
+  cd_demo_sk = c.c_current_cdemo_sk and 
+  exists (select *
+          from store_sales,date_dim
+          where c.c_customer_sk = ss_customer_sk and
+                ss_sold_date_sk = d_date_sk and
+                d_year = 1999 and
+                d_qoy < 4) and
+   (exists (select *
+            from web_sales,date_dim
+            where c.c_customer_sk = ws_bill_customer_sk and
+                  ws_sold_date_sk = d_date_sk and
+                  d_year = 1999 and
+                  d_qoy < 4) or 
+    exists (select * 
+            from catalog_sales,date_dim
+            where c.c_customer_sk = cs_ship_customer_sk and
+                  cs_sold_date_sk = d_date_sk and
+                  d_year = 1999 and
+                  d_qoy < 4))
+ group by ca_state,
+          cd_gender,
+          cd_marital_status,
+          cd_dep_count,
+          cd_dep_employed_count,
+          cd_dep_college_count
+ order by ca_state,
+          cd_gender,
+          cd_marital_status,
+          cd_dep_count,
+          cd_dep_employed_count,
+          cd_dep_college_count
+  ) where rownum <= 100;

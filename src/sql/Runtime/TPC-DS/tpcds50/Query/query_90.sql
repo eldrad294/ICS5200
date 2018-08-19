@@ -1,1 +1,19 @@
-    select * from (select        sum(ws_net_paid) as total_sum    ,i_category    ,i_class    ,grouping(i_category)+grouping(i_class) as lochierarchy    ,rank() over (  	partition by grouping(i_category)+grouping(i_class),  	case when grouping(i_class) = 0 then i_category end   	order by sum(ws_net_paid) desc) as rank_within_parent  from     web_sales    ,date_dim       d1    ,item  where     d1.d_month_seq between 1206 and 1206+11  and d1.d_date_sk = ws_sold_date_sk  and i_item_sk  = ws_item_sk  group by rollup(i_category,i_class)  order by    lochierarchy desc,    case when lochierarchy = 0 then i_category end,    rank_within_parent   ) where rownum <= 100
+select * from (select  cast(amc as decimal(15,4))*cast(pmc as decimal(15,4)) am_pm_ratio
+ from ( select count(*) amc
+       from web_sales, household_demographics , time_dim, web_page
+       where ws_sold_time_sk = time_dim.t_time_sk
+         and ws_ship_hdemo_sk = household_demographics.hd_demo_sk
+         and ws_web_page_sk = web_page.wp_web_page_sk
+         and time_dim.t_hour between 8 and 8+1
+         and household_demographics.hd_dep_count = 1
+         and web_page.wp_char_count between 5000 and 5200) at,
+      ( select count(*) pmc
+       from web_sales, household_demographics , time_dim, web_page
+       where ws_sold_time_sk = time_dim.t_time_sk
+         and ws_ship_hdemo_sk = household_demographics.hd_demo_sk
+         and ws_web_page_sk = web_page.wp_web_page_sk
+         and time_dim.t_hour between 16 and 16+1
+         and household_demographics.hd_dep_count = 1
+         and web_page.wp_char_count between 5000 and 5200) pt
+ order by am_pm_ratio
+  ) where rownum <= 100;

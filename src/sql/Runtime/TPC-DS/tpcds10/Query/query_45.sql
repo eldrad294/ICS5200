@@ -1,1 +1,17 @@
-    select * from (select  distinct(i_product_name)  from item i1  where i_manufact_id between 739 and 739+40     and (select count(*) as item_cnt         from item         where (i_manufact = i1.i_manufact and         ((i_category = 'Women' and          (i_color = 'mint' or i_color = 'almond') and          (i_units = 'Dozen' or i_units = 'Carton') and         (i_size = 'large' or i_size = 'extra large')         ) or         (i_category = 'Women' and         (i_color = 'lime' or i_color = 'dodger') and         (i_units = 'Pallet' or i_units = 'Ounce') and         (i_size = 'economy' or i_size = 'medium')         ) or         (i_category = 'Men' and         (i_color = 'salmon' or i_color = 'navy') and         (i_units = 'Bunch' or i_units = 'Oz') and         (i_size = 'N/A' or i_size = 'small')         ) or         (i_category = 'Men' and         (i_color = 'antique' or i_color = 'white') and         (i_units = 'Unknown' or i_units = 'Tbl') and         (i_size = 'large' or i_size = 'extra large')         ))) or        (i_manufact = i1.i_manufact and         ((i_category = 'Women' and          (i_color = 'dim' or i_color = 'chiffon') and          (i_units = 'Box' or i_units = 'N/A') and         (i_size = 'large' or i_size = 'extra large')         ) or         (i_category = 'Women' and         (i_color = 'lemon' or i_color = 'rosy') and         (i_units = 'Tsp' or i_units = 'Dram') and         (i_size = 'economy' or i_size = 'medium')         ) or         (i_category = 'Men' and         (i_color = 'deep' or i_color = 'smoke') and         (i_units = 'Gram' or i_units = 'Pound') and         (i_size = 'N/A' or i_size = 'small')         ) or         (i_category = 'Men' and         (i_color = 'metallic' or i_color = 'olive') and         (i_units = 'Lb' or i_units = 'Case') and         (i_size = 'large' or i_size = 'extra large')         )))) > 0  order by i_product_name   ) where rownum <= 100
+select * from (select  ca_zip, ca_city, sum(ws_sales_price)
+ from web_sales, customer, customer_address, date_dim, item
+ where ws_bill_customer_sk = c_customer_sk
+ 	and c_current_addr_sk = ca_address_sk 
+ 	and ws_item_sk = i_item_sk 
+ 	and ( substr(ca_zip,1,5) in ('85669', '86197','88274','83405','86475', '85392', '85460', '80348', '81792')
+ 	      or 
+ 	      i_item_id in (select i_item_id
+                             from item
+                             where i_item_sk in (2, 3, 5, 7, 11, 13, 17, 19, 23, 29)
+                             )
+ 	    )
+ 	and ws_sold_date_sk = d_date_sk
+ 	and d_qoy = 2 and d_year = 2001
+ group by ca_zip, ca_city
+ order by ca_zip, ca_city
+  ) where rownum <= 100;

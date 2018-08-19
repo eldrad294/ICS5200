@@ -1,1 +1,20 @@
- with ssales as (select c_last_name       ,c_first_name       ,s_store_name       ,ca_state       ,s_state       ,i_color       ,i_current_price       ,i_manager_id       ,i_units       ,i_size       ,sum(ss_net_profit) netpaid from store_sales     ,store_returns     ,store     ,item     ,customer     ,customer_address where ss_ticket_number = sr_ticket_number   and ss_item_sk = sr_item_sk   and ss_customer_sk = c_customer_sk   and ss_item_sk = i_item_sk   and ss_store_sk = s_store_sk   and c_current_addr_sk = ca_address_sk   and c_birth_country <> upper(ca_country)   and s_zip = ca_zip   and s_market_id = 10 group by c_last_name         ,c_first_name         ,s_store_name         ,ca_state         ,s_state         ,i_color         ,i_current_price         ,i_manager_id         ,i_units         ,i_size) select c_last_name       ,c_first_name       ,s_store_name       ,sum(netpaid) paid from ssales where i_color = 'peru' group by c_last_name         ,c_first_name         ,s_store_name having sum(netpaid) > (select 0.05*avg(netpaid)                            from ssales) order by c_last_name         ,c_first_name         ,s_store_name 
+select * from (select  i_item_id,
+        s_state, grouping(s_state) g_state,
+        avg(ss_quantity) agg1,
+        avg(ss_list_price) agg2,
+        avg(ss_coupon_amt) agg3,
+        avg(ss_sales_price) agg4
+ from store_sales, customer_demographics, date_dim, store, item
+ where ss_sold_date_sk = d_date_sk and
+       ss_item_sk = i_item_sk and
+       ss_store_sk = s_store_sk and
+       ss_cdemo_sk = cd_demo_sk and
+       cd_gender = 'F' and
+       cd_marital_status = 'W' and
+       cd_education_status = 'Unknown' and
+       d_year = 1998 and
+       s_state in ('TN','SD', 'AL', 'SD', 'SD', 'SD')
+ group by rollup (i_item_id, s_state)
+ order by i_item_id
+         ,s_state
+  ) where rownum <= 100;

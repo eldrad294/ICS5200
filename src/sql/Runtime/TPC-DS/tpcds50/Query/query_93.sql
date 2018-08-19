@@ -1,1 +1,15 @@
-    select * from (select  * from( select i_category, i_class, i_brand,        s_store_name, s_company_name,        d_moy,        sum(ss_sales_price) sum_sales,        avg(sum(ss_sales_price)) over          (partition by i_category, i_brand, s_store_name, s_company_name)          avg_monthly_sales from item, store_sales, date_dim, store where ss_item_sk = i_item_sk and       ss_sold_date_sk = d_date_sk and       ss_store_sk = s_store_sk and       d_year in (2002) and         ((i_category in ('Books','Men','Music') and           i_class in ('sports','sports-apparel','classical')          )       or (i_category in ('Children','Electronics','Home') and           i_class in ('infants','televisions','tables')          )) group by i_category, i_class, i_brand,          s_store_name, s_company_name, d_moy) tmp1 where case when (avg_monthly_sales <> 0) then (abs(sum_sales - avg_monthly_sales) / avg_monthly_sales) else null end > 0.1 order by sum_sales - avg_monthly_sales, s_store_name  ) where rownum <= 100
+select * from (select  ss_customer_sk
+            ,sum(act_sales) sumsales
+      from (select ss_item_sk
+                  ,ss_ticket_number
+                  ,ss_customer_sk
+                  ,case when sr_return_quantity is not null then (ss_quantity-sr_return_quantity)*ss_sales_price
+                                                            else (ss_quantity*ss_sales_price) end act_sales
+            from store_sales left outer join store_returns on (sr_item_sk = ss_item_sk
+                                                               and sr_ticket_number = ss_ticket_number)
+                ,reason
+            where sr_reason_sk = r_reason_sk
+              and r_reason_desc = 'its is a boy') t
+      group by ss_customer_sk
+      order by sumsales, ss_customer_sk
+ ) where rownum <= 100;

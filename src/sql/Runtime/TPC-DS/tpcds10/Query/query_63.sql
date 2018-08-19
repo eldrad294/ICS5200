@@ -1,1 +1,26 @@
-    with wss as   (select d_week_seq,         ss_store_sk,         sum(case when (d_day_name='Sunday') then ss_sales_price else null end) sun_sales,         sum(case when (d_day_name='Monday') then ss_sales_price else null end) mon_sales,         sum(case when (d_day_name='Tuesday') then ss_sales_price else  null end) tue_sales,         sum(case when (d_day_name='Wednesday') then ss_sales_price else null end) wed_sales,         sum(case when (d_day_name='Thursday') then ss_sales_price else null end) thu_sales,         sum(case when (d_day_name='Friday') then ss_sales_price else null end) fri_sales,         sum(case when (d_day_name='Saturday') then ss_sales_price else null end) sat_sales  from store_sales,date_dim  where d_date_sk = ss_sold_date_sk  group by d_week_seq,ss_store_sk  )  select * from ( select  s_store_name1,s_store_id1,d_week_seq1        ,sun_sales1/sun_sales2,mon_sales1/mon_sales2        ,tue_sales1/tue_sales2,wed_sales1/wed_sales2,thu_sales1/thu_sales2        ,fri_sales1/fri_sales2,sat_sales1/sat_sales2  from  (select s_store_name s_store_name1,wss.d_week_seq d_week_seq1         ,s_store_id s_store_id1,sun_sales sun_sales1         ,mon_sales mon_sales1,tue_sales tue_sales1         ,wed_sales wed_sales1,thu_sales thu_sales1         ,fri_sales fri_sales1,sat_sales sat_sales1   from wss,store,date_dim d   where d.d_week_seq = wss.d_week_seq and         ss_store_sk = s_store_sk and          d_month_seq between 1211 and 1211 + 11) y,  (select s_store_name s_store_name2,wss.d_week_seq d_week_seq2         ,s_store_id s_store_id2,sun_sales sun_sales2         ,mon_sales mon_sales2,tue_sales tue_sales2         ,wed_sales wed_sales2,thu_sales thu_sales2         ,fri_sales fri_sales2,sat_sales sat_sales2   from wss,store,date_dim d   where d.d_week_seq = wss.d_week_seq and         ss_store_sk = s_store_sk and          d_month_seq between 1211+ 12 and 1211 + 23) x  where s_store_id1=s_store_id2    and d_week_seq1=d_week_seq2-52  order by s_store_name1,s_store_id1,d_week_seq1  ) where rownum <= 100
+select * from (select  * 
+from (select i_manager_id
+             ,sum(ss_sales_price) sum_sales
+             ,avg(sum(ss_sales_price)) over (partition by i_manager_id) avg_monthly_sales
+      from item
+          ,store_sales
+          ,date_dim
+          ,store
+      where ss_item_sk = i_item_sk
+        and ss_sold_date_sk = d_date_sk
+        and ss_store_sk = s_store_sk
+        and d_month_seq in (1217,1217+1,1217+2,1217+3,1217+4,1217+5,1217+6,1217+7,1217+8,1217+9,1217+10,1217+11)
+        and ((    i_category in ('Books','Children','Electronics')
+              and i_class in ('personal','portable','reference','self-help')
+              and i_brand in ('scholaramalgamalg #14','scholaramalgamalg #7',
+		                  'exportiunivamalg #9','scholaramalgamalg #9'))
+           or(    i_category in ('Women','Music','Men')
+              and i_class in ('accessories','classical','fragrances','pants')
+              and i_brand in ('amalgimporto #1','edu packscholar #1','exportiimporto #1',
+		                 'importoamalg #1')))
+group by i_manager_id, d_moy) tmp1
+where case when avg_monthly_sales > 0 then abs (sum_sales - avg_monthly_sales) / avg_monthly_sales else null end > 0.1
+order by i_manager_id
+        ,avg_monthly_sales
+        ,sum_sales
+ ) where rownum <= 100;

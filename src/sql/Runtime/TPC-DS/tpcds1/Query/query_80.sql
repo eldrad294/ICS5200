@@ -10,8 +10,8 @@ with ssr as
      item,
      promotion
  where ss_sold_date_sk = d_date_sk
-       and d_date between cast('2000-08-20' as date) 
-                  and (cast('2000-08-20' as date) +  30 days)
+       and d_date between to_char(to_date('2000-08-20','yyyy/mm/dd'),'yyyy-mm-dd')
+                  and (to_char(to_date('2000-08-20','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
        and ss_store_sk = s_store_sk
        and ss_item_sk = i_item_sk
        and i_current_price > 50
@@ -31,8 +31,8 @@ with ssr as
      item,
      promotion
  where cs_sold_date_sk = d_date_sk
-       and d_date between cast('2000-08-20' as date)
-                  and (cast('2000-08-20' as date) +  30 days)
+       and d_date between to_char(to_date('2000-08-20','yyyy/mm/dd'),'yyyy-mm-dd')
+                  and (to_char(to_date('2000-08-20','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
         and cs_catalog_page_sk = cp_catalog_page_sk
        and cs_item_sk = i_item_sk
        and i_current_price > 50
@@ -52,8 +52,8 @@ group by cp_catalog_page_id)
      item,
      promotion
  where ws_sold_date_sk = d_date_sk
-       and d_date between cast('2000-08-20' as date)
-                  and (cast('2000-08-20' as date) +  30 days)
+       and d_date between to_char(to_date('2000-08-20','yyyy/mm/dd'),'yyyy-mm-dd')
+                  and (to_char(to_date('2000-08-20','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
         and ws_web_site_sk = web_site_sk
        and ws_item_sk = i_item_sk
        and i_current_price > 50

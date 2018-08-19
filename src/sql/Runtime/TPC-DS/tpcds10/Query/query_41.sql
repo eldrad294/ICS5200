@@ -1,1 +1,49 @@
-    select * from (select  count(*) from (     select distinct c_last_name, c_first_name, d_date     from store_sales, date_dim, customer           where store_sales.ss_sold_date_sk = date_dim.d_date_sk       and store_sales.ss_customer_sk = customer.c_customer_sk       and d_month_seq between 1179 and 1179 + 11   intersect     select distinct c_last_name, c_first_name, d_date     from catalog_sales, date_dim, customer           where catalog_sales.cs_sold_date_sk = date_dim.d_date_sk       and catalog_sales.cs_bill_customer_sk = customer.c_customer_sk       and d_month_seq between 1179 and 1179 + 11   intersect     select distinct c_last_name, c_first_name, d_date     from web_sales, date_dim, customer           where web_sales.ws_sold_date_sk = date_dim.d_date_sk       and web_sales.ws_bill_customer_sk = customer.c_customer_sk       and d_month_seq between 1179 and 1179 + 11 ) hot_cust  ) where rownum <= 100
+select * from (select  distinct(i_product_name)
+ from item i1
+ where i_manufact_id between 739 and 739+40 
+   and (select count(*) as item_cnt
+        from item
+        where (i_manufact = i1.i_manufact and
+        ((i_category = 'Women' and 
+        (i_color = 'mint' or i_color = 'almond') and 
+        (i_units = 'Dozen' or i_units = 'Carton') and
+        (i_size = 'large' or i_size = 'extra large')
+        ) or
+        (i_category = 'Women' and
+        (i_color = 'lime' or i_color = 'dodger') and
+        (i_units = 'Pallet' or i_units = 'Ounce') and
+        (i_size = 'economy' or i_size = 'medium')
+        ) or
+        (i_category = 'Men' and
+        (i_color = 'salmon' or i_color = 'navy') and
+        (i_units = 'Bunch' or i_units = 'Oz') and
+        (i_size = 'N/A' or i_size = 'small')
+        ) or
+        (i_category = 'Men' and
+        (i_color = 'antique' or i_color = 'white') and
+        (i_units = 'Unknown' or i_units = 'Tbl') and
+        (i_size = 'large' or i_size = 'extra large')
+        ))) or
+       (i_manufact = i1.i_manufact and
+        ((i_category = 'Women' and 
+        (i_color = 'dim' or i_color = 'chiffon') and 
+        (i_units = 'Box' or i_units = 'N/A') and
+        (i_size = 'large' or i_size = 'extra large')
+        ) or
+        (i_category = 'Women' and
+        (i_color = 'lemon' or i_color = 'rosy') and
+        (i_units = 'Tsp' or i_units = 'Dram') and
+        (i_size = 'economy' or i_size = 'medium')
+        ) or
+        (i_category = 'Men' and
+        (i_color = 'deep' or i_color = 'smoke') and
+        (i_units = 'Gram' or i_units = 'Pound') and
+        (i_size = 'N/A' or i_size = 'small')
+        ) or
+        (i_category = 'Men' and
+        (i_color = 'metallic' or i_color = 'olive') and
+        (i_units = 'Lb' or i_units = 'Case') and
+        (i_size = 'large' or i_size = 'extra large')
+        )))) > 0
+ order by i_product_name
+  ) where rownum <= 100;

@@ -1,1 +1,17 @@
-    select * from (select  distinct(i_product_name)  from item i1  where i_manufact_id between 978 and 978+40     and (select count(*) as item_cnt         from item         where (i_manufact = i1.i_manufact and         ((i_category = 'Women' and          (i_color = 'chiffon' or i_color = 'peru') and          (i_units = 'Case' or i_units = 'Box') and         (i_size = 'extra large' or i_size = 'small')         ) or         (i_category = 'Women' and         (i_color = 'chartreuse' or i_color = 'cream') and         (i_units = 'Pound' or i_units = 'Gram') and         (i_size = 'large' or i_size = 'N/A')         ) or         (i_category = 'Men' and         (i_color = 'ivory' or i_color = 'antique') and         (i_units = 'Dram' or i_units = 'Unknown') and         (i_size = 'medium' or i_size = 'petite')         ) or         (i_category = 'Men' and         (i_color = 'cornsilk' or i_color = 'orange') and         (i_units = 'Each' or i_units = 'Pallet') and         (i_size = 'extra large' or i_size = 'small')         ))) or        (i_manufact = i1.i_manufact and         ((i_category = 'Women' and          (i_color = 'misty' or i_color = 'linen') and          (i_units = 'Lb' or i_units = 'Ounce') and         (i_size = 'extra large' or i_size = 'small')         ) or         (i_category = 'Women' and         (i_color = 'purple' or i_color = 'red') and         (i_units = 'Dozen' or i_units = 'Gross') and         (i_size = 'large' or i_size = 'N/A')         ) or         (i_category = 'Men' and         (i_color = 'goldenrod' or i_color = 'turquoise') and         (i_units = 'Oz' or i_units = 'Tbl') and         (i_size = 'medium' or i_size = 'petite')         ) or         (i_category = 'Men' and         (i_color = 'bisque' or i_color = 'navajo') and         (i_units = 'Ton' or i_units = 'Bundle') and         (i_size = 'extra large' or i_size = 'small')         )))) > 0  order by i_product_name   ) where rownum <= 100
+select * from (select  ca_zip, ca_state, sum(ws_sales_price)
+ from web_sales, customer, customer_address, date_dim, item
+ where ws_bill_customer_sk = c_customer_sk
+ 	and c_current_addr_sk = ca_address_sk 
+ 	and ws_item_sk = i_item_sk 
+ 	and ( substr(ca_zip,1,5) in ('85669', '86197','88274','83405','86475', '85392', '85460', '80348', '81792')
+ 	      or 
+ 	      i_item_id in (select i_item_id
+                             from item
+                             where i_item_sk in (2, 3, 5, 7, 11, 13, 17, 19, 23, 29)
+                             )
+ 	    )
+ 	and ws_sold_date_sk = d_date_sk
+ 	and d_qoy = 2 and d_year = 2001
+ group by ca_zip, ca_state
+ order by ca_zip, ca_state
+  ) where rownum <= 100;

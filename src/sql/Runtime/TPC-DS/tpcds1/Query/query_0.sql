@@ -1634,7 +1634,7 @@ with customer_total_return as
          ,ca_state)
  select * from ( select  c_customer_id,c_salutation,c_first_name,c_last_name,c_preferred_cust_flag
        ,c_birth_day,c_birth_month,c_birth_year,c_birth_country,c_login,c_email_address
-       ,c_last_review_date_sk,ctr_total_return
+       ,c_last_review_date,ctr_total_return
  from customer_total_return ctr1
      ,customer_address
      ,customer
@@ -1646,7 +1646,7 @@ with customer_total_return as
        and ctr1.ctr_customer_sk = c_customer_sk
  order by c_customer_id,c_salutation,c_first_name,c_last_name,c_preferred_cust_flag
                   ,c_birth_day,c_birth_month,c_birth_year,c_birth_country,c_login,c_email_address
-                  ,c_last_review_date_sk,ctr_total_return
+                  ,c_last_review_date,ctr_total_return
  ) where rownum <= 100;
 
 
@@ -1932,7 +1932,7 @@ select * from (select  i_item_id
  where i_current_price between 29 and 29 + 30
  and inv_item_sk = i_item_sk
  and d_date_sk=inv_date_sk
- and d_date between cast('2002-03-29' as date) and (cast('2002-03-29' as date) +  60 days)
+ and d_date between to_char(to_date('2002-03-29','yyyy/mm/dd'),'yyyy-mm-dd') and (to_char(to_date('2002-03-29','yyyy/mm/dd') +  60,'yyyy-mm-dd'))
  and i_manufact_id in (705,742,777,944)
  and inv_quantity_on_hand between 100 and 500
  and cs_item_sk = i_item_sk
@@ -2022,9 +2022,9 @@ order by inv1.w_warehouse_sk,inv1.i_item_sk,inv1.d_moy,inv1.mean,inv1.cov
 select * from (select  
    w_state
   ,i_item_id
-  ,sum(case when (cast(d_date as date) < cast ('2001-05-02' as date)) 
+  ,sum(case when (to_char(to_date(d_date,'yyyy/mm/dd'),'yyyy-mm-dd') < to_char(to_date('2001-05-02','yyyy/mm/dd'),'yyyy-mm-dd'))
  		then cs_sales_price - coalesce(cr_refunded_cash,0) else 0 end) as sales_before
-  ,sum(case when (cast(d_date as date) >= cast ('2001-05-02' as date)) 
+  ,sum(case when (to_char(to_date(d_date,'yyyy/mm/dd'),'yyyy-mm-dd') >= to_char(to_date('2001-05-02','yyyy/mm/dd'),'yyyy-mm-dd'))
  		then cs_sales_price - coalesce(cr_refunded_cash,0) else 0 end) as sales_after
  from
    catalog_sales left outer join catalog_returns on
@@ -2038,8 +2038,8 @@ select * from (select
  and i_item_sk          = cs_item_sk
  and cs_warehouse_sk    = w_warehouse_sk 
  and cs_sold_date_sk    = d_date_sk
- and d_date between (cast ('2001-05-02' as date) - 30 days)
-                and (cast ('2001-05-02' as date) + 30 days) 
+ and d_date between (to_char(to_date('2001-05-02','yyyy/mm/dd') - 30,'yyyy-mm-dd'))
+                and (to_char(to_date('2001-05-02','yyyy/mm/dd') + 30,'yyyy-mm-dd'))
  group by
     w_state,i_item_id
  order by w_state,i_item_id
@@ -3713,7 +3713,7 @@ left outer join promotion on (cs_promo_sk=p_promo_sk)
 left outer join catalog_returns on (cr_item_sk = cs_item_sk and cr_order_number = cs_order_number)
 where d1.d_week_seq = d2.d_week_seq
   and inv_quantity_on_hand < cs_quantity 
-  and d3.d_date > d1.d_date + 5
+  and to_char(to_date(d3.d_date,'yyyy/mm/dd'),'yyyy-mm-dd') > to_char(to_date(d1.d_date,'yyyy/mm/dd') + 5,'yyyy-mm-dd')
   and hd_buy_potential = '501-1000'
   and d1.d_year = 1999
   and cd_marital_status = 'D'
@@ -3914,8 +3914,8 @@ with ss as
       date_dim,
       store
  where ss_sold_date_sk = d_date_sk
-       and d_date between cast('2000-08-16' as date) 
-                  and (cast('2000-08-16' as date) +  30 days) 
+       and d_date between to_char(to_date('2000-08-16','yyyy/mm/dd'),'yyyy-mm-dd')
+                  and (to_char(to_date('2000-08-16','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
        and ss_store_sk = s_store_sk
  group by s_store_sk)
  ,
@@ -3927,8 +3927,8 @@ with ss as
       date_dim,
       store
  where sr_returned_date_sk = d_date_sk
-       and d_date between cast('2000-08-16' as date)
-                  and (cast('2000-08-16' as date) +  30 days)
+       and d_date between to_char(to_date('2000-08-16','yyyy/mm/dd'),'yyyy-mm-dd')
+                  and (to_char(to_date('2000-08-16','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
        and sr_store_sk = s_store_sk
  group by s_store_sk), 
  cs as
@@ -3938,8 +3938,8 @@ with ss as
  from catalog_sales,
       date_dim
  where cs_sold_date_sk = d_date_sk
-       and d_date between cast('2000-08-16' as date)
-                  and (cast('2000-08-16' as date) +  30 days)
+       and d_date between to_char(to_date('2000-08-16','yyyy/mm/dd'),'yyyy-mm-dd')
+                  and (to_char(to_date('2000-08-16','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
  group by cs_call_center_sk 
  ), 
  cr as
@@ -3949,8 +3949,8 @@ with ss as
  from catalog_returns,
       date_dim
  where cr_returned_date_sk = d_date_sk
-       and d_date between cast('2000-08-16' as date)
-                  and (cast('2000-08-16' as date) +  30 days)
+       and d_date between to_char(to_date('2000-08-16','yyyy/mm/dd'),'yyyy-mm-dd')
+                  and (to_char(to_date('2000-08-16','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
  group by cr_call_center_sk
  ), 
  ws as
@@ -3961,8 +3961,8 @@ with ss as
       date_dim,
       web_page
  where ws_sold_date_sk = d_date_sk
-       and d_date between cast('2000-08-16' as date)
-                  and (cast('2000-08-16' as date) +  30 days)
+       and d_date between to_char(to_date('2000-08-16','yyyy-mm-dd'),'yyyy-mm-dd')
+                  and (to_char(to_date('2000-08-16','yyyy-mm-dd') +  30,'yyyy-mm-dd'))
        and ws_web_page_sk = wp_web_page_sk
  group by wp_web_page_sk), 
  wr as
@@ -3973,8 +3973,8 @@ with ss as
       date_dim,
       web_page
  where wr_returned_date_sk = d_date_sk
-       and d_date between cast('2000-08-16' as date)
-                  and (cast('2000-08-16' as date) +  30 days)
+       and d_date between to_char(to_date('2000-08-16','yyyy/mm/dd'),'yyyy-mm-dd')
+                  and (to_char(to_date('2000-08-16','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
        and wr_web_page_sk = wp_web_page_sk
  group by wp_web_page_sk)
  select * from ( select  channel
@@ -4107,8 +4107,8 @@ with ssr as
      item,
      promotion
  where ss_sold_date_sk = d_date_sk
-       and d_date between cast('2000-08-20' as date) 
-                  and (cast('2000-08-20' as date) +  30 days)
+       and d_date between to_char(to_date('2000-08-20','yyyy/mm/dd'),'yyyy-mm-dd')
+                  and (to_char(to_date('2000-08-20','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
        and ss_store_sk = s_store_sk
        and ss_item_sk = i_item_sk
        and i_current_price > 50
@@ -4128,8 +4128,8 @@ with ssr as
      item,
      promotion
  where cs_sold_date_sk = d_date_sk
-       and d_date between cast('2000-08-20' as date)
-                  and (cast('2000-08-20' as date) +  30 days)
+       and d_date between to_char(to_date('2000-08-20','yyyy/mm/dd'),'yyyy-mm-dd')
+                  and (to_char(to_date('2000-08-20','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
         and cs_catalog_page_sk = cp_catalog_page_sk
        and cs_item_sk = i_item_sk
        and i_current_price > 50
@@ -4149,8 +4149,8 @@ group by cp_catalog_page_id)
      item,
      promotion
  where ws_sold_date_sk = d_date_sk
-       and d_date between cast('2000-08-20' as date)
-                  and (cast('2000-08-20' as date) +  30 days)
+       and d_date between to_char(to_date('2000-08-20','yyyy/mm/dd'),'yyyy-mm-dd')
+                  and (to_char(to_date('2000-08-20','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
         and ws_web_site_sk = web_site_sk
        and ws_item_sk = i_item_sk
        and i_current_price > 50
@@ -4229,7 +4229,7 @@ select * from (select  i_item_id
  where i_current_price between 34 and 34+30
  and inv_item_sk = i_item_sk
  and d_date_sk=inv_date_sk
- and d_date between cast('2002-01-17' as date) and (cast('2002-01-17' as date) +  60 days)
+ and d_date between to_char(to_date('2002-01-17','yyyy/mm/dd'),'yyyy-mm-dd') and (to_char(to_date('2002-01-17','yyyy/mm/dd') +  60,'yyyy-mm-dd'))
  and i_manufact_id in (530,987,259,487)
  and inv_quantity_on_hand between 100 and 500
  and ss_item_sk = i_item_sk
@@ -4443,13 +4443,13 @@ from ((select distinct c_last_name, c_first_name, d_date
        where store_sales.ss_sold_date_sk = date_dim.d_date_sk
          and store_sales.ss_customer_sk = customer.c_customer_sk
          and d_month_seq between 1221 and 1221+11)
-       except
+       minus
       (select distinct c_last_name, c_first_name, d_date
        from catalog_sales, date_dim, customer
        where catalog_sales.cs_sold_date_sk = date_dim.d_date_sk
          and catalog_sales.cs_bill_customer_sk = customer.c_customer_sk
          and d_month_seq between 1221 and 1221+11)
-       except
+       minus
       (select distinct c_last_name, c_first_name, d_date
        from web_sales, date_dim, customer
        where web_sales.ws_sold_date_sk = date_dim.d_date_sk
@@ -4582,7 +4582,7 @@ order by sum_sales - avg_monthly_sales, s_store_name
 
 
 
-select * from (select  cast(amc as decimal(15,4))/cast(pmc as decimal(15,4)) am_pm_ratio
+select * from (select  cast(amc as decimal(15,4))*cast(pmc as decimal(15,4)) am_pm_ratio
  from ( select count(*) amc
        from web_sales, household_demographics , time_dim, web_page
        where ws_sold_time_sk = time_dim.t_time_sk
@@ -4644,8 +4644,8 @@ from
 where
 i_manufact_id = 408
 and i_item_sk = ws_item_sk 
-and d_date between '1999-02-19' and 
-        (cast('1999-02-19' as date) + 90 days)
+and d_date between to_char(to_date('1999-02-19','yyyy/mm/dd'),'yyyy-mm-dd') and
+        (to_char(to_date('1999-02-19','yyyy/mm/dd')+ 90,'yyyy-mm-dd'))
 and d_date_sk = ws_sold_date_sk 
 and ws_ext_discount_amt  
      > ( 
@@ -4656,8 +4656,8 @@ and ws_ext_discount_amt
            ,date_dim
          WHERE 
               ws_item_sk = i_item_sk 
-          and d_date between '1999-02-19' and
-                             (cast('1999-02-19' as date) + 90 days)
+          and d_date between to_char(to_date('1999-02-19','yyyy/mm/dd'),'yyyy-mm-dd') and
+                             (to_char(to_date('1999-02-19','yyyy/mm/dd') + 90,'yyyy-mm-dd'))
           and d_date_sk = ws_sold_date_sk 
       ) 
 order by sum(ws_ext_discount_amt)
@@ -4693,8 +4693,8 @@ from
   ,customer_address
   ,web_site
 where
-    d_date between '2000-2-01' and 
-           (cast('2000-2-01' as date) + 60 days)
+    d_date between to_char(to_date('2000-2-01','yyyy/mm/dd'),'yyyy-mm-dd') and
+           (to_char(to_date('2000-2-01','yyyy/mm/dd') + 60,'yyyy-mm-dd'))
 and ws1.ws_ship_date_sk = d_date_sk
 and ws1.ws_ship_addr_sk = ca_address_sk
 and ca_state = 'AR'
@@ -4727,8 +4727,8 @@ from
   ,customer_address
   ,web_site
 where
-    d_date between '1999-5-01' and 
-           (cast('1999-5-01' as date) + 60 days)
+    d_date between '1999-5-01' and
+           (to_char(to_date('1999-5-01','yyyy/mm/dd') + 60,'yyyy-mm-dd'))
 and ws1.ws_ship_date_sk = d_date_sk
 and ws1.ws_ship_addr_sk = ca_address_sk
 and ca_state = 'MT'
@@ -4801,8 +4801,8 @@ where
 	ss_item_sk = i_item_sk 
   	and i_category in ('Shoes', 'Books', 'Children')
   	and ss_sold_date_sk = d_date_sk
-	and d_date between cast('2001-02-01' as date) 
-				and (cast('2001-02-01' as date) + 30 days)
+	and d_date between to_char(to_date('2001-02-01','yyyy/mm/dd'),'yyyy-mm-dd')
+				and (to_char(to_date('2001-02-01','yyyy/mm/dd') + 30,'yyyy-mm-dd'))
 group by 
 	i_item_id
         ,i_item_desc 

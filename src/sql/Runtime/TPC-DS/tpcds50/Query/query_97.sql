@@ -1,1 +1,22 @@
-    select * from (select  ss_customer_sk             ,sum(act_sales) sumsales       from (select ss_item_sk                   ,ss_ticket_number                   ,ss_customer_sk                   ,case when sr_return_quantity is not null then (ss_quantity-sr_return_quantity)*ss_sales_price                                                             else (ss_quantity*ss_sales_price) end act_sales             from store_sales left outer join store_returns on (sr_item_sk = ss_item_sk                                                                and sr_ticket_number = ss_ticket_number)                 ,reason             where sr_reason_sk = r_reason_sk               and r_reason_desc = 'its is a boy') t       group by ss_customer_sk       order by sumsales, ss_customer_sk  ) where rownum <= 100
+with ssci as (
+select ss_customer_sk customer_sk
+      ,ss_item_sk item_sk
+from store_sales,date_dim
+where ss_sold_date_sk = d_date_sk
+  and d_month_seq between 1180 and 1180 + 11
+group by ss_customer_sk
+        ,ss_item_sk),
+csci as(
+ select cs_bill_customer_sk customer_sk
+      ,cs_item_sk item_sk
+from catalog_sales,date_dim
+where cs_sold_date_sk = d_date_sk
+  and d_month_seq between 1180 and 1180 + 11
+group by cs_bill_customer_sk
+        ,cs_item_sk)
+select * from ( select  sum(case when ssci.customer_sk is not null and csci.customer_sk is null then 1 else 0 end) store_only
+      ,sum(case when ssci.customer_sk is null and csci.customer_sk is not null then 1 else 0 end) catalog_only
+      ,sum(case when ssci.customer_sk is not null and csci.customer_sk is not null then 1 else 0 end) store_and_catalog
+from ssci full outer join csci on (ssci.customer_sk=csci.customer_sk
+                               and ssci.item_sk = csci.item_sk)
+ ) where rownum <= 100;
