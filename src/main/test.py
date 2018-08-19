@@ -108,7 +108,7 @@ def is_float(n):
     else:
         return True
 #
-nums = ['-12', '-12.3', '12.0', '123.002', '0.00','df','12']
+nums = ['2451371','29706']
 
 for num in nums:
     if is_int(num):
