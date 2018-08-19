@@ -100,11 +100,33 @@ class LoadTPCData:
                 value += i
             else:
                 try:
-                    if Decimal(value) % 1 == 0:
+                    if is_int(value):
                         list_line.append(int(value))
-                    else:
+                    elif is_float(value):
                         list_line.append(float(value))
+                    else:
+                        list_line.append(str(value))
                 except Exception:
                     list_line.append(str(value))
-                value = ""
+                else:
+                    value = ""
         return list_line
+#
+def is_int(n):
+    try:
+        if '.' in str(n):
+            return False
+        float_n = float(n)
+        int_n = int(float_n)
+    except ValueError:
+        return False
+    else:
+        return float_n == int_n
+
+def is_float(n):
+    try:
+        float_n = float(n)
+    except ValueError:
+        return False
+    else:
+        return True
