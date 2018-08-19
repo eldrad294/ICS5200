@@ -59,9 +59,6 @@ class LoadTPCData:
         dml = "INSERT INTO " + table_name + " " + column_names + " VALUES ("
         for count, data_line in enumerate(data):
             l_line = LoadTPCData.__parse_data_line(dataline=data_line)
-            if table_name == 'INVENTORY' or table_name == 'inventory':
-                logger.log(dml)
-                logger.log(l_line)
             if count < 1:
                 for i in range(len(l_line)):
                     if i == 0:
@@ -74,6 +71,7 @@ class LoadTPCData:
             if count % 1000 == 0 and count != 0:
                 di.execute_many_dml(dml=dml, data=values_bank)  # Bulk Insert
                 di.commit()  # Commit once after every RDD batch
+                logger.log('Committed Batch!')
                 values_bank = []
         #
         # Execute remaining rows
@@ -82,7 +80,7 @@ class LoadTPCData:
         di.close()
         #
         end_time = time.time()
-        logger.log('Committed ' + str(row_count) + ' rows for table ' + table_name + " | " + str(end_time-start_time) + " seconds")
+        logger.log('Finished batch of ' + str(row_count) + ' rows for table ' + table_name + " | " + str(end_time-start_time) + " seconds")
     #
     @staticmethod
     def __parse_data_line(dataline):
