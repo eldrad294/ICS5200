@@ -46,3 +46,4 @@ drop table WEB_RETURNS;
 drop table WEB_SALES;
 drop table WEB_SITE;
 drop table REP_EXECUTION_PLANS;
+drop table REP_TPC_DESCRIBE;
