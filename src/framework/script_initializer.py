@@ -71,7 +71,7 @@ class ScriptInitializer:
         tpce_sql_generation_bool = str(g_config.get_value('DataGeneration','tpce_sql_generation').title())
         #
         # Report Generation
-        report_save_path = home + str(g_config.get_value('ReportGeneration','report_save_path'))
+        report_save_path = home_dir + str(g_config.get_value('ReportGeneration','report_save_path'))
         #
         # Benchmark
         iterations = int(g_config.get_value('Benchmark','iterations'))
