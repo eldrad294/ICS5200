@@ -195,5 +195,5 @@ class ScriptInitializer:
     def __display_config(self):
         self.logger.log('----------------RUN CONFIG----------------')
         for item,val in self.ev_loader.var_get().items():
-            self.logger.log(item + ' -> [' + val + ']')
+            self.logger.log(str(item) + ' -> [' + str(val) + ']')
         self.logger.log('------------------------------------------')
