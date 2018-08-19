@@ -56,6 +56,7 @@ class LoadTPCData:
         row_count = 0
         values_bank = []
         dml = "INSERT INTO " + table_name + " " + column_names + " VALUES ("
+        logger.log(data)
         for count, data_line in enumerate(data):
             l_line = LoadTPCData.__parse_data_line(dataline=data_line)
             if count < 1:
@@ -65,6 +66,7 @@ class LoadTPCData:
                     else:
                         dml += ", :" + str(i+1) + " "
                 dml += ")"
+            logger.log(l_line)
             values_bank.append(l_line)
             row_count += 1
         di.execute_many_dml(dml=dml, data=values_bank) # Bulk Insert
