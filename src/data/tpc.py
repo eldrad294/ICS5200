@@ -53,12 +53,12 @@ class TPC_Wrapper:
             self.__logger.log(self.__supported_tpc_types[0] + " data generated for [" + str(self.__ev_loader.var_get('data_size'))
                        + "] Gigabytes using parallel degree [" + str(self.__ev_loader.var_get('parallel_degree')) + "]")
             #
-            for file in self.get_data_file_list(tpc_type=tpc_type):
-                newfilename = self.__rename(file)
-                rename_cmd = "mv " + data_generated_path + "/" + file + " " + data_generated_path + "/" + newfilename
-                output = os.system(rename_cmd)
-                if output != 0:
-                    raise Exception("Exception raised during renaming of TPC files..Terminating process!")
+            # for file in self.get_data_file_list(tpc_type=tpc_type):
+            #     newfilename = self.__rename(file)
+            #     rename_cmd = "mv " + data_generated_path + "/" + file + " " + data_generated_path + "/" + newfilename
+            #     output = os.system(rename_cmd)
+            #     if output != 0:
+            #         raise Exception("Exception raised during renaming of TPC files..Terminating process!")
 
         elif tpc_type == self.__supported_tpc_types[1]:
             raise NotImplementedError("TPC-E not supported yet!")
