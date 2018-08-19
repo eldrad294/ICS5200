@@ -2,6 +2,7 @@
 # Module Imports
 from src.framework.db_interface import DatabaseInterface
 from src.framework.logger import Logger
+from decimal import Decimal
 import time, os
 #
 class LoadTPCData:
@@ -91,6 +92,12 @@ class LoadTPCData:
             if i != delimeter:
                 value += i
             else:
-                list_line.append(str(value))
+                try:
+                    if Decimal(value) % 1 == 0:
+                        list_line.append(int(value))
+                    else:
+                        list_line.append(float(value))
+                except Exception:
+                    list_line.append(str(value))
                 value = ""
         return tuple(list_line)
