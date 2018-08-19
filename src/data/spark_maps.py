@@ -101,9 +101,9 @@ class LoadTPCData:
                 value += i
             else:
                 try:
-                    if is_int(value):
+                    if LoadTPCData.is_int(value):
                         list_line.append(int(value))
-                    elif is_float(value):
+                    elif LoadTPCData.is_float(value):
                         list_line.append(float(value))
                     else:
                         list_line.append(str(value))
@@ -113,6 +113,7 @@ class LoadTPCData:
                     value = ""
         return list_line
     #
+    @staticmethod
     def is_int(n):
         try:
             if '.' in str(n):
@@ -123,7 +124,8 @@ class LoadTPCData:
             return False
         else:
             return float_n == int_n
-
+    #
+    @staticmethod
     def is_float(n):
         try:
             float_n = float(n)
