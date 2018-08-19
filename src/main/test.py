@@ -54,7 +54,7 @@ def __parse_data_line(dataline):
 #
 # Retrieve columns required for batch insert
 sql = "select column_name from user_tab_columns where table_name = 'INVENTORY' order by column_id";
-res = di.execute_query(query=sql, describe=False)
+res = db_conn.execute_query(query=sql, describe=False)
 column_names = "("
 for i, item in enumerate(res):
     if i == 0:
@@ -80,12 +80,12 @@ for count, data_line in enumerate(['2450815|1|1|211|','2450815|2|1|235|','245081
     values_bank.append(l_line)
     row_count += 1
     if count % 1000 == 0 and count != 0:
-        di.execute_many_dml(dml=dml, data=values_bank)  # Bulk Insert
-        di.commit()  # Commit once after every RDD batch
+        db_conn.execute_many_dml(dml=dml, data=values_bank)  # Bulk Insert
+        db_conn.commit()  # Commit once after every RDD batch
         logger.log('Committed 1000 batch for [' + table_name + ']')
         values_bank = []
 #
 # Execute remaining rows
-di.execute_many_dml(dml=dml, data=values_bank)  # Bulk Insert
-di.commit()  # Commit once after every RDD batch
-di.close()
+db_conn.execute_many_dml(dml=dml, data=values_bank)  # Bulk Insert
+db_conn.commit()  # Commit once after every RDD batch
+db_conn.close()
