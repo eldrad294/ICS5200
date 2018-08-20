@@ -1,6 +1,7 @@
 #
 # Module Imports
 from src.data.spark_maps import LoadTPCData
+import os
 #
 class FileLoader:
     """
@@ -47,3 +48,16 @@ class FileLoader:
                                                                             logger_details=logger_details,
                                                                             instance_details=instance_details,
                                                                             oracle_path_details=oracle_path_details))
+    #
+    def call_ctrl_file(self, ev_loader, table_name):
+        """
+        Loads data through SQL Loader ctrl files
+        :param ev_loader:
+        :param table_name:
+        :return:
+        """
+        sys = "sqlldr " + ev_loader.var_get('user') + "/tpc@gabsam control=" + ev_loader.var_get('src_dir') + \
+              "/sql/Loading/" + ev_loader.var_get('user') + "/" + table_name + ".ctl"
+        output = os.system(sys)
+        if output != 0:
+            raise Exception("Exception raised during generation of TPC files..Terminating process!")

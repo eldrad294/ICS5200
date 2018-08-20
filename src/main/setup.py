@@ -88,9 +88,12 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
     #
     for i in range(len(file_names)):
         #
-        # Loads data into Oracle Instance
-        fl.load_data(path=ev_loader.var_get('data_generated_directory') + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i],
-                     table_name=table_names[i])
+        # Loads data into Oracle Instance using Spark
+        # fl.load_data(path=ev_loader.var_get('data_generated_directory') + "/TPC-DS/" + ev_loader.var_get('user') + "/" + file_names[i],
+        #              table_name=table_names[i])
+        #
+        # Loads data through SQL Loader control files
+        fl.call_ctrl_file(ev_loader=ev_loader, table_name=table_names[i])
         #
         # Deletes generated data file
         if ev_loader.var_get('data_retain_bool') == 'False':
