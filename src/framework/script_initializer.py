@@ -186,8 +186,7 @@ class ScriptInitializer:
         if self.spark is not None:
             return self.spark
         else:
-            raise Exception('Spark context was skipped during script Initialization..Change setting from config.ini '
-                            '[SparkContext.enable_spark]')
+            return None
     #
     def get_global_config(self):
         return self.ev_loader
