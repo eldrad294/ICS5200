@@ -1,7 +1,7 @@
 LOAD DATA
-INFILE '/mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/web_sales.dat'
+INFILE '/mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds50/web_sales.dat'
 REPLACE
-INTO TABLE tpcds1.web_sales
+INTO TABLE tpcds50.web_sales
 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
 TRAILING NULLCOLS
 (

@@ -1,7 +1,7 @@
 LOAD DATA
-INFILE '/mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/date_dim.dat'
+INFILE '/mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds50/date_dim.dat'
 REPLACE
-INTO TABLE tpcds1.date_dim
+INTO TABLE tpcds50.date_dim
 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
 TRAILING NULLCOLS
 (d_date_sk INTEGER EXTERNAL,
