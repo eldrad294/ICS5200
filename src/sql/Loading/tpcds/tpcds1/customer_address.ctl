@@ -3,7 +3,7 @@ INFILE '/mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/customer_address.dat'
 REPLACE
 INTO TABLE tpcds1.customer_address
 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
-TRAILING NULLCOLS
+TRAILING NULLCOLS(
 ca_address_sk INTEGER EXTERNAL,
 ca_address_id ,
 ca_street_number,
