@@ -69,8 +69,10 @@ class LoadTPCData:
                 dml += ")"
             values_bank.append(l_line)
             row_count += 1
+            if count == 0:
+                [(logger.log(type(l))) for l in values_bank[0]]
+                logger.log(values_bank[0])
             if count % 1000 == 0 and count != 0:
-                logger.log(data_line)
                 di.execute_many_dml(dml=dml, data=values_bank)  # Bulk Insert
                 di.commit()  # Commit once after every RDD batch
                 logger.log('Committed 1000 batch for [' + table_name + ']')
@@ -100,33 +102,35 @@ class LoadTPCData:
                 value += i
             else:
                 try:
-                    if is_int(value):
+                    if LoadTPCData.is_int(value):
                         list_line.append(int(value))
-                    elif is_float(value):
+                    elif LoadTPCData.is_float(value):
                         list_line.append(float(value))
                     else:
                         list_line.append(str(value))
                 except Exception:
                     list_line.append(str(value))
-                else:
+                finally:
                     value = ""
         return list_line
-#
-def is_int(n):
-    try:
-        if '.' in str(n):
+    #
+    @staticmethod
+    def is_int(n):
+        try:
+            if '.' in str(n):
+                return False
+            float_n = float(n)
+            int_n = int(float_n)
+        except ValueError:
             return False
-        float_n = float(n)
-        int_n = int(float_n)
-    except ValueError:
-        return False
-    else:
-        return float_n == int_n
-
-def is_float(n):
-    try:
-        float_n = float(n)
-    except ValueError:
-        return False
-    else:
-        return True
+        else:
+            return float_n == int_n
+    #
+    @staticmethod
+    def is_float(n):
+        try:
+            float_n = float(n)
+        except ValueError:
+            return False
+        else:
+            return True
