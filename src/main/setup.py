@@ -44,6 +44,8 @@ ev_loader = si.get_global_config()
 db_conn = ConnectionPool.claim_from_pool()[2]
 if ev_loader.var_get('enable_spark') == 'True':
     spark_context = si.initialize_spark().get_spark_context()
+else:
+    spark_context = None
 logger = si.initialize_logger()
 
 from src.data.tpc import TPC_Wrapper
