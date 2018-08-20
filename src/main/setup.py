@@ -84,7 +84,7 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
         logger.log('Skipping schema creation..TPC-DS tables already exist!')
     #
     # Retrieve eligible data file names
-    table_names = tpc.get_file_extension_list(tpc_type="tpcds")[0]
+    table_names = tpc.get_file_extension_list(tpc_type="TPC-DS")[0]
     #
     # Retrieve all eligible data files
     file_names = tpc.get_data_file_list(tpc_type="TPC-DS")
@@ -96,7 +96,7 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
         #              table_name=table_names[i])
         #
         # Loads data through SQL Loader control files
-        fl.call_ctrl_file(tpcds_type="TPC-DS", table_name=table_names[i])
+        fl.call_ctrl_file(tpcds_type="tpcds", table_name=table_names[i])
         #
         # Deletes generated data file
         if ev_loader.var_get('data_retain_bool') == 'False':
