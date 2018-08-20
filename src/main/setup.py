@@ -93,7 +93,7 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
         #              table_name=table_names[i])
         #
         # Loads data through SQL Loader control files
-        fl.call_ctrl_file(ev_loader=ev_loader, table_name=table_names[i])
+        fl.call_ctrl_file(table_name=table_names[i])
         #
         # Deletes generated data file
         if ev_loader.var_get('data_retain_bool') == 'False':
