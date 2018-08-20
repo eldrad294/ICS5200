@@ -1,7 +1,7 @@
 LOAD DATA
-INFILE '/mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/customer_demographics.dat'
+INFILE '/mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds100/customer_demographics.dat'
 REPLACE
-INTO TABLE tpcds1.customer_demographics
+INTO TABLE tpcds100.customer_demographics
 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
 TRAILING NULLCOLS
 (ca_address_sk INTEGER EXTERNAL,
