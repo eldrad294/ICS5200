@@ -49,7 +49,7 @@ class FileLoader:
                                                                             instance_details=instance_details,
                                                                             oracle_path_details=oracle_path_details))
     #
-    def call_ctrl_file(self, table_name):
+    def call_ctrl_file(self, tpcds_type, table_name):
         """
         Loads data through SQL Loader ctrl files
         :param ev_loader:
@@ -57,7 +57,8 @@ class FileLoader:
         :return:
         """
         sys = "sqlldr " + self.__ev_loader.var_get('user') + "/tpc@gabsam control=" + self.__ev_loader.var_get('src_dir') + \
-              "/sql/Loading/" + self.__ev_loader.var_get('user') + "/" + table_name + ".ctl"
+              "/sql/Loading/" + tpcds_type + "/" + self.__ev_loader.var_get('user') + "/" + table_name + ".ctl"
+        self.__logger.log(sys)
         output = os.system(sys)
         if output != 0:
             self.__logger.log("Exception raised during generation of TPC files..Terminating process!")
