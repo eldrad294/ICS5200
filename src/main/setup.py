@@ -42,7 +42,8 @@ from src.framework.db_interface import ConnectionPool
 si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir, home_dir=home_dir)
 ev_loader = si.get_global_config()
 db_conn = ConnectionPool.claim_from_pool()[2]
-spark_context = si.initialize_spark().get_spark_context()
+if ev_loader.var_get('enable_spark') == 'True':
+    spark_context = si.initialize_spark().get_spark_context()
 logger = si.initialize_logger()
 
 from src.data.tpc import TPC_Wrapper
