@@ -26,8 +26,7 @@ begin
   if i_count > 0 then
     begin
 	    --
-	    v_dml := 'CREATE TABLE REP_TPC_DESCRIBE (tpctype   varchar2(10),'||
-				 	'tablename varchar2(100),'||
+	    v_dml := 'CREATE TABLE REP_TPC_DESCRIBE (tablename varchar2(100),'||
 				 	'row_count number,'||
 				 	'index_count number) tablespace users';
 	    execute immediate v_dml;
@@ -37,7 +36,7 @@ begin
 	    dbms_output.put_line('Table [REP_TPC_DESCRIBE] already exists');
     end;
     --
-	v_dml := 'select count(*) from REP_TPC_DESCRIBE where tpctype = '''||upper(v_tpc_type)||'''';
+	v_dml := 'select count(*) from REP_TPC_DESCRIBE';
 	execute immediate v_dml into i_count;
 	--
 	if i_count = 0 then
@@ -54,7 +53,7 @@ begin
 	    v_dml := 'select count(*) from dba_indexes where table_name = '''|| upper(rec.table_name)||''' and table_owner = '''||upper(v_tpc_type)||'''';
 	    execute immediate v_dml into idx_count;
 	    --
-	    v_dml := 'insert into REP_TPC_DESCRIBE values ('''||upper(v_tpc_type)||''','''||upper(rec.table_name)||''','||row_count||','||idx_count||')';
+	    v_dml := 'insert into REP_TPC_DESCRIBE values ('''||upper(rec.table_name)||''','||row_count||','||idx_count||')';
 	    execute immediate v_dml;
 	  end loop;
 	  commit;
@@ -65,7 +64,7 @@ begin
 	  dbms_output.put_line('Data already exists for tpc type ['||v_tpc_type||']');
 	end if;
   else
-    dbms_output.put_line('Tables for tpc type ['||v_tpc_type||'] do not exist!');
+    dbms_output.put_line('Tables for tpc type ['||v_tpc_type||'] does not exist!');
   end if;
 exception
   when others then
