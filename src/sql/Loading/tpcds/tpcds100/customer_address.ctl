@@ -4,13 +4,17 @@ REPLACE
 INTO TABLE tpcds100.customer_address
 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"'
 TRAILING NULLCOLS
-(cd_demo_sk INTEGER EXTERNAL,
-cd_gender,
-cd_marital_status,
-cd_education_status,
-cd_purchase_estimate INTEGER EXTERNAL,
-cd_credit_rating,
-cd_dep_count INTEGER EXTERNAL,
-cd_dep_employed_count,
-cd_dep_college_count
-)
+(
+ca_address_sk INTEGER EXTERNAL,
+ca_address_id ,
+ca_street_number,
+ca_street_name ,
+ca_street_type ,
+ca_suite_number ,
+ca_city ,
+ca_county ,
+ca_state  ,
+ca_zip    ,
+ca_country   ,
+ca_gmt_offset DECIMAL EXTERNAL,
+ca_location_type)
