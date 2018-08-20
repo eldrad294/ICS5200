@@ -84,7 +84,7 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
         logger.log('Skipping schema creation..TPC-DS tables already exist!')
     #
     # Retrieve eligible data file names
-    table_names = tpc.get_file_extension_list(tpc_type="TPC-DS")[0]
+    table_names = tpc.get_file_extension_list(tpc_type="tpcds")[0]
     #
     # Retrieve all eligible data files
     file_names = tpc.get_data_file_list(tpc_type="TPC-DS")
