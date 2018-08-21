@@ -16,11 +16,6 @@ class ScriptInitializer:
         config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'main/config.ini')
         g_config = ConfigParser(config_file)
         #
-        # Environment var loading
-        os.environ['PYSPARK_PYTHON'] = project_dir + '/venv/bin/python3'
-        os.environ['PYSPARK_DRIVER_PYTHON'] = project_dir + '/venv/bin/python3'
-        os.environ['SPARK_YARN_USER_ENV'] = project_dir + '/venv/bin/python3'
-        #
         # Loading of Oracle config
         oracle_home = str(g_config.get_value('Oracle','oracle_home'))
         ld_library_path = str(g_config.get_value('Oracle','ld_library_path'))
@@ -123,6 +118,12 @@ class ScriptInitializer:
                             'report_save_path':report_save_path,
                             'iterations':iterations,
                             'erase_prior_metrics':erase_prior_metrics})
+        #
+        # Environment var loading
+        os.environ['PYSPARK_PYTHON'] = project_dir + '/venv/bin/python3'
+        os.environ['PYSPARK_DRIVER_PYTHON'] = project_dir + '/venv/bin/python3'
+        os.environ['SPARK_YARN_USER_ENV'] = project_dir + '/venv/bin/python3'
+        os.environ['ORACLE_HOME'] = oracle_home
         #
         self.logger = Logger(log_file_path=ev_loader.var_get('log_file_path'),
                              write_to_disk=ev_loader.var_get('write_to_disk'),
