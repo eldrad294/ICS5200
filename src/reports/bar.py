@@ -35,9 +35,9 @@ class BarCharts:
         # print(cur)
         table_name, row_count, index_count = [], [], []
         for row in cur:
-            table_name.append(row[1])
-            row_count.append(row[2])
-            index_count.append(row[3])
+            table_name.append(row[0])
+            row_count.append(row[1])
+            index_count.append(row[2])
         #
         data = Data([
             Bar(
