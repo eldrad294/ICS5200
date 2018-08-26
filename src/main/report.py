@@ -40,7 +40,7 @@ SCRIPT EXECUTION - Report Generation
 """
 from src.reports.bar import BarCharts
 bc = BarCharts(db_conn, logger, ev_loader.var_get('report_save_path'))
-bc.generate_REP_TPC_DESCRIBE(tpc_type='tpcds1')
+bc.generate_REP_TPC_DESCRIBE(tpc_type=ev_loader.var_get('user'))
 #bc.generate_REP_TPC_DESCRIBE(tpc_type='tpcds10')
 #bc.generate_REP_TPC_DESCRIBE(tpc_type='tpcds50')
 #bc.generate_REP_TPC_DESCRIBE(tpc_type='tpcds100')
