@@ -12,7 +12,7 @@ begin
   Declare config parameters downhere
   */
   --
-  v_tpc_type := 'tpcds1';
+  v_tpc_type := 'tpcds100';
   --
   -----------------------------------
   -- DO NOT CHANGE BELOW THIS LINE --
@@ -46,7 +46,7 @@ begin
 	 			  where tablespace_name = upper(v_tpc_type))
 	  loop
 	    --
-	    v_dml := 'select count(*) from '||upper(v_tpc_type)||'.'||rec.table_name;
+	    v_dml := 'select /*+PARALLEL(60)*/ count(*) from '||upper(v_tpc_type)||'.'||rec.table_name;
 	    execute immediate v_dml into row_count;
 	    --
 	    --dbms_output.put_line('1');
