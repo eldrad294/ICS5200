@@ -30,7 +30,7 @@ from src.framework.db_interface import ConnectionPool
 si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir, home_dir=home_dir)
 ev_loader = si.get_global_config()
 db_conn = ConnectionPool.claim_from_pool()[2]
-spark_context = si.initialize_spark().get_spark_context()
+#spark_context = si.initialize_spark().get_spark_context()
 logger = si.initialize_logger()
 #
 """
@@ -41,9 +41,9 @@ SCRIPT EXECUTION - Report Generation
 from src.reports.bar import BarCharts
 bc = BarCharts(db_conn, logger, ev_loader.var_get('report_save_path'))
 bc.generate_REP_TPC_DESCRIBE(tpc_type='tpcds1')
-bc.generate_REP_TPC_DESCRIBE(tpc_type='tpcds10')
-bc.generate_REP_TPC_DESCRIBE(tpc_type='tpcds50')
-bc.generate_REP_TPC_DESCRIBE(tpc_type='tpcds100')
+#bc.generate_REP_TPC_DESCRIBE(tpc_type='tpcds10')
+#bc.generate_REP_TPC_DESCRIBE(tpc_type='tpcds50')
+#bc.generate_REP_TPC_DESCRIBE(tpc_type='tpcds100')
 """
 SCRIPT CLOSEUP - Cleanup
 """

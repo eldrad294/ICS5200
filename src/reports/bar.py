@@ -28,7 +28,7 @@ class BarCharts:
         """
         self.__logger.log('Starting generation of report..')
         #
-        cur, schema = self.__db_conn.execute_query(query="select * from REP_TPC_DESCRIBE where tpctype='" + tpc_type.upper() + "'",
+        cur, schema = self.__db_conn.execute_query(query="select * from REP_TPC_DESCRIBE",
                                                    describe=True)
         #
         # print(schema)
