@@ -1,18 +1,17 @@
-drop table s_web_site;
-create table s_web_site tablespace tpcds_benchmark as
-select * from
-(select web_site_id wsit_web_site_id
-       ,d1.d_date wsit_open_date
-       ,d2.d_date wsit_closed_date
-       ,web_name wsit_site_name
-       ,web_class wsit_site_class
-       ,web_manager wsit_site_manager
-       ,web_tax_percentage wsit_tax_percentage
- from web_site
-     ,date_dim d1
-     ,date_dim d2
- where web_open_date_sk = d1.d_date_sk
-   and web_close_date_sk = d2.d_date_sk
-   and web_rec_end_date is null)
-where rownum < 6;
- 
+drop table s_web_page;
+create table s_web_page tablespace tpcds_benchmark as
+(select WP_WEB_PAGE_ID WPAG_WEB_PAGE_ID
+       ,d1.d_date WPAG_CREATE_DATE
+       ,d2.d_date WPAG_ACCESS_DATE
+       ,WP_AUTOGEN_FLAG WPAG_AUTOGEN_FLAG
+       ,WP_URL WPAG_URL
+       ,WP_TYPE WPAG_TYPE
+       ,WP_CHAR_COUNT WPAG_CHAR_COUNT
+       ,WP_LINK_COUNT WPAG_LINK_COUNT
+       ,WP_IMAGE_COUNT WPAG_IMAGE_COUNT
+       ,WP_MAX_AD_COUNT WPAG_MAX_AD_COUNT
+from web_page left outer join date_dim d1 on wp_creation_date_sk = d1.d_date_sk
+              left outer join date_dim d2 on wp_access_date_sk = d2.d_date_sk
+where wp_rec_end_date is null
+  and rownum < 10
+);

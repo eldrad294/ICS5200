@@ -1,7 +1,19 @@
-drop table s_warehouse;
-create table s_warehouse tablespace tpcds_benchmark as
-(select W_WAREHOUSE_ID WRHS_WAREHOUSE_ID
-       ,W_WAREHOUSE_name WRHS_WAREHOUSE_DESC
-       ,W_WAREHOUSE_SQ_FT WRHS_WAREHOUSE_SQ_FT
-from warehouse
-where rownum < 10);
+drop table s_store;
+create table s_store tablespace tpcds_benchmark as
+select * from
+(select s_store_id stor_store_id
+       ,d1.d_date stor_closed_date
+       ,s_store_name stor_name
+       ,s_number_employees stor_employees
+       ,s_floor_space stor_floor_space
+       ,s_hours stor_hours
+       ,s_market_manager stor_market_manager
+       ,s_manager stor_store_manager
+       ,s_market_id stor_market_id
+       ,s_geography_class stor_geography_class
+       ,s_tax_precentage stor_tax_percentage
+from store
+    ,date_dim d1
+where d_date_sk = s_closed_date_sk
+  and s_rec_end_date is null)
+where rownum < 4;

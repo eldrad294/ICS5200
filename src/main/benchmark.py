@@ -48,7 +48,9 @@ db_conn = ConnectionPool.claim_from_pool()[2]
 logger = si.initialize_logger()
 from src.utils.plan_control import XPlan
 from src.utils.stats_control import OptimizerStatistics
-xp = XPlan(db_conn=db_conn, logger=logger, ev_loader=ev_loader)
+xp = XPlan(db_conn=db_conn,
+           logger=logger,
+           ev_loader=ev_loader)
 """
 ------------------------------------------------------------
 SCRIPT EXECUTION - Benchmark Start - Without Optimizer Stats
@@ -83,7 +85,11 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
             for sql in sql_list:
                 sql = sql.replace("\n", " ")
                 if sql.isspace() is not True and sql != "":
-                    xp.generateExecutionPlan(sql=sql, binds=None, selection=None, transaction_name=filename)
+                    xp.generateExecutionPlan(sql=sql,
+                                             binds=None,
+                                             selection=None,
+                                             transaction_name=filename,
+                                             iteration_run=i)
     # Execute All DML
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
@@ -92,14 +98,22 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
             data = file.read()
             if xp.check_if_plsql_block(statement=data):
                 # Executes PL/SQL block
-                xp.generateExecutionPlan(sql=data, binds=None, selection=None, transaction_name=filename)
+                xp.generateExecutionPlan(sql=data,
+                                         binds=None,
+                                         selection=None,
+                                         transaction_name=filename,
+                                         iteration_run=i)
             else:
                 # Executes statements as a series of sql statements
                 dml_list = data.split(';')
                 for dml in dml_list:
                     dml = dml.replace("\n"," ")
                     if dml.isspace() is not True and dml != "":
-                        xp.generateExecutionPlan(sql=dml, binds=None, selection=None, transaction_name=filename)
+                        xp.generateExecutionPlan(sql=dml,
+                                                 binds=None,
+                                                 selection=None,
+                                                 transaction_name=filename,
+                                                 iteration_run=i)
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
 """
 ------------------------------------------------------------
@@ -126,7 +140,11 @@ for i in range(1, ev_loader.var_get('iterations')+1):
             for sql in sql_list:
                 sql = sql.replace("\n", " ")
                 if sql.isspace() is not True and sql != "":
-                    xp.generateExecutionPlan(sql=sql, binds=None, selection=None, transaction_name=filename)
+                    xp.generateExecutionPlan(sql=sql,
+                                             binds=None,
+                                             selection=None,
+                                             transaction_name=filename,
+                                             iteration_run=i)
     # Execute All DML
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
@@ -135,12 +153,20 @@ for i in range(1, ev_loader.var_get('iterations')+1):
             data = file.read()
             if xp.check_if_plsql_block(statement=data):
                 # Executes PL/SQL block
-                xp.generateExecutionPlan(sql=data, binds=None, selection=None, transaction_name=filename)
+                xp.generateExecutionPlan(sql=data,
+                                         binds=None,
+                                         selection=None,
+                                         transaction_name=filename,
+                                         iteration_run=i)
             else:
                 # Executes statements as a series of sql statements
                 dml_list = data.split(';')
                 for dml in dml_list:
                     dml = dml.replace("\n"," ")
                     if dml.isspace() is not True and dml != "":
-                        xp.generateExecutionPlan(sql=dml, binds=None, selection=None, transaction_name=filename)
+                        xp.generateExecutionPlan(sql=dml,
+                                                 binds=None,
+                                                 selection=None,
+                                                 transaction_name=filename,
+                                                 iteration_run=i)
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")

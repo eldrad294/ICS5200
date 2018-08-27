@@ -1,23 +1,35 @@
-drop table s_promotion;
-create table s_promotion tablespace tpcds_benchmark as
-(select P_PROMO_ID PROM_PROMOTION_ID
-       ,d1.d_date PROM_START_DATE
-       ,d2.d_date PROM_END_DATE
-       ,P_COST PROM_COST
-       ,P_RESPONSE_TARGET PROM_RESPONSE_TARGET
-       ,P_PROMO_NAME PROM_PROMO_NAME
-       ,P_CHANNEL_DMAIL PROM_CHANNEL_DMAIL
-       ,P_CHANNEL_EMAIL PROM_CHANNEL_EMAIL
-       ,P_CHANNEL_CATALOG PROM_CHANNEL_CATALOG
-       ,P_CHANNEL_TV PROM_CHANNEL_TV
-       ,P_CHANNEL_RADIO PROM_CHANNEL_RADIO
-       ,P_CHANNEL_PRESS PROM_CHANNEL_PRESS
-       ,P_CHANNEL_EVENT PROM_CHANNEL_EVENT
-       ,P_CHANNEL_DEMO PROM_CHANNEL_DEMO
-       ,P_CHANNEL_DETAILS PROM_CHANNEL_DETAILS
-       ,P_PURPOSE PROM_PURPOSE
-       ,P_DISCOUNT_ACTIVE PROM_DISCOUNT_ACTIVE
- from promotion left outer join date_dim d1 on P_START_DATE_SK = d1.d_date_sk
-                left outer join date_dim d2 on P_END_DATE_SK = d2.d_date_sk
- where rownum < 100
-);
+drop table websv;
+create table websv tablespace tpcds_benchmark as
+select web_site_seq.nextVal web_site_sk
+      ,wsit_web_site_id web_site_id
+      ,sysdate web_rec_start_date
+      ,cast(null as date) web_rec_end_date
+      ,wsit_site_name web_name
+      ,d1.d_date_sk web_open_date_sk
+      ,d2.d_date_sk web_close_date_sk
+      ,wsit_site_class web_class
+      ,wsit_site_manager web_manager
+      ,web_mkt_id
+      ,web_mkt_class
+      ,web_mkt_desc
+      ,web_market_manager
+      ,web_company_id
+      ,web_company_name
+      ,web_street_number
+      ,web_street_name
+      ,web_street_type
+      ,web_suite_number
+      ,web_city
+      ,web_county
+      ,web_state
+      ,web_zip
+      ,web_country
+      ,web_gmt_offset
+      ,wsit_tax_percentage web_tax_percentage
+from  s_web_site left outer join date_dim d1 on (d1.d_date = wsit_open_date)
+                   left outer join date_dim d2 on (d2.d_date = wsit_closed_date),
+      web_site
+where web_site_id = wsit_web_site_id
+  and web_rec_end_date is null;
+select count(*) from s_web_site;
+select count(*) from websv;

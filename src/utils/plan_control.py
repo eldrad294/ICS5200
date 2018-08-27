@@ -48,13 +48,14 @@ class XPlan:
                 ") " \
                 "order by id"
     #
-    def __query_execution_plan(self, transaction_name=None, md5_sum=None):
+    def __query_execution_plan(self, transaction_name=None, md5_sum=None, iteration_run=1):
         """
         Ensures that latest execution plan metrics are returned from Oracle's v$sqlarea view, distinguished by latest
         hint found within the view. The query identifies queries using a hint (SQL Comment), and retrieves the most
         latest one from the view.
         :param transaction_name - Name to store inside reporting table for specific transaction
         :param md5_sum - Md5 Hash sum of sql
+        :param iteration_run - Iteration identifier
         :return:
         """
         if transaction_name is not None:
@@ -62,7 +63,7 @@ class XPlan:
                 return "insert into " + self.__report_execution_plan + " " \
                        "select * " \
                        "from( " \
-                       "select vs.*, '" + transaction_name + "', '" + md5_sum + "' " \
+                       "select vs.*, '" + transaction_name + "', '" + md5_sum + "', " + str(iteration_run) + " " \
                        "from v$sql vs " \
                        "where sql_text like '%" + self.__execution_plan_hint + "%' " \
                        "and sql_text not like '%v_sql%' " \
@@ -140,6 +141,11 @@ class XPlan:
             dml_statement = "alter table " + self.__report_execution_plan + " add STATEMENT_HASH_SUM varchar2(4000)"
             self.__db_conn.execute_dml(dml=dml_statement)
             print(dml_statement)
+            #
+            # Adds column 'BENCHMARK_ITERATION'
+            dml_statement = "alter table " + self.__report_execution_plan + " add BENCHMARK_ITERATION varchar2(2)"
+            self.__db_conn.execute_dml(dml=dml_statement)
+            print(dml_statement)
         else:
             self.__logger.log('Table ['+self.__report_execution_plan+'] already exists..')
     #
@@ -168,7 +174,7 @@ class XPlan:
         #
         return plan
     #
-    def generateExecutionPlan(self, sql, binds=None, selection=None, transaction_name=None):
+    def generateExecutionPlan(self, sql, binds=None, selection=None, transaction_name=None, iteration_run=1):
         """
         Retrieves Execution Plan - Query is executed for execution plan retrieval
         :param sql: SQL under evaluation
@@ -178,6 +184,7 @@ class XPlan:
         :param transaction_name: Default set to None. If not specified (None), execution plan is returned to driver.
                                  Otherwise, the execution plan is saved to disk, in addition to the transaction name
                                  insie of a report table.
+        :param iteration_run: Parameter which denote the benchmark iteration
         :return: Execution plan in dictionary format
         """
         sql = self.__execution_plan_syntax(sql)
@@ -189,10 +196,12 @@ class XPlan:
         self.__db_conn.execute_dml(dml=sql, params=binds)
         #
         if transaction_name is not None:
-            self.__db_conn.execute_dml(dml=self.__query_execution_plan(transaction_name=transaction_name, md5_sum=sql_md5))
+            self.__db_conn.execute_dml(dml=self.__query_execution_plan(transaction_name=transaction_name,
+                                                                       md5_sum=sql_md5,
+                                                                       iteration_run = iteration_run))
             self.__db_conn.commit()
         else:
-            plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(transaction_name=False, md5_sum=sql_md5),
+            plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(transaction_name=False, md5_sum=sql_md5,iteration_run=iteration_run),
                                                         describe=True)
             #
             # Retrieves relavent columns specified in selection list

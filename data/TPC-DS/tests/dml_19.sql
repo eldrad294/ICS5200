@@ -1,41 +1,18 @@
-DECLARE
-   max_sk NUMBER;
-BEGIN
-  FOR p_rec IN (SELECT P_PROMO_ID
-,P_START_DATE_SK
-,P_END_DATE_SK
-,P_COST
-,P_RESPONSE_TARGET
-,PROM_PROMO_NAME
-,P_CHANNEL_DMAIL
-,P_CHANNEL_EMAIL
-,P_CHANNEL_CATALOG
-,P_CHANNEL_TV
-,P_CHANNEL_RADIO
-,P_CHANNEL_PRESS
-,P_CHANNEL_EVENT
-,P_CHANNEL_DEMO
-,P_CHANNEL_DETAILS
-,P_PURPOSE
-,P_DISCOUNT_ACTIVE
-                   FROM promv) LOOP
-    update promotion set
- P_END_DATE_SK=p_rec.P_END_DATE_SK
-,P_COST=p_rec.P_COST
-,P_RESPONSE_TARGET=p_rec.P_RESPONSE_TARGET
-,P_PROMO_NAME=p_rec.PROM_PROMO_NAME
-,P_CHANNEL_DMAIL=p_rec.P_CHANNEL_DMAIL
-,P_CHANNEL_EMAIL=p_rec.P_CHANNEL_EMAIL
-,P_CHANNEL_CATALOG=p_rec.P_CHANNEL_CATALOG
-,P_CHANNEL_TV=p_rec.P_CHANNEL_TV
-,P_CHANNEL_RADIO=p_rec.P_CHANNEL_RADIO
-,P_CHANNEL_PRESS=p_rec.P_CHANNEL_PRESS
-,P_CHANNEL_EVENT=p_rec.P_CHANNEL_EVENT
-,P_CHANNEL_DEMO=p_rec.P_CHANNEL_DEMO
-,P_CHANNEL_DETAILS=p_rec.P_CHANNEL_DETAILS
-,P_PURPOSE=p_rec.P_PURPOSE
-,P_DISCOUNT_ACTIVE=p_rec.P_DISCOUNT_ACTIVE
-  where P_PROMO_ID=p_rec.P_PROMO_ID;
-  END LOOP;
-commit;
-END;
+drop table s_web_site;
+create table s_web_site tablespace tpcds_benchmark as
+select * from
+(select web_site_id wsit_web_site_id
+       ,d1.d_date wsit_open_date
+       ,d2.d_date wsit_closed_date
+       ,web_name wsit_site_name
+       ,web_class wsit_site_class
+       ,web_manager wsit_site_manager
+       ,web_tax_percentage wsit_tax_percentage
+ from web_site
+     ,date_dim d1
+     ,date_dim d2
+ where web_open_date_sk = d1.d_date_sk
+   and web_close_date_sk = d2.d_date_sk
+   and web_rec_end_date is null)
+where rownum < 6;
+ 
