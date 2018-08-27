@@ -10,3 +10,13 @@ FROM V$RESTORE_POINT;
 --
 -- Removes restore points
 DROP RESTORE POINT before_upgrade;
+--
+select *
+from CATALOG_PAGE;
+--
+delete
+from CATALOG_PAGE
+where rownum <= 718;
+commit;
+--
+flashback table catalog_page to timestamp to_date('27-AUG-2018 17:58:00','DD-MON-YYYY HH24:MI:SS');

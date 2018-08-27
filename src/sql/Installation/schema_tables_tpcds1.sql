@@ -527,3 +527,28 @@ create table store_sales
     ss_net_profit             decimal(15,5)                 ,
     primary key (ss_item_sk, ss_ticket_number)
 ) tablespace tpcds1 nologging;
+alter table STORE_SALES enable row movement;
+alter table CATALOG_SALES enable row movement;
+alter table WEB_SALES enable row movement;
+alter table WEB_RETURNS enable row movement;
+alter table CATALOG_RETURNS enable row movement;
+alter table INVENTORY enable row movement;
+alter table CATALOG_PAGE enable row movement;
+alter table PROMOTION enable row movement;
+alter table WEB_PAGE enable row movement;
+alter table HOUSEHOLD_DEMOGRAPHICS enable row movement;
+alter table STORE_RETURNS enable row movement;
+alter table WEB_SITE enable row movement;
+alter table CUSTOMER enable row movement;
+alter table CALL_CENTER enable row movement;
+alter table STORE enable row movement;
+alter table ITEM enable row movement;
+alter table INCOME_BAND enable row movement;
+alter table REASON enable row movement;
+alter table TIME_DIM enable row movement;
+alter table SHIP_MODE enable row movement;
+alter table WAREHOUSE enable row movement;
+alter table DATE_DIM enable row movement;
+alter table CUSTOMER_DEMOGRAPHICS enable row movement;
+alter table CUSTOMER_ADDRESS enable row movement;
+alter table DBGEN_VERSION enable row movement;
