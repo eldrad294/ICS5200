@@ -128,15 +128,18 @@ class XPlan:
             self.__logger.log('Creating table [' + self.__report_execution_plan + ']..')
             dml_statement = "create table " + self.__report_execution_plan + " tablespace users as " \
                                                                              "select * from v$sql where 1=0"
+            print(dml_statement)
             self.__db_conn.execute_dml(dml=dml_statement)
             #
             # Adds column 'TPC_STATEMENT_NAME'
             dml_statement = "alter table " + self.__report_execution_plan + " add TPC_TRANSACTION_NAME varchar2(20)"
             self.__db_conn.execute_dml(dml=dml_statement)
+            print(dml_statement)
             #
             # Adds column 'STATEMENT_HASH_SUM'
             dml_statement = "alter table " + self.__report_execution_plan + " add STATEMENT_HASH_SUM varchar2(4000)"
             self.__db_conn.execute_dml(dml=dml_statement)
+            print(dml_statement)
         else:
             self.__logger.log('Table ['+self.__report_execution_plan+'] already exists..')
     #
