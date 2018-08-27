@@ -17,7 +17,6 @@ This script is used to execute all TPC provided queries and benchmark them accor
 NB: ENSURE FOLLOWING CONFIG IS ESTABLISHED AND PROPERLY CONFIGURED src/main/config.ini:
 1) DatabaseConnectionString.user
 2) Benchmark.iterations
-3) Benchmark.erase_prior_metrics
 --------------------------
 """
 """
