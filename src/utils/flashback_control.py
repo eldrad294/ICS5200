@@ -1,23 +1,40 @@
 #
 # Import Modules
-import os
+import datetime, time
+#
 class FlashbackControl:
     #
     @staticmethod
-    def create_restore_point(logger, ev_loader, restore_point_name):
+    def captureTimeStamp():
         """
-        This method needs to be re-written to support table flashback mode
+        :return: Retrieve point in time
+        """
+        return FlashbackControl.__getTimeStamp()
+    #
+    @staticmethod
+    def flashback_tables(db_conn, logger, timestamp, ev_loader):
+        """
+        Flashbacks all tables located within user_tables to ensure that changes carried out by the flashback are
+        restored.
+        :param db_conn:
         :param logger:
+        :param timestamp:
         :param ev_loader:
-        :param restore_point_name:
         :return:
         """
-        cmd = "exit | sqlplus " + ev_loader.var_get('user') + "/" + ev_loader.var_get('password') + "@" \
-              + ev_loader.var_get('instance_name') + " @" + ev_loader.var_get('src_dir') + \
-              "/sql/Utility/create_restore_point.sql " + restore_point_name
-        logger.log(cmd)
-        output = os.system(cmd)
-        if output != 0:
-            logger.log("Exception raised during generation of TPC files..Terminating process!")
-            raise Exception("Exception raised during generation of TPC files..Terminating process!")
-        logger.log('Created restore point [' + restore_point_name + ']')
+        logger.log('Enabling Table Flashback..')
+        sql = "select table_name from user_tables where tablespace_name in ('" + str(ev_loader.var_get('user')).upper() \
+              + "','TPCDS_BENCHMARK')"
+        res = db_conn.execute_query(query=sql, describe=False)
+        for table in res:
+            sql = "flashback table " + table + " to timestamp to_date('" + timestamp + "','DD-MM-YYYY HH24:MI:SS')"
+            logger.log('Flashing table [' + table + '] to established timestamp [' + timestamp + ']')
+            db_conn.execute_dml(dml=sql)
+    #
+    @staticmethod
+    def __getTimeStamp(self):
+        """
+        :return: Returns system timestamp
+        """
+        ts = time.time()
+        return datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y %H:%M:%S')

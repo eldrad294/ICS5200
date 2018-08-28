@@ -47,6 +47,7 @@ db_conn = ConnectionPool.claim_from_pool()[2]
 logger = si.initialize_logger()
 from src.utils.plan_control import XPlan
 from src.utils.stats_control import OptimizerStatistics
+from src.utils.flashback_control import FlashbackControl
 xp = XPlan(db_conn=db_conn,
            logger=logger,
            ev_loader=ev_loader)
@@ -74,6 +75,10 @@ dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var
 #
 # Execute Queries + DML for n number of iterations
 for i in range(1, ev_loader.var_get('iterations') + 1):
+    #
+    # Keep reference to flashback timestamp
+    ts = FlashbackControl.captureTimeStamp()
+    #
     # Execute All Queries
     for j in range(1, 100):
         filename = 'query_'+str(j)+'.sql'
@@ -114,6 +119,12 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                                  transaction_name=filename,
                                                  iteration_run=i)
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
+    #
+    # Flashback Impacted Tables
+    FlashbackControl.flashback_tables(db_conn=db_conn,
+                                      logger=logger,
+                                      timestamp=ts,
+                                      ev_loader=ev_loader)
 """
 ------------------------------------------------------------
 SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
@@ -129,6 +140,10 @@ SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 #
 # Execute Queries + DML for n number of iterations
 for i in range(1, ev_loader.var_get('iterations')+1):
+    #
+    # Keep reference to flashback timestamp
+    ts = FlashbackControl.captureTimeStamp()
+    #
     # Execute All Queries
     for j in range(1, 100):
         filename = 'query_' + str(j) + '.sql'
@@ -169,3 +184,9 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                                  transaction_name=filename,
                                                  iteration_run=i)
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
+    #
+    # Flashback Impacted Tables
+    FlashbackControl.flashback_tables(db_conn=db_conn,
+                                      logger=logger,
+                                      timestamp=ts,
+                                      ev_loader=ev_loader)
