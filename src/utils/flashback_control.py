@@ -16,10 +16,10 @@ class FlashbackControl:
         """
         Flashbacks all tables located within user_tables to ensure that changes carried out by the flashback are
         restored.
-        :param db_conn:
-        :param logger:
-        :param timestamp:
-        :param ev_loader:
+        :param db_conn: Database Connection
+        :param logger: Logger Instance
+        :param timestamp: Timstamp of flashback point
+        :param ev_loader: environment data instance
         :return:
         """
         logger.log('Enabling Table Flashback..')

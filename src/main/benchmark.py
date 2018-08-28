@@ -78,10 +78,9 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
     #
     # Keep reference to flashback timestamp
     ts = FlashbackControl.captureTimeStamp()
-    print(ts)
     #
     # Execute All Queries
-    for j in range(99, 100):
+    for j in range(1, 100):
         filename = 'query_'+str(j)+'.sql'
         with open(query_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
@@ -96,7 +95,7 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                              transaction_name=filename,
                                              iteration_run=i)
     # Execute All DML
-    for j in range(42, 43):
+    for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
         with open(dml_path + filename) as file:
@@ -146,7 +145,7 @@ for i in range(1, ev_loader.var_get('iterations')+1):
     ts = FlashbackControl.captureTimeStamp()
     #
     # Execute All Queries
-    for j in range(99, 100):
+    for j in range(1, 100):
         filename = 'query_' + str(j) + '.sql'
         with open(query_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
@@ -161,7 +160,7 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                              transaction_name=filename,
                                              iteration_run=i)
     # Execute All DML
-    for j in range(42, 43):
+    for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
         with open(dml_path + filename) as file:
