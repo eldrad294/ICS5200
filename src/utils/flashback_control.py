@@ -27,6 +27,7 @@ class FlashbackControl:
               + "','TPCDS_BENCHMARK')"
         res = db_conn.execute_query(query=sql, describe=False)
         for table in res:
+            table = table[0]
             sql = "flashback table " + table + " to timestamp to_date('" + timestamp + "','DD-MM-YYYY HH24:MI:SS')"
             logger.log('Flashing table [' + table + '] to established timestamp [' + timestamp + ']')
             db_conn.execute_dml(dml=sql)
