@@ -32,7 +32,7 @@ class FlashbackControl:
             db_conn.execute_dml(dml=sql)
     #
     @staticmethod
-    def __getTimeStamp(self):
+    def __getTimeStamp():
         """
         :return: Returns system timestamp
         """
