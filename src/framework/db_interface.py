@@ -1,7 +1,6 @@
 #
 # Module Imports
 import cx_Oracle
-from src.utils.timeout import timeout
 #
 class DatabaseInterface:
     #
@@ -64,7 +63,6 @@ class DatabaseInterface:
                 self.__logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
             raise Exception("Couldn't connect to database: [" + str(e) + "]")
     #
-    @timeout(30)
     def execute_query(self, query, params=None, fetch_single=False, describe=False):
         """
         Statement wrapper method, invoked to pass query statements to the connected database instance, and return
@@ -104,7 +102,6 @@ class DatabaseInterface:
         else:
             return result
     #
-    @timeout(30)
     def execute_dml(self, dml, params=None):
         """
         Statement wrapper method invoked to pass dml statements to the connected database instance.
@@ -150,7 +147,6 @@ class DatabaseInterface:
             if cursor is not None:
                 cursor.close()
     #
-    @timeout(30)
     def execute_proc(self, name, parameters):
         """
 
