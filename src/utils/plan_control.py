@@ -48,7 +48,7 @@ class XPlan:
                 ") " \
                 "order by id"
     #
-    def __query_execution_plan(self, transaction_name=None, md5_sum=None, iteration_run=1):
+    def __query_execution_plan(self, transaction_name=None, md5_sum=None, iteration_run=1, gathered_stats=False):
         """
         Ensures that latest execution plan metrics are returned from Oracle's v$sqlarea view, distinguished by latest
         hint found within the view. The query identifies queries using a hint (SQL Comment), and retrieves the most
@@ -63,7 +63,7 @@ class XPlan:
                 return "insert into " + self.__report_execution_plan + " " \
                        "select * " \
                        "from( " \
-                       "select vs.*, '" + transaction_name + "', '" + md5_sum + "', " + str(iteration_run) + " " \
+                       "select vs.*, '" + transaction_name + "', '" + md5_sum + "', " + str(iteration_run) + ", '" + str(gathered_stats) + "' " \
                        "from v$sql vs " \
                        "where sql_text like '%" + self.__execution_plan_hint + "%' " \
                        "and sql_text not like '%v_sql%' " \
@@ -142,6 +142,10 @@ class XPlan:
             # Adds column 'BENCHMARK_ITERATION'
             dml_statement = "alter table " + self.__report_execution_plan + " add BENCHMARK_ITERATION varchar2(2)"
             self.__db_conn.execute_dml(dml=dml_statement)
+            #
+            # Adds column 'GATHERED_STATS'
+            dml_statement = "alter table " + self.__report_execution_plan + " add GATHERED_STATS varchar2(5)"
+            self.__db_conn.execute_dml(dml=dml_statement)
         else:
             self.__logger.log('Table ['+self.__report_execution_plan+'] already exists..')
     #
@@ -170,7 +174,7 @@ class XPlan:
         #
         return plan
     #
-    def generateExecutionPlan(self, sql, binds=None, selection=None, transaction_name=None, iteration_run=1):
+    def generateExecutionPlan(self, sql, binds=None, selection=None, transaction_name=None, iteration_run=1, gathered_stats=False):
         """
         Retrieves Execution Plan - Query is executed for execution plan retrieval
         :param sql: SQL under evaluation
@@ -194,10 +198,11 @@ class XPlan:
         if transaction_name is not None:
             self.__db_conn.execute_dml(dml=self.__query_execution_plan(transaction_name=transaction_name,
                                                                        md5_sum=sql_md5,
-                                                                       iteration_run = iteration_run))
+                                                                       iteration_run = iteration_run,
+                                                                       gathered_stats=gathered_stats))
             self.__db_conn.commit()
         else:
-            plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(transaction_name=False, md5_sum=sql_md5,iteration_run=iteration_run),
+            plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(transaction_name=False, md5_sum=sql_md5,iteration_run=iteration_run,gathered_stats=gathered_stats),
                                                         describe=True)
             #
             # Retrieves relavent columns specified in selection list

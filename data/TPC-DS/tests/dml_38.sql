@@ -2,7 +2,7 @@ drop table srv;
 create table srv tablespace tpcds_benchmark as
 select d_date_sk sr_returned_date_sk
       ,t_time_sk sr_return_time_sk
-      ,i_item_sk sr_item_sk
+      ,nvl(i_item_sk,0) sr_item_sk
       ,c_customer_sk sr_customer_sk
       ,c_current_cdemo_sk sr_cdemo_sk
       ,c_current_hdemo_sk sr_hdemo_sk
@@ -31,6 +31,7 @@ from store_returns left outer join date_dim on (to_char(SR_RETURNED_DATE_SK) = d
                      left outer join reason on (to_char(SR_REASON_SK) = r_reason_id)
 where i_rec_end_date is NULL
   and s_rec_end_date is NULL;
+
 select count(*) from srv where sr_item_sk is null;
 select count(*) from store_returns;
 select count(*) from srv;

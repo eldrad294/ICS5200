@@ -93,7 +93,8 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                              binds=None,
                                              selection=None,
                                              transaction_name=filename,
-                                             iteration_run=i)
+                                             iteration_run=i,
+                                             gathered_stats=False)
     # Execute All DML
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
@@ -106,7 +107,8 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                          binds=None,
                                          selection=None,
                                          transaction_name=filename,
-                                         iteration_run=i)
+                                         iteration_run=i,
+                                         gathered_stats=False)
             else:
                 # Executes statements as a series of sql statements
                 dml_list = data.split(';')
@@ -117,7 +119,8 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                                  binds=None,
                                                  selection=None,
                                                  transaction_name=filename,
-                                                 iteration_run=i)
+                                                 iteration_run=i,
+                                                 gathered_stats=False)
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
     #
     # Flashback Impacted Tables
@@ -158,7 +161,8 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                              binds=None,
                                              selection=None,
                                              transaction_name=filename,
-                                             iteration_run=i)
+                                             iteration_run=i,
+                                             gathered_stats=True)
     # Execute All DML
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
@@ -171,7 +175,8 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                          binds=None,
                                          selection=None,
                                          transaction_name=filename,
-                                         iteration_run=i)
+                                         iteration_run=i,
+                                         gathered_stats=True)
             else:
                 # Executes statements as a series of sql statements
                 dml_list = data.split(';')
@@ -182,7 +187,8 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                                  binds=None,
                                                  selection=None,
                                                  transaction_name=filename,
-                                                 iteration_run=i)
+                                                 iteration_run=i,
+                                                 gathered_stats=True)
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
     #
     # Flashback Impacted Tables
