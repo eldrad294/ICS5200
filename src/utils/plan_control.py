@@ -194,6 +194,7 @@ class XPlan:
             sql_md5 = hashlib.md5(sql.encode('utf-8')).hexdigest()
         #
         self.__db_conn.execute_dml(dml=sql, params=binds)
+        self.__db_conn.commit()
         #
         if transaction_name is not None:
             self.__db_conn.execute_dml(dml=self.__query_execution_plan(transaction_name=transaction_name,

@@ -6,20 +6,17 @@ import signal
 class TimeoutError(Exception):
     pass
 #
-def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
-    def decorator(func):
-        def _handle_timeout(signum, frame):
-            raise TimeoutError(error_message)
+def timeout(timeout, *args):
+    def decorate(f):
+        def handler(signum, frame):
+            raise TimeoutError()
 
-        def wrapper(*args, **kwargs):
-            signal.signal(signal.SIGALRM, _handle_timeout)
-            signal.alarm(seconds)
-            try:
-                result = func(*args, **kwargs)
-            finally:
-                signal.alarm(0)
-            return result
+        def new_f(*args):
+            signal.signal(signal.SIGALRM, handler)
+            signal.alarm(timeout)
+            return f(*args)
+            signal.alarm(0)
 
-        return wraps(func)(wrapper)
-
-    return decorator
+        new_f.__name__ = f.__name__
+        return new_f
+    return decorate
