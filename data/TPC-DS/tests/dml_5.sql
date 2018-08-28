@@ -17,6 +17,5 @@ from s_customer_m
     ,customer_address
 where cust_customer_id = c_customer_id
   and c_current_addr_sk = ca_address_sk);
-
 select count(*) from s_customer_m;
 select count(*) from cadrv;

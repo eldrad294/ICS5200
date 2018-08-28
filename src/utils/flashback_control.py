@@ -24,7 +24,7 @@ class FlashbackControl:
         """
         logger.log('Enabling Table Flashback..')
         sql = "select table_name from user_tables where tablespace_name in ('" + str(ev_loader.var_get('user')).upper() \
-              + "','TPCDS_BENCHMARK')"
+              + "')"
         res = db_conn.execute_query(query=sql, describe=False)
         for table in res:
             table = table[0]
