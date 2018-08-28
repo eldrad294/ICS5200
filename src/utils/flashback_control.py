@@ -9,7 +9,7 @@ class FlashbackControl:
         """
         :return: Retrieve point in time
         """
-        return FlashbackControl.__getTimeStamp()
+        return str(FlashbackControl.__getTimeStamp())
     #
     @staticmethod
     def flashback_tables(db_conn, logger, timestamp, ev_loader):
