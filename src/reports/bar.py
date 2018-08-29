@@ -173,7 +173,11 @@ class BarCharts:
         )
         config = None
         fig = go.Figure(data=data, layout=layout)
-        plot(fig, config=config, filename=self.__save_path + "/REP_EXECUTION_PLANS_" + str(tpc_type) + ".html",
+        save_path = "/REP_EXECUTION_PLANS_" + str(tpc_type)
+        for col in columns:
+            save_path += "_" + col
+        save_path += ".html"
+        plot(fig, config=config, filename=self.__save_path + save_path,
              auto_open=False)
         #
         self.__logger.log('Report generation complete')
