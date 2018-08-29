@@ -1,0 +1,57 @@
+
+SQL*Loader: Release 11.2.0.4.0 - Production on Wed Aug 29 10:01:27 2018
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/customer_demographics.ctl
+Data File:      /mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/customer_demographics.dat
+  Bad File:     /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/customer_demographics.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TPCDS1.CUSTOMER_DEMOGRAPHICS, loaded from every logical record.
+Insert option in effect for this table: REPLACE
+TRAILING NULLCOLS option in effect
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+Message 3053 not found;  product=RDBMS; facility=UL
+Message 3054 not found;  product=RDBMS; facility=UL
+CD_DEMO_SK                          FIRST     *   |  O(") CHARACTER            
+CD_GENDER                            NEXT     *   |  O(") CHARACTER            
+CD_MARITAL_STATUS                    NEXT     *   |  O(") CHARACTER            
+CD_EDUCATION_STATUS                  NEXT     *   |  O(") CHARACTER            
+CD_PURCHASE_ESTIMATE                 NEXT     *   |  O(") CHARACTER            
+CD_CREDIT_RATING                     NEXT     *   |  O(") CHARACTER            
+CD_DEP_COUNT                         NEXT     *   |  O(") CHARACTER            
+CD_DEP_EMPLOYED_COUNT                NEXT     *   |  O(") CHARACTER            
+CD_DEP_COLLEGE_COUNT                 NEXT     *   |  O(") CHARACTER            
+
+
+Table TPCDS1.CUSTOMER_DEMOGRAPHICS:
+  1920800 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                 148608 bytes(64 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:       1920800
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Wed Aug 29 10:01:27 2018
+Run ended on Wed Aug 29 10:01:46 2018
+
+Elapsed time was:     00:00:19.38
+CPU time was:         00:00:04.90

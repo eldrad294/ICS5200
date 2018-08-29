@@ -1,0 +1,73 @@
+
+SQL*Loader: Release 11.2.0.4.0 - Production on Wed Aug 29 09:56:27 2018
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/web_returns.ctl
+Data File:      /mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/web_returns.dat
+  Bad File:     /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/web_returns.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TPCDS1.WEB_RETURNS, loaded from every logical record.
+Insert option in effect for this table: REPLACE
+TRAILING NULLCOLS option in effect
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+Message 3053 not found;  product=RDBMS; facility=UL
+Message 3054 not found;  product=RDBMS; facility=UL
+WR_RETURNED_DATE_SK                 FIRST     *   |  O(") CHARACTER            
+WR_RETURNED_TIME_SK                  NEXT     *   |  O(") CHARACTER            
+WR_ITEM_SK                           NEXT     *   |  O(") CHARACTER            
+WR_REFUNDED_CUSTOMER_SK              NEXT     *   |  O(") CHARACTER            
+WR_REFUNDED_CDEMO_SK                 NEXT     *   |  O(") CHARACTER            
+WR_REFUNDED_HDEMO_SK                 NEXT     *   |  O(") CHARACTER            
+WR_REFUNDED_ADDR_SK                  NEXT     *   |  O(") CHARACTER            
+WR_RETURNING_CUSTOMER_SK             NEXT     *   |  O(") CHARACTER            
+WR_RETURNING_CDEMO_SK                NEXT     *   |  O(") CHARACTER            
+WR_RETURNING_HDEMO_SK                NEXT     *   |  O(") CHARACTER            
+WR_RETURNING_ADDR_SK                 NEXT     *   |  O(") CHARACTER            
+WR_WEB_PAGE_SK                       NEXT     *   |  O(") CHARACTER            
+WR_REASON_SK                         NEXT     *   |  O(") CHARACTER            
+WR_ORDER_NUMBER                      NEXT     *   |  O(") CHARACTER            
+WR_RETURN_QUANTITY                   NEXT     *   |  O(") CHARACTER            
+WR_RETURN_AMT                        NEXT     *   |  O(") CHARACTER            
+WR_RETURN_TAX                        NEXT     *   |  O(") CHARACTER            
+WR_RETURN_AMT_INC_TAX                NEXT     *   |  O(") CHARACTER            
+WR_FEE                               NEXT     *   |  O(") CHARACTER            
+WR_RETURN_SHIP_COST                  NEXT     *   |  O(") CHARACTER            
+WR_REFUNDED_CASH                     NEXT     *   |  O(") CHARACTER            
+WR_REVERSED_CHARGE                   NEXT     *   |  O(") CHARACTER            
+WR_ACCOUNT_CREDIT                    NEXT     *   |  O(") CHARACTER            
+WR_NET_LOSS                          NEXT     *   |  O(") CHARACTER            
+
+value used for ROWS parameter changed from 64 to 41
+
+Table TPCDS1.WEB_RETURNS:
+  71763 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                 253872 bytes(41 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:         71763
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Wed Aug 29 09:56:27 2018
+Run ended on Wed Aug 29 09:56:30 2018
+
+Elapsed time was:     00:00:02.69
+CPU time was:         00:00:00.52

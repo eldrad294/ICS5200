@@ -1,0 +1,75 @@
+
+SQL*Loader: Release 11.2.0.4.0 - Production on Wed Aug 29 09:59:33 2018
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/web_site.ctl
+Data File:      /mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/web_site.dat
+  Bad File:     /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/web_site.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TPCDS1.WEB_SITE, loaded from every logical record.
+Insert option in effect for this table: REPLACE
+TRAILING NULLCOLS option in effect
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+Message 3053 not found;  product=RDBMS; facility=UL
+Message 3054 not found;  product=RDBMS; facility=UL
+WEB_SITE_SK                         FIRST     *   |  O(") CHARACTER            
+WEB_SITE_ID                          NEXT     *   |  O(") CHARACTER            
+WEB_REC_START_DATE                   NEXT     *   |  O(") CHARACTER            
+WEB_REC_END_DATE                     NEXT     *   |  O(") CHARACTER            
+WEB_NAME                             NEXT     *   |  O(") CHARACTER            
+WEB_OPEN_DATE_SK                     NEXT     *   |  O(") CHARACTER            
+WEB_CLOSE_DATE_SK                    NEXT     *   |  O(") CHARACTER            
+WEB_CLASS                            NEXT     *   |  O(") CHARACTER            
+WEB_MANAGER                          NEXT     *   |  O(") CHARACTER            
+WEB_MKT_ID                           NEXT     *   |  O(") CHARACTER            
+WEB_MKT_CLASS                        NEXT     *   |  O(") CHARACTER            
+WEB_MKT_DESC                         NEXT     *   |  O(") CHARACTER            
+WEB_MARKET_MANAGER                   NEXT     *   |  O(") CHARACTER            
+WEB_COMPANY_ID                       NEXT     *   |  O(") CHARACTER            
+WEB_COMPANY_NAME                     NEXT     *   |  O(") CHARACTER            
+WEB_STREET_NUMBER                    NEXT     *   |  O(") CHARACTER            
+WEB_STREET_NAME                      NEXT     *   |  O(") CHARACTER            
+WEB_STREET_TYPE                      NEXT     *   |  O(") CHARACTER            
+WEB_SUITE_NUMBER                     NEXT     *   |  O(") CHARACTER            
+WEB_CITY                             NEXT     *   |  O(") CHARACTER            
+WEB_COUNTY                           NEXT     *   |  O(") CHARACTER            
+WEB_STATE                            NEXT     *   |  O(") CHARACTER            
+WEB_ZIP                              NEXT     *   |  O(") CHARACTER            
+WEB_COUNTRY                          NEXT     *   |  O(") CHARACTER            
+WEB_GMT_OFFSET                       NEXT     *   |  O(") CHARACTER            
+WEB_TAX_PERCENTAGE                   NEXT     *   |  O(") CHARACTER            
+
+value used for ROWS parameter changed from 64 to 38
+
+Table TPCDS1.WEB_SITE:
+  30 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                 254904 bytes(38 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:            30
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Wed Aug 29 09:59:33 2018
+Run ended on Wed Aug 29 09:59:33 2018
+
+Elapsed time was:     00:00:00.04
+CPU time was:         00:00:00.00

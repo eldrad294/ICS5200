@@ -1,0 +1,53 @@
+
+SQL*Loader: Release 11.2.0.4.0 - Production on Wed Aug 29 09:59:33 2018
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/household_demographics.ctl
+Data File:      /mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/household_demographics.dat
+  Bad File:     /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/household_demographics.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TPCDS1.HOUSEHOLD_DEMOGRAPHICS, loaded from every logical record.
+Insert option in effect for this table: REPLACE
+TRAILING NULLCOLS option in effect
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+Message 3053 not found;  product=RDBMS; facility=UL
+Message 3054 not found;  product=RDBMS; facility=UL
+HD_DEMO_SK                          FIRST     *   |  O(") CHARACTER            
+HD_INCOME_BAND_SK                    NEXT     *   |  O(") CHARACTER            
+HD_BUY_POTENTIAL                     NEXT     *   |  O(") CHARACTER            
+HD_DEP_COUNT                         NEXT     *   |  O(") CHARACTER            
+HD_VEHICLE_COUNT                     NEXT     *   |  O(") CHARACTER            
+
+
+Table TPCDS1.HOUSEHOLD_DEMOGRAPHICS:
+  7200 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                  82560 bytes(64 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:          7200
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Wed Aug 29 09:59:33 2018
+Run ended on Wed Aug 29 09:59:33 2018
+
+Elapsed time was:     00:00:00.10
+CPU time was:         00:00:00.02

@@ -1,0 +1,52 @@
+
+SQL*Loader: Release 11.2.0.4.0 - Production on Wed Aug 29 09:57:03 2018
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/inventory.ctl
+Data File:      /mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/inventory.dat
+  Bad File:     /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/inventory.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TPCDS1.INVENTORY, loaded from every logical record.
+Insert option in effect for this table: REPLACE
+TRAILING NULLCOLS option in effect
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+Message 3053 not found;  product=RDBMS; facility=UL
+Message 3054 not found;  product=RDBMS; facility=UL
+INV_DATE_SK                         FIRST     *   |  O(") CHARACTER            
+INV_ITEM_SK                          NEXT     *   |  O(") CHARACTER            
+INV_WAREHOUSE_SK                     NEXT     *   |  O(") CHARACTER            
+INV_QUANTITY_ON_HAND                 NEXT     *   |  O(") CHARACTER            
+
+
+Table TPCDS1.INVENTORY:
+  11745000 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                  66048 bytes(64 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:      11745000
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Wed Aug 29 09:57:03 2018
+Run ended on Wed Aug 29 09:59:27 2018
+
+Elapsed time was:     00:02:23.34
+CPU time was:         00:00:18.85

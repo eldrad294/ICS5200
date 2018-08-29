@@ -1,0 +1,68 @@
+
+SQL*Loader: Release 11.2.0.4.0 - Production on Wed Aug 29 09:59:28 2018
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/promotion.ctl
+Data File:      /mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/promotion.dat
+  Bad File:     /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/promotion.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TPCDS1.PROMOTION, loaded from every logical record.
+Insert option in effect for this table: REPLACE
+TRAILING NULLCOLS option in effect
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+Message 3053 not found;  product=RDBMS; facility=UL
+Message 3054 not found;  product=RDBMS; facility=UL
+P_PROMO_SK                          FIRST     *   |  O(") CHARACTER            
+P_PROMO_ID                           NEXT     *   |  O(") CHARACTER            
+P_START_DATE_SK                      NEXT     *   |  O(") CHARACTER            
+P_END_DATE_SK                        NEXT     *   |  O(") CHARACTER            
+P_ITEM_SK                            NEXT     *   |  O(") CHARACTER            
+P_COST                               NEXT     *   |  O(") CHARACTER            
+P_RESPONSE_TARGET                    NEXT     *   |  O(") CHARACTER            
+P_PROMO_NAME                         NEXT     *   |  O(") CHARACTER            
+P_CHANNEL_DMAIL                      NEXT     *   |  O(") CHARACTER            
+P_CHANNEL_EMAIL                      NEXT     *   |  O(") CHARACTER            
+P_CHANNEL_CATALOG                    NEXT     *   |  O(") CHARACTER            
+P_CHANNEL_TV                         NEXT     *   |  O(") CHARACTER            
+P_CHANNEL_RADIO                      NEXT     *   |  O(") CHARACTER            
+P_CHANNEL_PRESS                      NEXT     *   |  O(") CHARACTER            
+P_CHANNEL_EVENT                      NEXT     *   |  O(") CHARACTER            
+P_CHANNEL_DEMO                       NEXT     *   |  O(") CHARACTER            
+P_CHANNEL_DETAILS                    NEXT     *   |  O(") CHARACTER            
+P_PURPOSE                            NEXT     *   |  O(") CHARACTER            
+P_DISCOUNT_ACTIVE                    NEXT     *   |  O(") CHARACTER            
+
+value used for ROWS parameter changed from 64 to 52
+
+Table TPCDS1.PROMOTION:
+  300 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                 254904 bytes(52 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:           300
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Wed Aug 29 09:59:28 2018
+Run ended on Wed Aug 29 09:59:28 2018
+
+Elapsed time was:     00:00:00.05
+CPU time was:         00:00:00.01

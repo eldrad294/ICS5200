@@ -1,0 +1,77 @@
+
+SQL*Loader: Release 11.2.0.4.0 - Production on Wed Aug 29 09:59:27 2018
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/date_dim.ctl
+Data File:      /mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/date_dim.dat
+  Bad File:     /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/date_dim.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TPCDS1.DATE_DIM, loaded from every logical record.
+Insert option in effect for this table: REPLACE
+TRAILING NULLCOLS option in effect
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+Message 3053 not found;  product=RDBMS; facility=UL
+Message 3054 not found;  product=RDBMS; facility=UL
+D_DATE_SK                           FIRST     *   |  O(") CHARACTER            
+D_DATE_ID                            NEXT     *   |  O(") CHARACTER            
+D_DATE                               NEXT     *   |  O(") CHARACTER            
+D_MONTH_SEQ                          NEXT     *   |  O(") CHARACTER            
+D_WEEK_SEQ                           NEXT     *   |  O(") CHARACTER            
+D_QUARTER_SEQ                        NEXT     *   |  O(") CHARACTER            
+D_YEAR                               NEXT     *   |  O(") CHARACTER            
+D_DOW                                NEXT     *   |  O(") CHARACTER            
+D_MOY                                NEXT     *   |  O(") CHARACTER            
+D_DOM                                NEXT     *   |  O(") CHARACTER            
+D_QOY                                NEXT     *   |  O(") CHARACTER            
+D_FY_YEAR                            NEXT     *   |  O(") CHARACTER            
+D_FY_QUARTER_SEQ                     NEXT     *   |  O(") CHARACTER            
+D_FY_WEEK_SEQ                        NEXT     *   |  O(") CHARACTER            
+D_DAY_NAME                           NEXT     *   |  O(") CHARACTER            
+D_QUARTER_NAME                       NEXT     *   |  O(") CHARACTER            
+D_HOLIDAY                            NEXT     *   |  O(") CHARACTER            
+D_WEEKEND                            NEXT     *   |  O(") CHARACTER            
+D_FOLLOWING_HOLIDAY                  NEXT     *   |  O(") CHARACTER            
+D_FIRST_DOM                          NEXT     *   |  O(") CHARACTER            
+D_LAST_DOM                           NEXT     *   |  O(") CHARACTER            
+D_SAME_DAY_LY                        NEXT     *   |  O(") CHARACTER            
+D_SAME_DAY_LQ                        NEXT     *   |  O(") CHARACTER            
+D_CURRENT_DAY                        NEXT     *   |  O(") CHARACTER            
+D_CURRENT_WEEK                       NEXT     *   |  O(") CHARACTER            
+D_CURRENT_MONTH                      NEXT     *   |  O(") CHARACTER            
+D_CURRENT_QUARTER                    NEXT     *   |  O(") CHARACTER            
+D_CURRENT_YEAR                       NEXT     *   |  O(") CHARACTER            
+
+value used for ROWS parameter changed from 64 to 35
+
+Table TPCDS1.DATE_DIM:
+  73049 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                 252840 bytes(35 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:         73049
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Wed Aug 29 09:59:27 2018
+Run ended on Wed Aug 29 09:59:28 2018
+
+Elapsed time was:     00:00:01.54
+CPU time was:         00:00:00.54

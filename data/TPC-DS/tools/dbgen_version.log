@@ -1,0 +1,52 @@
+
+SQL*Loader: Release 11.2.0.4.0 - Production on Wed Aug 29 09:59:32 2018
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/dbgen_version.ctl
+Data File:      /mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/dbgen_version.dat
+  Bad File:     /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/dbgen_version.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TPCDS1.DBGEN_VERSION, loaded from every logical record.
+Insert option in effect for this table: REPLACE
+TRAILING NULLCOLS option in effect
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+Message 3053 not found;  product=RDBMS; facility=UL
+Message 3054 not found;  product=RDBMS; facility=UL
+DV_VERSION                          FIRST     *   |  O(") CHARACTER            
+DV_CREATE_DATE                       NEXT     *   |  O(") CHARACTER            
+DV_CREATE_TIME                       NEXT     *   |  O(") CHARACTER            
+DV_CMDLINE_ARGS                      NEXT     *   |  O(") CHARACTER            
+
+
+Table TPCDS1.DBGEN_VERSION:
+  1 Row successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                  66048 bytes(64 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:             1
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Wed Aug 29 09:59:32 2018
+Run ended on Wed Aug 29 09:59:33 2018
+
+Elapsed time was:     00:00:00.12
+CPU time was:         00:00:00.01

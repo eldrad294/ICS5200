@@ -1,0 +1,83 @@
+
+SQL*Loader: Release 11.2.0.4.0 - Production on Wed Aug 29 09:55:29 2018
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/catalog_sales.ctl
+Data File:      /mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/catalog_sales.dat
+  Bad File:     /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/catalog_sales.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TPCDS1.CATALOG_SALES, loaded from every logical record.
+Insert option in effect for this table: REPLACE
+TRAILING NULLCOLS option in effect
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+Message 3053 not found;  product=RDBMS; facility=UL
+Message 3054 not found;  product=RDBMS; facility=UL
+CS_SOLD_DATE_SK                     FIRST     *   |  O(") CHARACTER            
+CS_SOLD_TIME_SK                      NEXT     *   |  O(") CHARACTER            
+CS_SHIP_DATE_SK                      NEXT     *   |  O(") CHARACTER            
+CS_BILL_CUSTOMER_SK                  NEXT     *   |  O(") CHARACTER            
+CS_BILL_CDEMO_SK                     NEXT     *   |  O(") CHARACTER            
+CS_BILL_HDEMO_SK                     NEXT     *   |  O(") CHARACTER            
+CS_BILL_ADDR_SK                      NEXT     *   |  O(") CHARACTER            
+CS_SHIP_CUSTOMER_SK                  NEXT     *   |  O(") CHARACTER            
+CS_SHIP_CDEMO_SK                     NEXT     *   |  O(") CHARACTER            
+CS_SHIP_HDEMO_SK                     NEXT     *   |  O(") CHARACTER            
+CS_SHIP_ADDR_SK                      NEXT     *   |  O(") CHARACTER            
+CS_CALL_CENTER_SK                    NEXT     *   |  O(") CHARACTER            
+CS_CATALOG_PAGE_SK                   NEXT     *   |  O(") CHARACTER            
+CS_SHIP_MODE_SK                      NEXT     *   |  O(") CHARACTER            
+CS_WAREHOUSE_SK                      NEXT     *   |  O(") CHARACTER            
+CS_ITEM_SK                           NEXT     *   |  O(") CHARACTER            
+CS_PROMO_SK                          NEXT     *   |  O(") CHARACTER            
+CS_ORDER_NUMBER                      NEXT     *   |  O(") CHARACTER            
+CS_QUANTITY                          NEXT     *   |  O(") CHARACTER            
+CS_WHOLESALE_COST                    NEXT     *   |  O(") CHARACTER            
+CS_LIST_PRICE                        NEXT     *   |  O(") CHARACTER            
+CS_SALES_PRICE                       NEXT     *   |  O(") CHARACTER            
+CS_EXT_DISCOUNT_AMT                  NEXT     *   |  O(") CHARACTER            
+CS_EXT_SALES_PRICE                   NEXT     *   |  O(") CHARACTER            
+CS_EXT_WHOLESALE_COST                NEXT     *   |  O(") CHARACTER            
+CS_EXT_LIST_PRICE                    NEXT     *   |  O(") CHARACTER            
+CS_EXT_TAX                           NEXT     *   |  O(") CHARACTER            
+CS_COUPON_AMT                        NEXT     *   |  O(") CHARACTER            
+CS_EXT_SHIP_COST                     NEXT     *   |  O(") CHARACTER            
+CS_NET_PAID                          NEXT     *   |  O(") CHARACTER            
+CS_NET_PAID_INC_TAX                  NEXT     *   |  O(") CHARACTER            
+CS_NET_PAID_INC_SHIP                 NEXT     *   |  O(") CHARACTER            
+CS_NET_PAID_INC_SHIP_TAX             NEXT     *   |  O(") CHARACTER            
+CS_NET_PROFIT                        NEXT     *   |  O(") CHARACTER            
+
+value used for ROWS parameter changed from 64 to 29
+
+Table TPCDS1.CATALOG_SALES:
+  1441548 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                 254388 bytes(29 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:       1441548
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Wed Aug 29 09:55:29 2018
+Run ended on Wed Aug 29 09:56:27 2018
+
+Elapsed time was:     00:00:58.19
+CPU time was:         00:00:14.78

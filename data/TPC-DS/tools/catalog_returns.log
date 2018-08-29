@@ -1,0 +1,76 @@
+
+SQL*Loader: Release 11.2.0.4.0 - Production on Wed Aug 29 09:56:30 2018
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/catalog_returns.ctl
+Data File:      /mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/catalog_returns.dat
+  Bad File:     /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/catalog_returns.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TPCDS1.CATALOG_RETURNS, loaded from every logical record.
+Insert option in effect for this table: REPLACE
+TRAILING NULLCOLS option in effect
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+Message 3053 not found;  product=RDBMS; facility=UL
+Message 3054 not found;  product=RDBMS; facility=UL
+CR_RETURNED_DATE_SK                 FIRST     *   |  O(") CHARACTER            
+CR_RETURNED_TIME_SK                  NEXT     *   |  O(") CHARACTER            
+CR_ITEM_SK                           NEXT     *   |  O(") CHARACTER            
+CR_REFUNDED_CUSTOMER_SK              NEXT     *   |  O(") CHARACTER            
+CR_REFUNDED_CDEMO_SK                 NEXT     *   |  O(") CHARACTER            
+CR_REFUNDED_HDEMO_SK                 NEXT     *   |  O(") CHARACTER            
+CR_REFUNDED_ADDR_SK                  NEXT     *   |  O(") CHARACTER            
+CR_RETURNING_CUSTOMER_SK             NEXT     *   |  O(") CHARACTER            
+CR_RETURNING_CDEMO_SK                NEXT     *   |  O(") CHARACTER            
+CR_RETURNING_HDEMO_SK                NEXT     *   |  O(") CHARACTER            
+CR_RETURNING_ADDR_SK                 NEXT     *   |  O(") CHARACTER            
+CR_CALL_CENTER_SK                    NEXT     *   |  O(") CHARACTER            
+CR_CATALOG_PAGE_SK                   NEXT     *   |  O(") CHARACTER            
+CR_SHIP_MODE_SK                      NEXT     *   |  O(") CHARACTER            
+CR_WAREHOUSE_SK                      NEXT     *   |  O(") CHARACTER            
+CR_REASON_SK                         NEXT     *   |  O(") CHARACTER            
+CR_ORDER_NUMBER                      NEXT     *   |  O(") CHARACTER            
+CR_RETURN_QUANTITY                   NEXT     *   |  O(") CHARACTER            
+CR_RETURN_AMOUNT                     NEXT     *   |  O(") CHARACTER            
+CR_RETURN_TAX                        NEXT     *   |  O(") CHARACTER            
+CR_RETURN_AMT_INC_TAX                NEXT     *   |  O(") CHARACTER            
+CR_FEE                               NEXT     *   |  O(") CHARACTER            
+CR_RETURN_SHIP_COST                  NEXT     *   |  O(") CHARACTER            
+CR_REFUNDED_CASH                     NEXT     *   |  O(") CHARACTER            
+CR_REVERSED_CHARGE                   NEXT     *   |  O(") CHARACTER            
+CR_STORE_CREDIT                      NEXT     *   |  O(") CHARACTER            
+CR_NET_LOSS                          NEXT     *   |  O(") CHARACTER            
+
+value used for ROWS parameter changed from 64 to 36
+
+Table TPCDS1.CATALOG_RETURNS:
+  144067 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                 250776 bytes(36 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:        144067
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Wed Aug 29 09:56:30 2018
+Run ended on Wed Aug 29 09:56:34 2018
+
+Elapsed time was:     00:00:04.79
+CPU time was:         00:00:01.19

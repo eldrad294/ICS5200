@@ -1,0 +1,62 @@
+
+SQL*Loader: Release 11.2.0.4.0 - Production on Wed Aug 29 10:01:27 2018
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/web_page.ctl
+Data File:      /mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/web_page.dat
+  Bad File:     /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/web_page.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TPCDS1.WEB_PAGE, loaded from every logical record.
+Insert option in effect for this table: REPLACE
+TRAILING NULLCOLS option in effect
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+Message 3053 not found;  product=RDBMS; facility=UL
+Message 3054 not found;  product=RDBMS; facility=UL
+WP_WEB_PAGE_SK                      FIRST     *   |  O(") CHARACTER            
+WP_WEB_PAGE_ID                       NEXT     *   |  O(") CHARACTER            
+WP_REC_START_DATE                    NEXT     *   |  O(") CHARACTER            
+WP_REC_END_DATE                      NEXT     *   |  O(") CHARACTER            
+WP_CREATION_DATE_SK                  NEXT     *   |  O(") CHARACTER            
+WP_ACCESS_DATE_SK                    NEXT     *   |  O(") CHARACTER            
+WP_AUTOGEN_FLAG                      NEXT     *   |  O(") CHARACTER            
+WP_CUSTOMER_SK                       NEXT     *   |  O(") CHARACTER            
+WP_URL                               NEXT     *   |  O(") CHARACTER            
+WP_TYPE                              NEXT     *   |  O(") CHARACTER            
+WP_CHAR_COUNT                        NEXT     *   |  O(") CHARACTER            
+WP_LINK_COUNT                        NEXT     *   |  O(") CHARACTER            
+WP_IMAGE_COUNT                       NEXT     *   |  O(") CHARACTER            
+WP_MAX_AD_COUNT                      NEXT     *   |  O(") CHARACTER            
+
+
+Table TPCDS1.WEB_PAGE:
+  60 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                 231168 bytes(64 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:            60
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Wed Aug 29 10:01:27 2018
+Run ended on Wed Aug 29 10:01:27 2018
+
+Elapsed time was:     00:00:00.05
+CPU time was:         00:00:00.00

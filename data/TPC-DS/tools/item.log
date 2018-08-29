@@ -1,0 +1,71 @@
+
+SQL*Loader: Release 11.2.0.4.0 - Production on Wed Aug 29 09:59:33 2018
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/item.ctl
+Data File:      /mnt/raid5/DataGeneration_ICS5200/TPC-DS/tpcds1/item.dat
+  Bad File:     /home/gabriels/ICS5200/src/sql/Loading/tpcds/tpcds1/item.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TPCDS1.ITEM, loaded from every logical record.
+Insert option in effect for this table: REPLACE
+TRAILING NULLCOLS option in effect
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+Message 3053 not found;  product=RDBMS; facility=UL
+Message 3054 not found;  product=RDBMS; facility=UL
+I_ITEM_SK                           FIRST     *   |  O(") CHARACTER            
+I_ITEM_ID                            NEXT     *   |  O(") CHARACTER            
+I_REC_START_DATE                     NEXT     *   |  O(") CHARACTER            
+I_REC_END_DATE                       NEXT     *   |  O(") CHARACTER            
+I_ITEM_DESC                          NEXT     *   |  O(") CHARACTER            
+I_CURRENT_PRICE                      NEXT     *   |  O(") CHARACTER            
+I_WHOLESALE_COST                     NEXT     *   |  O(") CHARACTER            
+I_BRAND_ID                           NEXT     *   |  O(") CHARACTER            
+I_BRAND                              NEXT     *   |  O(") CHARACTER            
+I_CLASS_ID                           NEXT     *   |  O(") CHARACTER            
+I_CLASS                              NEXT     *   |  O(") CHARACTER            
+I_CATEGORY_ID                        NEXT     *   |  O(") CHARACTER            
+I_CATEGORY                           NEXT     *   |  O(") CHARACTER            
+I_MANUFACT_ID                        NEXT     *   |  O(") CHARACTER            
+I_MANUFACT                           NEXT     *   |  O(") CHARACTER            
+I_SIZE                               NEXT     *   |  O(") CHARACTER            
+I_FORMULATION                        NEXT     *   |  O(") CHARACTER            
+I_COLOR                              NEXT     *   |  O(") CHARACTER            
+I_UNITS                              NEXT     *   |  O(") CHARACTER            
+I_CONTAINER                          NEXT     *   |  O(") CHARACTER            
+I_MANAGER_ID                         NEXT     *   |  O(") CHARACTER            
+I_PRODUCT_NAME                       NEXT     *   |  O(") CHARACTER            
+
+value used for ROWS parameter changed from 64 to 45
+
+Table TPCDS1.ITEM:
+  18000 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                 255420 bytes(45 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:         18000
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Wed Aug 29 09:59:33 2018
+Run ended on Wed Aug 29 09:59:33 2018
+
+Elapsed time was:     00:00:00.41
+CPU time was:         00:00:00.15

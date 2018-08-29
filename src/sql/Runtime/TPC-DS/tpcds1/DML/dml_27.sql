@@ -1,38 +1,40 @@
-drop table storv;
-create table storv tablespace tpcds_benchmark as
-select store_seq.nextVal s_store_sk
-      ,stor_store_id s_store_id
-      ,sysdate s_rec_start_date
-      ,cast(NULL as date) s_rec_end_date
-      ,d1.d_date_sk s_closed_date_sk
-      ,stor_name s_store_name
-      ,stor_employees s_number_employees
-      ,stor_floor_space s_floor_space
-      ,stor_hours s_hours
-      ,stor_store_manager s_manager
-      ,stor_market_id s_market_id
-      ,stor_geography_class s_geography_class
-      ,s_market_desc
-      ,stor_market_manager s_market_manager
-      ,s_division_id
-      ,s_division_name
-      ,s_company_id
-      ,s_company_name
-      ,s_street_number
-      ,s_street_name
-      ,s_street_type
-      ,s_suite_number
-      ,s_city
-      ,s_county
-      ,s_state
-      ,s_zip
-      ,s_country
-      ,s_gmt_offset
-      ,stor_tax_percentage s_tax_percentage
-from  s_store left outer join date_dim d1 on to_char(TO_DATE(stor_closed_date,'yyyy/mm/dd'),'yyyy-mm-dd')= d1.d_date
-     ,store
-where  stor_store_id = s_store_id
-   and s_rec_end_date is null;
-select 's_store_m '||count(*) from s_store;
-select 's_storv '||count(*) from storv;
-select 'null date_dim '||count(*) from storv where s_closed_date_sk is null;
+drop table ccv;
+create table CCV tablespace tpcds_benchmark as
+(select  callcenter_seq.nextval cc_call_center_sk
+        ,call_center_id cc_call_center_id
+        ,sysdate cc_rec_start_date
+        ,to_char(to_date(sysdate,'yyyy/mm/dd'),'yyyy-mm-dd') cc_rec_end_date
+        ,d1.d_date_sk cc_closed_date_sk
+        ,d2.d_date_sk cc_open_date_sk
+        ,call_center_name cc_name
+        ,call_center_class cc_class
+        ,call_center_employees cc_employees
+        ,call_center_sq_ft cc_sq_ft
+        ,call_center_hours cc_hours
+        ,call_center_manager cc_manager
+        ,cc_mkt_id
+        ,cc_mkt_class
+        ,cc_mkt_desc
+        ,cc_market_manager
+        ,cc_division
+        ,cc_division_name
+        ,cc_company
+        ,cc_company_name
+        ,cc_street_number
+        ,cc_street_name
+        ,cc_street_type
+        ,cc_suite_number
+        ,cc_city
+        ,cc_county
+        ,cc_state
+        ,cc_zip
+        ,cc_country
+        ,cc_gmt_offset
+        ,cc_tax_percentage
+from    s_call_center left outer join date_dim d2 on d2.d_date = to_char(to_date(call_closed_date,'yyyy/mm/dd'),'yyyy-mm-dd')
+                      left outer join date_dim d1 on d1.d_date = to_char(to_date(call_open_date,'yyyy/mm/dd'),'yyyy-mm-dd'),
+        call_center
+where  call_center_id = cc_call_center_id
+   and cc_rec_end_date is null);
+select count(*) from s_call_center;
+select count(*) from ccv;
