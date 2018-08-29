@@ -1,5 +1,5 @@
 insert /*+ ignore_row_on_dupkey_index(catalog_returns, SYS_C0021709) */ into catalog_returns (
-select CR_CALL_CENTER_SK,
+select  6
 		CR_CATALOG_PAGE_SK,
 		6,
 		CR_ITEM_SK,
