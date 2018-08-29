@@ -1,2 +1,3 @@
-insert into store_returns (select * from srv);
+drop table cc2_store_returns;
+create table cc2_store_returns as (select * from srv);
 rollback;

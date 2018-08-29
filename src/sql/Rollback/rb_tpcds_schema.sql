@@ -2,6 +2,8 @@ drop table CATV;
 drop table CCV;
 drop table CRV;
 drop table CUSTV;
+drop table CC2_CALL_CENTER;
+drop table CC2_STORE_RETURNS;
 drop table ITEMV;
 drop table PROMV;
 drop table SRV;
