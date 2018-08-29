@@ -64,11 +64,11 @@ if result == 0:
     raise Exception('[' + ev_loader.var_get('user') + '] schema tables were not found..terminating script!')
 #
 # Strip optimizer stats
-# logger.log('Starting optimizer stats dropping..')
-# OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
-#                                                 logger=logger,
-#                                                 tpctype=ev_loader.var_get('user'))
-# logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
+logger.log('Starting optimizer stats dropping..')
+OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
+                                                logger=logger,
+                                                tpctype=ev_loader.var_get('user'))
+logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
 #
 query_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Query/"
 dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/DML/"
@@ -135,11 +135,11 @@ SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 """
 #
 # Gather optimizer stats
-# logger.log('Starting optimizer stats generation..')
-# OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
-#                                                   logger=logger,
-#                                                   tpctype=ev_loader.var_get('user'))
-# logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
+logger.log('Starting optimizer stats generation..')
+OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
+                                                  logger=logger,
+                                                  tpctype=ev_loader.var_get('user'))
+logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
 #
 # Execute Queries + DML for n number of iterations
 for i in range(1, ev_loader.var_get('iterations')+1):
