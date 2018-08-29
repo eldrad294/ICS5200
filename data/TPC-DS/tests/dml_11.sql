@@ -1,17 +1,14 @@
-drop table s_item;
-create table s_item tablespace tpcds_benchmark as
-(select i_item_id item_item_id
-       ,i_item_desc item_item_description
-       ,i_current_price item_list_price
-       ,i_wholesale_cost item_wholesale_cost
-       ,i_manager_id item_manager_id
-       ,i_size item_size
-       ,i_formulation item_formulation
-       ,i_color item_color
-       ,i_units item_units
-       ,i_container item_container
- from item
- where i_rec_end_date is null 
-   and rownum < 1000);
-delete from s_item where item_item_id in (select ITEM_ITEM_ID from (select ITEM_ITEM_ID ,count(*) cnt from s_item group by ITEM_ITEM_ID) where cnt > 1);
-commit;
+DECLARE
+   max_sk NUMBER;
+   i_count number;
+BEGIN
+   select count(*)
+   into i_count
+   from all_sequences
+   where sequence_name = upper('web_site_seq');
+   if i_count > 0 then
+     execute immediate 'drop sequence web_site_seq';
+   end if;
+   SELECT max(web_site_sk)+1 INTO max_sk FROM web_site;
+   EXECUTE IMMEDIATE 'CREATE SEQUENCE web_site_seq INCREMENT BY 1 START WITH '||max_sk||' ORDER';
+END;
