@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 declare
   v_constraint varchar2(60);
 begin
@@ -17,3 +18,14 @@ begin
   commit;
   execute immediate 'alter table CALL_CENTER add constraint '||v_constraint||' primary key (cc_call_center_sk)';
 end;
+=======
+update call_center
+set cc_rec_end_date = sysdate
+where cc_call_center_id in (
+  select cc_call_center_id
+  from call_center)
+and cc_rec_end_date is NULL;
+drop table cc2_call_center;
+create table cc2_call_center tablespace tpcds_benchmark as select * from ccv;
+commit;
+>>>>>>> b27b66e4bb572b3914025880f9a18ff3d14fdc41
