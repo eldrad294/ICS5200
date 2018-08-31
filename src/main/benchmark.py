@@ -196,3 +196,9 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                       logger=logger,
                                       timestamp=ts,
                                       ev_loader=ev_loader)
+"""
+SCRIPT CLOSEUP - Cleanup
+"""
+ConnectionPool.close_connection_pool()
+# si.initialize_spark().kill_spark_nodes()
+logger.log("Script Complete!\n-------------------------------------")
