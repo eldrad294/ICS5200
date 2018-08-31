@@ -76,9 +76,6 @@ dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var
 # Execute Queries + DML for n number of iterations
 for i in range(1, ev_loader.var_get('iterations') + 1):
     #
-    # Keep reference to flashback timestamp
-    ts = FlashbackControl.captureTimeStamp()
-    #
     # Execute All Queries
     for j in range(1, 100):
         filename = 'query_'+str(j)+'.sql'
@@ -99,6 +96,9 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
+        #
+        # Keep reference to flashback timestamp
+        ts = FlashbackControl.captureTimeStamp()
         with open(dml_path + filename) as file:
             data = file.read()
             if xp.check_if_plsql_block(statement=data):
@@ -121,13 +121,13 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                                  transaction_name=filename,
                                                  iteration_run=i,
                                                  gathered_stats=False)
+        #
+        # Flashback Impacted Tables
+        FlashbackControl.flashback_tables(db_conn=db_conn,
+                                          logger=logger,
+                                          timestamp=ts,
+                                          ev_loader=ev_loader)
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
-    #
-    # Flashback Impacted Tables
-    FlashbackControl.flashback_tables(db_conn=db_conn,
-                                      logger=logger,
-                                      timestamp=ts,
-                                      ev_loader=ev_loader)
 """
 ------------------------------------------------------------
 SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
@@ -143,9 +143,6 @@ logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer sta
 #
 # Execute Queries + DML for n number of iterations
 for i in range(1, ev_loader.var_get('iterations')+1):
-    #
-    # Keep reference to flashback timestamp
-    ts = FlashbackControl.captureTimeStamp()
     #
     # Execute All Queries
     for j in range(1, 100):
@@ -167,6 +164,9 @@ for i in range(1, ev_loader.var_get('iterations')+1):
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
+        #
+        # Keep reference to flashback timestamp
+        ts = FlashbackControl.captureTimeStamp()
         with open(dml_path + filename) as file:
             data = file.read()
             if xp.check_if_plsql_block(statement=data):
@@ -189,13 +189,13 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                                  transaction_name=filename,
                                                  iteration_run=i,
                                                  gathered_stats=True)
+        #
+        # Flashback Impacted Tables
+        FlashbackControl.flashback_tables(db_conn=db_conn,
+                                          logger=logger,
+                                          timestamp=ts,
+                                          ev_loader=ev_loader)
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
-    #
-    # Flashback Impacted Tables
-    FlashbackControl.flashback_tables(db_conn=db_conn,
-                                      logger=logger,
-                                      timestamp=ts,
-                                      ev_loader=ev_loader)
 """
 SCRIPT CLOSEUP - Cleanup
 """
