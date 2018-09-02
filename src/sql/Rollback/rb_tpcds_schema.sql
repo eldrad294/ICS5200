@@ -50,3 +50,5 @@ drop table WEB_SALES;
 drop table WEB_SITE;
 drop table REP_EXECUTION_PLANS;
 drop table REP_TPC_DESCRIBE;
+drop table MON_KILL_LONG_RUNNING;
+drop procedure kill_long_running;

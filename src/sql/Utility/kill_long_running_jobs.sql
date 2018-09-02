@@ -6,13 +6,16 @@ begin
   select count(*)
   into i_count
   from user_tables
-  where table_name = 'MON_KILL_LONG_RUNNING';
+  where table_name = 'MON_KILL_LONG_RUNNING'
+  and tablespace_name = 'TPCDS_BENCHMARK';
   if i_count < 1 then
-    execute immediate 'create table MON_KILL_LONG_RUNNING (running number default 1)';
+    execute immediate 'create table MON_KILL_LONG_RUNNING (running number default 1) tablespace tpcds_benchmark';
+    execute immediate 'insert into MON_KILL_LONG_RUNNING values (1)';
+    commit;
   end if;
   while (true)
   loop
-    execute immediate 'select running into i_count from MON_KILL_LONG_RUNNING' into i_count;
+    execute immediate 'select running from MON_KILL_LONG_RUNNING' into i_count;
     if i_count = 0 then
       exit;
     end if;
