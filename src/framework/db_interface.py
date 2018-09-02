@@ -1,6 +1,6 @@
 #
 # Module Imports
-import cx_Oracle, time
+import cx_Oracle, time, os
 #
 class DatabaseInterface:
     #
