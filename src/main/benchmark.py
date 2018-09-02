@@ -75,7 +75,7 @@ OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
 #
 # Start sniffer procedure to terminate long running queries
-db.conn.execute_proc('kill_long_running',{i_secs:ev_loader.var_get('time_out_in_seconds')})
+db_conn.execute_proc('kill_long_running',{i_secs:ev_loader.var_get('time_out_in_seconds')})
 logger.log('Started "kill_long_running" proc')
 #
 db_conn.close()
@@ -224,7 +224,7 @@ OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
 #
 # Start sniffer procedure to terminate long running queries
-db.conn.execute_proc('kill_long_running',{i_secs:ev_loader.var_get('time_out_in_seconds')})
+db_conn.execute_proc('kill_long_running',{i_secs:ev_loader.var_get('time_out_in_seconds')})
 logger.log('Started "kill_long_running" proc')
 db_conn.close()
 #
