@@ -58,7 +58,8 @@ sleep_connection_delay = 1
 db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                                                user=ev_loader.var_get('user'),
                                                host=ev_loader.var_get('host'),
-                                               service=ev_loader.var_get('port'),
+                                               service=ev_loader.var_get('service'),
+                                               port=ev_loader.var_get('port'),
                                                password=ev_loader.var_get('password'),
                                                logger=logger)
 db_conn.connect()
@@ -95,7 +96,8 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                     db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                                                user=ev_loader.var_get('user'),
                                                host=ev_loader.var_get('host'),
-                                               service=ev_loader.var_get('port'),
+                                               service=ev_loader.var_get('service'),
+                                               port=ev_loader.var_get('port'),
                                                password=ev_loader.var_get('password'),
                                                logger=logger)
                     db_conn.connect()
@@ -123,7 +125,8 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
             db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                                         user=ev_loader.var_get('user'),
                                         host=ev_loader.var_get('host'),
-                                        service=ev_loader.var_get('port'),
+                                        service=ev_loader.var_get('service'),
+                                        port=ev_loader.var_get('port'),
                                         password=ev_loader.var_get('password'),
                                         logger=logger)
             db_conn.connect()
@@ -139,7 +142,8 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                 db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                                             user=ev_loader.var_get('user'),
                                             host=ev_loader.var_get('host'),
-                                            service=ev_loader.var_get('port'),
+                                            service=ev_loader.var_get('service'),
+                                            port=ev_loader.var_get('port'),
                                             password=ev_loader.var_get('password'),
                                             logger=logger)
                 db_conn.connect()
@@ -165,7 +169,8 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                         db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                                                     user=ev_loader.var_get('user'),
                                                     host=ev_loader.var_get('host'),
-                                                    service=ev_loader.var_get('port'),
+                                                    service=ev_loader.var_get('service'),
+                                                    port=ev_loader.var_get('port'),
                                                     password=ev_loader.var_get('password'),
                                                     logger=logger)
                         db_conn.connect()
@@ -216,7 +221,8 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                     db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                                                 user=ev_loader.var_get('user'),
                                                 host=ev_loader.var_get('host'),
-                                                service=ev_loader.var_get('port'),
+                                                service=ev_loader.var_get('service'),
+                                                port=ev_loader.var_get('port'),
                                                 password=ev_loader.var_get('password'),
                                                 logger=logger)
                     db_conn.connect()
@@ -243,7 +249,8 @@ for i in range(1, ev_loader.var_get('iterations')+1):
             db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                                         user=ev_loader.var_get('user'),
                                         host=ev_loader.var_get('host'),
-                                        service=ev_loader.var_get('port'),
+                                        service=ev_loader.var_get('service'),
+                                        port=ev_loader.var_get('port'),
                                         password=ev_loader.var_get('password'),
                                         logger=logger)
             db_conn.connect()
@@ -259,7 +266,8 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                 db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                                             user=ev_loader.var_get('user'),
                                             host=ev_loader.var_get('host'),
-                                            service=ev_loader.var_get('port'),
+                                            service=ev_loader.var_get('service'),
+                                            port=ev_loader.var_get('port'),
                                             password=ev_loader.var_get('password'),
                                             logger=logger)
                 db_conn.connect()
@@ -284,7 +292,8 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                         db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                                                     user=ev_loader.var_get('user'),
                                                     host=ev_loader.var_get('host'),
-                                                    service=ev_loader.var_get('port'),
+                                                    service=ev_loader.var_get('service'),
+                                                    port=ev_loader.var_get('port'),
                                                     password=ev_loader.var_get('password'),
                                                     logger=logger)
                         db_conn.connect()
