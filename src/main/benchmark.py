@@ -76,6 +76,7 @@ logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer sta
 #
 # Start sniffer procedure to terminate long running queries
 db.conn.execute_proc('kill_long_running',{i_secs:ev_loader.var_get('time_out_in_seconds')})
+logger.log('Started "kill_long_running" proc')
 #
 db_conn.close()
 #
@@ -214,11 +215,17 @@ db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                                     password=ev_loader.var_get('password'),
                                     logger=logger)
 db_conn.connect()
+db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=0') # Kill Sniffer Procedure
+time.sleep(5)
 logger.log('Starting optimizer stats generation..')
 OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
                                                   logger=logger,
                                                   tpctype=ev_loader.var_get('user'))
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
+#
+# Start sniffer procedure to terminate long running queries
+db.conn.execute_proc('kill_long_running',{i_secs:ev_loader.var_get('time_out_in_seconds')})
+logger.log('Started "kill_long_running" proc')
 db_conn.close()
 #
 # Execute Queries + DML for n number of iterations
