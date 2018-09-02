@@ -1,6 +1,6 @@
 #
 # Module Imports
-import cx_Oracle
+import cx_Oracle, time
 #
 class DatabaseInterface:
     #
@@ -61,7 +61,7 @@ class DatabaseInterface:
         except Exception as e:
             if self.__logger is not None:
                 self.__logger.log("Exception caught whilst establishing connection to database! [" + str(e) + "]")
-            raise Exception("Couldn't connect to database: [" + str(e) + "]")
+            #raise Exception("Couldn't connect to database: [" + str(e) + "]")
     #
     def execute_query(self, query, params=None, fetch_single=False, describe=False):
         """
@@ -176,7 +176,7 @@ class DatabaseInterface:
             self.__conn.commit()
         except Exception as e:
             self.__logger.log("Couldn't commit transaction to database: [" + str(e) + "]")
-            raise Exception("Couldn't commit transaction to database: [" + str(e) + "]")
+            #raise Exception("Couldn't commit transaction to database: [" + str(e) + "]")
     #
     def executeScriptsFromFile(self, filename):
         """
@@ -206,8 +206,9 @@ class DatabaseInterface:
         """
         try:
             self.__conn.close()
+            time.sleep(1)
         except Exception as e:
-            raise Exception("Couldn't close connection: [" + str(e) + "]")
+            logger.log("Couldn't close connection: [" + str(e) + "]")
     #
     def get_connection_details(self):
         return {'instance_name':self.__instance_name,

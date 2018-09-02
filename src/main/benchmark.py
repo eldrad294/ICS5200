@@ -26,7 +26,7 @@ SCRIPT WARM UP - Module Import & Path Configuration
 """
 #
 # Module Imports
-import sys, os, time
+import sys, os
 from os.path import dirname, abspath
 #
 # Retrieving relative paths for project directory
@@ -65,8 +65,6 @@ db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
 db_conn.connect()
 sql_statement = "select count(*) from user_tables where table_name = 'DBGEN_VERSION'"
 result = int(db_conn.execute_query(sql_statement, fetch_single=True)[0])
-db_conn.close()
-time.sleep(sleep_connection_delay)
 if result == 0:
     raise Exception('[' + ev_loader.var_get('user') + '] schema tables were not found..terminating script!')
 #
@@ -76,6 +74,7 @@ OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
                                                 logger=logger,
                                                 tpctype=ev_loader.var_get('user'))
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
+db_conn.close()
 #
 query_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Query/"
 dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/DML/"
@@ -111,7 +110,6 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                              iteration_run=i,
                                              gathered_stats=False)
                     db_conn.close()
-                    time.sleep(sleep_connection_delay)
     # Execute All DML
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
@@ -135,7 +133,6 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                        ev_loader=ev_loader)
             check_if_plsql = xp.check_if_plsql_block(statement=data)
             db_conn.close()
-            time.sleep(sleep_connection_delay)
             #
             if check_if_plsql:
                 #
@@ -159,7 +156,6 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                          iteration_run=i,
                                          gathered_stats=False)
                 db_conn.close()
-                time.sleep(sleep_connection_delay)
             else:
                 # Executes statements as a series of sql statements
                 dml_list = data.split(';')
@@ -184,7 +180,6 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                                  iteration_run=i,
                                                  gathered_stats=False)
                         db_conn.close()
-                        time.sleep(sleep_connection_delay)
         #
         # Flashback Impacted Tables
         db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
@@ -200,7 +195,6 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                           timestamp=ts,
                                           ev_loader=ev_loader)
         db_conn.close()
-        time.sleep(sleep_connection_delay)
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
 """
 ------------------------------------------------------------
@@ -209,11 +203,20 @@ SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 """
 #
 # Gather optimizer stats
+db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
+                                    user=ev_loader.var_get('user'),
+                                    host=ev_loader.var_get('host'),
+                                    service=ev_loader.var_get('service'),
+                                    port=ev_loader.var_get('port'),
+                                    password=ev_loader.var_get('password'),
+                                    logger=logger)
+db_conn.connect()
 logger.log('Starting optimizer stats generation..')
 OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
                                                   logger=logger,
                                                   tpctype=ev_loader.var_get('user'))
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
+db_conn.close()
 #
 # Execute Queries + DML for n number of iterations
 for i in range(1, ev_loader.var_get('iterations')+1):
@@ -246,7 +249,6 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                              iteration_run=i,
                                              gathered_stats=True)
                     db.close()
-                    time.sleep(sleep_connection_delay)
     # Execute All DML
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
@@ -269,7 +271,6 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                        ev_loader=ev_loader)
             check_if_plsql = xp.check_if_plsql_block(statement=data)
             db_conn.close()
-            time.sleep(sleep_connection_delay)
             #
             if check_if_plsql:
                 #
@@ -292,7 +293,6 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                          iteration_run=i,
                                          gathered_stats=True)
                 db_conn.close()
-                time.sleep(sleep_connection_delay)
             else:
                 # Executes statements as a series of sql statements
                 dml_list = data.split(';')
@@ -317,7 +317,6 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                                  iteration_run=i,
                                                  gathered_stats=True)
                         db_conn.close()
-                        time.sleep(sleep_connection_delay)
         #
         # Flashback Impacted Tables
         db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
@@ -333,7 +332,6 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                           timestamp=ts,
                                           ev_loader=ev_loader)
         db.close()
-        time.sleep(sleep_connection_delay)
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
 """
 SCRIPT CLOSEUP - Cleanup
