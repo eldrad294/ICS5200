@@ -67,15 +67,16 @@ result = int(db_conn.execute_query(sql_statement, fetch_single=True)[0])
 if result == 0:
     raise Exception('[' + ev_loader.var_get('user') + '] schema tables were not found..terminating script!')
 #
-# Start sniffer procedure to terminate long running queries
-db.conn.execute_proc('kill_long_running',{i_secs:1});
-#
 # Strip optimizer stats
 logger.log('Starting optimizer stats dropping..')
 OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
                                                 logger=logger,
                                                 tpctype=ev_loader.var_get('user'))
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
+#
+# Start sniffer procedure to terminate long running queries
+db.conn.execute_proc('kill_long_running',{i_secs:ev_loader.var_get('time_out_in_seconds')})
+#
 db_conn.close()
 #
 query_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Query/"

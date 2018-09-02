@@ -70,6 +70,7 @@ class ScriptInitializer:
         #
         # Benchmark
         iterations = int(g_config.get_value('Benchmark','iterations'))
+        time_out_in_seconds = int(g_config.get_value('Benchmark','time_out_in_seconds'))
         #
         # Load into global dictionary
         ev_loader.var_load({'project_dir':project_dir,
@@ -115,7 +116,8 @@ class ScriptInitializer:
                             'spark_python_worker_reuse':spark_python_worker_reuse,
                             'log_file_path':project_dir + "/log/" + log_file_name + "_" + user,
                             'report_save_path':report_save_path,
-                            'iterations':iterations})
+                            'iterations':iterations,
+                            'time_out_in_seconds':time_out_in_seconds})
         #
         # Environment var loading
         os.environ['PYSPARK_PYTHON'] = project_dir + '/venv/bin/python3'
