@@ -65,7 +65,7 @@ db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
 db_conn.connect()
 sql_statement = "select count(*) from user_tables where table_name = 'DBGEN_VERSION'"
 result = int(db_conn.execute_query(sql_statement, fetch_single=True)[0])
-db.close()
+db_conn.close()
 time.sleep(sleep_connection_delay)
 if result == 0:
     raise Exception('[' + ev_loader.var_get('user') + '] schema tables were not found..terminating script!')
