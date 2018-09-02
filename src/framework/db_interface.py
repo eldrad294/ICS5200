@@ -8,6 +8,7 @@ class DatabaseInterface:
         self.__instance_name = str(instance_name)
         self.__user = str(user)
         self.__host = str(host)
+        self.__host = str(host)
         self.__service = str(service)
         self.__port = str(port)
         self.__password = str(password) # Required to execute under nohup instead of manual user input,
