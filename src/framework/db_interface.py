@@ -149,7 +149,7 @@ class DatabaseInterface:
     #
     def execute_proc(self, name, parameters):
         """
-
+        Executes procedure
         :param name: Name of procedure
         :param parameters: Dictionary of parameters
         :return:

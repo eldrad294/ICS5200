@@ -52,7 +52,6 @@ from src.utils.flashback_control import FlashbackControl
 SCRIPT EXECUTION - Benchmark Start - Without Optimizer Stats
 ------------------------------------------------------------
 """
-sleep_connection_delay = 1
 #
 # Check whether schema needs creating - executed only if relevant tables are not found
 db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
@@ -67,6 +66,9 @@ sql_statement = "select count(*) from user_tables where table_name = 'DBGEN_VERS
 result = int(db_conn.execute_query(sql_statement, fetch_single=True)[0])
 if result == 0:
     raise Exception('[' + ev_loader.var_get('user') + '] schema tables were not found..terminating script!')
+#
+# Start sniffer procedure to terminate long running queries
+db.conn.execute_proc('kill_long_running',{i_secs:1});
 #
 # Strip optimizer stats
 logger.log('Starting optimizer stats dropping..')
