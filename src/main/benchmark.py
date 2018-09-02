@@ -187,10 +187,20 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                         time.sleep(sleep_connection_delay)
         #
         # Flashback Impacted Tables
+        db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
+                                    user=ev_loader.var_get('user'),
+                                    host=ev_loader.var_get('host'),
+                                    service=ev_loader.var_get('service'),
+                                    port=ev_loader.var_get('port'),
+                                    password=ev_loader.var_get('password'),
+                                    logger=logger)
+        db_conn.connect()
         FlashbackControl.flashback_tables(db_conn=db_conn,
                                           logger=logger,
                                           timestamp=ts,
                                           ev_loader=ev_loader)
+        db_conn.close()
+        time.sleep(sleep_connection_delay)
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
 """
 ------------------------------------------------------------
@@ -310,10 +320,20 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                         time.sleep(sleep_connection_delay)
         #
         # Flashback Impacted Tables
+        db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
+                                    user=ev_loader.var_get('user'),
+                                    host=ev_loader.var_get('host'),
+                                    service=ev_loader.var_get('service'),
+                                    port=ev_loader.var_get('port'),
+                                    password=ev_loader.var_get('password'),
+                                    logger=logger)
+        db_conn.connect()
         FlashbackControl.flashback_tables(db_conn=db_conn,
                                           logger=logger,
                                           timestamp=ts,
                                           ev_loader=ev_loader)
+        db.close()
+        time.sleep(sleep_connection_delay)
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
 """
 SCRIPT CLOSEUP - Cleanup

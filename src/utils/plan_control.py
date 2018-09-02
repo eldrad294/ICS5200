@@ -146,8 +146,8 @@ class XPlan:
             # Adds column 'GATHERED_STATS'
             dml_statement = "alter table " + self.__report_execution_plan + " add GATHERED_STATS varchar2(5)"
             self.__db_conn.execute_dml(dml=dml_statement)
-        else:
-            self.__logger.log('Table ['+self.__report_execution_plan+'] already exists..')
+        # else:
+        #     self.__logger.log('Table ['+self.__report_execution_plan+'] already exists..')
     #
     def check_if_plsql_block(self, statement):
         if 'begin' in statement.lower() and 'end' in statement.lower():
