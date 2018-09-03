@@ -8,7 +8,6 @@ class DatabaseInterface:
         self.__instance_name = str(instance_name)
         self.__user = str(user)
         self.__host = str(host)
-        self.__host = str(host)
         self.__service = str(service)
         self.__port = str(port)
         self.__password = str(password) # Required to execute under nohup instead of manual user input,
@@ -33,6 +32,10 @@ class DatabaseInterface:
             raise ValueError("Database service was not declared!")
         if self.__port is None:
             raise ValueError("Database port was not declared!")
+        if self.__logger is None:
+            raise ValueError("Database logger was not declared!")
+        if self.__password is None:
+            raise ValueError("Password was not declared!")
     #
     def __schema_names(self, schema):
         """
