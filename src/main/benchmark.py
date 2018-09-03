@@ -111,12 +111,15 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                     xp = XPlan(db_conn=db_conn,
                                logger=logger,
                                ev_loader=ev_loader)
-                    xp.generateExecutionPlan(sql=sql,
-                                             binds=None,
-                                             selection=None,
-                                             transaction_name=filename,
-                                             iteration_run=i,
-                                             gathered_stats=False)
+                    try:
+                        xp.generateExecutionPlan(sql=sql,
+                                                 binds=None,
+                                                 selection=None,
+                                                 transaction_name=filename,
+                                                 iteration_run=i,
+                                                 gathered_stats=False)
+                    except Exception as e:
+                        logger.log(str(e))
                     db_conn.close()
     # Execute All DML
     for j in range(1, 43):
@@ -157,12 +160,15 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                            ev_loader=ev_loader)
                 #
                 # Executes PL/SQL block
-                xp.generateExecutionPlan(sql=data,
-                                         binds=None,
-                                         selection=None,
-                                         transaction_name=filename,
-                                         iteration_run=i,
-                                         gathered_stats=False)
+                try:
+                    xp.generateExecutionPlan(sql=data,
+                                             binds=None,
+                                             selection=None,
+                                             transaction_name=filename,
+                                             iteration_run=i,
+                                             gathered_stats=False)
+                except Exception as e:
+                    logger.log(str(e))
                 db_conn.close()
             else:
                 # Executes statements as a series of sql statements
@@ -181,12 +187,15 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                         xp = XPlan(db_conn=db_conn,
                                    logger=logger,
                                    ev_loader=ev_loader)
-                        xp.generateExecutionPlan(sql=dml,
-                                                 binds=None,
-                                                 selection=None,
-                                                 transaction_name=filename,
-                                                 iteration_run=i,
-                                                 gathered_stats=False)
+                        try:
+                            xp.generateExecutionPlan(sql=dml,
+                                                     binds=None,
+                                                     selection=None,
+                                                     transaction_name=filename,
+                                                     iteration_run=i,
+                                                     gathered_stats=False)
+                        except Exception as e:
+                            logger.log(str(e))
                         db_conn.close()
         #
         # Flashback Impacted Tables
@@ -260,12 +269,15 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                     xp = XPlan(db_conn=db_conn,
                                logger=logger,
                                ev_loader=ev_loader)
-                    xp.generateExecutionPlan(sql=sql,
-                                             binds=None,
-                                             selection=None,
-                                             transaction_name=filename,
-                                             iteration_run=i,
-                                             gathered_stats=True)
+                    try:
+                        xp.generateExecutionPlan(sql=sql,
+                                                 binds=None,
+                                                 selection=None,
+                                                 transaction_name=filename,
+                                                 iteration_run=i,
+                                                 gathered_stats=True)
+                    except Exception as e:
+                        logger.log(str(e))
                     db_conn.close()
     # Execute All DML
     for j in range(1, 43):
@@ -303,13 +315,16 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                 xp = XPlan(db_conn=db_conn,
                            logger=logger,
                            ev_loader=ev_loader)
-                # Executes PL/SQL block
-                xp.generateExecutionPlan(sql=data,
-                                         binds=None,
-                                         selection=None,
-                                         transaction_name=filename,
-                                         iteration_run=i,
-                                         gathered_stats=True)
+                try:
+                    # Executes PL/SQL block
+                    xp.generateExecutionPlan(sql=data,
+                                             binds=None,
+                                             selection=None,
+                                             transaction_name=filename,
+                                             iteration_run=i,
+                                             gathered_stats=True)
+                except Exception as e:
+                    logger.log(str(e))
                 db_conn.close()
             else:
                 # Executes statements as a series of sql statements
@@ -328,12 +343,15 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                         xp = XPlan(db_conn=db_conn,
                                    logger=logger,
                                    ev_loader=ev_loader)
-                        xp.generateExecutionPlan(sql=dml,
-                                                 binds=None,
-                                                 selection=None,
-                                                 transaction_name=filename,
-                                                 iteration_run=i,
-                                                 gathered_stats=True)
+                        try:
+                            xp.generateExecutionPlan(sql=dml,
+                                                     binds=None,
+                                                     selection=None,
+                                                     transaction_name=filename,
+                                                     iteration_run=i,
+                                                     gathered_stats=True)
+                        except Exception as e:
+                            logger.log(str(e))
                         db_conn.close()
         #
         # Flashback Impacted Tables
