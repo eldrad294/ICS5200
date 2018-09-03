@@ -211,6 +211,7 @@ class DatabaseInterface:
         output = os.system(sys)
         if output != 0:
             raise Exception("Exception raised during generation of TPC files..Terminating process!")
+        self.__logger.log(sys)
         self.__logger.log(filename + " executed!")
     #
     def close(self):
