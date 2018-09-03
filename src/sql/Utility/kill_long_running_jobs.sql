@@ -10,9 +10,11 @@ begin
   and tablespace_name = 'TPCDS_BENCHMARK';
   if i_count < 1 then
     execute immediate 'create table MON_KILL_LONG_RUNNING (running number default 1) tablespace tpcds_benchmark';
-    execute immediate 'insert into MON_KILL_LONG_RUNNING values (1)';
-    commit;
+    insert into MON_KILL_LONG_RUNNING values (1);
+  else
+    update MON_KILL_LONG_RUNNING set running = 1;
   end if;
+  commit;
   while (true)
   loop
     execute immediate 'select running from MON_KILL_LONG_RUNNING' into i_count;
@@ -41,4 +43,3 @@ begin
     dbms_lock.sleep(10);
   end loop;
 end;
-/

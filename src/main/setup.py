@@ -83,7 +83,8 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
         db_conn.execute_script(user=ev_loader.var_get('user'),
                                password=ev_loader.var_get('password'),
                                instance_name=ev_loader.var_get('instance_name'),
-                               filename=ev_loader.var_get("src_dir") + "/sql/Utility/kill_long_running_jobs.sql")
+                               filename=ev_loader.var_get("src_dir") + "/sql/Utility/kill_long_running_jobs.sql",
+                               params=None)
         logger.log('TPC-DS procedures generation successful!')
     else:
         logger.log('Skipping schema creation..TPC-DS tables already exist!')

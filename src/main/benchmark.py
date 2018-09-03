@@ -75,9 +75,11 @@ OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
 #
 # Start sniffer procedure to terminate long running queries
-db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=1') # Activate Sniffer Procedure
-db_conn.commit()
-db_conn.execute_proc('kill_long_running',{"i_secs":ev_loader.var_get('time_out_in_seconds')})
+db_conn.execute_script(user=ev_loader.var_get('user'),
+                       password=ev_loader.var_get('password'),
+                       instance_name=ev_loader.var_get('instance_name'),
+                       filename=ev_loader.var_get("src_dir") + "/sql/Utility/run_kill_long_running_jobs.sql",
+                       params=[ev_loader.var_get('time_out_in_seconds')])
 logger.log('Started "kill_long_running" proc')
 #
 db_conn.close()
@@ -226,10 +228,11 @@ OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
                                                   tpctype=ev_loader.var_get('user'))
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
 #
-# Start sniffer procedure to terminate long running queries
-db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=1') # Activate Sniffer Procedure
-db_conn.commit()
-db_conn.execute_proc('kill_long_running',{"i_secs":ev_loader.var_get('time_out_in_seconds')})
+db_conn.execute_script(user=ev_loader.var_get('user'),
+                       password=ev_loader.var_get('password'),
+                       instance_name=ev_loader.var_get('instance_name'),
+                       filename=ev_loader.var_get("src_dir") + "/sql/Utility/run_kill_long_running_jobs.sql",
+                       params=[ev_loader.var_get('time_out_in_seconds')])
 logger.log('Started "kill_long_running" proc')
 db_conn.close()
 #

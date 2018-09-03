@@ -203,8 +203,11 @@ class DatabaseInterface:
             if command is not None and command != "" and command != '\n\n':
                 self.execute_dml(command)
     #
-    def execute_script(self, user, password, instance_name, filename):
+    def execute_script(self, user, password, instance_name, filename, params):
         sys = "exit | sqlplus " + user + "/" + password + "@" + instance_name + " @" + filename
+        if params is not None and len(params) > 0:
+            for param in params:
+                sys += " " + str(param)
         output = os.system(sys)
         if output != 0:
             raise Exception("Exception raised during generation of TPC files..Terminating process!")
