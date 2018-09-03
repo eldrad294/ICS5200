@@ -204,12 +204,11 @@ class DatabaseInterface:
                 self.execute_dml(command)
     #
     def execute_script(self, user, password, instance_name, filename):
-        self.__logger.log('TESTTEST!')
         sys = "exit | sqlplus " + user + "/" + password + "@" + instance_name + " @" + filename
         output = os.system(sys)
         if output != 0:
             raise Exception("Exception raised during generation of TPC files..Terminating process!")
-        self.__logger.log("[" + sys + "] executed!")
+        self.__logger.log(filename + " executed!")
     #
     def close(self):
         """
