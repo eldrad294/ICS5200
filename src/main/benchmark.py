@@ -26,7 +26,7 @@ SCRIPT WARM UP - Module Import & Path Configuration
 """
 #
 # Module Imports
-import sys, os
+import sys, os, time
 from os.path import dirname, abspath
 #
 # Retrieving relative paths for project directory
@@ -40,7 +40,7 @@ sys.path.append(project_dir)
 sys.path.append(src_dir)
 #
 from src.framework.script_initializer import ScriptInitializer
-from src.framework.db_interface import ConnectionPool, DatabaseInterface
+from src.framework.db_interface import DatabaseInterface
 si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir, home_dir=home_dir)
 ev_loader = si.get_global_config()
 logger = si.initialize_logger()
@@ -55,12 +55,12 @@ SCRIPT EXECUTION - Benchmark Start - Without Optimizer Stats
 #
 # Check whether schema needs creating - executed only if relevant tables are not found
 db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-                                               user=ev_loader.var_get('user'),
-                                               host=ev_loader.var_get('host'),
-                                               service=ev_loader.var_get('service'),
-                                               port=ev_loader.var_get('port'),
-                                               password=ev_loader.var_get('password'),
-                                               logger=logger)
+                            user=ev_loader.var_get('user'),
+                            host=ev_loader.var_get('host'),
+                            service=ev_loader.var_get('service'),
+                            port=ev_loader.var_get('port'),
+                            password=ev_loader.var_get('password'),
+                            logger=logger)
 db_conn.connect()
 sql_statement = "select count(*) from user_tables where table_name = 'DBGEN_VERSION'"
 result = int(db_conn.execute_query(sql_statement, fetch_single=True)[0])
@@ -97,12 +97,12 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                 sql = sql.replace("\n", " ")
                 if sql.isspace() is not True and sql != "":
                     db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-                                               user=ev_loader.var_get('user'),
-                                               host=ev_loader.var_get('host'),
-                                               service=ev_loader.var_get('service'),
-                                               port=ev_loader.var_get('port'),
-                                               password=ev_loader.var_get('password'),
-                                               logger=logger)
+                                                user=ev_loader.var_get('user'),
+                                                host=ev_loader.var_get('host'),
+                                                service=ev_loader.var_get('service'),
+                                                port=ev_loader.var_get('port'),
+                                                password=ev_loader.var_get('password'),
+                                                logger=logger)
                     db_conn.connect()
                     xp = XPlan(db_conn=db_conn,
                                logger=logger,
@@ -258,7 +258,7 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                              transaction_name=filename,
                                              iteration_run=i,
                                              gathered_stats=True)
-                    db.close()
+                    db_conn.close()
     # Execute All DML
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
@@ -341,7 +341,7 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                           logger=logger,
                                           timestamp=ts,
                                           ev_loader=ev_loader)
-        db.close()
+        db_conn.close()
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
 """
 SCRIPT CLOSEUP - Cleanup
