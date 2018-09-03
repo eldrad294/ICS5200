@@ -164,7 +164,7 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                 #
                 # Executes PL/SQL block
                 try:
-                    sql = xp.execution_plan_syntax(sql)
+                    sql = xp.execution_plan_syntax(data)
                     db_conn.execute_dml(dml=sql, params=None)
                 except Exception as e:
                     logger.log(str(e))
@@ -194,12 +194,12 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                    logger=logger,
                                    ev_loader=ev_loader)
                         try:
-                            sql = xp.execution_plan_syntax(sql)
-                            db_conn.execute_dml(dml=sql, params=None)
+                            dml = xp.execution_plan_syntax(dml)
+                            db_conn.execute_dml(dml=dml, params=None)
                         except Exception as e:
                             logger.log(str(e))
                         finally:
-                            xp.generateExecutionPlan(sql=sql,
+                            xp.generateExecutionPlan(sql=dml,
                                                      binds=None,
                                                      selection=None,
                                                      transaction_name=filename,
@@ -328,7 +328,7 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                            logger=logger,
                            ev_loader=ev_loader)
                 try:
-                    sql = xp.execution_plan_syntax(sql)
+                    sql = xp.execution_plan_syntax(data)
                     db_conn.execute_dml(dml=sql, params=None)
                 except Exception as e:
                     logger.log(str(e))
@@ -358,12 +358,12 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                    logger=logger,
                                    ev_loader=ev_loader)
                         try:
-                            sql = xp.execution_plan_syntax(sql)
-                            db_conn.execute_dml(dml=sql, params=None)
+                            dml = xp.execution_plan_syntax(dml)
+                            db_conn.execute_dml(dml=dml, params=None)
                         except Exception as e:
                             logger.log(str(e))
                         finally:
-                            xp.generateExecutionPlan(sql=sql,
+                            xp.generateExecutionPlan(sql=dml,
                                                      binds=None,
                                                      selection=None,
                                                      transaction_name=filename,
