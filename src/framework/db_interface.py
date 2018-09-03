@@ -201,6 +201,7 @@ class DatabaseInterface:
                 self.execute_dml(command)
     #
     def execute_script(self, user, password, instance_name, filename):
+        self.__logger.log('TESTTEST!')
         sys = "exit | sqlplus " + user + "/" + password + "@" + instance_name + " @" + filename
         output = os.system(sys)
         if output != 0:
