@@ -205,7 +205,7 @@ class DatabaseInterface:
         output = os.system(sys)
         if output != 0:
             raise Exception("Exception raised during generation of TPC files..Terminating process!")
-        self.__logger.log("[" + filename + "] executed!")
+        self.__logger.log("[" + sys + "] executed!")
     #
     def close(self):
         """
@@ -216,7 +216,7 @@ class DatabaseInterface:
             self.__conn.close()
             time.sleep(1)
         except Exception as e:
-            logger.log("Couldn't close connection: [" + str(e) + "]")
+            self.__logger.log("Couldn't close connection: [" + str(e) + "]")
     #
     def get_connection_details(self):
         return {'instance_name':self.__instance_name,
