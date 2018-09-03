@@ -10,9 +10,9 @@ begin
   and tablespace_name = 'TPCDS_BENCHMARK';
   if i_count < 1 then
     execute immediate 'create table MON_KILL_LONG_RUNNING (running number default 1) tablespace tpcds_benchmark';
-    insert into MON_KILL_LONG_RUNNING values (1);
+    execute immediate 'insert into MON_KILL_LONG_RUNNING values (1)';
   else
-    update MON_KILL_LONG_RUNNING set running = 1;
+    execute immediate 'update MON_KILL_LONG_RUNNING set running = 1';
   end if;
   commit;
   while (true)
@@ -27,7 +27,7 @@ begin
 					where username like 'TPC%'
 					and status = 'ACTIVE'
 					and program like '%python%'
-					and sysdate - NUMTODSINTERVAL(i_secs, 'MINUTE') > logon_time)
+					and sysdate - NUMTODSINTERVAL(i_secs, 'SECOND') > logon_time)
       loop
         begin
           execute immediate rec.dml;

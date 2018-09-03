@@ -3,7 +3,7 @@ declare
 begin
   dbms_job.submit(
     l_job,
-    'begin kill_long_running(60); end;',
+    'begin kill_long_running(&1); end;',
     sysdate,
     null
   );
