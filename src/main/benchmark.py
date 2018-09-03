@@ -112,14 +112,17 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                logger=logger,
                                ev_loader=ev_loader)
                     try:
+                        sql = xp.execution_plan_syntax(sql)
+                        db_conn.execute_dml(dml=sql, params=None)
+                    except Exception as e:
+                        logger.log(str(e))
+                    finally:
                         xp.generateExecutionPlan(sql=sql,
                                                  binds=None,
                                                  selection=None,
                                                  transaction_name=filename,
                                                  iteration_run=i,
                                                  gathered_stats=False)
-                    except Exception as e:
-                        logger.log(str(e))
                     db_conn.close()
     # Execute All DML
     for j in range(1, 43):
@@ -161,14 +164,17 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                 #
                 # Executes PL/SQL block
                 try:
-                    xp.generateExecutionPlan(sql=data,
+                    sql = xp.execution_plan_syntax(sql)
+                    db_conn.execute_dml(dml=sql, params=None)
+                except Exception as e:
+                    logger.log(str(e))
+                finally:
+                    xp.generateExecutionPlan(sql=sql,
                                              binds=None,
                                              selection=None,
                                              transaction_name=filename,
                                              iteration_run=i,
                                              gathered_stats=False)
-                except Exception as e:
-                    logger.log(str(e))
                 db_conn.close()
             else:
                 # Executes statements as a series of sql statements
@@ -188,14 +194,17 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                    logger=logger,
                                    ev_loader=ev_loader)
                         try:
-                            xp.generateExecutionPlan(sql=dml,
+                            sql = xp.execution_plan_syntax(sql)
+                            db_conn.execute_dml(dml=sql, params=None)
+                        except Exception as e:
+                            logger.log(str(e))
+                        finally:
+                            xp.generateExecutionPlan(sql=sql,
                                                      binds=None,
                                                      selection=None,
                                                      transaction_name=filename,
                                                      iteration_run=i,
                                                      gathered_stats=False)
-                        except Exception as e:
-                            logger.log(str(e))
                         db_conn.close()
         #
         # Flashback Impacted Tables
@@ -270,14 +279,17 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                logger=logger,
                                ev_loader=ev_loader)
                     try:
+                        sql = xp.execution_plan_syntax(sql)
+                        db_conn.execute_dml(dml=sql, params=None)
+                    except Exception as e:
+                        logger.log(str(e))
+                    finally:
                         xp.generateExecutionPlan(sql=sql,
                                                  binds=None,
                                                  selection=None,
                                                  transaction_name=filename,
                                                  iteration_run=i,
-                                                 gathered_stats=True)
-                    except Exception as e:
-                        logger.log(str(e))
+                                                 gathered_stats=False)
                     db_conn.close()
     # Execute All DML
     for j in range(1, 43):
@@ -316,15 +328,17 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                            logger=logger,
                            ev_loader=ev_loader)
                 try:
-                    # Executes PL/SQL block
-                    xp.generateExecutionPlan(sql=data,
+                    sql = xp.execution_plan_syntax(sql)
+                    db_conn.execute_dml(dml=sql, params=None)
+                except Exception as e:
+                    logger.log(str(e))
+                finally:
+                    xp.generateExecutionPlan(sql=sql,
                                              binds=None,
                                              selection=None,
                                              transaction_name=filename,
                                              iteration_run=i,
-                                             gathered_stats=True)
-                except Exception as e:
-                    logger.log(str(e))
+                                             gathered_stats=False)
                 db_conn.close()
             else:
                 # Executes statements as a series of sql statements
@@ -344,14 +358,17 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                    logger=logger,
                                    ev_loader=ev_loader)
                         try:
-                            xp.generateExecutionPlan(sql=dml,
+                            sql = xp.execution_plan_syntax(sql)
+                            db_conn.execute_dml(dml=sql, params=None)
+                        except Exception as e:
+                            logger.log(str(e))
+                        finally:
+                            xp.generateExecutionPlan(sql=sql,
                                                      binds=None,
                                                      selection=None,
                                                      transaction_name=filename,
                                                      iteration_run=i,
-                                                     gathered_stats=True)
-                        except Exception as e:
-                            logger.log(str(e))
+                                                     gathered_stats=False)
                         db_conn.close()
         #
         # Flashback Impacted Tables

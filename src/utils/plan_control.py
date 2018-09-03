@@ -20,7 +20,12 @@ class XPlan:
     def __explain_plan_syntax(self, p_sql):
         return "explain plan for " + str(p_sql)
     #
-    def __execution_plan_syntax(self, p_sql):
+    def execution_plan_syntax(self, p_sql):
+        """
+        Appends an SQL comment to the SQL so as to make it easier to extract from v$sql
+        :param p_sql:
+        :return:
+        """
         p_sql = p_sql.split()
         r_sql = ""
         for i, sql in enumerate(p_sql):
@@ -187,19 +192,15 @@ class XPlan:
         :param iteration_run: Parameter which denote the benchmark iteration
         :return: Execution plan in dictionary format
         """
-        sql = self.__execution_plan_syntax(sql)
         if transaction_name is None:
             sql_md5 = None
         else:
             sql_md5 = hashlib.md5(sql.encode('utf-8')).hexdigest()
         #
-        self.__db_conn.execute_dml(dml=sql, params=binds)
-        self.__db_conn.commit()
-        #
         if transaction_name is not None:
             self.__db_conn.execute_dml(dml=self.__query_execution_plan(transaction_name=transaction_name,
                                                                        md5_sum=sql_md5,
-                                                                       iteration_run = iteration_run,
+                                                                       iteration_run=iteration_run,
                                                                        gathered_stats=gathered_stats))
             self.__db_conn.commit()
         else:
