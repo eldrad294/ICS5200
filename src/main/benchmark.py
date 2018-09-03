@@ -75,6 +75,8 @@ OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
 #
 # Start sniffer procedure to terminate long running queries
+db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=1') # Activate Sniffer Procedure
+db_conn.commit()
 db_conn.execute_proc('kill_long_running',{"i_secs":ev_loader.var_get('time_out_in_seconds')})
 logger.log('Started "kill_long_running" proc')
 #
@@ -208,14 +210,15 @@ SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 #
 # Gather optimizer stats
 db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-                                    user=ev_loader.var_get('user'),
-                                    host=ev_loader.var_get('host'),
-                                    service=ev_loader.var_get('service'),
-                                    port=ev_loader.var_get('port'),
-                                    password=ev_loader.var_get('password'),
-                                    logger=logger)
+                            user=ev_loader.var_get('user'),
+                            host=ev_loader.var_get('host'),
+                            service=ev_loader.var_get('service'),
+                            port=ev_loader.var_get('port'),
+                            password=ev_loader.var_get('password'),
+                            logger=logger)
 db_conn.connect()
 db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=0') # Kill Sniffer Procedure
+db_conn.commit()
 time.sleep(5)
 logger.log('Starting optimizer stats generation..')
 OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
@@ -224,6 +227,8 @@ OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
 #
 # Start sniffer procedure to terminate long running queries
+db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=1') # Activate Sniffer Procedure
+db_conn.commit()
 db_conn.execute_proc('kill_long_running',{"i_secs":ev_loader.var_get('time_out_in_seconds')})
 logger.log('Started "kill_long_running" proc')
 db_conn.close()
@@ -346,5 +351,7 @@ for i in range(1, ev_loader.var_get('iterations')+1):
 """
 SCRIPT CLOSEUP - Cleanup
 """
+db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=0') # Kill Sniffer Procedure
+db_conn.commit()
 # si.initialize_spark().kill_spark_nodes()
 logger.log("Script Complete!\n-------------------------------------")
