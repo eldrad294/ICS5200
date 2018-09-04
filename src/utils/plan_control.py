@@ -160,7 +160,7 @@ class XPlan:
             return True
         return False
     #
-    def generateExplainPlan(self, sql, binds=None, selection=None):
+    def generateExplainPlan(self, sql, binds=None, selection=None, db_conn=None):
         """
         Retrieves Explain Plan - Query is not executed for explain plan retrieval
         :param sql: SQL under evaluation
@@ -171,16 +171,16 @@ class XPlan:
         """
         sql = self.__explain_plan_syntax(sql)
         #
-        self.__db_conn.execute_dml(dml=sql, params=binds)
+        db_conn.execute_dml(dml=sql, params=binds)
         #
-        plan, schema = self.__db_conn.execute_query(query=self.__query_explain_plan(), describe=True)
+        plan, schema = db_conn.execute_query(query=self.__query_explain_plan(), describe=True)
         #
         # Retrieves relevant columns specified in selection list
         plan = self.__select_relevant_columns(plan=plan, schema=schema, selection=selection)
         #
         return plan
     #
-    def generateExecutionPlan(self, sql, binds=None, selection=None, transaction_name=None, iteration_run=1, gathered_stats=False):
+    def generateExecutionPlan(self, sql, binds=None, selection=None, transaction_name=None, iteration_run=1, gathered_stats=False, db_conn=None):
         """
         Retrieves Execution Plan - Query is executed for execution plan retrieval
         :param sql: SQL under evaluation
@@ -191,6 +191,7 @@ class XPlan:
                                  Otherwise, the execution plan is saved to disk, in addition to the transaction name
                                  insie of a report table.
         :param iteration_run: Parameter which denote the benchmark iteration
+        :param db_conn: DB Connection info
         :return: Execution plan in dictionary format
         """
         if transaction_name is None:
@@ -199,14 +200,14 @@ class XPlan:
             sql_md5 = hashlib.md5(sql.encode('utf-8')).hexdigest()
         #
         if transaction_name is not None:
-            self.__db_conn.execute_dml(dml=self.__query_execution_plan(transaction_name=transaction_name,
-                                                                       md5_sum=sql_md5,
-                                                                       iteration_run=iteration_run,
-                                                                       gathered_stats=gathered_stats))
-            self.__db_conn.commit()
+            db_conn.execute_dml(dml=self.__query_execution_plan(transaction_name=transaction_name,
+                                                                md5_sum=sql_md5,
+                                                                iteration_run=iteration_run,
+                                                                gathered_stats=gathered_stats))
+            db_conn.commit()
         else:
-            plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(transaction_name=False, md5_sum=sql_md5,iteration_run=iteration_run,gathered_stats=gathered_stats),
-                                                        describe=True)
+            plan, schema = db_conn.execute_query(query=self.__query_execution_plan(transaction_name=False, md5_sum=sql_md5,iteration_run=iteration_run,gathered_stats=gathered_stats),
+                                                 describe=True)
             #
             # Retrieves relavent columns specified in selection list
             plan = self.__select_relevant_columns(plan=plan, schema=schema, selection=selection)
