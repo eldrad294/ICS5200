@@ -10,7 +10,7 @@ class ScriptInitializer:
     for the environment to operate. This class should be initialized only once, at the beginning of every script.
     """
     #
-    def __init__(self, project_dir, src_dir, home_dir):
+    def __init__(self, project_dir, src_dir, home_dir,log_name_prefix):
         #
         # Defines config object
         config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'main/config.ini')
@@ -128,6 +128,8 @@ class ScriptInitializer:
         os.environ['ORACLE_HOME'] = oracle_home
         #
         self.logger = Logger(log_file_path=ev_loader.var_get('log_file_path'),
+                             log_script_name=log_name_prefix,
+                             log_user=ev_loader.var_get('user'),
                              write_to_disk=ev_loader.var_get('write_to_disk'),
                              write_to_screen=ev_loader.var_get('write_to_screen'))
         #

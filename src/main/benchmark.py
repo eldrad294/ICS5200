@@ -38,10 +38,11 @@ src_dir = dirname(dirname(abspath(__file__)))
 sys.path.append(home_dir)
 sys.path.append(project_dir)
 sys.path.append(src_dir)
+file_name = os.path.basename(__file__)
 #
 from src.framework.script_initializer import ScriptInitializer
 from src.framework.db_interface import DatabaseInterface
-si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir, home_dir=home_dir)
+si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir, home_dir=home_dir, log_name_prefix=file_name)
 ev_loader = si.get_global_config()
 logger = si.initialize_logger()
 from src.utils.plan_control import XPlan

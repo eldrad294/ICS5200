@@ -130,7 +130,6 @@ class DatabaseInterface:
         cursor = None
         try:
             cursor = self.__conn.cursor()
-            #cursor.executemany(dml, data)
             cursor.executemany(dml, data, batcherrors=True)
 
             #display the errors that have taken place
