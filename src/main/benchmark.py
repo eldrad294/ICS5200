@@ -38,7 +38,7 @@ src_dir = dirname(dirname(abspath(__file__)))
 sys.path.append(home_dir)
 sys.path.append(project_dir)
 sys.path.append(src_dir)
-file_name = os.path.basename(__file__)
+file_name = os.path.basename(__file__).split('.')[0]
 #
 from src.framework.script_initializer import ScriptInitializer
 from src.framework.db_interface import DatabaseInterface

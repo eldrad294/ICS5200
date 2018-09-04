@@ -129,7 +129,6 @@ class ScriptInitializer:
         #
         self.logger = Logger(log_file_path=ev_loader.var_get('log_file_path'),
                              log_script_name=log_name_prefix,
-                             log_user=ev_loader.var_get('user'),
                              write_to_disk=ev_loader.var_get('write_to_disk'),
                              write_to_screen=ev_loader.var_get('write_to_screen'))
         #
