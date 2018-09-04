@@ -91,39 +91,39 @@ dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var
 for i in range(1, ev_loader.var_get('iterations') + 1):
     #
     # Execute All Queries
-    for j in range(1, 100):
-        filename = 'query_'+str(j)+'.sql'
-        with open(query_path + filename) as file:
-            logger.log('Generating execution metrics for [' + filename + ']..')
-            data = file.read()
-            sql_list = data.split(';')
-            for sql in sql_list:
-                sql = sql.replace("\n", " ")
-                if sql.isspace() is not True and sql != "":
-                    db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-                                                user=ev_loader.var_get('user'),
-                                                host=ev_loader.var_get('host'),
-                                                service=ev_loader.var_get('service'),
-                                                port=ev_loader.var_get('port'),
-                                                password=ev_loader.var_get('password'),
-                                                logger=logger)
-                    db_conn.connect()
-                    xp = XPlan(db_conn=db_conn,
-                               logger=logger,
-                               ev_loader=ev_loader)
-                    try:
-                        sql = xp.execution_plan_syntax(sql)
-                        db_conn.execute_dml(dml=sql, params=None)
-                    except Exception as e:
-                        logger.log(str(e))
-                    finally:
-                        xp.generateExecutionPlan(sql=sql,
-                                                 binds=None,
-                                                 selection=None,
-                                                 transaction_name=filename,
-                                                 iteration_run=i,
-                                                 gathered_stats=False)
-                    db_conn.close()
+    # for j in range(1, 100):
+    #     filename = 'query_'+str(j)+'.sql'
+    #     with open(query_path + filename) as file:
+    #         logger.log('Generating execution metrics for [' + filename + ']..')
+    #         data = file.read()
+    #         sql_list = data.split(';')
+    #         for sql in sql_list:
+    #             sql = sql.replace("\n", " ")
+    #             if sql.isspace() is not True and sql != "":
+    #                 db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
+    #                                             user=ev_loader.var_get('user'),
+    #                                             host=ev_loader.var_get('host'),
+    #                                             service=ev_loader.var_get('service'),
+    #                                             port=ev_loader.var_get('port'),
+    #                                             password=ev_loader.var_get('password'),
+    #                                             logger=logger)
+    #                 db_conn.connect()
+    #                 xp = XPlan(db_conn=db_conn,
+    #                            logger=logger,
+    #                            ev_loader=ev_loader)
+    #                 try:
+    #                     sql = xp.execution_plan_syntax(sql)
+    #                     db_conn.execute_dml(dml=sql, params=None)
+    #                 except Exception as e:
+    #                     logger.log(str(e))
+    #                 finally:
+    #                     xp.generateExecutionPlan(sql=sql,
+    #                                              binds=None,
+    #                                              selection=None,
+    #                                              transaction_name=filename,
+    #                                              iteration_run=i,
+    #                                              gathered_stats=False)
+    #                 db_conn.close()
     # Execute All DML
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
