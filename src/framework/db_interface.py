@@ -217,7 +217,7 @@ class DatabaseInterface:
         """
         try:
             self.__conn.close()
-            time.sleep(3)
+            time.sleep(1)
         except Exception as e:
             self.__logger.log("Couldn't close connection: [" + str(e) + "]")
     #

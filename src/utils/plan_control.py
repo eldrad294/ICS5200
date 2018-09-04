@@ -120,11 +120,11 @@ class XPlan:
         """
         sql_statement = "select count(*) from dba_tables where table_name = '" + self.__report_execution_plan + "'"
         result = int(db_conn.execute_query(query=sql_statement, fetch_single=True)[0])
+        if self.__ev_loader.var_get('refresh_rep_table') == 'True':
+            dml_statement = "drop table " + self.__report_execution_plan
+            db_conn.execute_dml(dml=dml_statement)
+            self.__logger.log('Dropped table ' + self.__report_execution_plan + " for cleanup..")
         if result == 0:
-            if self.__ev_loader.var_get('refresh_rep_table') == 'True':
-                dml_statement = "drop table " + self.__report_execution_plan
-                db_conn.execute_dml(dml=dml_statement)
-                self.__logger.log('Dropped table ' + self.__report_execution_plan + " for cleanup..")
             #
             # Creates Reporting Table
             self.__logger.log('Creating table [' + self.__report_execution_plan + ']..')

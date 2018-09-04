@@ -181,14 +181,14 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                                      gathered_stats=False,
                                                      db_conn=db_conn)
                             db_conn.close()
-        #
-        # Flashback Impacted Tables
-        db_conn.connect()
-        FlashbackControl.flashback_tables(db_conn=db_conn,
-                                          logger=logger,
-                                          timestamp=ts,
-                                          ev_loader=ev_loader)
-        db_conn.close()
+    #
+    # Flashback Impacted Tables
+    db_conn.connect()
+    FlashbackControl.flashback_tables(db_conn=db_conn,
+                                      logger=logger,
+                                      timestamp=ts,
+                                      ev_loader=ev_loader)
+    db_conn.close()
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
 """
 ------------------------------------------------------------
@@ -300,14 +300,14 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                                      gathered_stats=False,
                                                      db_conn=db_conn)
                             db_conn.close()
-        #
-        # Flashback Impacted Tables
-        db_conn.connect()
-        FlashbackControl.flashback_tables(db_conn=db_conn,
-                                          logger=logger,
-                                          timestamp=ts,
-                                          ev_loader=ev_loader)
-        db_conn.close()
+    #
+    # Flashback Impacted Tables
+    db_conn.connect()
+    FlashbackControl.flashback_tables(db_conn=db_conn,
+                                      logger=logger,
+                                      timestamp=ts,
+                                      ev_loader=ev_loader)
+    db_conn.close()
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
 """
 SCRIPT CLOSEUP - Cleanup
