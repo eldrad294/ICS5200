@@ -111,10 +111,10 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                         db_conn = db_conn_info
                         db_conn.connect()
                         db_conn.execute_dml(dml=sql, params=None)
+                        db_conn.close()
                     except Exception as e:
                         logger.log(str(e))
                     finally:
-                        db_conn.close()
                         db_conn.connect()
                         xp = XPlan(db_conn=db_conn,
                                    logger=logger,
