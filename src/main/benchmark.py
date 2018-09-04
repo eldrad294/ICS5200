@@ -101,7 +101,12 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
             for sql in sql_list:
                 sql = sql.replace("\n", " ")
                 if sql.isspace() is not True and sql != "":
+                    db_conn.connect()
+                    xp = XPlan(db_conn=db_conn,
+                               logger=logger,
+                               ev_loader=ev_loader)
                     sql = xp.execution_plan_syntax(sql)
+                    db_conn.close()
                     try:
                         db_conn = db_conn_info
                         db_conn.connect()
@@ -168,7 +173,13 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                 for dml in dml_list:
                     dml = dml.replace("\n"," ")
                     if dml.isspace() is not True and dml != "":
+                        db_conn = db_conn_info
+                        db_conn.connect()
+                        xp = XPlan(db_conn=db_conn,
+                                   logger=logger,
+                                   ev_loader=ev_loader)
                         dml = xp.execution_plan_syntax(dml)
+                        db_conn.close()
                         try:
                             db_conn = db_conn_info
                             db_conn.connect()
