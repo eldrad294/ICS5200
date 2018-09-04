@@ -9,6 +9,7 @@ class XPlan:
     """
     def __init__(self, db_conn, logger, ev_loader):
         self.__db_conn = db_conn
+        self.__db_conn.connect()
         self.__logger = logger
         self.__ev_loader = ev_loader
         self.__execution_plan_hint = "/*ICS5200_MONITOR_HINT*/"
@@ -16,6 +17,13 @@ class XPlan:
         #
         # Create reporting table
         self.__create_REP_EXECUTION_PLANS()
+    #
+    def __del__(self):
+        """
+        Destructor method
+        :return:
+        """
+        self.__db_conn.close()
     #
     def __explain_plan_syntax(self, p_sql):
         return "explain plan for " + str(p_sql)
