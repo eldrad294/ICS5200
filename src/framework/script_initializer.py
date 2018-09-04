@@ -71,6 +71,7 @@ class ScriptInitializer:
         # Benchmark
         iterations = int(g_config.get_value('Benchmark','iterations'))
         time_out_in_seconds = int(g_config.get_value('Benchmark','time_out_in_seconds'))
+        refresh_rep_table = str(g_config.get_value('Benchmark','refresh_rep_table').title())
         #
         # Load into global dictionary
         ev_loader.var_load({'project_dir':project_dir,
@@ -117,7 +118,8 @@ class ScriptInitializer:
                             'log_file_path':project_dir + "/log/" + log_file_name + "_" + user,
                             'report_save_path':report_save_path,
                             'iterations':iterations,
-                            'time_out_in_seconds':time_out_in_seconds})
+                            'time_out_in_seconds':time_out_in_seconds,
+                            'refresh_rep_table':refresh_rep_table})
         #
         # Environment var loading
         os.environ['PYSPARK_PYTHON'] = project_dir + '/venv/bin/python3'
@@ -138,14 +140,6 @@ class ScriptInitializer:
         ConnectionPool.create_connection_pool(max_connections=1,
                                               connection_details=connection_details,
                                               logger=self.logger)
-        #
-        # self.db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-        #                                  user=ev_loader.var_get('user'),
-        #                                  host=ev_loader.var_get('host'),
-        #                                  service=ev_loader.var_get('service'),
-        #                                  port=ev_loader.var_get('port'),
-        #                                  password=ev_loader.var_get('password'),
-        #                                  logger=self.logger)
         #
         if ev_loader.var_get('enable_spark') == 'True':
             self.spark = Spark(app_name=ev_loader.var_get('app_name'),

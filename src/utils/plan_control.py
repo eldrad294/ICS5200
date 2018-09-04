@@ -121,7 +121,7 @@ class XPlan:
         sql_statement = "select count(*) from dba_tables where table_name = '" + self.__report_execution_plan + "'"
         result = int(db_conn.execute_query(query=sql_statement, fetch_single=True)[0])
         if result == 0:
-            if self.__ev_loader == 'True':
+            if self.__ev_loader.var_get('refresh_rep_table') == 'True':
                 dml_statement = "drop table " + self.__report_execution_plan
                 db_conn.execute_dml(dml=dml_statement)
                 self.__logger.log('Dropped table ' + self.__report_execution_plan + " for cleanup..")
@@ -147,8 +147,10 @@ class XPlan:
             # Adds column 'GATHERED_STATS'
             dml_statement = "alter table " + self.__report_execution_plan + " add GATHERED_STATS varchar2(5)"
             db_conn.execute_dml(dml=dml_statement)
-        # else:
-        #     self.__logger.log('Table ['+self.__report_execution_plan+'] already exists..')
+            #
+            self.__logger.log('Table [' + self.__report_execution_plan + '] created!')
+        else:
+            self.__logger.log('Table ['+self.__report_execution_plan+'] already exists..')
     #
     @staticmethod
     def check_if_plsql_block(statement):
@@ -204,6 +206,7 @@ class XPlan:
                                                                 iteration_run=iteration_run,
                                                                 gathered_stats=gathered_stats))
             db_conn.commit()
+            self.__logger.log('Successfully generated metrics for [' + transaction_name + ']')
         else:
             plan, schema = db_conn.execute_query(query=self.__query_execution_plan(transaction_name=False, md5_sum=sql_md5,iteration_run=iteration_run,gathered_stats=gathered_stats),
                                                  describe=True)

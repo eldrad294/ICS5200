@@ -110,6 +110,7 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                     try:
                         db_conn.connect()
                         db_conn.execute_dml(dml=sql, params=None)
+                        logger.log('Successfully executed [' + filename + "]")
                     except Exception as e:
                         logger.log(str(e))
                     finally:
@@ -142,6 +143,7 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                 try:
                     db_conn.connect()
                     db_conn.execute_dml(dml=sql, params=None)
+                    logger.log('Successfully executed [' + filename + "]")
                 except Exception as e:
                     logger.log(str(e))
                 finally:
@@ -165,6 +167,7 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                         try:
                             db_conn.connect()
                             db_conn.execute_dml(dml=dml, params=None)
+                            logger.log('Successfully executed [' + filename + "]")
                         except Exception as e:
                             logger.log(str(e))
                         finally:
@@ -229,6 +232,7 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                     try:
                         db_conn.connect()
                         db_conn.execute_dml(dml=sql, params=None)
+                        logger.log('Successfully executed [' + filename + "]")
                     except Exception as e:
                         logger.log(str(e))
                     finally:
@@ -258,6 +262,7 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                 try:
                     db_conn.connect()
                     db_conn.execute_dml(dml=sql, params=None)
+                    logger.log('Successfully executed [' + filename + "]")
                 except Exception as e:
                     logger.log(str(e))
                 finally:
@@ -281,6 +286,7 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                         try:
                             db_conn.connect()
                             db_conn.execute_dml(dml=dml, params=None)
+                            logger.log('Successfully executed [' + filename + "]")
                         except Exception as e:
                             logger.log(str(e))
                         finally:
