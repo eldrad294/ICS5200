@@ -134,19 +134,7 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
         #
         with open(dml_path + filename) as file:
             data = file.read()
-            db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-                                        user=ev_loader.var_get('user'),
-                                        host=ev_loader.var_get('host'),
-                                        service=ev_loader.var_get('service'),
-                                        port=ev_loader.var_get('port'),
-                                        password=ev_loader.var_get('password'),
-                                        logger=logger)
-            db_conn.connect()
-            xp = XPlan(db_conn=db_conn,
-                       logger=logger,
-                       ev_loader=ev_loader)
-            check_if_plsql = xp.check_if_plsql_block(statement=data)
-            db_conn.close()
+            check_if_plsql = XPlan.check_if_plsql_block(statement=data)
             #
             if check_if_plsql:
                 #
@@ -300,19 +288,7 @@ for i in range(1, ev_loader.var_get('iterations')+1):
         ts = FlashbackControl.captureTimeStamp()
         with open(dml_path + filename) as file:
             data = file.read()
-            db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-                                        user=ev_loader.var_get('user'),
-                                        host=ev_loader.var_get('host'),
-                                        service=ev_loader.var_get('service'),
-                                        port=ev_loader.var_get('port'),
-                                        password=ev_loader.var_get('password'),
-                                        logger=logger)
-            db_conn.connect()
-            xp = XPlan(db_conn=db_conn,
-                       logger=logger,
-                       ev_loader=ev_loader)
-            check_if_plsql = xp.check_if_plsql_block(statement=data)
-            db_conn.close()
+            check_if_plsql = XPlan.check_if_plsql_block(statement=data)
             #
             if check_if_plsql:
                 #

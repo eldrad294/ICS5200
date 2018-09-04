@@ -154,6 +154,7 @@ class XPlan:
         # else:
         #     self.__logger.log('Table ['+self.__report_execution_plan+'] already exists..')
     #
+    @staticmethod
     def check_if_plsql_block(self, statement):
         if 'begin' in statement.lower() and 'end' in statement.lower():
             return True
