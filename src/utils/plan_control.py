@@ -7,27 +7,16 @@ class XPlan:
     This class serves as an interface to Oracle's explain plan generation utility, providing wrapper methods so as to
     invoke oracle explain plan generation packages, and return data in a formatted, cleaned manner.
     """
-    def __init__(self, db_conn, logger, ev_loader):
-        self.__db_conn = db_conn
-        self.__db_conn.connect()
+    def __init__(self, logger, ev_loader):
         self.__logger = logger
         self.__ev_loader = ev_loader
         self.__execution_plan_hint = "/*ICS5200_MONITOR_HINT*/"
         self.__report_execution_plan = 'REP_EXECUTION_PLANS'
-        #
-        # Create reporting table
-        self.__create_REP_EXECUTION_PLANS()
-    #
-    def __del__(self):
-        """
-        Destructor method
-        :return:
-        """
-        self.__db_conn.close()
     #
     def __explain_plan_syntax(self, p_sql):
         return "explain plan for " + str(p_sql)
     #
+    @staticmethod
     def execution_plan_syntax(self, p_sql):
         """
         Appends an SQL comment to the SQL so as to make it easier to extract from v$sql
@@ -122,7 +111,7 @@ class XPlan:
         else:
             return temp_plan
     #
-    def __create_REP_EXECUTION_PLANS(self):
+    def create_REP_EXECUTION_PLANS(self, db_conn):
         """
         Creates reporting table REP_EXECUTION_PLANS to save v$sql execution metrics.
         The table is a replica of v$sql, with two additional columns:
@@ -131,34 +120,34 @@ class XPlan:
         :return:
         """
         sql_statement = "select count(*) from dba_tables where table_name = '" + self.__report_execution_plan + "'"
-        result = int(self.__db_conn.execute_query(query=sql_statement, fetch_single=True)[0])
+        result = int(db_conn.execute_query(query=sql_statement, fetch_single=True)[0])
         if result == 0:
             if self.__ev_loader == 'True':
                 dml_statement = "drop table " + self.__report_execution_plan
-                self.__db_conn.execute_dml(dml=dml_statement)
+                db_conn.execute_dml(dml=dml_statement)
                 self.__logger.log('Dropped table ' + self.__report_execution_plan + " for cleanup..")
             #
             # Creates Reporting Table
             self.__logger.log('Creating table [' + self.__report_execution_plan + ']..')
             dml_statement = "create table " + self.__report_execution_plan + " tablespace users as " \
                                                                              "select * from v$sql where 1=0"
-            self.__db_conn.execute_dml(dml=dml_statement)
+            db_conn.execute_dml(dml=dml_statement)
             #
             # Adds column 'TPC_STATEMENT_NAME'
             dml_statement = "alter table " + self.__report_execution_plan + " add TPC_TRANSACTION_NAME varchar2(20)"
-            self.__db_conn.execute_dml(dml=dml_statement)
+            db_conn.execute_dml(dml=dml_statement)
             #
             # Adds column 'STATEMENT_HASH_SUM'
             dml_statement = "alter table " + self.__report_execution_plan + " add STATEMENT_HASH_SUM varchar2(4000)"
-            self.__db_conn.execute_dml(dml=dml_statement)
+            db_conn.execute_dml(dml=dml_statement)
             #
             # Adds column 'BENCHMARK_ITERATION'
             dml_statement = "alter table " + self.__report_execution_plan + " add BENCHMARK_ITERATION varchar2(2)"
-            self.__db_conn.execute_dml(dml=dml_statement)
+            db_conn.execute_dml(dml=dml_statement)
             #
             # Adds column 'GATHERED_STATS'
             dml_statement = "alter table " + self.__report_execution_plan + " add GATHERED_STATS varchar2(5)"
-            self.__db_conn.execute_dml(dml=dml_statement)
+            db_conn.execute_dml(dml=dml_statement)
         # else:
         #     self.__logger.log('Table ['+self.__report_execution_plan+'] already exists..')
     #
@@ -188,7 +177,7 @@ class XPlan:
         #
         return plan
     #
-    def generateExecutionPlan(self, sql, binds=None, selection=None, transaction_name=None, iteration_run=1, gathered_stats=False):
+    def generateExecutionPlan(self, sql, binds=None, selection=None, transaction_name=None, iteration_run=1, gathered_stats=False, db_conn=None):
         """
         Retrieves Execution Plan - Query is executed for execution plan retrieval
         :param sql: SQL under evaluation
@@ -202,20 +191,23 @@ class XPlan:
         :param db_conn: DB Connection info
         :return: Execution plan in dictionary format
         """
+        if db_conn is None:
+            raise ValueError("No database context was passed!")
+        #
         if transaction_name is None:
             sql_md5 = None
         else:
             sql_md5 = hashlib.md5(sql.encode('utf-8')).hexdigest()
         #
         if transaction_name is not None:
-            self.__db_conn.execute_dml(dml=self.__query_execution_plan(transaction_name=transaction_name,
-                                                                       md5_sum=sql_md5,
-                                                                       iteration_run=iteration_run,
-                                                                       gathered_stats=gathered_stats))
-            self.__db_conn.commit()
+            db_conn.execute_dml(dml=self.__query_execution_plan(transaction_name=transaction_name,
+                                                                md5_sum=sql_md5,
+                                                                iteration_run=iteration_run,
+                                                                gathered_stats=gathered_stats))
+            db_conn.commit()
         else:
-            plan, schema = self.__db_conn.execute_query(query=self.__query_execution_plan(transaction_name=False, md5_sum=sql_md5,iteration_run=iteration_run,gathered_stats=gathered_stats),
-                                                        describe=True)
+            plan, schema = db_conn.execute_query(query=self.__query_execution_plan(transaction_name=False, md5_sum=sql_md5,iteration_run=iteration_run,gathered_stats=gathered_stats),
+                                                 describe=True)
             #
             # Retrieves relavent columns specified in selection list
             plan = self.__select_relevant_columns(plan=plan, schema=schema, selection=selection)

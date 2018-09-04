@@ -52,21 +52,26 @@ from src.utils.flashback_control import FlashbackControl
 SCRIPT EXECUTION - Benchmark Start - Without Optimizer Stats
 ------------------------------------------------------------
 """
-db_conn_info = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-                                 user=ev_loader.var_get('user'),
-                                 host=ev_loader.var_get('host'),
-                                 service=ev_loader.var_get('service'),
-                                 port=ev_loader.var_get('port'),
-                                 password=ev_loader.var_get('password'),
-                                 logger=logger)
+db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
+                            user=ev_loader.var_get('user'),
+                            host=ev_loader.var_get('host'),
+                            service=ev_loader.var_get('service'),
+                            port=ev_loader.var_get('port'),
+                            password=ev_loader.var_get('password'),
+                            logger=logger)
+xp = XPlan(logger=logger,
+           ev_loader=ev_loader)
+db_conn.connect()
 #
 # Check whether schema needs creating - executed only if relevant tables are not found
-db_conn = db_conn_info
-db_conn.connect()
 sql_statement = "select count(*) from user_tables where table_name = 'DBGEN_VERSION'"
 result = int(db_conn.execute_query(sql_statement, fetch_single=True)[0])
 if result == 0:
+    db_conn.close()
     raise Exception('[' + ev_loader.var_get('user') + '] schema tables were not found..terminating script!')
+#
+# Create metric table
+xp.create_REP_EXECUTION_PLANS(db_conn=db_conn)
 #
 # Strip optimizer stats
 logger.log('Starting optimizer stats dropping..')
@@ -101,30 +106,22 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
             for sql in sql_list:
                 sql = sql.replace("\n", " ")
                 if sql.isspace() is not True and sql != "":
-                    db_conn.connect()
-                    xp = XPlan(db_conn=db_conn,
-                               logger=logger,
-                               ev_loader=ev_loader)
-                    sql = xp.execution_plan_syntax(sql)
-                    db_conn.close()
+                    sql = XPlan.execution_plan_syntax(sql)
                     try:
-                        db_conn = db_conn_info
                         db_conn.connect()
                         db_conn.execute_dml(dml=sql, params=None)
-                        db_conn.close()
                     except Exception as e:
                         logger.log(str(e))
                     finally:
+                        db_conn.close()
                         db_conn.connect()
-                        xp = XPlan(db_conn=db_conn,
-                                   logger=logger,
-                                   ev_loader=ev_loader)
                         xp.generateExecutionPlan(sql=sql,
                                                  binds=None,
                                                  selection=None,
                                                  transaction_name=filename,
                                                  iteration_run=i,
-                                                 gathered_stats=False)
+                                                 gathered_stats=False,
+                                                 db_conn=db_conn)
                         db_conn.close()
     # Execute All DML
     for j in range(1, 43):
@@ -141,15 +138,8 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
             if check_if_plsql:
                 #
                 # Executes PL/SQL block
-                db_conn = db_conn_info
-                db_conn.connect()
-                xp = XPlan(db_conn=db_conn,
-                           logger=logger,
-                           ev_loader=ev_loader)
-                sql = xp.execution_plan_syntax(data)
-                db_conn.close()
+                sql = XPlan.execution_plan_syntax(data)
                 try:
-                    db_conn = db_conn_info
                     db_conn.connect()
                     db_conn.execute_dml(dml=sql, params=None)
                 except Exception as e:
@@ -157,15 +147,13 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                 finally:
                     db_conn.close()
                     db_conn.connect()
-                    xp = XPlan(db_conn=db_conn,
-                               logger=logger,
-                               ev_loader=ev_loader)
                     xp.generateExecutionPlan(sql=sql,
                                              binds=None,
                                              selection=None,
                                              transaction_name=filename,
                                              iteration_run=i,
-                                             gathered_stats=False)
+                                             gathered_stats=False,
+                                             db_conn=db_conn)
                     db_conn.close()
             else:
                 # Executes statements as a series of sql statements
@@ -173,15 +161,8 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                 for dml in dml_list:
                     dml = dml.replace("\n"," ")
                     if dml.isspace() is not True and dml != "":
-                        db_conn = db_conn_info
-                        db_conn.connect()
-                        xp = XPlan(db_conn=db_conn,
-                                   logger=logger,
-                                   ev_loader=ev_loader)
-                        dml = xp.execution_plan_syntax(dml)
-                        db_conn.close()
+                        dml = XPlan.execution_plan_syntax(dml)
                         try:
-                            db_conn = db_conn_info
                             db_conn.connect()
                             db_conn.execute_dml(dml=dml, params=None)
                         except Exception as e:
@@ -189,19 +170,16 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                         finally:
                             db_conn.close()
                             db_conn.connect()
-                            xp = XPlan(db_conn=db_conn,
-                                       logger=logger,
-                                       ev_loader=ev_loader)
                             xp.generateExecutionPlan(sql=dml,
                                                      binds=None,
                                                      selection=None,
                                                      transaction_name=filename,
                                                      iteration_run=i,
-                                                     gathered_stats=False)
+                                                     gathered_stats=False,
+                                                     db_conn=db_conn)
                             db_conn.close()
         #
         # Flashback Impacted Tables
-        db_conn = db_conn_info
         db_conn.connect()
         FlashbackControl.flashback_tables(db_conn=db_conn,
                                           logger=logger,
@@ -216,7 +194,6 @@ SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 """
 #
 # Gather optimizer stats
-db_conn = db_conn_info
 db_conn.connect()
 db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=0') # Kill Sniffer Procedure
 db_conn.commit()
@@ -248,9 +225,8 @@ for i in range(1, ev_loader.var_get('iterations')+1):
             for sql in sql_list:
                 sql = sql.replace("\n", " ")
                 if sql.isspace() is not True and sql != "":
-                    sql = xp.execution_plan_syntax(sql)
+                    sql = XPlan.execution_plan_syntax(sql)
                     try:
-                        db_conn = db_conn_info
                         db_conn.connect()
                         db_conn.execute_dml(dml=sql, params=None)
                     except Exception as e:
@@ -258,15 +234,13 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                     finally:
                         db_conn.close()
                         db_conn.connect()
-                        xp = XPlan(db_conn=db_conn,
-                                   logger=logger,
-                                   ev_loader=ev_loader)
                         xp.generateExecutionPlan(sql=sql,
                                                  binds=None,
                                                  selection=None,
                                                  transaction_name=filename,
                                                  iteration_run=i,
-                                                 gathered_stats=False)
+                                                 gathered_stats=False,
+                                                 db_conn=db_conn)
                         db_conn.close()
     # Execute All DML
     for j in range(1, 43):
@@ -280,30 +254,31 @@ for i in range(1, ev_loader.var_get('iterations')+1):
             check_if_plsql = XPlan.check_if_plsql_block(statement=data)
             #
             if check_if_plsql:
-                sql = xp.execution_plan_syntax(data)
+                sql = XPlan.execution_plan_syntax(data)
                 try:
-                    db_conn = db_conn_info
                     db_conn.connect()
                     db_conn.execute_dml(dml=sql, params=None)
                 except Exception as e:
                     logger.log(str(e))
                 finally:
                     db_conn.close()
+                    db_conn.connect()
                     xp.generateExecutionPlan(sql=sql,
                                              binds=None,
                                              selection=None,
                                              transaction_name=filename,
                                              iteration_run=i,
-                                             gathered_stats=False)
+                                             gathered_stats=False,
+                                             db_conn=db_conn)
+                    db_conn.close()
             else:
                 # Executes statements as a series of sql statements
                 dml_list = data.split(';')
                 for dml in dml_list:
                     dml = dml.replace("\n"," ")
                     if dml.isspace() is not True and dml != "":
-                        dml = xp.execution_plan_syntax(dml)
+                        dml = XPlan.execution_plan_syntax(dml)
                         try:
-                            db_conn = db_conn_info
                             db_conn.connect()
                             db_conn.execute_dml(dml=dml, params=None)
                         except Exception as e:
@@ -311,19 +286,16 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                         finally:
                             db_conn.close()
                             db_conn.connect()
-                            xp = XPlan(db_conn=db_conn,
-                                       logger=logger,
-                                       ev_loader=ev_loader)
                             xp.generateExecutionPlan(sql=dml,
                                                      binds=None,
                                                      selection=None,
                                                      transaction_name=filename,
                                                      iteration_run=i,
-                                                     gathered_stats=False)
+                                                     gathered_stats=False,
+                                                     db_conn=db_conn)
                             db_conn.close()
         #
         # Flashback Impacted Tables
-        db_conn = db_conn_info
         db_conn.connect()
         FlashbackControl.flashback_tables(db_conn=db_conn,
                                           logger=logger,
@@ -334,7 +306,6 @@ for i in range(1, ev_loader.var_get('iterations')+1):
 """
 SCRIPT CLOSEUP - Cleanup
 """
-db_conn = db_conn_info
 db_conn.connect()
 db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=0') # Kill Sniffer Procedure
 db_conn.commit()
