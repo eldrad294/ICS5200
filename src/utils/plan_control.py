@@ -118,12 +118,12 @@ class XPlan:
         2) STATEMENT_HASH_SUM - Contains md5 hash sum for a particular statement
         :return:
         """
-        sql_statement = "select count(*) from dba_tables where table_name = '" + self.__report_execution_plan + "'"
-        result = int(db_conn.execute_query(query=sql_statement, fetch_single=True)[0])
         if self.__ev_loader.var_get('refresh_rep_table') == 'True':
             dml_statement = "drop table " + self.__report_execution_plan
             db_conn.execute_dml(dml=dml_statement)
             self.__logger.log('Dropped table ' + self.__report_execution_plan + " for cleanup..")
+        sql_statement = "select count(*) from dba_tables where table_name = '" + self.__report_execution_plan + "'"
+        result = int(db_conn.execute_query(query=sql_statement, fetch_single=True)[0])
         if result == 0:
             #
             # Creates Reporting Table

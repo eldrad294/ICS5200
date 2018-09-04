@@ -124,13 +124,14 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
     #                                              gathered_stats=False,
     #                                              db_conn=db_conn)
     #                     db_conn.close()
+    #
+    # Keep reference to flashback timestamp
+    ts = FlashbackControl.captureTimeStamp()
+    #
     # Execute All DML
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
-        #
-        # Keep reference to flashback timestamp
-        ts = FlashbackControl.captureTimeStamp()
         #
         with open(dml_path + filename) as file:
             data = file.read()
@@ -246,13 +247,15 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                                  gathered_stats=False,
                                                  db_conn=db_conn)
                         db_conn.close()
+    #
+    # Keep reference to flashback timestamp
+    ts = FlashbackControl.captureTimeStamp()
+    #
     # Execute All DML
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
         #
-        # Keep reference to flashback timestamp
-        ts = FlashbackControl.captureTimeStamp()
         with open(dml_path + filename) as file:
             data = file.read()
             check_if_plsql = XPlan.check_if_plsql_block(statement=data)
