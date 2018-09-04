@@ -53,12 +53,12 @@ SCRIPT EXECUTION - Benchmark Start - Without Optimizer Stats
 ------------------------------------------------------------
 """
 db_conn_info = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-                            user=ev_loader.var_get('user'),
-                            host=ev_loader.var_get('host'),
-                            service=ev_loader.var_get('service'),
-                            port=ev_loader.var_get('port'),
-                            password=ev_loader.var_get('password'),
-                            logger=logger)
+                                 user=ev_loader.var_get('user'),
+                                 host=ev_loader.var_get('host'),
+                                 service=ev_loader.var_get('service'),
+                                 port=ev_loader.var_get('port'),
+                                 password=ev_loader.var_get('password'),
+                                 logger=logger)
 db_conn2 = db_conn_info
 db_conn2.connect()
 xp = XPlan(db_conn=db_conn2,
@@ -115,16 +115,12 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
     #                     logger.log(str(e))
     #                 finally:
     #                     db_conn.close()
-    #                     db_conn = db_conn_info
-    #                     db_conn.connect()
     #                     xp.generateExecutionPlan(sql=sql,
     #                                              binds=None,
     #                                              selection=None,
     #                                              transaction_name=filename,
     #                                              iteration_run=i,
-    #                                              gathered_stats=False,
-    #                                              db_conn=db_conn)
-    #                     db_conn.close()
+    #                                              gathered_stats=False)
     # Execute All DML
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
@@ -149,16 +145,12 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                     logger.log(str(e))
                 finally:
                     db_conn.close()
-                    db_conn = db_conn_info
-                    db_conn.connect()
                     xp.generateExecutionPlan(sql=sql,
                                              binds=None,
                                              selection=None,
                                              transaction_name=filename,
                                              iteration_run=i,
-                                             gathered_stats=False,
-                                             db_conn=db_conn)
-                    db_conn.close()
+                                             gathered_stats=False)
             else:
                 # Executes statements as a series of sql statements
                 dml_list = data.split(';')
@@ -174,16 +166,12 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                             logger.log(str(e))
                         finally:
                             db_conn.close()
-                            db_conn = db_conn_info
-                            db_conn.connect()
                             xp.generateExecutionPlan(sql=dml,
                                                      binds=None,
                                                      selection=None,
                                                      transaction_name=filename,
                                                      iteration_run=i,
-                                                     gathered_stats=False,
-                                                     db_conn=db_conn)
-                            db_conn.close()
+                                                     gathered_stats=False)
         #
         # Flashback Impacted Tables
         db_conn = db_conn_info
@@ -242,16 +230,12 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                         logger.log(str(e))
                     finally:
                         db_conn.close()
-                        db_conn = db_conn_info
-                        db_conn.connect()
                         xp.generateExecutionPlan(sql=sql,
                                                  binds=None,
                                                  selection=None,
                                                  transaction_name=filename,
                                                  iteration_run=i,
-                                                 gathered_stats=False,
-                                                 db_conn=db_conn)
-                        db_conn.close()
+                                                 gathered_stats=False)
     # Execute All DML
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
@@ -273,16 +257,12 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                     logger.log(str(e))
                 finally:
                     db_conn.close()
-                    db_conn = db_conn_info
-                    db_conn.connect()
                     xp.generateExecutionPlan(sql=sql,
                                              binds=None,
                                              selection=None,
                                              transaction_name=filename,
                                              iteration_run=i,
-                                             gathered_stats=False,
-                                             db_conn=db_conn)
-                    db_conn.close()
+                                             gathered_stats=False)
             else:
                 # Executes statements as a series of sql statements
                 dml_list = data.split(';')
@@ -298,16 +278,12 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                             logger.log(str(e))
                         finally:
                             db_conn.close()
-                            db_conn = db_conn_info
-                            db_conn.connect()
                             xp.generateExecutionPlan(sql=dml,
                                                      binds=None,
                                                      selection=None,
                                                      transaction_name=filename,
                                                      iteration_run=i,
-                                                     gathered_stats=False,
-                                                     db_conn=db_conn)
-                            db_conn.close()
+                                                     gathered_stats=False)
         #
         # Flashback Impacted Tables
         db_conn = db_conn_info
