@@ -16,7 +16,6 @@ class XPlan:
     def __explain_plan_syntax(self, p_sql):
         return "explain plan for " + str(p_sql)
     #
-    @staticmethod
     def execution_plan_syntax(self, p_sql):
         """
         Appends an SQL comment to the SQL so as to make it easier to extract from v$sql
