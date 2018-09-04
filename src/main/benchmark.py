@@ -106,10 +106,10 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
     #         for sql in sql_list:
     #             sql = sql.replace("\n", " ")
     #             if sql.isspace() is not True and sql != "":
+    #                 sql = xp.execution_plan_syntax(sql)
     #                 try:
     #                     db_conn = db_conn_info
     #                     db_conn.connect()
-    #                     sql = xp.execution_plan_syntax(sql)
     #                     db_conn.execute_dml(dml=sql, params=None)
     #                 except Exception as e:
     #                     logger.log(str(e))
@@ -140,10 +140,10 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
             if check_if_plsql:
                 #
                 # Executes PL/SQL block
+                sql = xp.execution_plan_syntax(data)
                 try:
                     db_conn = db_conn_info
                     db_conn.connect()
-                    sql = xp.execution_plan_syntax(data)
                     db_conn.execute_dml(dml=sql, params=None)
                 except Exception as e:
                     logger.log(str(e))
@@ -165,10 +165,10 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                 for dml in dml_list:
                     dml = dml.replace("\n"," ")
                     if dml.isspace() is not True and dml != "":
+                        dml = xp.execution_plan_syntax(dml)
                         try:
                             db_conn = db_conn_info
                             db_conn.connect()
-                            dml = xp.execution_plan_syntax(dml)
                             db_conn.execute_dml(dml=dml, params=None)
                         except Exception as e:
                             logger.log(str(e))
@@ -233,10 +233,10 @@ for i in range(1, ev_loader.var_get('iterations')+1):
             for sql in sql_list:
                 sql = sql.replace("\n", " ")
                 if sql.isspace() is not True and sql != "":
+                    sql = xp.execution_plan_syntax(sql)
                     try:
                         db_conn = db_conn_info
                         db_conn.connect()
-                        sql = xp.execution_plan_syntax(sql)
                         db_conn.execute_dml(dml=sql, params=None)
                     except Exception as e:
                         logger.log(str(e))
@@ -264,10 +264,10 @@ for i in range(1, ev_loader.var_get('iterations')+1):
             check_if_plsql = XPlan.check_if_plsql_block(statement=data)
             #
             if check_if_plsql:
+                sql = xp.execution_plan_syntax(data)
                 try:
                     db_conn = db_conn_info
                     db_conn.connect()
-                    sql = xp.execution_plan_syntax(data)
                     db_conn.execute_dml(dml=sql, params=None)
                 except Exception as e:
                     logger.log(str(e))
@@ -289,10 +289,10 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                 for dml in dml_list:
                     dml = dml.replace("\n"," ")
                     if dml.isspace() is not True and dml != "":
+                        dml = xp.execution_plan_syntax(dml)
                         try:
                             db_conn = db_conn_info
                             db_conn.connect()
-                            dml = xp.execution_plan_syntax(dml)
                             db_conn.execute_dml(dml=dml, params=None)
                         except Exception as e:
                             logger.log(str(e))
