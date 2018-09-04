@@ -71,7 +71,7 @@ class ScriptInitializer:
         # Benchmark
         iterations = int(g_config.get_value('Benchmark','iterations'))
         time_out_in_seconds = int(g_config.get_value('Benchmark','time_out_in_seconds'))
-        refresh_rep_table = str(g_config.get_value('Benchmark','refresh_rep_table').title())
+        refresh_rep_table = str(g_config.get_value('Benchmark','refresh_rep_table')).title()
         #
         # Load into global dictionary
         ev_loader.var_load({'project_dir':project_dir,
