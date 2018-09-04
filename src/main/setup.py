@@ -24,7 +24,7 @@ SCRIPT WARM UP - Module Import & Path Configuration
 """
 #
 # Module Imports
-import sys
+import sys, os
 from os.path import dirname, abspath
 #
 # Retrieving relative paths for project directory
@@ -36,10 +36,11 @@ src_dir = dirname(dirname(abspath(__file__)))
 sys.path.append(home_dir)
 sys.path.append(project_dir)
 sys.path.append(src_dir)
+file_name = os.path.basename(__file__).split('.')[0]
 #
 from src.framework.script_initializer import ScriptInitializer
 from src.framework.db_interface import ConnectionPool
-si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir, home_dir=home_dir)
+si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir, home_dir=home_dir, log_name_prefix=file_name)
 ev_loader = si.get_global_config()
 db_conn = ConnectionPool.claim_from_pool()[2]
 if ev_loader.var_get('enable_spark') == 'True':
