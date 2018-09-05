@@ -1,14 +1,3 @@
-select resource_name, current_utilization, max_utilization from v$resource_limit where resource_name in ('processes','sessions');
-select * from CALL_CENTER;
---
-select * from tpcds1.MON_KILL_LONG_RUNNING;
---
-select * from plan_table;
---
---update tpcds1.MON_KILL_LONG_RUNNING tpcds1, tpcds10.MON_KILL_LONG_RUNNING tpcds10 set tpcds1.running=0
---
-select * from plan_table;
-drop table REP_EXPLAIN_PLANS;
 create table REP_EXPLAIN_PLANS(
   STATEMENT_ID	VARCHAR2(30),
   PLAN_ID varchar2(400),
@@ -34,8 +23,7 @@ create table REP_EXPLAIN_PLANS(
   OTHER_TAG	VARCHAR2(255),
   PARTITION_START	VARCHAR2(255),
   PARTITION_STOP	VARCHAR2(255),
-  PARTITION_ID	NUMBER(38),
-  OTHER	LONG,
+  PARTITION_ID	NUMBER(38)
   other_xml varchar2(4000),
   DISTRIBUTION	VARCHAR2(30),
   CPU_COST	NUMBER(38),

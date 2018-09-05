@@ -43,8 +43,46 @@ class XPlan:
         """
         if transaction_name is not None:
             if md5_sum is not None:
-                return "insert into " + self.__report_explain_plan + " " \
-                       "select pt.*, '" + transaction_name + "','" + md5_sum + "', " + str(iteration_run) + ", '" + str(gathered_stats) + "' " \
+                vsql =  "insert into " + self.__report_explain_plan + " " \
+                       "select vs.STATEMENT_ID	" \
+                                ",vs.PLAN_ID 				  " \
+                                ",vs.TIMESTAMP				  " \
+                                ",vs.REMARKS				      " \
+                                ",vs.OPERATION				  " \
+                                ",vs.OPTIONS				      " \
+                                ",vs.OBJECT_NODE			      " \
+                                ",vs.OBJECT_OWNER			  " \
+                                ",vs.OBJECT_NAME			      " \
+                                ",vs.OBJECT_ALIAS			  " \
+                                ",vs.OBJECT_INSTANCE		      " \
+                                ",vs.OBJECT_TYPE			      " \
+                                ",vs.OPTIMIZER	VARCHAR2	  " \
+                                ",vs.SEARCH_COLUMNS		      " \
+                                ",vs.ID					      " \
+                                ",vs.PARENT_ID				  " \
+                                ",vs.depth 				      " \
+                                ",vs.POSITION				  " \
+                                ",vs.COST					  " \
+                                ",vs.CARDINALITY			      " \
+                                ",vs.BYTES					  " \
+                                ",vs.OTHER_TAG				  " \
+                                ",vs.PARTITION_START		      " \
+                                ",vs.PARTITION_STOP		      " \
+                                ",vs.PARTITION_ID			  " \
+                                ",vs.other_xml 			      " \
+                                ",vs.DISTRIBUTION			  " \
+                                ",vs.CPU_COST				  " \
+                                ",vs.IO_COST				      " \
+                                ",vs.TEMP_SPACE			      " \
+                                ",vs.ACCESS_PREDICATES		  " \
+                                ",vs.FILTER_PREDICATES	 	  " \
+                                ",vs.PROJECTION			      " \
+                                ",vs.TIME					  " \
+                                ",vs.qblock_name 			  " \
+                                ",vs.TPC_TRANSACTION_NAME      " \
+                                ",vs.STATEMENT_HASH_SUM	      " \
+                                ",vs.BENCHMARK_ITERATION 	  " \
+                                ",vs.GATHERED_STATS 		  ,'" + transaction_name + "','" + md5_sum + "', " + str(iteration_run) + ", '" + str(gathered_stats) + "' " \
                        "from plan_table pt " \
                         "where plan_id = ( " \
                         " select max(plan_id) " \
@@ -52,6 +90,8 @@ class XPlan:
                         " where to_date(to_char(timestamp,'MM/DD/YYYY'),'MM/DD/YYYY') = to_date(to_char(sysdate,'MM/DD/YYYY'),'MM/DD/YYYY') " \
                         ") " \
                         "order by id"
+                print(vsql)
+                return vsql
             else:
                 raise ValueError("md5_sum was not specified!")
         else:
@@ -216,7 +256,6 @@ class XPlan:
                                 "PARTITION_START	VARCHAR2(255), " \
                                 "PARTITION_STOP	VARCHAR2(255), " \
                                 "PARTITION_ID	NUMBER(38), " \
-                                "OTHER	LONG, " \
                                 "OTHER_XML VARCHAR2(4000), " \
                                 "DISTRIBUTION	VARCHAR2(30), " \
                                 "CPU_COST	NUMBER(38), " \
