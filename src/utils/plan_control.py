@@ -82,7 +82,6 @@ class XPlan:
                         " where to_date(to_char(timestamp,'MM/DD/YYYY'),'MM/DD/YYYY') = to_date(to_char(sysdate,'MM/DD/YYYY'),'MM/DD/YYYY') " \
                         ") " \
                         "order by id"
-                print(vsql)
                 return vsql
             else:
                 raise ValueError("md5_sum was not specified!")
@@ -259,7 +258,6 @@ class XPlan:
                                 "BENCHMARK_ITERATION varchar2(2), " \
                                 "GATHERED_STATS varchar2(5) " \
                                 ")tablespace users "
-            print(dml_statement)
             db_conn.execute_dml(dml=dml_statement)
             #
             self.__logger.log('Table [' + self.__report_explain_plan + '] created!')
