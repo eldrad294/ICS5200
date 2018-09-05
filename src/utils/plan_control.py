@@ -200,6 +200,7 @@ class XPlan:
                                 "OBJECT_NODE	VARCHAR2(128), " \
                                 "OBJECT_OWNER	VARCHAR2(30), " \
                                 "OBJECT_NAME	VARCHAR2(30), " \
+                                "OBJECT_ALIAS VARCHAR2(4000), " \
                                 "OBJECT_INSTANCE	NUMBER(38), " \
                                 "OBJECT_TYPE	VARCHAR2(30), " \
                                 "OPTIMIZER	VARCHAR2(255), " \
