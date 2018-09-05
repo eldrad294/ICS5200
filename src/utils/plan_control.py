@@ -225,7 +225,11 @@ class XPlan:
                                 "FILTER_PREDICATES	 	VARCHAR2(4000), " \
                                 "PROJECTION	VARCHAR2(4000), " \
                                 "TIME	NUMBER(38), " \
-                                "QBLOCK_NAME varchar2(4000) " \
+                                "QBLOCK_NAME varchar2(4000), " \
+                                "TPC_TRANSACTION_NAME varchar2(20), " \
+                                "STATEMENT_HASH_SUM varchar2(4000), " \
+                                "BENCHMARK_ITERATION varchar2(2), " \
+                                "GATHERED_STATS varchar2(5) " \
                                 ")tablespace users "
             db_conn.execute_dml(dml=dml_statement)
             #

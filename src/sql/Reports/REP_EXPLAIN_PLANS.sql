@@ -1,3 +1,14 @@
+select resource_name, current_utilization, max_utilization from v$resource_limit where resource_name in ('processes','sessions');
+select * from CALL_CENTER;
+--
+select * from tpcds1.MON_KILL_LONG_RUNNING;
+--
+select * from plan_table;
+--
+--update tpcds1.MON_KILL_LONG_RUNNING tpcds1, tpcds10.MON_KILL_LONG_RUNNING tpcds10 set tpcds1.running=0
+--
+select * from plan_table;
+drop table REP_EXPLAIN_PLANS;
 create table REP_EXPLAIN_PLANS(
   STATEMENT_ID	VARCHAR2(30),
   PLAN_ID varchar2(400),
@@ -33,5 +44,9 @@ create table REP_EXPLAIN_PLANS(
   FILTER_PREDICATES	 	VARCHAR2(4000),
   PROJECTION	VARCHAR2(4000),
   TIME	NUMBER(38),
-  qblock_name varchar2(4000)
+  qblock_name varchar2(4000),
+  TPC_TRANSACTION_NAME varchar2(20),
+  STATEMENT_HASH_SUM varchar2(4000),
+  BENCHMARK_ITERATION varchar2(2),
+  GATHERED_STATS varchar2(5)
 )tablespace users;
