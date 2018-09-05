@@ -266,7 +266,7 @@ class XPlan:
                                                                 iteration_run=iteration_run,
                                                                 gathered_stats=gathered_stats))
             db_conn.commit()
-            self.__logger.log('Successfully generated metrics for [' + transaction_name + ']')
+            self.__logger.log('Successfully generated plan metrics for [' + transaction_name + ']')
         else:
             #
             plan, schema = db_conn.execute_query(query=self.__query_explain_plan(transaction_name=False,md5_sum=sql_md5,iteration_run=iteration_run, gathered_stats=gathered_stats),
@@ -305,7 +305,7 @@ class XPlan:
                                                                 iteration_run=iteration_run,
                                                                 gathered_stats=gathered_stats))
             db_conn.commit()
-            self.__logger.log('Successfully generated metrics for [' + transaction_name + ']')
+            self.__logger.log('Successfully generated execution metrics for [' + transaction_name + ']')
         else:
             plan, schema = db_conn.execute_query(query=self.__query_execution_plan(transaction_name=False, md5_sum=sql_md5,iteration_run=iteration_run,gathered_stats=gathered_stats),
                                                  describe=True)
