@@ -236,7 +236,7 @@ class XPlan:
                                 "OBJECT_NODE	VARCHAR2(1000), " \
                                 "OBJECT_OWNER	VARCHAR2(1000), " \
                                 "OBJECT_NAME	VARCHAR2(1000), " \
-                                "OBJECT_ALIAS VARCHAR2(8000), " \
+                                "OBJECT_ALIAS VARCHAR2(6000), " \
                                 "OBJECT_INSTANCE	NUMBER(38), " \
                                 "OBJECT_TYPE	VARCHAR2(1000), " \
                                 "OPTIMIZER	VARCHAR2(1000), " \
@@ -252,18 +252,18 @@ class XPlan:
                                 "PARTITION_START	VARCHAR2(1000), " \
                                 "PARTITION_STOP	VARCHAR2(1000), " \
                                 "PARTITION_ID	NUMBER(38), " \
-                                "OTHER_XML VARCHAR2(8000), " \
+                                "OTHER_XML VARCHAR2(6000), " \
                                 "DISTRIBUTION	VARCHAR2(1000), " \
                                 "CPU_COST	NUMBER(38), " \
                                 "IO_COST	NUMBER(38), " \
                                 "TEMP_SPACE	NUMBER(38), " \
-                                "ACCESS_PREDICATES	VARCHAR2(8000), " \
-                                "FILTER_PREDICATES	 	VARCHAR2(8000), " \
-                                "PROJECTION	VARCHAR2(8000), " \
+                                "ACCESS_PREDICATES	VARCHAR2(6000), " \
+                                "FILTER_PREDICATES	 	VARCHAR2(6000), " \
+                                "PROJECTION	VARCHAR2(6000), " \
                                 "TIME	NUMBER(38), " \
-                                "QBLOCK_NAME varchar2(8000), " \
+                                "QBLOCK_NAME varchar2(6000), " \
                                 "TPC_TRANSACTION_NAME varchar2(20), " \
-                                "STATEMENT_HASH_SUM varchar2(8000), " \
+                                "STATEMENT_HASH_SUM varchar2(6000), " \
                                 "BENCHMARK_ITERATION varchar2(2), " \
                                 "GATHERED_STATS varchar2(5) " \
                                 ")tablespace users "
