@@ -192,6 +192,7 @@ class XPlan:
             self.__logger.log('Creating table [' + self.__report_explain_plan + ']..')
             dml_statement = "create table REP_EXPLAIN_PLANS( " \
                                 "STATEMENT_ID	VARCHAR2(30), " \
+                                "PLAN_ID VARCHAR2(400), " \
                                 "TIMESTAMP	DATE, " \
                                 "REMARKS	VARCHAR2(80), " \
                                 "OPERATION	VARCHAR2(30), " \
@@ -205,6 +206,7 @@ class XPlan:
                                 "SEARCH_COLUMNS	NUMBER, " \
                                 "ID	NUMBER(38)	, " \
                                 "PARENT_ID	NUMBER(38), " \
+                                "DEPTH number(38), " \
                                 "POSITION	NUMBER(38), " \
                                 "COST	NUMBER(38), " \
                                 "CARDINALITY	NUMBER(38), " \
@@ -221,7 +223,8 @@ class XPlan:
                                 "ACCESS_PREDICATES	VARCHAR2(4000), " \
                                 "FILTER_PREDICATES	 	VARCHAR2(4000), " \
                                 "PROJECTION	VARCHAR2(4000), " \
-                                "TIME	NUMBER(38) " \
+                                "TIME	NUMBER(38), " \
+                                "QBLOCK_NAME varchar2(4000) " \
                                 ")tablespace users "
             db_conn.execute_dml(dml=dml_statement)
             #
