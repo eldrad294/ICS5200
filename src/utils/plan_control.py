@@ -56,7 +56,7 @@ class XPlan:
                                 ",pt.OBJECT_ALIAS			  " \
                                 ",pt.OBJECT_INSTANCE		      " \
                                 ",pt.OBJECT_TYPE			      " \
-                                ",pt.OPTIMIZER	VARCHAR2	  " \
+                                ",pt.OPTIMIZER	        	  " \
                                 ",pt.SEARCH_COLUMNS		      " \
                                 ",pt.ID					      " \
                                 ",pt.PARENT_ID				  " \
