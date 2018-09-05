@@ -78,11 +78,7 @@ class XPlan:
                                 ",pt.FILTER_PREDICATES	 	  " \
                                 ",pt.PROJECTION			      " \
                                 ",pt.TIME					  " \
-                                ",pt.qblock_name 			  " \
-                                ",pt.TPC_TRANSACTION_NAME      " \
-                                ",pt.STATEMENT_HASH_SUM	      " \
-                                ",pt.BENCHMARK_ITERATION 	  " \
-                                ",pt.GATHERED_STATS 		  ,'" + transaction_name + "','" + md5_sum + "', " + str(iteration_run) + ", '" + str(gathered_stats) + "' " \
+                                ",pt.qblock_name 			 , " + transaction_name + "','" + md5_sum + "', " + str(iteration_run) + ", '" + str(gathered_stats) + "' " \
                        "from plan_table pt " \
                         "where plan_id = ( " \
                         " select max(plan_id) " \
