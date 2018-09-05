@@ -53,7 +53,6 @@ class XPlan:
                                 ",pt.OBJECT_NODE			      " \
                                 ",pt.OBJECT_OWNER			  " \
                                 ",pt.OBJECT_NAME			      " \
-                                ",pt.OBJECT_ALIAS			  " \
                                 ",pt.OBJECT_INSTANCE		      " \
                                 ",pt.OBJECT_TYPE			      " \
                                 ",pt.OPTIMIZER	        	  " \
@@ -69,16 +68,13 @@ class XPlan:
                                 ",pt.PARTITION_START		      " \
                                 ",pt.PARTITION_STOP		      " \
                                 ",pt.PARTITION_ID			  " \
-                                ",pt.other_xml 			      " \
                                 ",pt.DISTRIBUTION			  " \
                                 ",pt.CPU_COST				  " \
                                 ",pt.IO_COST				      " \
                                 ",pt.TEMP_SPACE			      " \
                                 ",pt.ACCESS_PREDICATES		  " \
                                 ",pt.FILTER_PREDICATES	 	  " \
-                                ",pt.PROJECTION			      " \
-                                ",pt.TIME					  " \
-                                ",pt.qblock_name 			 , '" + transaction_name + "','" + md5_sum + "', " + str(iteration_run) + ", '" + str(gathered_stats) + "' " \
+                                ",pt.TIME					, '" + transaction_name + "','" + md5_sum + "', " + str(iteration_run) + ", '" + str(gathered_stats) + "' " \
                        "from plan_table pt " \
                         "where plan_id = ( " \
                         " select max(plan_id) " \
@@ -236,7 +232,6 @@ class XPlan:
                                 "OBJECT_NODE	VARCHAR2(1000), " \
                                 "OBJECT_OWNER	VARCHAR2(1000), " \
                                 "OBJECT_NAME	VARCHAR2(1000), " \
-                                "OBJECT_ALIAS VARCHAR2(6000), " \
                                 "OBJECT_INSTANCE	NUMBER(38), " \
                                 "OBJECT_TYPE	VARCHAR2(1000), " \
                                 "OPTIMIZER	VARCHAR2(1000), " \
@@ -252,21 +247,19 @@ class XPlan:
                                 "PARTITION_START	VARCHAR2(1000), " \
                                 "PARTITION_STOP	VARCHAR2(1000), " \
                                 "PARTITION_ID	NUMBER(38), " \
-                                "OTHER_XML VARCHAR2(6000), " \
                                 "DISTRIBUTION	VARCHAR2(1000), " \
                                 "CPU_COST	NUMBER(38), " \
                                 "IO_COST	NUMBER(38), " \
                                 "TEMP_SPACE	NUMBER(38), " \
-                                "ACCESS_PREDICATES	VARCHAR2(6000), " \
-                                "FILTER_PREDICATES	 	VARCHAR2(6000), " \
-                                "PROJECTION	VARCHAR2(6000), " \
+                                "ACCESS_PREDICATES	VARCHAR2(4000), " \
+                                "FILTER_PREDICATES	 	VARCHAR2(4000), " \
                                 "TIME	NUMBER(38), " \
-                                "QBLOCK_NAME varchar2(6000), " \
                                 "TPC_TRANSACTION_NAME varchar2(20), " \
-                                "STATEMENT_HASH_SUM varchar2(6000), " \
+                                "STATEMENT_HASH_SUM varchar2(4000), " \
                                 "BENCHMARK_ITERATION varchar2(2), " \
                                 "GATHERED_STATS varchar2(5) " \
                                 ")tablespace users "
+            print(dml_statement)
             db_conn.execute_dml(dml=dml_statement)
             #
             self.__logger.log('Table [' + self.__report_explain_plan + '] created!')
