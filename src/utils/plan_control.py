@@ -139,7 +139,7 @@ class XPlan:
             dml_statement = "drop table " + self.__report_execution_plan
             db_conn.execute_dml(dml=dml_statement)
             self.__logger.log('Dropped table ' + self.__report_execution_plan + " for cleanup..")
-        sql_statement = "select count(*) from dba_tables where table_name = '" + self.__report_execution_plan + "'"
+        sql_statement = "select count(*) from user_tables where table_name = '" + self.__report_execution_plan + "'"
         result = int(db_conn.execute_query(query=sql_statement, fetch_single=True)[0])
         if result == 0:
             #
@@ -184,7 +184,7 @@ class XPlan:
             dml_statement = "drop table " + self.__report_explain_plan
             db_conn.execute_dml(dml=dml_statement)
             self.__logger.log('Dropped table ' + self.__report_explain_plan + " for cleanup..")
-        sql_statement = "select count(*) from dba_tables where table_name = '" + self.__report_explain_plan + "'"
+        sql_statement = "select count(*) from user_tables where table_name = '" + self.__report_explain_plan + "'"
         result = int(db_conn.execute_query(query=sql_statement, fetch_single=True)[0])
         if result == 0:
             #
