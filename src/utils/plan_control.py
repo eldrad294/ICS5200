@@ -216,6 +216,7 @@ class XPlan:
                                 "PARTITION_STOP	VARCHAR2(255), " \
                                 "PARTITION_ID	NUMBER(38), " \
                                 "OTHER	LONG, " \
+                                "OTHER_XML VARCHAR2(4000), " \
                                 "DISTRIBUTION	VARCHAR2(30), " \
                                 "CPU_COST	NUMBER(38), " \
                                 "IO_COST	NUMBER(38), " \
