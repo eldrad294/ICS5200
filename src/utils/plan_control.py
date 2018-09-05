@@ -227,19 +227,19 @@ class XPlan:
             # Creates Reporting Table
             self.__logger.log('Creating table [' + self.__report_explain_plan + ']..')
             dml_statement = "create table REP_EXPLAIN_PLANS( " \
-                                "STATEMENT_ID	VARCHAR2(30), " \
+                                "STATEMENT_ID	VARCHAR2(1000), " \
                                 "PLAN_ID VARCHAR2(400), " \
                                 "TIMESTAMP	DATE, " \
-                                "REMARKS	VARCHAR2(80), " \
-                                "OPERATION	VARCHAR2(30), " \
-                                "OPTIONS	VARCHAR2(255), " \
-                                "OBJECT_NODE	VARCHAR2(128), " \
-                                "OBJECT_OWNER	VARCHAR2(30), " \
-                                "OBJECT_NAME	VARCHAR2(30), " \
+                                "REMARKS	VARCHAR2(1000), " \
+                                "OPERATION	VARCHAR2(1000), " \
+                                "OPTIONS	VARCHAR2(1000), " \
+                                "OBJECT_NODE	VARCHAR2(1000), " \
+                                "OBJECT_OWNER	VARCHAR2(1000), " \
+                                "OBJECT_NAME	VARCHAR2(1000), " \
                                 "OBJECT_ALIAS VARCHAR2(4000), " \
                                 "OBJECT_INSTANCE	NUMBER(38), " \
-                                "OBJECT_TYPE	VARCHAR2(30), " \
-                                "OPTIMIZER	VARCHAR2(255), " \
+                                "OBJECT_TYPE	VARCHAR2(1000), " \
+                                "OPTIMIZER	VARCHAR2(1000), " \
                                 "SEARCH_COLUMNS	NUMBER, " \
                                 "ID	NUMBER(38)	, " \
                                 "PARENT_ID	NUMBER(38), " \
@@ -248,12 +248,12 @@ class XPlan:
                                 "COST	NUMBER(38), " \
                                 "CARDINALITY	NUMBER(38), " \
                                 "BYTES	NUMBER(38), " \
-                                "OTHER_TAG	VARCHAR2(255), " \
-                                "PARTITION_START	VARCHAR2(255), " \
-                                "PARTITION_STOP	VARCHAR2(255), " \
+                                "OTHER_TAG	VARCHAR2(1000), " \
+                                "PARTITION_START	VARCHAR2(1000), " \
+                                "PARTITION_STOP	VARCHAR2(1000), " \
                                 "PARTITION_ID	NUMBER(38), " \
                                 "OTHER_XML VARCHAR2(4000), " \
-                                "DISTRIBUTION	VARCHAR2(30), " \
+                                "DISTRIBUTION	VARCHAR2(1000), " \
                                 "CPU_COST	NUMBER(38), " \
                                 "IO_COST	NUMBER(38), " \
                                 "TEMP_SPACE	NUMBER(38), " \
