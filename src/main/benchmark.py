@@ -197,12 +197,12 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
 SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 ------------------------------------------------------------
 """
-#
-# Gather optimizer stats
 db_conn.connect()
 db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=0') # Kill Sniffer Procedure
 db_conn.commit()
 time.sleep(5)
+#
+# Gather optimizer stats
 logger.log('Starting optimizer stats generation..')
 OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
                                                   logger=logger,
