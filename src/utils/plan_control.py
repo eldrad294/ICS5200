@@ -44,45 +44,45 @@ class XPlan:
         if transaction_name is not None:
             if md5_sum is not None:
                 vsql =  "insert into " + self.__report_explain_plan + " " \
-                       "select vs.STATEMENT_ID	" \
-                                ",vs.PLAN_ID 				  " \
-                                ",vs.TIMESTAMP				  " \
-                                ",vs.REMARKS				      " \
-                                ",vs.OPERATION				  " \
-                                ",vs.OPTIONS				      " \
-                                ",vs.OBJECT_NODE			      " \
-                                ",vs.OBJECT_OWNER			  " \
-                                ",vs.OBJECT_NAME			      " \
-                                ",vs.OBJECT_ALIAS			  " \
-                                ",vs.OBJECT_INSTANCE		      " \
-                                ",vs.OBJECT_TYPE			      " \
-                                ",vs.OPTIMIZER	VARCHAR2	  " \
-                                ",vs.SEARCH_COLUMNS		      " \
-                                ",vs.ID					      " \
-                                ",vs.PARENT_ID				  " \
-                                ",vs.depth 				      " \
-                                ",vs.POSITION				  " \
-                                ",vs.COST					  " \
-                                ",vs.CARDINALITY			      " \
-                                ",vs.BYTES					  " \
-                                ",vs.OTHER_TAG				  " \
-                                ",vs.PARTITION_START		      " \
-                                ",vs.PARTITION_STOP		      " \
-                                ",vs.PARTITION_ID			  " \
-                                ",vs.other_xml 			      " \
-                                ",vs.DISTRIBUTION			  " \
-                                ",vs.CPU_COST				  " \
-                                ",vs.IO_COST				      " \
-                                ",vs.TEMP_SPACE			      " \
-                                ",vs.ACCESS_PREDICATES		  " \
-                                ",vs.FILTER_PREDICATES	 	  " \
-                                ",vs.PROJECTION			      " \
-                                ",vs.TIME					  " \
-                                ",vs.qblock_name 			  " \
-                                ",vs.TPC_TRANSACTION_NAME      " \
-                                ",vs.STATEMENT_HASH_SUM	      " \
-                                ",vs.BENCHMARK_ITERATION 	  " \
-                                ",vs.GATHERED_STATS 		  ,'" + transaction_name + "','" + md5_sum + "', " + str(iteration_run) + ", '" + str(gathered_stats) + "' " \
+                       "select pt.STATEMENT_ID	" \
+                                ",pt.PLAN_ID 				  " \
+                                ",pt.TIMESTAMP				  " \
+                                ",pt.REMARKS				      " \
+                                ",pt.OPERATION				  " \
+                                ",pt.OPTIONS				      " \
+                                ",pt.OBJECT_NODE			      " \
+                                ",pt.OBJECT_OWNER			  " \
+                                ",pt.OBJECT_NAME			      " \
+                                ",pt.OBJECT_ALIAS			  " \
+                                ",pt.OBJECT_INSTANCE		      " \
+                                ",pt.OBJECT_TYPE			      " \
+                                ",pt.OPTIMIZER	VARCHAR2	  " \
+                                ",pt.SEARCH_COLUMNS		      " \
+                                ",pt.ID					      " \
+                                ",pt.PARENT_ID				  " \
+                                ",pt.depth 				      " \
+                                ",pt.POSITION				  " \
+                                ",pt.COST					  " \
+                                ",pt.CARDINALITY			      " \
+                                ",pt.BYTES					  " \
+                                ",pt.OTHER_TAG				  " \
+                                ",pt.PARTITION_START		      " \
+                                ",pt.PARTITION_STOP		      " \
+                                ",pt.PARTITION_ID			  " \
+                                ",pt.other_xml 			      " \
+                                ",pt.DISTRIBUTION			  " \
+                                ",pt.CPU_COST				  " \
+                                ",pt.IO_COST				      " \
+                                ",pt.TEMP_SPACE			      " \
+                                ",pt.ACCESS_PREDICATES		  " \
+                                ",pt.FILTER_PREDICATES	 	  " \
+                                ",pt.PROJECTION			      " \
+                                ",pt.TIME					  " \
+                                ",pt.qblock_name 			  " \
+                                ",pt.TPC_TRANSACTION_NAME      " \
+                                ",pt.STATEMENT_HASH_SUM	      " \
+                                ",pt.BENCHMARK_ITERATION 	  " \
+                                ",pt.GATHERED_STATS 		  ,'" + transaction_name + "','" + md5_sum + "', " + str(iteration_run) + ", '" + str(gathered_stats) + "' " \
                        "from plan_table pt " \
                         "where plan_id = ( " \
                         " select max(plan_id) " \
