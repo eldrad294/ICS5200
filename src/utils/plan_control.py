@@ -261,10 +261,10 @@ class XPlan:
         db_conn.execute_dml(dml=sql) # execute with explain plan for
         #
         if transaction_name is not None:
-            db_conn.execute_dml(dml=self.__query_execution_plan(transaction_name=transaction_name,
-                                                                md5_sum=sql_md5,
-                                                                iteration_run=iteration_run,
-                                                                gathered_stats=gathered_stats))
+            db_conn.execute_dml(dml=self.__query_explain_plan(transaction_name=transaction_name,
+                                                              md5_sum=sql_md5,
+                                                              iteration_run=iteration_run,
+                                                              gathered_stats=gathered_stats))
             db_conn.commit()
             self.__logger.log('Successfully generated plan metrics for [' + transaction_name + ']')
         else:
