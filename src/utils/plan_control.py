@@ -12,6 +12,7 @@ class XPlan:
         self.__ev_loader = ev_loader
         self.__execution_plan_hint = "/*ICS5200_MONITOR_HINT*/"
         self.__report_execution_plan = 'REP_EXECUTION_PLANS'
+        self.__report_explain_plan = 'REP_EXPLAIN_PLANS'
     #
     def __explain_plan_syntax(self, p_sql):
         return "explain plan for " + str(p_sql)
@@ -30,7 +31,7 @@ class XPlan:
             r_sql += " " + sql
         return r_sql
     #
-    def __query_explain_plan(self):
+    def __query_explain_plan(self, transaction_name=None, md5_sum=None, iteration_run=1,gathered_stats=False):
         """
         Ensures that latest explain plan is returned from Oracle's plan_table. The query returns the latest generated
         explain plan found in the 'plan_table'. This is risky for rapid-interweaving queries whose explain plan is
@@ -40,14 +41,28 @@ class XPlan:
         instance, and therefore are only utilized through user intervention.
         :return:
         """
-        return "select * " \
-               "from plan_table " \
-                "where plan_id = ( " \
-                " select max(plan_id) " \
-                " from plan_table " \
-                " where to_date(to_char(timestamp,'MM/DD/YYYY'),'MM/DD/YYYY') = to_date(to_char(sysdate,'MM/DD/YYYY'),'MM/DD/YYYY') " \
-                ") " \
-                "order by id"
+        if transaction_name is not None:
+            if md5_sum is not None:
+                return "insert into " + self.__report_explain_plan + " " \
+                       "select pt.*, '" + transaction_name + "','" + md5_sum + "', " + str(iteration_run) + ", '" + str(gathered_stats) + "' " \
+                       "from plan_table pt " \
+                        "where plan_id = ( " \
+                        " select max(plan_id) " \
+                        " from plan_table " \
+                        " where to_date(to_char(timestamp,'MM/DD/YYYY'),'MM/DD/YYYY') = to_date(to_char(sysdate,'MM/DD/YYYY'),'MM/DD/YYYY') " \
+                        ") " \
+                        "order by id"
+            else:
+                raise ValueError("md5_sum was not specified!")
+        else:
+            return "select * " \
+                   "from plan_table " \
+                    "where plan_id = ( " \
+                    " select max(plan_id) " \
+                    " from plan_table " \
+                    " where to_date(to_char(timestamp,'MM/DD/YYYY'),'MM/DD/YYYY') = to_date(to_char(sysdate,'MM/DD/YYYY'),'MM/DD/YYYY') " \
+                    ") " \
+                    "order by id"
     #
     def __query_execution_plan(self, transaction_name=None, md5_sum=None, iteration_run=1, gathered_stats=False):
         """
@@ -113,9 +128,11 @@ class XPlan:
     def create_REP_EXECUTION_PLANS(self, db_conn):
         """
         Creates reporting table REP_EXECUTION_PLANS to save v$sql execution metrics.
-        The table is a replica of v$sql, with two additional columns:
+        The table is a replica of v$sql, with 4 additional columns:
         1) TPC_TRANSACTION_NAME - Contains name of TPC Transaction
         2) STATEMENT_HASH_SUM - Contains md5 hash sum for a particular statement
+        3) BENCHMARK_ITERATION - Dictates which execution for the same queries occured in the benchmark
+        4) GATHERED_STATS - True/False, depending on whether or not stats were gathered
         :return:
         """
         if self.__ev_loader.var_get('refresh_rep_table') == 'True':
@@ -152,31 +169,98 @@ class XPlan:
         else:
             self.__logger.log('Table ['+self.__report_execution_plan+'] already exists..')
     #
+    def create_REP_EXPLAIN_PLANS(self, db_conn):
+        """
+        Creates reporting table REP_EXPLAIN_PLANS tp save plan_table metrics.
+        The table is a replica of v$sql, with 1 additional column:
+        1) TPC_TRANSACTION_NAME - Contains name of TPC Transaction
+        2) STATEMENT_HASH_SUM - Contains md5 hash sum for a particular statement
+        3) BENCHMARK_ITERATION - Dictates which execution for the same queries occured in the benchmark
+        4) GATHERED_STATS - True/False, depending on whether or not stats were gathered
+        :param db_conn:
+        :return:
+        """
+        if self.__ev_loader.var_get('refresh_rep_table') == 'True':
+            dml_statement = "drop table " + self.__report_explain_plan
+            db_conn.execute_dml(dml=dml_statement)
+            self.__logger.log('Dropped table ' + self.__report_explain_plan + " for cleanup..")
+        sql_statement = "select count(*) from dba_tables where table_name = '" + self.__report_explain_plan + "'"
+        result = int(db_conn.execute_query(query=sql_statement, fetch_single=True)[0])
+        if result == 0:
+            #
+            # Creates Reporting Table
+            self.__logger.log('Creating table [' + self.__report_explain_plan + ']..')
+            dml_statement = "create table " + self.__report_explain_plan + " tablespace users as " \
+                                                                    "select * from plan_table where 1=0"
+            db_conn.execute_dml(dml=dml_statement)
+            #
+            # Adds column 'TPC_STATEMENT_NAME'
+            dml_statement = "alter table " + self.__report_explain_plan + " add TPC_TRANSACTION_NAME varchar2(20)"
+            db_conn.execute_dml(dml=dml_statement)
+            #
+            # Adds column 'STATEMENT_HASH_SUM'
+            dml_statement = "alter table " + self.__report_explain_plan + " add STATEMENT_HASH_SUM varchar2(4000)"
+            db_conn.execute_dml(dml=dml_statement)
+            #
+            # Adds column 'BENCHMARK_ITERATION'
+            dml_statement = "alter table " + self.__report_explain_plan + " add BENCHMARK_ITERATION varchar2(2)"
+            db_conn.execute_dml(dml=dml_statement)
+            #
+            # Adds column 'GATHERED_STATS'
+            dml_statement = "alter table " + self.__report_explain_plan + " add GATHERED_STATS varchar2(5)"
+            db_conn.execute_dml(dml=dml_statement)
+            #
+            self.__logger.log('Table [' + self.__report_explain_plan + '] created!')
+        else:
+            self.__logger.log('Table ['+self.__report_explain_plan+'] already exists..')
+    #
     @staticmethod
     def check_if_plsql_block(statement):
         if 'begin' in statement.lower() and 'end' in statement.lower():
             return True
         return False
     #
-    def generateExplainPlan(self, sql, binds=None, selection=None):
+    def generateExplainPlan(self, sql, binds=None, selection=None, transaction_name=None, iteration_run=1, gathered_stats=False, db_conn=None):
         """
-        Retrieves Explain Plan - Query is not executed for explain plan retrieval
+        Retrieves Explain Plan - Query is executed for explain plan retrieval
         :param sql: SQL under evaluation
         :param binds: Accepts query bind parameters as a tuple
         :param selection: Accepts list of column names which will be returned for the explain plan generation. If left
-                          empty, selection is assumed to return all explain plan columns
+                          empty, selection is assumed to return all execution plan columns
+        :param transaction_name: Default set to None. If not specified (None), execution plan is returned to driver.
+                                 Otherwise, the execution plan is saved to disk, in addition to the transaction name
+                                 insie of a report table.
+        :param iteration_run: Parameter which denote the benchmark iteration
+        :param db_conn: DB Connection info
         :return: Explain plan in dictionary format
         """
+        if db_conn is None:
+            raise ValueError("No database context was passed!")
+        #
+        if transaction_name is None:
+            sql_md5 = None
+        else:
+            sql_md5 = hashlib.md5(sql.encode('utf-8')).hexdigest()
+        #
         sql = self.__explain_plan_syntax(sql)
+        db_conn.execute_dml(dml=sql) # execute with explain plan for
         #
-        self.__db_conn.execute_dml(dml=sql, params=binds)
-        #
-        plan, schema = self.__db_conn.execute_query(query=self.__query_explain_plan(), describe=True)
-        #
-        # Retrieves relevant columns specified in selection list
-        plan = self.__select_relevant_columns(plan=plan, schema=schema, selection=selection)
-        #
-        return plan
+        if transaction_name is not None:
+            db_conn.execute_dml(dml=self.__query_execution_plan(transaction_name=transaction_name,
+                                                                md5_sum=sql_md5,
+                                                                iteration_run=iteration_run,
+                                                                gathered_stats=gathered_stats))
+            db_conn.commit()
+            self.__logger.log('Successfully generated metrics for [' + transaction_name + ']')
+        else:
+            #
+            plan, schema = db_conn.execute_query(query=self.__query_explain_plan(transaction_name=False,md5_sum=sql_md5,iteration_run=iteration_run, gathered_stats=gathered_stats),
+                                                 describe=True)
+            #
+            # Retrieves relevant columns specified in selection list
+            plan = self.__select_relevant_columns(plan=plan, schema=schema, selection=selection)
+            #
+            return plan
     #
     def generateExecutionPlan(self, sql, binds=None, selection=None, transaction_name=None, iteration_run=1, gathered_stats=False, db_conn=None):
         """

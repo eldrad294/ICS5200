@@ -73,6 +73,7 @@ if result == 0:
 #
 # Create metric table
 xp.create_REP_EXECUTION_PLANS(db_conn=db_conn)
+xp.create_REP_EXPLAIN_PLANS(db_conn=db_conn)
 #
 # Strip optimizer stats
 logger.log('Starting optimizer stats dropping..')
@@ -124,6 +125,13 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                                  iteration_run=i,
                                                  gathered_stats=False,
                                                  db_conn=db_conn)
+                        xp.generateExplainPlan(sql=sql,
+                                               binds=None,
+                                               selection=None,
+                                               transaction_name=filename,
+                                               iteration_run=i,
+                                               gathered_stats=False,
+                                               db_conn=db_conn)
                         db_conn.close()
     #
     # Keep reference to flashback timestamp
@@ -182,6 +190,13 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                                      iteration_run=i,
                                                      gathered_stats=False,
                                                      db_conn=db_conn)
+                            xp.generateExplainPlan(sql=dml,
+                                                   binds=None,
+                                                   selection=None,
+                                                   transaction_name=filename,
+                                                   iteration_run=i,
+                                                   gathered_stats=False,
+                                                   db_conn=db_conn)
                             db_conn.close()
     #
     # Flashback Impacted Tables
@@ -245,8 +260,15 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                                  selection=None,
                                                  transaction_name=filename,
                                                  iteration_run=i,
-                                                 gathered_stats=False,
+                                                 gathered_stats=True,
                                                  db_conn=db_conn)
+                        xp.generateExplainPlan(sql=sql,
+                                               binds=None,
+                                               selection=None,
+                                               transaction_name=filename,
+                                               iteration_run=i,
+                                               gathered_stats=True,
+                                               db_conn=db_conn)
                         db_conn.close()
     #
     # Keep reference to flashback timestamp
@@ -277,7 +299,7 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                              selection=None,
                                              transaction_name=filename,
                                              iteration_run=i,
-                                             gathered_stats=False,
+                                             gathered_stats=True,
                                              db_conn=db_conn)
                     db_conn.close()
             else:
@@ -301,8 +323,15 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                                      selection=None,
                                                      transaction_name=filename,
                                                      iteration_run=i,
-                                                     gathered_stats=False,
+                                                     gathered_stats=True,
                                                      db_conn=db_conn)
+                            xp.generateExplainPlan(sql=dml,
+                                                   binds=None,
+                                                   selection=None,
+                                                   transaction_name=filename,
+                                                   iteration_run=i,
+                                                   gathered_stats=True,
+                                                   db_conn=db_conn)
                             db_conn.close()
     #
     # Flashback Impacted Tables

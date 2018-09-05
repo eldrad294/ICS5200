@@ -88,7 +88,9 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
                                params=None)
         #
         # Execute this to ensure that sniffer procedure is deactivated
-        db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=0')  # Kill Sniffer Procedure
+        db_conn.execute_dml(dml='update tpcds1.MON_KILL_LONG_RUNNING set running=0')  # Kill Sniffer Procedure
+        db_conn.execute_dml(dml='update tpcds10.MON_KILL_LONG_RUNNING set running=0')  # Kill Sniffer Procedure
+        db_conn.execute_dml(dml='update tpcds100.MON_KILL_LONG_RUNNING set running=0')  # Kill Sniffer Procedure
         db_conn.commit()
         logger.log('TPC-DS procedures generation successful!')
     else:
