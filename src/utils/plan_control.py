@@ -190,24 +190,39 @@ class XPlan:
             #
             # Creates Reporting Table
             self.__logger.log('Creating table [' + self.__report_explain_plan + ']..')
-            dml_statement = "create table " + self.__report_explain_plan + " tablespace users as " \
-                                                                    "select * from plan_table where 1=0"
-            db_conn.execute_dml(dml=dml_statement)
-            #
-            # Adds column 'TPC_STATEMENT_NAME'
-            dml_statement = "alter table " + self.__report_explain_plan + " add TPC_TRANSACTION_NAME varchar2(20)"
-            db_conn.execute_dml(dml=dml_statement)
-            #
-            # Adds column 'STATEMENT_HASH_SUM'
-            dml_statement = "alter table " + self.__report_explain_plan + " add STATEMENT_HASH_SUM varchar2(4000)"
-            db_conn.execute_dml(dml=dml_statement)
-            #
-            # Adds column 'BENCHMARK_ITERATION'
-            dml_statement = "alter table " + self.__report_explain_plan + " add BENCHMARK_ITERATION varchar2(2)"
-            db_conn.execute_dml(dml=dml_statement)
-            #
-            # Adds column 'GATHERED_STATS'
-            dml_statement = "alter table " + self.__report_explain_plan + " add GATHERED_STATS varchar2(5)"
+            dml_statement = "create table REP_EXPLAIN_PLANS( " \
+                                "STATEMENT_ID	VARCHAR2(30), " \
+                                "TIMESTAMP	DATE, " \
+                                "REMARKS	VARCHAR2(80), " \
+                                "OPERATION	VARCHAR2(30), " \
+                                "OPTIONS	VARCHAR2(255), " \
+                                "OBJECT_NODE	VARCHAR2(128), " \
+                                "OBJECT_OWNER	VARCHAR2(30), " \
+                                "OBJECT_NAME	VARCHAR2(30), " \
+                                "OBJECT_INSTANCE	NUMBER(38), " \
+                                "OBJECT_TYPE	VARCHAR2(30), " \
+                                "OPTIMIZER	VARCHAR2(255), " \
+                                "SEARCH_COLUMNS	NUMBER, " \
+                                "ID	NUMBER(38)	, " \
+                                "PARENT_ID	NUMBER(38), " \
+                                "POSITION	NUMBER(38), " \
+                                "COST	NUMBER(38), " \
+                                "CARDINALITY	NUMBER(38), " \
+                                "BYTES	NUMBER(38), " \
+                                "OTHER_TAG	VARCHAR2(255), " \
+                                "PARTITION_START	VARCHAR2(255), " \
+                                "PARTITION_STOP	VARCHAR2(255), " \
+                                "PARTITION_ID	NUMBER(38), " \
+                                "OTHER	LONG, " \
+                                "DISTRIBUTION	VARCHAR2(30), " \
+                                "CPU_COST	NUMBER(38), " \
+                                "IO_COST	NUMBER(38), " \
+                                "TEMP_SPACE	NUMBER(38), " \
+                                "ACCESS_PREDICATES	VARCHAR2(4000), " \
+                                "FILTER_PREDICATES	 	VARCHAR2(4000), " \
+                                "PROJECTION	VARCHAR2(4000), " \
+                                "TIME	NUMBER(38) " \
+                                ")tablespace users "
             db_conn.execute_dml(dml=dml_statement)
             #
             self.__logger.log('Table [' + self.__report_explain_plan + '] created!')
