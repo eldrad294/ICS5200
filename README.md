@@ -15,17 +15,28 @@ Project dependencies are logged under a Python3 virtual environment. The envirom
 * deactivate 
 
 # Project Distribution
-- ## data
-  - TPC-DS
-  - TPC-E
-- ## log
-  - msg_log_yyyymmdd
-- ## src
-  - data (Contains TPC Related tools + setup)
-  - framework (Contains core framework logic referenced project wide)
-  - main (Contains main executable scripts driving project flow)
-  - prototypes (Contains rough sketches / primitive / initial idea workflows)
-  - sql (Contains repository of all SQL referenced in this project)
-  - utils (Contains project independent scripts, which can be used as standalone logic if needs be)
-- ## venv
+## bash
+  * benchmark - Bash scripts reserved to initiate TPC benchmark
+  * setup - Bash scripts reserved to initiate TPC installation
+  * spark - Bash scripts reserved for Spark startup/cleanup
+## data
+  * TPC-DS
+  * TPC-E
+## docs
+  * Project related documentation
+## log
+  * msg_log_yyyymmdd
+## src
+  * data (Contains TPC Related tools + setup)
+  * framework (Contains core framework logic referenced project wide)
+  * main (Contains main executable scripts driving project flow)
+  * prototypes (Contains rough sketches / primitive / initial idea workflows)
+  * reports (Contains visualization scripts based atop TPC schemas)
+  * sql (Contains repository of all SQL referenced in this project)
+  * utils (Contains project independent scripts, which can be used as standalone logic if needs be)
+## venv
+  * python3 virtual environment
+## visuals
+  * Directory reserved for housing of html generated reports/graphs
+
 
