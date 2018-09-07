@@ -34,13 +34,15 @@ db_conn = ConnectionPool.claim_from_pool()[2]
 logger = si.initialize_logger()
 #
 """
-----------------------------------
+------------------------------------
 SCRIPT EXECUTION - Report Generation
-----------------------------------
+------------------------------------
 """
 from src.reports.bar import BarCharts
 bc = BarCharts(db_conn, logger, ev_loader.var_get('report_save_path'))
-bc.generate_REP_TPC_DESCRIBE(tpc_type=ev_loader.var_get('user'))
+#
+# This line requires SQL/Reports/REP_TPC_DESCRIBE.sql to have been executed for respective schema
+# bc.generate_REP_TPC_DESCRIBE(tpc_type=ev_loader.var_get('user'))
 bc.generate_REP_EXECUTION_PLANS(tpc_type=ev_loader.var_get('user'),gathered_stats=False,iterations=5,columns=['ELAPSED_TIME'])
 bc.generate_REP_EXECUTION_PLANS(tpc_type=ev_loader.var_get('user'),gathered_stats=True,iterations=5,columns=['ELAPSED_TIME'])
 """
