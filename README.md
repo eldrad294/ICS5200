@@ -15,6 +15,7 @@ Project dependencies are logged under a Python3 virtual environment. The envirom
 * deactivate 
 
 # Project Distribution
+This repository is distributed as follows
 ## bash
   * benchmark - Bash scripts reserved to initiate TPC benchmark
   * setup - Bash scripts reserved to initiate TPC installation
