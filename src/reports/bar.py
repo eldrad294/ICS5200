@@ -139,7 +139,7 @@ class BarCharts:
         #
         # print(schema)
         # print(cur)
-        schema_offsets = []
+        schema_offsets = [] # Used to keep record of which column offsets have been selected
         for col in columns:
             for i in range(len(schema)):
                 if col == schema[i]:
@@ -180,4 +180,4 @@ class BarCharts:
         plot(fig, config=config, filename=self.__save_path + save_path,
              auto_open=False)
         #
-        self.__logger.log('Report generation complete')
+        self.__logger.log('Report generation complete.')
