@@ -1,40 +1,17 @@
-drop table ccv;
-create table CCV tablespace tpcds_benchmark as
-(select  callcenter_seq.nextval cc_call_center_sk
-        ,call_center_id cc_call_center_id
-        ,sysdate cc_rec_start_date
-        ,to_char(to_date(sysdate,'yyyy/mm/dd'),'yyyy-mm-dd') cc_rec_end_date
-        ,d1.d_date_sk cc_closed_date_sk
-        ,d2.d_date_sk cc_open_date_sk
-        ,call_center_name cc_name
-        ,call_center_class cc_class
-        ,call_center_employees cc_employees
-        ,call_center_sq_ft cc_sq_ft
-        ,call_center_hours cc_hours
-        ,call_center_manager cc_manager
-        ,cc_mkt_id
-        ,cc_mkt_class
-        ,cc_mkt_desc
-        ,cc_market_manager
-        ,cc_division
-        ,cc_division_name
-        ,cc_company
-        ,cc_company_name
-        ,cc_street_number
-        ,cc_street_name
-        ,cc_street_type
-        ,cc_suite_number
-        ,cc_city
-        ,cc_county
-        ,cc_state
-        ,cc_zip
-        ,cc_country
-        ,cc_gmt_offset
-        ,cc_tax_percentage
-from    s_call_center left outer join date_dim d2 on d2.d_date = to_char(to_date(call_closed_date,'yyyy/mm/dd'),'yyyy-mm-dd')
-                      left outer join date_dim d1 on d1.d_date = to_char(to_date(call_open_date,'yyyy/mm/dd'),'yyyy-mm-dd'),
-        call_center
-where  call_center_id = cc_call_center_id
-   and cc_rec_end_date is null);
-select count(*) from s_call_center;
-select count(*) from ccv;
+drop table s_call_center;
+create table s_call_center  tablespace tpcds_benchmark as
+(select cc_call_center_id call_center_id 
+       ,d1.d_date call_open_date
+       ,d2.d_date call_closed_date
+       ,cc_name call_center_name
+       ,cc_class call_center_class
+       ,cc_employees call_center_employees
+       ,cc_sq_ft call_center_sq_ft
+       ,CC_HOURS call_center_hours
+       ,CC_MANAGER call_center_manager
+       ,CC_TAX_PERCENTAGE call_tax_percentage
+from call_center left outer join date_dim d2 on CC_CLOSED_DATE_SK = d2.d_date_sk
+                 left outer join date_dim d1 on CC_OPEN_DATE_SK = d1.d_date_sk
+where cc_rec_end_date is NULL
+  and rownum < 5
+);
