@@ -3,7 +3,7 @@ DECLARE
 BEGIN
    select count(*)
    into i_count
-   from all_sequences
+   from user_sequences
    where sequence_name = upper('callcenter_seq');
    if i_count > 0 then
    		execute immediate 'drop sequence callcenter_seq';
