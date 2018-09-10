@@ -146,11 +146,13 @@ class BarCharts:
         for col in columns:
             for i in range(len(schema)):
                 if col == schema[i]:
-                    data = Data(Bar(
+                    data = Data([
+                        Bar(
                             x=transaction_bank,
                             y=list(cur[:][i]),
                             name=col # Bar Title
-                    ))
+                        )
+                    ])
                     layout = go.Layout(
                         barmode='group',
                         title=tpc_type.upper() + " Benchmark " + str(col)
