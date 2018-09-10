@@ -143,6 +143,8 @@ class BarCharts:
         for row in cur:
             transaction_bank.append(row[0])
         #
+        print(schema)
+        print(cur)
         for col in columns:
             for i in range(len(schema)):
                 if col == schema[i]:
