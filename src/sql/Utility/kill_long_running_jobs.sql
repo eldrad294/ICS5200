@@ -42,10 +42,5 @@ begin
     end;
     dbms_lock.sleep(10);
   end loop;
-exception
-  when others then
-    rollback;
-    execute immediate 'insert into MON_DEBUG values(to_char('||sqlerrm||'))';
-    commit;
 end;
 /
