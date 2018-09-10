@@ -101,13 +101,13 @@ class BarCharts:
                 " sum(CONCURRENCY_WAIT_TIME) / " + str(iterations) + " as CONCURRENCY_WAIT_TIME, " \
                 " sum(CLUSTER_WAIT_TIME) / " + str(iterations) + " as CLUSTER_WAIT_TIME, " \
                 " sum(USER_IO_WAIT_TIME) / " + str(iterations) + " as USER_IO_WAIT_TIME, " \
-                " sum(PLSQL_EXEC_TIME) / " + str(iterations) + " as PLSQL_EXEC_TIME, " \
+                " round((sum(PLSQL_EXEC_TIME) / " + str(iterations) + ") / (1000*60*60)) as PLSQL_EXEC_TIME_MINS, " \
                 " sum(JAVA_EXEC_TIME) / " + str(iterations) + " as JAVA_EXEC_TIME, " \
                 " sum(OPTIMIZER_COST) / " + str(iterations) + " as OPTIMIZER_COST, " \
                 " sum(CHILD_NUMBER) / " + str(iterations) + " as CHILD_NUMBER, " \
                 " sum(SERIALIZABLE_ABORTS) / " + str(iterations) + " as SERIALIZABLE_ABORTS, " \
                 " sum(OUTLINE_CATEGORY) / " + str(iterations) + " as OUTLINE_CATEGORY, " \
-                " sum(CPU_TIME) / " + str(iterations) + " as CPU_TIME, " \
+                " round((sum(CPU_TIME) / " + str(iterations) + ") / (1000*60*60)) as CPU_TIME_MINS, " \
                 " round((sum(ELAPSED_TIME) / " + str(iterations) + ") / (1000*60*60)) as ELAPSED_TIME_MINS, " \
                 " sum(OUTLINE_SID) / " + str(iterations) + " as OUTLINE_SID, " \
                 " sum(SQLTYPE) / " + str(iterations) + " as SQLTYPE, " \

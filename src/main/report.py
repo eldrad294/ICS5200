@@ -44,8 +44,38 @@ bc = BarCharts(db_conn, logger, ev_loader.var_get('report_save_path'))
 #
 # This line requires SQL/Reports/REP_TPC_DESCRIBE.sql to have been executed for respective schema
 # bc.generate_REP_TPC_DESCRIBE(tpc_type=ev_loader.var_get('user'))
-bc.generate_REP_EXECUTION_PLANS(tpc_type=ev_loader.var_get('user'),gathered_stats=False,iterations=5,columns=['ELAPSED_TIME_MINS'])
-bc.generate_REP_EXECUTION_PLANS(tpc_type=ev_loader.var_get('user'),gathered_stats=True,iterations=5,columns=['ELAPSED_TIME_MINS'])
+bc.generate_REP_EXECUTION_PLANS(tpc_type=ev_loader.var_get('user'),gathered_stats=False,iterations=5,columns=['ELAPSED_TIME_MINS',
+                                                                                                              'SORTS',
+                                                                                                              'PARSE_CALLS',
+                                                                                                              'DISK_READS',
+                                                                                                              'DIRECT_WRITES',
+                                                                                                              'BUFFER_GETS',
+                                                                                                              'USER_IO_WAIT_TIME',
+                                                                                                              'OPTIMIZER_COST',
+                                                                                                              'CPU_TIME_MINS',
+                                                                                                              'IO_INTERCONNECT_BYTES',
+                                                                                                              'PHYSICAL_READ_REQUESTS',
+                                                                                                              'PHYSICAL_WRITE_REQUESTS',
+                                                                                                              'SHARABLE_MEM',
+                                                                                                              'PERSISTENT_MEM',
+                                                                                                              'RUNTIME_MEM',
+                                                                                                              'PLSQL_EXEC_TIME_MINS'])
+bc.generate_REP_EXECUTION_PLANS(tpc_type=ev_loader.var_get('user'),gathered_stats=True,iterations=5,columns=['ELAPSED_TIME_MINS',
+                                                                                                              'SORTS',
+                                                                                                              'PARSE_CALLS',
+                                                                                                              'DISK_READS',
+                                                                                                              'DIRECT_WRITES',
+                                                                                                              'BUFFER_GETS',
+                                                                                                              'USER_IO_WAIT_TIME',
+                                                                                                              'OPTIMIZER_COST',
+                                                                                                              'CPU_TIME_MINS',
+                                                                                                              'IO_INTERCONNECT_BYTES',
+                                                                                                              'PHYSICAL_READ_REQUESTS',
+                                                                                                              'PHYSICAL_WRITE_REQUESTS',
+                                                                                                              'SHARABLE_MEM',
+                                                                                                              'PERSISTENT_MEM',
+                                                                                                              'RUNTIME_MEM',
+                                                                                                              'PLSQL_EXEC_TIME_MINS'])
 """
 SCRIPT CLOSEUP - Cleanup
 """
