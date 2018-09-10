@@ -149,7 +149,7 @@ class BarCharts:
                     data = Data([
                         Bar(
                             x=transaction_bank,
-                            y=list(cur[:][i]),
+                            y=list(cur[i][:]),
                             name=col # Bar Title
                         )
                     ])
