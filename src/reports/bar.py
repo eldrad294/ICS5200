@@ -108,7 +108,7 @@ class BarCharts:
                 " sum(SERIALIZABLE_ABORTS) / " + str(iterations) + " as SERIALIZABLE_ABORTS, " \
                 " sum(OUTLINE_CATEGORY) / " + str(iterations) + " as OUTLINE_CATEGORY, " \
                 " sum(CPU_TIME) / " + str(iterations) + " as CPU_TIME, " \
-                " sum(ELAPSED_TIME) / " + str(iterations) + " as ELAPSED_TIME, " \
+                " (sum(ELAPSED_TIME) / " + str(iterations) + ") / (1000*60*60) as ELAPSED_TIME, " \
                 " sum(OUTLINE_SID) / " + str(iterations) + " as OUTLINE_SID, " \
                 " sum(SQLTYPE) / " + str(iterations) + " as SQLTYPE, " \
                 " min(LAST_LOAD_TIME) as LAST_LOAD_TIME, " \
@@ -134,7 +134,8 @@ class BarCharts:
                 " from REP_EXECUTION_PLANS " \
                 " where GATHERED_STATS = '" + str(gathered_stats).title() + "' " \
                 " group by tpc_transaction_name " \
-                " order by last_load_time"
+                " order by first_load_time " \
+                " tpc_transaction_name"
         print(query)
         cur, schema = self.__db_conn.execute_query(query=query,
                                                    describe=True)
