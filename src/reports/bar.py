@@ -136,7 +136,7 @@ class BarCharts:
                 " group by tpc_transaction_name " \
                 " order by first_load_time, " \
                 " tpc_transaction_name"
-        print(query)
+        #print(query)
         cur, schema = self.__db_conn.execute_query(query=query,
                                                    describe=True)
         #
@@ -151,36 +151,34 @@ class BarCharts:
         if len(schema_offsets) < 1:
             raise ValueError('No matching columns were found according to schema spec!')
         #
-        column_dict = {}
-        for i in range(len(schema_offsets)):
-            column_dict[schema[schema_offsets[i]]] = []
-        transaction_bank = []
-        for row in cur:
-            transaction_bank.append(row[0])
-            for i in range(len(row)):
-                if i in schema_offsets:
-                    column_dict[schema[i]].append(row[i])
-        #
-        bar_date = []
-        for key, val in column_dict.items():
-            b = Bar(
-                x=transaction_bank,
-                y=val,
-                name=key # Bar Title
-            )
-            bar_date.append(b)
-        data = Data(bar_date)
-        layout = go.Layout(
-            barmode='group',
-            title=tpc_type.upper() + " Benchmark " + str(columns)
-        )
-        config = None
-        fig = go.Figure(data=data, layout=layout)
-        save_path = "/REP_EXECUTION_PLANS_" + str(tpc_type) + '_' + str(gathered_stats)
         for col in columns:
-            save_path += "_" + col
-        save_path += ".html"
-        plot(fig, config=config, filename=self.__save_path + save_path,
-             auto_open=False)
+            column_dict = {}
+            for i in range(len(schema_offsets)):
+                column_dict[schema[schema_offsets[i]]] = []
+            transaction_bank = []
+            for row in cur:
+                transaction_bank.append(row[0])
+                for i in range(len(row)):
+                    if i in schema_offsets:
+                        column_dict[schema[i]].append(row[i])
+            #
+            bar_date = []
+            for key, val in column_dict.items():
+                b = Bar(
+                    x=transaction_bank,
+                    y=val,
+                    name=key # Bar Title
+                )
+                bar_date.append(b)
+            data = Data(bar_date)
+            layout = go.Layout(
+                barmode='group',
+                title=tpc_type.upper() + " Benchmark " + str(col)
+            )
+            config = None
+            fig = go.Figure(data=data, layout=layout)
+            save_path = "/REP_EXECUTION_PLANS_" + str(tpc_type) + '_' + str(gathered_stats) + '_' + col + '.html'
+            plot(fig, config=config, filename=self.__save_path + save_path,
+                 auto_open=False)
         #
         self.__logger.log('Report generation complete.')
