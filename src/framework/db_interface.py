@@ -203,7 +203,7 @@ class DatabaseInterface:
         if params is not None and len(params) > 0:
             for param in params:
                 sys += " " + str(param)
-        self.__logger.log(sys)
+        # self.__logger.log(sys)
         output = os.system(sys)
         if output != 0:
             raise Exception("Exception raised during generation of TPC files..Terminating process!")
