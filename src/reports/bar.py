@@ -143,9 +143,9 @@ class BarCharts:
         for row in cur:
             transaction_bank.append(row[0])
         #
-        print(schema)
-        print(cur)
-        print(np.array(cur)[:,0])
+        # print(schema)
+        # print(cur)
+        # print(np.array(cur)[:,0])
         for col in columns:
             for i in range(len(schema)):
                 if col == schema[i]:
