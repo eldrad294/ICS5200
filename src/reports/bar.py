@@ -1,7 +1,7 @@
 from plotly.offline import plot
 from plotly.graph_objs import *
 import plotly.graph_objs as go
-import os
+import os, numpy as np
 #
 class BarCharts:
     #
@@ -145,14 +145,14 @@ class BarCharts:
         #
         print(schema)
         print(cur)
-        print(cur[:,0])
+        print(np.array(cur[:,0]))
         for col in columns:
             for i in range(len(schema)):
                 if col == schema[i]:
                     data = Data([
                         Bar(
                             x=transaction_bank,
-                            y=cur[:,i],
+                            y=np.array(cur[:,i]),
                             name=col # Bar Title
                         )
                     ])
