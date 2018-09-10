@@ -152,7 +152,7 @@ class BarCharts:
                             name=col # Bar Title
                     ))
                     layout = go.Layout(
-                        barmode='group',
+                        barmode='bar',
                         title=tpc_type.upper() + " Benchmark " + str(col)
                     )
                     config = None
