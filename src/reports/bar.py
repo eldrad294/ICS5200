@@ -133,7 +133,9 @@ class BarCharts:
                 " count(BENCHMARK_ITERATION) as BENCHMARK_ITERATIONS " \
                 " from REP_EXECUTION_PLANS " \
                 " where GATHERED_STATS = '" + str(gathered_stats).title() + "' " \
-                " group by tpc_transaction_name"
+                " group by tpc_transaction_name " \
+                " order by last_load_time"
+        print(query)
         cur, schema = self.__db_conn.execute_query(query=query,
                                                    describe=True)
         #
