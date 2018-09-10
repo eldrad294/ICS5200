@@ -145,14 +145,14 @@ class BarCharts:
         #
         print(schema)
         print(cur)
-        print(cur[:][0])
+        print(cur[:,0])
         for col in columns:
             for i in range(len(schema)):
                 if col == schema[i]:
                     data = Data([
                         Bar(
                             x=transaction_bank,
-                            y=cur[:][i],
+                            y=cur[:,i],
                             name=col # Bar Title
                         )
                     ])
