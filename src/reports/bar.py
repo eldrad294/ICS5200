@@ -145,6 +145,7 @@ class BarCharts:
         #
         print(schema)
         print(cur)
+        print(list(zip(cur))[0])
         for col in columns:
             for i in range(len(schema)):
                 if col == schema[i]:
@@ -162,7 +163,7 @@ class BarCharts:
                     config = None
                     fig = go.Figure(data=data, layout=layout)
                     save_path = "/REP_EXECUTION_PLANS_" + str(tpc_type) + '_' + str(gathered_stats) + '_' + col + '.html'
-                    plot(fig, config=config, filename=self.__save_path + save_path,
-                         auto_open=False)
+                    plot(fig, config=config, filename=self.__save_path + save_path, auto_open=False)
+            self.__logger.log(str(col) + ' graph generated successfully..')
         #
         self.__logger.log('Report generation complete.')
