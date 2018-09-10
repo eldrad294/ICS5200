@@ -132,7 +132,7 @@ class BarCharts:
                 " count(STATEMENT_HASH_SUM) as STATEMENT_HASH_SUM, " \
                 " count(BENCHMARK_ITERATION) as BENCHMARK_ITERATIONS " \
                 " from REP_EXECUTION_PLANS " \
-                " where GATHERED_STATS = '" + str(gathered_stats).lower() + "' " \
+                " where GATHERED_STATS = '" + str(gathered_stats).title() + "' " \
                 " group by tpc_transaction_name"
         cur, schema = self.__db_conn.execute_query(query=query,
                                                    describe=True)
@@ -173,7 +173,7 @@ class BarCharts:
         )
         config = None
         fig = go.Figure(data=data, layout=layout)
-        save_path = "/REP_EXECUTION_PLANS_" + str(tpc_type)
+        save_path = "/REP_EXECUTION_PLANS_" + str(tpc_type) + '_' + str(gathered_stats)
         for col in columns:
             save_path += "_" + col
         save_path += ".html"
