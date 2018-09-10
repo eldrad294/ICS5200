@@ -43,6 +43,7 @@ begin
     dbms_lock.sleep(10);
   end loop;
 end;
+/
 declare
   l_job number := 0;
 begin
