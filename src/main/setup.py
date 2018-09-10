@@ -81,16 +81,6 @@ if ev_loader.var_get('tpcds_data_loading_bool') == 'True':
     if result < 1:
         db_conn.executeScriptsFromFile(ev_loader.var_get("src_dir") + "/sql/Installation/schema_tables_" + ev_loader.var_get('user') + ".sql")
         logger.log('TPC-DS table generation successful!')
-        db_conn.execute_script(user=ev_loader.var_get('user'),
-                               password=ev_loader.var_get('password'),
-                               instance_name=ev_loader.var_get('instance_name'),
-                               filename=ev_loader.var_get("src_dir") + "/sql/Utility/kill_long_running_jobs.sql",
-                               params=None)
-        #
-        # Execute this to ensure that sniffer procedure is deactivated
-        db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=0')  # Kill Sniffer Procedure
-        db_conn.commit()
-        logger.log('TPC-DS procedures generation successful!')
     else:
         logger.log('Skipping schema creation..TPC-DS tables already exist!')
     #
