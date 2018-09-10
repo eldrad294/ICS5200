@@ -1,5 +1,6 @@
 create or replace procedure kill_long_running
-  (i_secs number)
+  (i_secs number,
+   v_user varchar2)
 as
   i_count number;
 begin
@@ -9,15 +10,15 @@ begin
   where table_name = 'MON_KILL_LONG_RUNNING'
   and tablespace_name = 'TPCDS_BENCHMARK';
   if i_count < 1 then
-    execute immediate 'create table MON_KILL_LONG_RUNNING (running number default 1) tablespace tpcds_benchmark';
-    execute immediate 'insert into MON_KILL_LONG_RUNNING values (1)';
+    execute immediate 'create table '||v_user||'.MON_KILL_LONG_RUNNING (running number default 1) tablespace tpcds_benchmark';
+    execute immediate 'insert into '||v_user||'.MON_KILL_LONG_RUNNING values (1)';
   else
-    execute immediate 'update MON_KILL_LONG_RUNNING set running = 1';
+    execute immediate 'update '||v_user||'.MON_KILL_LONG_RUNNING set running = 1';
   end if;
   commit;
   while (true)
   loop
-    execute immediate 'select running from MON_KILL_LONG_RUNNING' into i_count;
+    execute immediate 'select running from '||v_user||'.MON_KILL_LONG_RUNNING' into i_count;
     if i_count = 0 then
       exit;
     end if;

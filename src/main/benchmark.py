@@ -87,7 +87,7 @@ db_conn.execute_script(user=ev_loader.var_get('user'),
                        password=ev_loader.var_get('password'),
                        instance_name=ev_loader.var_get('instance_name'),
                        filename=ev_loader.var_get("src_dir") + "/sql/Utility/run_kill_long_running_jobs.sql",
-                       params=[ev_loader.var_get('time_out_in_seconds')])
+                       params=[ev_loader.var_get('time_out_in_seconds'), ev_loader.var_get('user')])
 logger.log('Started "kill_long_running" proc')
 #
 db_conn.close()
@@ -228,7 +228,7 @@ db_conn.execute_script(user=ev_loader.var_get('user'),
                        password=ev_loader.var_get('password'),
                        instance_name=ev_loader.var_get('instance_name'),
                        filename=ev_loader.var_get("src_dir") + "/sql/Utility/run_kill_long_running_jobs.sql",
-                       params=[ev_loader.var_get('time_out_in_seconds')])
+                       params=[ev_loader.var_get('time_out_in_seconds'), ev_loader.var_get('user')])
 logger.log('Started "kill_long_running" proc')
 db_conn.close()
 #
