@@ -222,7 +222,7 @@ logger.log('Starting optimizer stats generation..')
 OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
                                                   logger=logger,
                                                   tpctype=ev_loader.var_get('user'))
-logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
+logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
 #
 db_conn.execute_script(user=ev_loader.var_get('user'),
                        password=ev_loader.var_get('password'),
