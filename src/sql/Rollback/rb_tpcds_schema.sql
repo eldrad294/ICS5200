@@ -1,6 +1,4 @@
-update tpcds1.MON_KILL_LONG_RUNNING set running=0;
-update tpcds10.MON_KILL_LONG_RUNNING set running=0;
-update tpcds100.MON_KILL_LONG_RUNNING set running=0;
+update MON_KILL_LONG_RUNNING set running=0;
 commit;
 drop table CATV;
 drop table CCV;
