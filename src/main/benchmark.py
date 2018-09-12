@@ -47,7 +47,6 @@ ev_loader = si.get_global_config()
 logger = si.initialize_logger()
 from src.utils.plan_control import XPlan
 from src.utils.stats_control import OptimizerStatistics
-from src.utils.flashback_control import FlashbackControl
 """
 ------------------------------------------------------------
 SCRIPT EXECUTION - Benchmark Start - Without Optimizer Stats
@@ -63,6 +62,20 @@ db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
 xp = XPlan(logger=logger,
            ev_loader=ev_loader)
 db_conn.connect()
+#
+# Prepare database for flashback
+db_conn.execute_script(user=ev_loader.var_get('user'),
+                       password=ev_loader.var_get('password'),
+                       instance_name=ev_loader.var_get('instance_name'),
+                       filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_tearup.sql",
+                       params=None)
+#
+# Revert database post flashback - back to normal state (noarchive mode)
+db_conn.execute_script(user=ev_loader.var_get('user'),
+                       password=ev_loader.var_get('password'),
+                       instance_name=ev_loader.var_get('instance_name'),
+                       filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_teardown.sql",
+                       params=None)
 #
 # Check whether schema needs creating - executed only if relevant tables are not found
 sql_statement = "select count(*) from user_tables where table_name = 'DBGEN_VERSION'"
@@ -99,43 +112,40 @@ dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var
 for i in range(1, ev_loader.var_get('iterations') + 1):
     #
     # Execute All Queries
-    # for j in range(1, 100):
-    #     filename = 'query_'+str(j)+'.sql'
-    #     with open(query_path + filename) as file:
-    #         logger.log('Generating execution metrics for [' + filename + ']..')
-    #         data = file.read()
-    #         sql_list = data.split(';')
-    #         for sql in sql_list:
-    #             sql = sql.replace("\n", " ")
-    #             if sql.isspace() is not True and sql != "":
-    #                 sql = xp.execution_plan_syntax(sql)
-    #                 try:
-    #                     db_conn.connect()
-    #                     db_conn.execute_dml(dml=sql, params=None)
-    #                     logger.log('Successfully executed [' + filename + "]")
-    #                 except Exception as e:
-    #                     logger.log(str(e))
-    #                 finally:
-    #                     db_conn.close()
-    #                     db_conn.connect()
-    #                     xp.generateExecutionPlan(sql=sql,
-    #                                              binds=None,
-    #                                              selection=None,
-    #                                              transaction_name=filename,
-    #                                              iteration_run=i,
-    #                                              gathered_stats=False,
-    #                                              db_conn=db_conn)
-    #                     xp.generateExplainPlan(sql=sql,
-    #                                            binds=None,
-    #                                            selection=None,
-    #                                            transaction_name=filename,
-    #                                            iteration_run=i,
-    #                                            gathered_stats=False,
-    #                                            db_conn=db_conn)
-    #                     db_conn.close()
-
-    # Keep reference to flashback timestamp
-    ts = FlashbackControl.captureTimeStamp()
+    for j in range(1, 100):
+        filename = 'query_'+str(j)+'.sql'
+        with open(query_path + filename) as file:
+            logger.log('Generating execution metrics for [' + filename + ']..')
+            data = file.read()
+            sql_list = data.split(';')
+            for sql in sql_list:
+                sql = sql.replace("\n", " ")
+                if sql.isspace() is not True and sql != "":
+                    sql = xp.execution_plan_syntax(sql)
+                    try:
+                        db_conn.connect()
+                        db_conn.execute_dml(dml=sql, params=None)
+                        logger.log('Successfully executed [' + filename + "]")
+                    except Exception as e:
+                        logger.log(str(e))
+                    finally:
+                        db_conn.close()
+                        db_conn.connect()
+                        xp.generateExecutionPlan(sql=sql,
+                                                 binds=None,
+                                                 selection=None,
+                                                 transaction_name=filename,
+                                                 iteration_run=i,
+                                                 gathered_stats=False,
+                                                 db_conn=db_conn)
+                        xp.generateExplainPlan(sql=sql,
+                                               binds=None,
+                                               selection=None,
+                                               transaction_name=filename,
+                                               iteration_run=i,
+                                               gathered_stats=False,
+                                               db_conn=db_conn)
+                        db_conn.close()
     #
     # Execute All DML
     for j in range(1, 43):
@@ -198,13 +208,6 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                                    gathered_stats=False,
                                                    db_conn=db_conn)
                             db_conn.close()
-    #
-    # Flashback Impacted Tables
-    db_conn.connect()
-    FlashbackControl.flashback_tables(db_conn=db_conn,
-                                      logger=logger,
-                                      timestamp=ts,
-                                      ev_loader=ev_loader)
     db_conn.close()
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
 """
@@ -271,9 +274,6 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                                db_conn=db_conn)
                         db_conn.close()
     #
-    # Keep reference to flashback timestamp
-    ts = FlashbackControl.captureTimeStamp()
-    #
     # Execute All DML
     for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
@@ -333,13 +333,6 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                                    gathered_stats=True,
                                                    db_conn=db_conn)
                             db_conn.close()
-    #
-    # Flashback Impacted Tables
-    db_conn.connect()
-    FlashbackControl.flashback_tables(db_conn=db_conn,
-                                      logger=logger,
-                                      timestamp=ts,
-                                      ev_loader=ev_loader)
     db_conn.close()
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
 """

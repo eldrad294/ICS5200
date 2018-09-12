@@ -1,6 +1,6 @@
 #
 # Import Modules
-import datetime, time
+import datetime, time, os
 #
 class FlashbackControl:
     #
@@ -39,3 +39,17 @@ class FlashbackControl:
         """
         ts = time.time()
         return datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y %H:%M:%S')
+    #
+    # @staticmethod
+    # def flashback_tearup(logger, script_path, user='sys as sysdba', password='!Orange1234'):
+    #     logger.log('Enabling database flashback tearup..')
+    #     sys = 'exit | sqlplus ' + user + '/' + password + ' @' + script_path
+    #     res = os.system(sys)
+    #     if res != 0:
+    #         raise OSError('Exited flashback tearup with error: ' + str(res))
+    #     logger.log('Database flashback tearup complete..')
+    # #
+    # @staticmethod
+    # def flashback_teardown(logger, script_path, user='sys as sysdba', password='!Orange1234'):
+    #     logger.log('Enabling database flashback teardown..')
+    #     sys = 'exit | sqlplus ' + user + '/' + password + ' @' + script_path
