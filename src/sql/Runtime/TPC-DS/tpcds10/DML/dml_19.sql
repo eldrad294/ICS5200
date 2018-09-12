@@ -1,41 +1,17 @@
-DECLARE
-   max_sk NUMBER;
-BEGIN
-  FOR p_rec IN (SELECT P_PROMO_ID
-,P_START_DATE_SK
-,P_END_DATE_SK
-,P_COST
-,P_RESPONSE_TARGET
-,PROM_PROMO_NAME
-,P_CHANNEL_DMAIL
-,P_CHANNEL_EMAIL
-,P_CHANNEL_CATALOG
-,P_CHANNEL_TV
-,P_CHANNEL_RADIO
-,P_CHANNEL_PRESS
-,P_CHANNEL_EVENT
-,P_CHANNEL_DEMO
-,P_CHANNEL_DETAILS
-,P_PURPOSE
-,P_DISCOUNT_ACTIVE
-                   FROM promv) LOOP
-    update promotion set
- P_END_DATE_SK=p_rec.P_END_DATE_SK
-,P_COST=p_rec.P_COST
-,P_RESPONSE_TARGET=p_rec.P_RESPONSE_TARGET
-,P_PROMO_NAME=p_rec.PROM_PROMO_NAME
-,P_CHANNEL_DMAIL=p_rec.P_CHANNEL_DMAIL
-,P_CHANNEL_EMAIL=p_rec.P_CHANNEL_EMAIL
-,P_CHANNEL_CATALOG=p_rec.P_CHANNEL_CATALOG
-,P_CHANNEL_TV=p_rec.P_CHANNEL_TV
-,P_CHANNEL_RADIO=p_rec.P_CHANNEL_RADIO
-,P_CHANNEL_PRESS=p_rec.P_CHANNEL_PRESS
-,P_CHANNEL_EVENT=p_rec.P_CHANNEL_EVENT
-,P_CHANNEL_DEMO=p_rec.P_CHANNEL_DEMO
-,P_CHANNEL_DETAILS=p_rec.P_CHANNEL_DETAILS
-,P_PURPOSE=p_rec.P_PURPOSE
-,P_DISCOUNT_ACTIVE=p_rec.P_DISCOUNT_ACTIVE
-  where P_PROMO_ID=p_rec.P_PROMO_ID;
-  END LOOP;
-commit;
-END;
+drop table s_web_page;
+create table s_web_page tablespace tpcds_benchmark as
+(select WP_WEB_PAGE_ID WPAG_WEB_PAGE_ID
+       ,d1.d_date WPAG_CREATE_DATE
+       ,d2.d_date WPAG_ACCESS_DATE
+       ,WP_AUTOGEN_FLAG WPAG_AUTOGEN_FLAG
+       ,WP_URL WPAG_URL
+       ,WP_TYPE WPAG_TYPE
+       ,WP_CHAR_COUNT WPAG_CHAR_COUNT
+       ,WP_LINK_COUNT WPAG_LINK_COUNT
+       ,WP_IMAGE_COUNT WPAG_IMAGE_COUNT
+       ,WP_MAX_AD_COUNT WPAG_MAX_AD_COUNT
+from web_page left outer join date_dim d1 on wp_creation_date_sk = d1.d_date_sk
+              left outer join date_dim d2 on wp_access_date_sk = d2.d_date_sk
+where wp_rec_end_date is null
+  and rownum < 10
+);

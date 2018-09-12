@@ -1,40 +1,27 @@
-drop table ccv;
-create table CCV tablespace tpcds_benchmark as
-(select  callcenter_seq.nextval cc_call_center_sk
-        ,call_center_id cc_call_center_id
-        ,sysdate cc_rec_start_date
-        ,to_char(to_date(sysdate,'yyyy/mm/dd'),'yyyy-mm-dd') cc_rec_end_date
-        ,d1.d_date_sk cc_closed_date_sk
-        ,d2.d_date_sk cc_open_date_sk
-        ,call_center_name cc_name
-        ,call_center_class cc_class
-        ,call_center_employees cc_employees
-        ,call_center_sq_ft cc_sq_ft
-        ,call_center_hours cc_hours
-        ,call_center_manager cc_manager
-        ,cc_mkt_id
-        ,cc_mkt_class
-        ,cc_mkt_desc
-        ,cc_market_manager
-        ,cc_division
-        ,cc_division_name
-        ,cc_company
-        ,cc_company_name
-        ,cc_street_number
-        ,cc_street_name
-        ,cc_street_type
-        ,cc_suite_number
-        ,cc_city
-        ,cc_county
-        ,cc_state
-        ,cc_zip
-        ,cc_country
-        ,cc_gmt_offset
-        ,cc_tax_percentage
-from    s_call_center left outer join date_dim d2 on d2.d_date = to_char(to_date(call_closed_date,'yyyy/mm/dd'),'yyyy-mm-dd')
-                      left outer join date_dim d1 on d1.d_date = to_char(to_date(call_open_date,'yyyy/mm/dd'),'yyyy-mm-dd'),
-        call_center
-where  call_center_id = cc_call_center_id
-   and cc_rec_end_date is null);
-select count(*) from s_call_center;
-select count(*) from ccv;
+DECLARE
+   max_sk NUMBER;
+BEGIN
+  FOR ca_rec IN (SELECT CA_ADDRESS_ID
+                       ,CA_STREET_NUMBER AS CUST_STREET_NUMBER
+                       ,CA_STREET_NAME AS STREET
+                       ,CA_STREET_TYPE AS CUST_STREET_TYPE
+                       ,CA_SUITE_NUMBER AS CUST_SUITE_NUMBER
+                       ,CA_CITY AS CUST_CITY
+                       ,CA_COUNTY AS CUST_COUNTY
+                       ,CA_STATE AS CUST_STATE
+                       ,CA_ZIP AS CUST_ZIP
+                       ,CA_COUNTRY AS CUST_COUNTRY
+                 from cadrv) LOOP
+    update customer_address set
+ CA_STREET_NUMBER=ca_rec.CUST_STREET_NUMBER
+,CA_STREET_NAME=substr(ca_rec.STREET,60)
+,CA_STREET_TYPE=ca_rec.CUST_STREET_TYPE
+,CA_SUITE_NUMBER=ca_rec.CUST_SUITE_NUMBER
+,CA_CITY=ca_rec.CUST_CITY
+,CA_COUNTY=ca_rec.CUST_COUNTY
+,CA_STATE=ca_rec.CUST_STATE
+,CA_ZIP=ca_rec.CUST_ZIP
+,CA_COUNTRY=ca_rec.CUST_COUNTRY;
+  END LOOP;
+commit;
+END;
