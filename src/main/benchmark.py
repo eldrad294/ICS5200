@@ -70,19 +70,6 @@ db_conn.execute_script(user='sys as sysdba',
                        instance_name=ev_loader.var_get('instance_name'),
                        filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_tearup.sql",
                        params=[restore_point_name])
-"""
-TEST BEGIN
-"""
-#
-# Enable Flashback
-db_conn.execute_script(user='sys as sysdba',
-                       password='!Orange1234',
-                       instance_name=ev_loader.var_get('instance_name'),
-                       filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
-                       params=[restore_point_name])
-"""
-TEST END
-"""
 #
 # Database would have restarted at this point, so need to close prior connections
 db_conn.connect()
