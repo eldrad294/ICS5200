@@ -64,15 +64,15 @@ xp = XPlan(logger=logger,
 db_conn.connect()
 #
 # Prepare database for flashback
-db_conn.execute_script(user=ev_loader.var_get('user'),
-                       password=ev_loader.var_get('password'),
+db_conn.execute_script(user='sys as sysdba',
+                       password='!Orange1234',
                        instance_name=ev_loader.var_get('instance_name'),
                        filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_tearup.sql",
                        params=None)
 #
 # Revert database post flashback - back to normal state (noarchive mode)
-db_conn.execute_script(user=ev_loader.var_get('user'),
-                       password=ev_loader.var_get('password'),
+db_conn.execute_script(user='sys as sysdba',
+                       password='!Orange1234',
                        instance_name=ev_loader.var_get('instance_name'),
                        filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_teardown.sql",
                        params=None)
