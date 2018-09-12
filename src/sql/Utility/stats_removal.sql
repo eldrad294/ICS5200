@@ -9,5 +9,5 @@
 */
 execute dbms_stats.delete_database_stats(statown=>'tpcds1');
 execute dbms_stats.delete_database_stats(statown=>'tpcds10');
-execute dbms_stats.delete_database_stats(statown=>'tpcds50');
+--execute dbms_stats.delete_database_stats(statown=>'tpcds50');
 execute dbms_stats.delete_database_stats(statown=>'tpcds100');
