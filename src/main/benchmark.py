@@ -65,8 +65,8 @@ db_conn.connect()
 #
 # Prepare database for flashback
 restore_point_name = ev_loader.var_get('user') + "_benchmark_rp"
-db_conn.execute_script(user='sys as sysdba',
-                       password='!Orange1234',
+db_conn.execute_script(user=ev_loader.var_get('sysuser'),
+                       password=ev_loader.var_get('syspassword'),
                        instance_name=ev_loader.var_get('instance_name'),
                        filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_tearup.sql",
                        params=[restore_point_name])
@@ -201,8 +201,8 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                             db_conn.close()
     #
     # Enable Flashback
-    db_conn.execute_script(user='sys as sysdba',
-                           password='!Orange1234',
+    db_conn.execute_script(user=ev_loader.var_get('sysuser'),
+                           password=ev_loader.var_get('syspassword'),
                            instance_name=ev_loader.var_get('instance_name'),
                            filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
                            params=[restore_point_name])
@@ -332,8 +332,8 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                             db_conn.close()
     #
     # Enable Flashback
-    db_conn.execute_script(user='sys as sysdba',
-                           password='!Orange1234',
+    db_conn.execute_script(user=ev_loader.var_get('sysuser'),
+                           password=ev_loader.var_get('syspassword'),
                            instance_name=ev_loader.var_get('instance_name'),
                            filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
                            params=[restore_point_name])
@@ -347,8 +347,8 @@ db_conn.commit()
 db_conn.close()
 #
 # Revert database post flashback - back to normal state (noarchive mode)
-db_conn.execute_script(user='sys as sysdba',
-                       password='!Orange1234',
+db_conn.execute_script(user=ev_loader.var_get('sysuser'),
+                       password=ev_loader.var_get('syspassword'),
                        instance_name=ev_loader.var_get('instance_name'),
                        filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_teardown.sql",
                        params=[restore_point_name])

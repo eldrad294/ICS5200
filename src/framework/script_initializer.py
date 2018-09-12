@@ -21,10 +21,12 @@ class ScriptInitializer:
         ld_library_path = str(g_config.get_value('Oracle','ld_library_path'))
         #
         # Loading of database config
+        sysuser = g_config.get_value('DatabaseConnectionString','sysuser')
         user = g_config.get_value('DatabaseConnectionString','user')
         host = g_config.get_value('DatabaseConnectionString','host')
         service = g_config.get_value('DatabaseConnectionString','service')
         port = g_config.get_value('DatabaseConnectionString','port')
+        syspassword = g_config.get_value('DatabaseConnectionString','syspassword')
         password = g_config.get_value('DatabaseConnectionString','password')
         instance_name = g_config.get_value('DatabaseConnectionString','instance_name')
         #
@@ -78,6 +80,7 @@ class ScriptInitializer:
                             'src_dir':src_dir,
                             'home_dir':home_dir,
                             'spark_installation_path':spark_installation_path,
+                            'sysuser':sysuser,
                             'user':user,
                             'write_to_disk':write_to_disk,
                             'write_to_screen':write_to_screen,
@@ -88,6 +91,7 @@ class ScriptInitializer:
                             'host':host,
                             'service':service,
                             'port':port,
+                            'syspassword':syspassword,
                             'password':password,
                             'data_retain_bool':data_retain_bool,
                             'tpcds_generation_bool':tpcds_generation_bool,
