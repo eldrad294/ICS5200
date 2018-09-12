@@ -1,22 +1,18 @@
-DECLARE
-   max_sk NUMBER;
-BEGIN
-  FOR cp_rec IN (SELECT CP_CATALOG_PAGE_ID
-                       ,CP_START_DATE_SK
-                       ,CP_END_DATE_SK
-                       ,CP_DEPARTMENT
-                       ,CP_CATALOG_NUMBER
-                       ,CP_DESCRIPTION
-                       ,CP_TYPE
-                   FROM catv) LOOP
-    update catalog_page set CP_CATALOG_PAGE_ID=cp_rec.CP_CATALOG_PAGE_ID
-                           ,CP_START_DATE_SK=cp_rec.CP_START_DATE_SK
-                           ,CP_END_DATE_SK=cp_rec.CP_END_DATE_SK
-                           ,CP_DEPARTMENT=cp_rec.CP_DEPARTMENT
-                           ,CP_CATALOG_NUMBER=cp_rec.CP_CATALOG_NUMBER
-                           ,CP_DESCRIPTION=cp_rec.CP_DESCRIPTION
-                           ,CP_TYPE=cp_rec.CP_TYPE
-  where CP_CATALOG_PAGE_ID=cp_rec.CP_CATALOG_PAGE_ID;
-  END LOOP;
-commit;
-END;
+drop table s_web_site;
+create table s_web_site tablespace tpcds_benchmark as
+select * from
+(select web_site_id wsit_web_site_id
+       ,d1.d_date wsit_open_date
+       ,d2.d_date wsit_closed_date
+       ,web_name wsit_site_name
+       ,web_class wsit_site_class
+       ,web_manager wsit_site_manager
+       ,web_tax_percentage wsit_tax_percentage
+ from web_site
+     ,date_dim d1
+     ,date_dim d2
+ where web_open_date_sk = d1.d_date_sk
+   and web_close_date_sk = d2.d_date_sk
+   and web_rec_end_date is null)
+where rownum < 6;
+ 

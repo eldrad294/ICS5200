@@ -1,20 +1,34 @@
-drop table wrhsv;
-create  table wrhsv tablespace tpcds_benchmark as
-select  wrhs_warehouse_id w_warehouse_id
-       ,wrhs_warehouse_desc w_warehouse_name
-       ,wrhs_warehouse_sq_ft w_warehouse_sq_ft
-       ,w_street_number
-       ,w_street_name
-       ,w_street_type
-       ,w_suite_number
-       ,w_city
-       ,w_county
-       ,w_state
-       ,w_zip
-       ,w_country
-       ,w_gmt_offset
-from    s_warehouse,
-        warehouse
-where   wrhs_warehouse_id = w_warehouse_id;
-select count(*) from s_warehouse;
-select count(*) from wrhsv;
+DECLARE
+   max_sk NUMBER;
+BEGIN
+  FOR w_rec IN (SELECT W_WAREHOUSE_ID
+                       ,W_WAREHOUSE_NAME
+                       ,W_WAREHOUSE_SQ_FT
+                       ,W_STREET_NUMBER
+                       ,W_STREET_NAME
+                       ,W_STREET_TYPE
+                       ,W_SUITE_NUMBER
+                       ,W_CITY
+                       ,W_COUNTY
+                       ,W_STATE
+                       ,W_ZIP
+                       ,W_COUNTRY
+                       ,W_GMT_OFFSET
+                   FROM wrhsv) LOOP
+    update warehouse set 
+            W_WAREHOUSE_NAME=w_rec.W_WAREHOUSE_NAME
+           ,W_WAREHOUSE_SQ_FT=w_rec.W_WAREHOUSE_SQ_FT
+           ,W_STREET_NUMBER=w_rec.W_STREET_NUMBER
+           ,W_STREET_NAME=w_rec.W_STREET_NAME
+           ,W_STREET_TYPE=w_rec.W_STREET_TYPE
+           ,W_SUITE_NUMBER=w_rec.W_SUITE_NUMBER
+           ,W_CITY=w_rec.W_CITY
+           ,W_COUNTY=w_rec.W_COUNTY
+           ,W_STATE=w_rec.W_STATE
+           ,W_ZIP=w_rec.W_ZIP
+           ,W_COUNTRY=w_rec.W_COUNTRY
+           ,W_GMT_OFFSET=w_rec.W_GMT_OFFSET
+  where W_WAREHOUSE_ID=w_rec.W_WAREHOUSE_ID;
+  END LOOP;
+commit;
+END;

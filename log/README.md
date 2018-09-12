@@ -1,1 +1,1 @@
-Log File
+This is a readme

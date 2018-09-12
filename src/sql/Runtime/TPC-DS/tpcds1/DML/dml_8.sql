@@ -1,14 +1,40 @@
-DECLARE
-   max_sk NUMBER;
-   i_count number;
-BEGIN
-   select count(*)
-   into i_count
-   from all_sequences
-   where sequence_name = upper('web_page_seq');
-   if i_count > 0 then
-     execute immediate 'drop sequence web_page_seq';
-   end if;
-   SELECT max(WP_WEB_PAGE_SK)+1 INTO max_sk FROM web_page;
-   EXECUTE IMMEDIATE 'CREATE SEQUENCE web_page_seq INCREMENT BY 1 START WITH '||max_sk||' ORDER';
-END;
+drop table ccv;
+create table CCV tablespace tpcds_benchmark as
+(select  callcenter_seq.nextval cc_call_center_sk
+        ,call_center_id cc_call_center_id
+        ,sysdate cc_rec_start_date
+        ,to_char(to_date(sysdate,'yyyy/mm/dd'),'yyyy-mm-dd') cc_rec_end_date
+        ,d1.d_date_sk cc_closed_date_sk
+        ,d2.d_date_sk cc_open_date_sk
+        ,call_center_name cc_name
+        ,call_center_class cc_class
+        ,call_center_employees cc_employees
+        ,call_center_sq_ft cc_sq_ft
+        ,call_center_hours cc_hours
+        ,call_center_manager cc_manager
+        ,cc_mkt_id
+        ,cc_mkt_class
+        ,cc_mkt_desc
+        ,cc_market_manager
+        ,cc_division
+        ,cc_division_name
+        ,cc_company
+        ,cc_company_name
+        ,cc_street_number
+        ,cc_street_name
+        ,cc_street_type
+        ,cc_suite_number
+        ,cc_city
+        ,cc_county
+        ,cc_state
+        ,cc_zip
+        ,cc_country
+        ,cc_gmt_offset
+        ,cc_tax_percentage
+from    s_call_center left outer join date_dim d2 on d2.d_date = to_char(to_date(call_closed_date,'yyyy/mm/dd'),'yyyy-mm-dd')
+                      left outer join date_dim d1 on d1.d_date = to_char(to_date(call_open_date,'yyyy/mm/dd'),'yyyy-mm-dd'),
+        call_center
+where  call_center_id = cc_call_center_id
+   and cc_rec_end_date is null);
+select count(*) from s_call_center;
+select count(*) from ccv;

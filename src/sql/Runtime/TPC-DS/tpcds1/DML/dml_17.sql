@@ -1,14 +1,22 @@
 DECLARE
    max_sk NUMBER;
-   i_count number;
 BEGIN
-   select count(*)
-   into i_count
-   from all_sequences
-   where sequence_name = upper('item_seq');
-   if i_count > 0 then
-   execute immediate 'drop sequence item_seq';
-   end if;
-   SELECT max(i_item_sk)+1 INTO max_sk FROM item;
-   EXECUTE IMMEDIATE 'CREATE SEQUENCE item_seq INCREMENT BY 1 START WITH '||max_sk||' ORDER';
+  FOR cp_rec IN (SELECT CP_CATALOG_PAGE_ID
+                       ,CP_START_DATE_SK
+                       ,CP_END_DATE_SK
+                       ,CP_DEPARTMENT
+                       ,CP_CATALOG_NUMBER
+                       ,CP_DESCRIPTION
+                       ,CP_TYPE
+                   FROM catv) LOOP
+    update catalog_page set CP_CATALOG_PAGE_ID=cp_rec.CP_CATALOG_PAGE_ID
+                           ,CP_START_DATE_SK=cp_rec.CP_START_DATE_SK
+                           ,CP_END_DATE_SK=cp_rec.CP_END_DATE_SK
+                           ,CP_DEPARTMENT=cp_rec.CP_DEPARTMENT
+                           ,CP_CATALOG_NUMBER=cp_rec.CP_CATALOG_NUMBER
+                           ,CP_DESCRIPTION=cp_rec.CP_DESCRIPTION
+                           ,CP_TYPE=cp_rec.CP_TYPE
+  where CP_CATALOG_PAGE_ID=cp_rec.CP_CATALOG_PAGE_ID;
+  END LOOP;
+commit;
 END;
