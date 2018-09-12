@@ -2,5 +2,6 @@ shutdown immediate;
 startup mount;
 alter database archivelog;
 alter database flashback on;
-CREATE RESTORE POINT &1 GUARANTEE FLASHBACK DATABASE;
+FLASHBACK DATABASE TO RESTORE POINT &1;
+ALTER DATABASE OPEN RESETLOGS;
 alter database open;

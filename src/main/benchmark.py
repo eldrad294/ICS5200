@@ -64,18 +64,25 @@ xp = XPlan(logger=logger,
 db_conn.connect()
 #
 # Prepare database for flashback
+restore_point_name = ev_loader.var_get('user') + "_benchmark_rp"
 db_conn.execute_script(user='sys as sysdba',
                        password='!Orange1234',
                        instance_name=ev_loader.var_get('instance_name'),
                        filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_tearup.sql",
-                       params=None)
+                       params=[restore_point_name])
+"""
+TEST BEGIN
+"""
 #
-# Revert database post flashback - back to normal state (noarchive mode)
+# Enable Flashback
 db_conn.execute_script(user='sys as sysdba',
                        password='!Orange1234',
                        instance_name=ev_loader.var_get('instance_name'),
-                       filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_teardown.sql",
-                       params=None)
+                       filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
+                       params=[restore_point_name])
+"""
+TEST END
+"""
 #
 # Database would have restarted at this point, so need to close prior connections
 db_conn.connect()
@@ -98,12 +105,6 @@ OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
                                                 tpctype=ev_loader.var_get('user'))
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
 #
-# Start sniffer procedure to terminate long running queries
-db_conn.execute_script(user=ev_loader.var_get('user'),
-                       password=ev_loader.var_get('password'),
-                       instance_name=ev_loader.var_get('instance_name'),
-                       filename=ev_loader.var_get("src_dir") + "/sql/Utility/kill_long_running_jobs.sql",
-                       params=[ev_loader.var_get('time_out_in_seconds')])
 logger.log('Started "kill_long_running" proc')
 #
 db_conn.close()
@@ -211,7 +212,13 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                                    gathered_stats=False,
                                                    db_conn=db_conn)
                             db_conn.close()
-    db_conn.close()
+    #
+    # Enable Flashback
+    db_conn.execute_script(user='sys as sysdba',
+                           password='!Orange1234',
+                           instance_name=ev_loader.var_get('instance_name'),
+                           filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
+                           params=[restore_point_name])
     logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
 """
 ------------------------------------------------------------
@@ -336,7 +343,13 @@ for i in range(1, ev_loader.var_get('iterations')+1):
                                                    gathered_stats=True,
                                                    db_conn=db_conn)
                             db_conn.close()
-    db_conn.close()
+    #
+    # Enable Flashback
+    db_conn.execute_script(user='sys as sysdba',
+                           password='!Orange1234',
+                           instance_name=ev_loader.var_get('instance_name'),
+                           filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
+                           params=[restore_point_name])
     logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
 """
 SCRIPT CLOSEUP - Cleanup
@@ -345,5 +358,12 @@ db_conn.connect()
 db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=0') # Kill Sniffer Procedure
 db_conn.commit()
 db_conn.close()
+#
+# Revert database post flashback - back to normal state (noarchive mode)
+db_conn.execute_script(user='sys as sysdba',
+                       password='!Orange1234',
+                       instance_name=ev_loader.var_get('instance_name'),
+                       filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_teardown.sql",
+                       params=[restore_point_name])
 # si.initialize_spark().kill_spark_nodes()
 logger.log("Script Complete!\n-------------------------------------")
