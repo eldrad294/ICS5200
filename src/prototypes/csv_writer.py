@@ -51,7 +51,7 @@ execution_output.writerow(headers)
 for row in cur_res:
     execution_output.writerow(row)
 cur_res, headers = db_conn.execute_query(query='select * from rep_explain_plans', describe=True)
-execution_output.writerow(headers)
+explain_output.writerow(headers)
 for row in cur_res:
     explain_output.writerow(row)
 db_conn.close()
