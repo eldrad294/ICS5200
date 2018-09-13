@@ -2,7 +2,7 @@ LOAD DATA
 INFILE '/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_execution_plans.csv'
 REPLACE
 INTO TABLE tpcds1.rep_execution_plans
-FIELDS TERMINATED BY ','
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 TRAILING NULLCOLS
 (
 SQL_TEXT,

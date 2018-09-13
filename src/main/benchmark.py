@@ -76,12 +76,6 @@ finally:
     #
     execution_output = csv.writer(rep_execution_plans_file, dialect='excel')
     explain_output = csv.writer(rep_explain_plans_file, dialect='excel')
-    #
-    # Write File Headers
-    cur_res, headers = db_conn.execute_query(query='select * from rep_execution_plans', describe=True)
-    execution_output.writerow(headers)
-    cur_res, headers = db_conn.execute_query(query='select * from rep_explain_plans', describe=True)
-    explain_output.writerow(headers)
 #
 # Check whether schema needs creating - executed only if relevant tables are not found
 sql_statement = "select count(*) from user_tables where table_name = 'DBGEN_VERSION'"
