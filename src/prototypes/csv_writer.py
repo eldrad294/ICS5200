@@ -31,8 +31,8 @@ open("/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_executi
 open("/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_explain_plans.csv","w")
 rep_execution_plans_file=open("/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_execution_plans.csv","a")
 rep_explain_plans_file=open("/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_explain_plans.csv","a")
-execution_output=csv.writer(rep_execution_plans_file, dialect='csv')
-explain_output=csv.writer(rep_explain_plans_file, dialect='csv')
+execution_output=csv.writer(rep_execution_plans_file, dialect='excel')
+explain_output=csv.writer(rep_explain_plans_file, dialect='excel')
 db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                             user=ev_loader.var_get('user'),
                             host=ev_loader.var_get('host'),
