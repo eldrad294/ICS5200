@@ -21,7 +21,8 @@ BEGIN
 ,CA_COUNTY=ca_rec.CUST_COUNTY
 ,CA_STATE=ca_rec.CUST_STATE
 ,CA_ZIP=ca_rec.CUST_ZIP
-,CA_COUNTRY=ca_rec.CUST_COUNTRY;
+,CA_COUNTRY=ca_rec.CUST_COUNTRY
+where ca_address_id = ca_rec.ca_address_id;
   END LOOP;
 commit;
 END;
