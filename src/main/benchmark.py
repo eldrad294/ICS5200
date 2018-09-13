@@ -57,11 +57,11 @@ db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
 xp = XPlan(logger=logger,
            ev_loader=ev_loader)
 #
+db_conn.connect()
+#
 # Create metric table
 xp.create_REP_EXECUTION_PLANS(db_conn=db_conn)
 xp.create_REP_EXPLAIN_PLANS(db_conn=db_conn)
-#
-db_conn.connect()
 #
 csv_rep_execution_plans = "/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_execution_plans.csv"
 csv_rep_explain_plans = "/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_explain_plans.csv"
