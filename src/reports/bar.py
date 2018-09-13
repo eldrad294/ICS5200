@@ -78,7 +78,7 @@ class BarCharts:
         columns = [column.upper() for column in columns]
         #
         # Check whether schema needs creating - executed only if relevant tables are not found
-        sql_statement = "select count(*) from user_tables where table_name = 'REP_EXECUTION_PLANS'"
+        sql_statement = "select count(*) from REP_EXECUTION_PLANS"
         result = int(self.__db_conn.execute_query(sql_statement, fetch_single=True)[0])
         if result == 0:
             #

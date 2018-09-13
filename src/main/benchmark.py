@@ -113,7 +113,12 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
     db_conn.connect()
     #
     # Drop stats during first half of the benchmark, Gather stats during first half of the benchmark.
-    # if i > (ev_loader.var_get('iterations')):
+    if i > (ev_loader.var_get('iterations')):
+        stats = True
+    else:
+        stats = False
+    #
+    # if stats:
     #     #
     #     # Gather optimizer stats
     #     logger.log('Starting optimizer stats generation..')
@@ -128,7 +133,7 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
     #     OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
     #                                                     logger=logger,
     #                                                     tpctype=ev_loader.var_get('user'))
-    #     logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
+        logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
     #
     db_conn.close()
     #
@@ -157,14 +162,14 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
                                                  selection=None,
                                                  transaction_name=filename,
                                                  iteration_run=i,
-                                                 gathered_stats=False,
+                                                 gathered_stats=stats,
                                                  db_conn=db_conn)
                         xp.generateExplainPlan(sql=sql,
                                                binds=None,
                                                selection=None,
                                                transaction_name=filename,
                                                iteration_run=i,
-                                               gathered_stats=False,
+                                               gathered_stats=stats,
                                                db_conn=db_conn)
                         db_conn.close()
     #
@@ -195,7 +200,7 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
                                              selection=None,
                                              transaction_name=filename,
                                              iteration_run=i,
-                                             gathered_stats=False,
+                                             gathered_stats=stats,
                                              db_conn=db_conn)
                     db_conn.close()
             else:
@@ -219,14 +224,14 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
                                                      selection=None,
                                                      transaction_name=filename,
                                                      iteration_run=i,
-                                                     gathered_stats=False,
+                                                     gathered_stats=stats,
                                                      db_conn=db_conn)
                             xp.generateExplainPlan(sql=dml,
                                                    binds=None,
                                                    selection=None,
                                                    transaction_name=filename,
                                                    iteration_run=i,
-                                                   gathered_stats=False,
+                                                   gathered_stats=stats,
                                                    db_conn=db_conn)
                             db_conn.close()
     #
@@ -238,18 +243,18 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
     cur_res = db_conn.execute_query(query='select * from rep_explain_plans')
     [explain_output.writerow(row) for row in cur_res]
     db_conn.close()
+    # #
+    # # Enable Flashback
+    # db_conn.execute_script(user=ev_loader.var_get('sysuser'),
+    #                        password=ev_loader.var_get('syspassword'),
+    #                        instance_name=ev_loader.var_get('instance_name'),
+    #                        filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
+    #                        params=[restore_point_name])
     #
-    # Enable Flashback
-    db_conn.execute_script(user=ev_loader.var_get('sysuser'),
-                           password=ev_loader.var_get('syspassword'),
-                           instance_name=ev_loader.var_get('instance_name'),
-                           filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
-                           params=[restore_point_name])
-    #
-    if i > (ev_loader.var_get('iterations')):
-        logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
+    if stats:
+        logger.log("Executed iteration [" + str(i-1) + "] of gathered stats benchmark")
     else:
-        logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
+        logger.log("Executed iteration [" + str(i-1) + "] of removed stats benchmark")
 """
 SCRIPT CLOSEUP - Cleanup
 """
