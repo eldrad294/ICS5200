@@ -133,7 +133,7 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
     db_conn.close()
     #
     # Execute All Queries
-    for j in range(1, 100):
+    for j in range(99, 100):
         filename = 'query_'+str(j)+'.sql'
         with open(query_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
@@ -169,7 +169,7 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
                         db_conn.close()
     #
     # Execute All DML
-    for j in range(1, 43):
+    for j in range(42, 43):
         filename = 'dml_' + str(j) + '.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
         #
@@ -380,6 +380,10 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
 """
 SCRIPT CLOSEUP - Cleanup
 """
+#
+# Close CSV file
+rep_execution_plans_file.close()
+rep_explain_plans_file.close()
 #
 # Revert database post flashback - back to normal state (noarchive mode)
 db_conn.execute_script(user=ev_loader.var_get('sysuser'),

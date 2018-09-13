@@ -202,6 +202,5 @@ class BarCharts:
                 fig = go.Figure(data=data, layout=layout)
                 save_path = "/REP_EXECUTION_PLANS_" + str(ev_loader.var_get('user')) + '_' + str(gathered_stats) + '_' + col + '.html'
                 plot(fig, config=config, filename=self.__save_path + save_path, auto_open=False)
-
         #
         self.__logger.log('Report generation complete.')
