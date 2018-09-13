@@ -113,22 +113,22 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
     db_conn.connect()
     #
     # Drop stats during first half of the benchmark, Gather stats during first half of the benchmark.
-    if i > (ev_loader.var_get('iterations')):
-        #
-        # Gather optimizer stats
-        logger.log('Starting optimizer stats generation..')
-        OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
-                                                          logger=logger,
-                                                          tpctype=ev_loader.var_get('user'))
-        logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
-    else:
-        #
-        # Strip optimizer stats
-        logger.log('Starting optimizer stats dropping..')
-        OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
-                                                        logger=logger,
-                                                        tpctype=ev_loader.var_get('user'))
-        logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
+    # if i > (ev_loader.var_get('iterations')):
+    #     #
+    #     # Gather optimizer stats
+    #     logger.log('Starting optimizer stats generation..')
+    #     OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
+    #                                                       logger=logger,
+    #                                                       tpctype=ev_loader.var_get('user'))
+    #     logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
+    # else:
+    #     #
+    #     # Strip optimizer stats
+    #     logger.log('Starting optimizer stats dropping..')
+    #     OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
+    #                                                     logger=logger,
+    #                                                     tpctype=ev_loader.var_get('user'))
+    #     logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
     #
     db_conn.close()
     #
