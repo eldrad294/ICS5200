@@ -61,17 +61,7 @@ db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                             logger=logger)
 xp = XPlan(logger=logger,
            ev_loader=ev_loader)
-db_conn.connect()
 #
-# Prepare database for flashback
-restore_point_name = ev_loader.var_get('user') + "_benchmark_rp"
-db_conn.execute_script(user=ev_loader.var_get('sysuser'),
-                       password=ev_loader.var_get('syspassword'),
-                       instance_name=ev_loader.var_get('instance_name'),
-                       filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_tearup.sql",
-                       params=[restore_point_name])
-#
-# Database would have restarted at this point, so need to close prior connections
 db_conn.connect()
 #
 # Check whether schema needs creating - executed only if relevant tables are not found
@@ -85,14 +75,23 @@ if result == 0:
 xp.create_REP_EXECUTION_PLANS(db_conn=db_conn)
 xp.create_REP_EXPLAIN_PLANS(db_conn=db_conn)
 #
+# Prepare database for flashback
+restore_point_name = ev_loader.var_get('user') + "_benchmark_rp"
+db_conn.execute_script(user=ev_loader.var_get('sysuser'),
+                       password=ev_loader.var_get('syspassword'),
+                       instance_name=ev_loader.var_get('instance_name'),
+                       filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_tearup.sql",
+                       params=[restore_point_name])
+#
+# Database connection would have to be reopened at this point, due to db restart
+db_conn.connect()
+#
 # Strip optimizer stats
 logger.log('Starting optimizer stats dropping..')
 OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
                                                 logger=logger,
                                                 tpctype=ev_loader.var_get('user'))
 logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
-#
-logger.log('Started "kill_long_running" proc')
 #
 db_conn.close()
 #
@@ -200,6 +199,13 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
                                                    db_conn=db_conn)
                             db_conn.close()
     #
+    # Offload rep_execution_plans & rep_explain_plans into csv
+    db_conn.connect()
+    cur_res = db_conn.execute_query(query='select * from rep_execution_plans')
+    # for row in cur_res:
+    #     if not
+    db_conn.close()
+    #
     # Enable Flashback
     db_conn.execute_script(user=ev_loader.var_get('sysuser'),
                            password=ev_loader.var_get('syspassword'),
@@ -212,10 +218,6 @@ for i in range(1, ev_loader.var_get('iterations') + 1):
 SCRIPT EXECUTION - Benchmark Start - With Optimizer Stats
 ------------------------------------------------------------
 """
-db_conn.connect()
-db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=0') # Kill Sniffer Procedure
-db_conn.commit()
-time.sleep(5)
 #
 # Gather optimizer stats
 logger.log('Starting optimizer stats generation..')
@@ -341,10 +343,6 @@ for i in range(1, ev_loader.var_get('iterations')+1):
 """
 SCRIPT CLOSEUP - Cleanup
 """
-db_conn.connect()
-db_conn.execute_dml(dml='update MON_KILL_LONG_RUNNING set running=0') # Kill Sniffer Procedure
-db_conn.commit()
-db_conn.close()
 #
 # Revert database post flashback - back to normal state (noarchive mode)
 db_conn.execute_script(user=ev_loader.var_get('sysuser'),
