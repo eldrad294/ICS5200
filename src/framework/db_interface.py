@@ -199,6 +199,15 @@ class DatabaseInterface:
                 self.execute_dml(command)
     #
     def execute_script(self, user, password, instance_name, filename, params):
+        """
+        This method allows .SQL scripts to be invoked through SQL Plus
+        :param user: Database instance username
+        :param password: Database instance password
+        :param instance_name: Database instance name
+        :param filename: Filename of the script to be executed through SQL+
+        :param params: Params which require to be passed in addition to the script (Passed as a list)
+        :return:
+        """
         sys = "exit | sqlplus " + user + "/" + password + "@" + instance_name + " @" + filename
         if params is not None and len(params) > 0:
             for param in params:
@@ -240,12 +249,22 @@ class ConnectionPool:
     #
     @staticmethod
     def create_connection_pool(max_connections, connection_details, logger):
+        """
+        Creates a connection with a number of Oracle connections
+        :param max_connections: Determines number of connections in pool
+        :param connection_details: dictionary of connection details
+        :param logger: logger variables
+        :return:
+        """
         max_connections = int(max_connections)
         if max_connections is None:
+            logger.log('Maximum connection pool size must be declared!')
             raise ValueError('Maximum connection pool size must be declared!')
         if max_connections > 210 or max_connections < 1:
+            logger.log('Connection pool size must be between 1 and 210!')
             raise ValueError('Connection pool size must be between 1 and 210!')
         if len(connection_details) == 0 or connection_details is None:
+            logger.log('No connection details were specified!')
             raise ValueError('No connection details were specified!')
         #
         for i in range(max_connections):
@@ -263,12 +282,21 @@ class ConnectionPool:
     #
     @staticmethod
     def close_connection_pool():
+        """
+        All connections in the connection pool are closed, and set to 0
+        :return:
+        """
         for conn_list in ConnectionPool.__pool:
             if conn_list[1] == 1:
                 conn_list[2].close()
+                conn_list[1] = 0
     #
     @staticmethod
     def claim_from_pool():
+        """
+        Retrieves a free connection from the pool
+        :return:
+        """
         if len(ConnectionPool.__pool) == 0:
             raise Exception('Connection pool is empty!')
         #
@@ -276,15 +304,19 @@ class ConnectionPool:
             status = conn_list[1]
             if status == 0:
                 ConnectionPool.__pool[i][1] = 1
-                return ConnectionPool.__pool[i] # Returns Connection List
+                return ConnectionPool.__pool[i] # Returns Connection List eg: id, status {0,1}, connection
         else:
             raise Exception('Connection pool busy..all [' + str(len(ConnectionPool.__pool)) + '] connections are currently active!')
     #
     @staticmethod
     def return_to_pool(conn):
-        conn_list = ConnectionPool.__pool[id]
+        """
+        The connection is set as available in the connection pool
+        :param conn: [id, status {0,1}, connection]
+        :return:
+        """
+        conn_list = ConnectionPool.__pool[conn[0]]
         if conn_list[conn[0]][1] == 1:
-            conn.close()
             ConnectionPool.__pool[conn[0]][1] = 0
 """
 Follow below example:

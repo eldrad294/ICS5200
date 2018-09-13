@@ -75,6 +75,10 @@ class ScriptInitializer:
         time_out_in_seconds = int(g_config.get_value('Benchmark','time_out_in_seconds'))
         refresh_rep_table = str(g_config.get_value('Benchmark','refresh_rep_table')).title()
         #
+        # WorkloadGeneration
+        intervals = int(g_config.get_value('WorkloadGeneration','intervals'))
+        parallel_cap = int(g_config.get_value('WorkloadGeneration','parallel_cap'))
+        #
         # Load into global dictionary
         ev_loader.var_load({'project_dir':project_dir,
                             'src_dir':src_dir,
@@ -123,7 +127,10 @@ class ScriptInitializer:
                             'report_save_path':report_save_path,
                             'iterations':iterations,
                             'time_out_in_seconds':time_out_in_seconds,
-                            'refresh_rep_table':refresh_rep_table})
+                            'refresh_rep_table':refresh_rep_table,
+                            'intervals':intervals,
+                            'parallel_cap':parallel_cap
+                            })
         #
         # Environment var loading
         os.environ['PYSPARK_PYTHON'] = project_dir + '/venv/bin/python3'
@@ -142,7 +149,9 @@ class ScriptInitializer:
                               'service':ev_loader.var_get('service'),
                               'port':ev_loader.var_get('port'),
                               'password':ev_loader.var_get('password')}
-        ConnectionPool.create_connection_pool(max_connections=1,
+        #
+        # +1 is required for the 'scheduler.py' script, because an extra thread will be required to poll and record oracle metrics.
+        ConnectionPool.create_connection_pool(max_connections=ev_loader.var_get('parallel_cap') + 1,
                                               connection_details=connection_details,
                                               logger=self.logger)
         #
