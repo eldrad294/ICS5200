@@ -57,6 +57,10 @@ db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
 xp = XPlan(logger=logger,
            ev_loader=ev_loader)
 #
+# Create metric table
+xp.create_REP_EXECUTION_PLANS(db_conn=db_conn)
+xp.create_REP_EXPLAIN_PLANS(db_conn=db_conn)
+#
 db_conn.connect()
 #
 csv_rep_execution_plans = "/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_execution_plans.csv"
@@ -86,10 +90,6 @@ if result == 0:
     db_conn.close()
     raise Exception('[' + ev_loader.var_get('user') + '] schema tables were not found..terminating script!')
 #
-# Create metric table
-xp.create_REP_EXECUTION_PLANS(db_conn=db_conn)
-xp.create_REP_EXPLAIN_PLANS(db_conn=db_conn)
-#
 # Prepare database for flashback
 restore_point_name = ev_loader.var_get('user') + "_benchmark_rp"
 db_conn.execute_script(user=ev_loader.var_get('sysuser'),
@@ -113,7 +113,7 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
     db_conn.connect()
     #
     # Drop stats during first half of the benchmark, Gather stats during first half of the benchmark.
-    if i > (ev_loader.var_get('iterations') + 1):
+    if i > (ev_loader.var_get('iterations')):
         #
         # Gather optimizer stats
         logger.log('Starting optimizer stats generation..')
@@ -246,7 +246,7 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
                            filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
                            params=[restore_point_name])
     #
-    if i > (ev_loader.var_get('iterations') + 1):
+    if i > (ev_loader.var_get('iterations')):
         logger.log("Executed iteration [" + str(i) + "] of gathered stats benchmark")
     else:
         logger.log("Executed iteration [" + str(i) + "] of removed stats benchmark")
