@@ -44,7 +44,7 @@ bc = BarCharts(db_conn, logger, ev_loader.var_get('report_save_path'))
 #
 # This line requires SQL/Reports/REP_TPC_DESCRIBE.sql to have been executed for respective schema
 # bc.generate_REP_TPC_DESCRIBE(tpc_type=ev_loader.var_get('user'))
-columns = ['ELAPSED_TIME',
+columns = ['ELAPSED_TIME_MINS',
           'SORTS',
           'PARSE_CALLS',
           'DISK_READS',
@@ -59,9 +59,9 @@ columns = ['ELAPSED_TIME',
           'SHARABLE_MEM',
           'PERSISTENT_MEM',
           'RUNTIME_MEM',
-          'PLSQL_EXEC_TIME']
-bc.generate_REP_EXECUTION_PLANS(ev_loader=ev_loader,gathered_stats=False,iterations=3,columns=columns,from_table=False)
-bc.generate_REP_EXECUTION_PLANS(ev_loader=ev_loader,gathered_stats=True,iterations=3,columns=columns,from_table=False)
+          'PLSQL_EXEC_TIME_MINS']
+bc.generate_REP_EXECUTION_PLANS(ev_loader=ev_loader,gathered_stats=False,iterations=3,columns=columns)
+bc.generate_REP_EXECUTION_PLANS(ev_loader=ev_loader,gathered_stats=True,iterations=3,columns=columns)
 """
 SCRIPT CLOSEUP - Cleanup
 """
