@@ -61,17 +61,17 @@ class BarCharts:
         #
         self.__logger.log('Report generation complete')
     #
-    def generate_REP_EXECUTION_PLANS(self, ev_loader=None, gathered_stats=False, iterations=5, columns=None):
+    def generate_REP_EXECUTION_PLANS(self, ev_loader=None, gathered_stats=False, columns=None):
         """
         Generates the REP_EXECUTION_PLANS.sql report
         :param tpc_type: TPC-DSX
         :param gathered_stats: True or False, depending on the type of benchmark
-        :param iterations: Number of expected iterations
         :param columns: User specification as to which columns to plot. Graph will always be plot against
                         tpc_transaction_name on X axis.
         :return:
         """
         self.__logger.log('Starting generation of report..')
+        iterations = ev_loader.var_get('iterations')
         #
         if columns is None or len(columns) < 1:
             raise ValueError('No columns were assigned to be plotted!')
@@ -86,7 +86,7 @@ class BarCharts:
             fl = FileLoader(ev_loader=ev_loader,
                             logger=self.__logger,
                             spark_context=None)
-            fl.call_ctrl_file(tpcds_type="tpcds", table_name='rep_execution_plan')
+            fl.call_ctrl_file(tpcds_type="tpcds", table_name='rep_execution_plans')
         #
         query = " select tpc_transaction_name as tpc_transaction_name, " \
                 " count(tpc_transaction_name) as number_of_executions, " \

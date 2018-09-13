@@ -60,8 +60,8 @@ columns = ['ELAPSED_TIME_MINS',
           'PERSISTENT_MEM',
           'RUNTIME_MEM',
           'PLSQL_EXEC_TIME_MINS']
-bc.generate_REP_EXECUTION_PLANS(ev_loader=ev_loader,gathered_stats=False,iterations=3,columns=columns)
-bc.generate_REP_EXECUTION_PLANS(ev_loader=ev_loader,gathered_stats=True,iterations=3,columns=columns)
+bc.generate_REP_EXECUTION_PLANS(ev_loader=ev_loader,gathered_stats=False,columns=columns)
+bc.generate_REP_EXECUTION_PLANS(ev_loader=ev_loader,gathered_stats=True,columns=columns)
 """
 SCRIPT CLOSEUP - Cleanup
 """
