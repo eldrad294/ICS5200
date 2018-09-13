@@ -26,9 +26,12 @@ from src.utils.stats_control import OptimizerStatistics
 SCRIPT EXECUTION - Benchmark Start - Without Optimizer Stats
 ------------------------------------------------------------
 """
-import csv
-open("/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_execution_plans.csv","w")
-open("/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_explain_plans.csv","w")
+import csv, os
+try:
+    os.remove("/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_execution_plans.csv")
+    os.remove("/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_explain_plans.csv")
+except Exception as e:
+    print(str(e))
 rep_execution_plans_file=open("/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_execution_plans.csv","a")
 rep_explain_plans_file=open("/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_explain_plans.csv","a")
 execution_output=csv.writer(rep_execution_plans_file, dialect='excel')
