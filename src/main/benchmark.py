@@ -112,21 +112,21 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
     else:
         stats = False
     #
-    # if stats:
-    #     #
-    #     # Gather optimizer stats
-    #     logger.log('Starting optimizer stats generation..')
-    #     OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
-    #                                                       logger=logger,
-    #                                                       tpctype=ev_loader.var_get('user'))
-    #     logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
-    # else:
-    #     #
-    #     # Strip optimizer stats
-    #     logger.log('Starting optimizer stats dropping..')
-    #     OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
-    #                                                     logger=logger,
-    #                                                     tpctype=ev_loader.var_get('user'))
+    if stats:
+        #
+        # Gather optimizer stats
+        logger.log('Starting optimizer stats generation..')
+        OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
+                                                          logger=logger,
+                                                          tpctype=ev_loader.var_get('user'))
+        logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
+    else:
+        #
+        # Strip optimizer stats
+        logger.log('Starting optimizer stats dropping..')
+        OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
+                                                        logger=logger,
+                                                        tpctype=ev_loader.var_get('user'))
         logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
     #
     db_conn.close()
@@ -238,12 +238,12 @@ for i in range(1, (ev_loader.var_get('iterations') + 1) * 2):
     [explain_output.writerow(row) for row in cur_res]
     db_conn.close()
     # #
-    # # Enable Flashback
-    # db_conn.execute_script(user=ev_loader.var_get('sysuser'),
-    #                        password=ev_loader.var_get('syspassword'),
-    #                        instance_name=ev_loader.var_get('instance_name'),
-    #                        filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
-    #                        params=[restore_point_name])
+    # Enable Flashback
+    db_conn.execute_script(user=ev_loader.var_get('sysuser'),
+                           password=ev_loader.var_get('syspassword'),
+                           instance_name=ev_loader.var_get('instance_name'),
+                           filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
+                           params=[restore_point_name])
     #
     if stats:
         logger.log("Executed iteration [" + str(i-1) + "] of gathered stats benchmark")
