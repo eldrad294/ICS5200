@@ -43,10 +43,12 @@ db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
 xp = XPlan(logger=logger,
            ev_loader=ev_loader)
 db_conn.connect()
-cur_res = db_conn.execute_query(query='select * from rep_execution_plans')
+cur_res, headers = db_conn.execute_query(query='select * from rep_execution_plans', describe=True)
+execution_output.writerow(headers)
 for row in cur_res:
     execution_output.writerow(row)
-cur_res = db_conn.execute_query(query='select * from rep_explain_plans')
+cur_res, headers = db_conn.execute_query(query='select * from rep_explain_plans', describe=True)
+execution_output.writerow(headers)
 for row in cur_res:
     explain_output.writerow(row)
 db_conn.close()
