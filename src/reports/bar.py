@@ -86,7 +86,7 @@ class BarCharts:
             fl = FileLoader(ev_loader=ev_loader,
                             logger=self.__logger,
                             spark_context=None)
-            fl.call_ctrl_file(tpcds_type="tpcds", table_name='REP_EXECUTION_PLANS')
+            fl.call_ctrl_file(tpcds_type="tpcds", table_name='rep_execution_plan')
         #
         query = " select tpc_transaction_name as tpc_transaction_name, " \
                 " count(tpc_transaction_name) as number_of_executions, " \
