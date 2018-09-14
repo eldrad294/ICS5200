@@ -1,17 +1,100 @@
 #
 # Module Imports
-from src.framework.db_interface import ConnectionPool
+from src.framework.db_interface import DatabaseInterface
 from multiprocessing import Process
-import time
+import time, cx_Oracle
 #
 class Workload:
     #
-    __active_thread_count = 0
+    __active_thread_count = 0 # Denotes how many active threads are running, to avoid resource starvation
     #
     @staticmethod
     def execute_transaction(ev_loader, logger, transaction_path, transaction_name):
+        """
+        Wrapper method for method '__execute_and_forget'
+        :param ev_loader:
+        :param logger:
+        :param transaction_path:
+        :param transaction_name:
+        :return:
+        """
         p = Process(target=Workload.__execute_and_forget, args=(ev_loader, logger, transaction_path, transaction_name))
         p.start()
+    #
+    @staticmethod
+    def execute_statistic_gatherer(ev_loader, logger):
+        """
+        Wrapper method for '__statistic_gatherer'
+        :param ev_loader:
+        :param logger:
+        :return:
+        """
+        p = Process(target=Workload.__statistic_gatherer, args=(ev_loader, logger))
+        p.start()
+    #
+    @staticmethod
+    def __statistic_gatherer(ev_loader, logger):
+        """
+        This method is tasked with polling the database instance and extract metric every N seconds. Extracted metrics
+        are saved in .csv format on disk.
+
+        This method executes indefinitely, until the schedule is terminated.
+        :param ev_loader:
+        :param logger:
+        :return:
+        """
+        logger.log('Initiating statistic gatherer..')
+        Workload.__active_thread_count += 1
+        kill_signal = 0
+        query_sql_stat = "select dhsql.*, " \
+                         "dhsnap.startup_time, " \
+                         "dhsnap.begin_interval_time, " \
+                         "dhsnap.end_interval_time, " \
+                         "dhsnap.flush_elapsed, " \
+                         "dhsnap.snap_level, "\
+                         "dhsnap.error_count, "\
+                         "dhsnap.snap_flag, "\
+                         "dhsnap.snap_timezone, "\
+                         "dhsnap.con_id "\
+                         "from dba_hist_sqlstat dhsql, "\
+                         "dba_hist_snapshot dhsnap "\
+                         "where dhsql.snap_id = dhsnap.snap_id "\
+                         "and dhsql.dbid = dhsnap.dbid "\
+                         "and dhsql.instance_number = dhsnap.instance_number "\
+                         "and dhsnap.snap_id between :snap_begin and :snap_end"
+        #
+        # Creates database connection
+        db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
+                                    user=ev_loader.var_get('user'),
+                                    host=ev_loader.var_get('host'),
+                                    service=ev_loader.var_get('service'),
+                                    port=ev_loader.var_get('port'),
+                                    password=ev_loader.var_get('password'),
+                                    logger=logger)
+        db_conn.connect()
+        while True:
+            #
+            snap_begin = 0
+            time.sleep(ev_loader.var_get('statistic_intervals'))
+            snap_end = 0
+            #
+            try:
+                logger.log('Polling metrics from instance..')
+                res_cur = db_conn.execute_query(query=query_sql_stat,
+                                                   params={"snap_begin":snap_begin,"snap_end":snap_end})
+            except cx_Oracle.DatabaseError as e:
+                logger.log('Oracle exception caught [' + str(e) + ']')
+                kill_signal = 1
+            except Exception as e:
+                logger.log('An exception was caught in method ''__statistic_gatherer'' [' + str(e) + ']')
+            #
+            if kill_signal > 0:
+                break
+        #
+        # Closes database connection
+        db_conn.close() # This line most will most likely not be needed given that the database would have just restarted
+        Workload.__active_thread_count -= 1
+        logger.log('Killed statistic gatherer..')
     #
     @staticmethod
     def __execute_and_forget(ev_loader, logger, transaction_path, transaction_name):
@@ -28,20 +111,23 @@ class Workload:
         """
         Workload.__active_thread_count += 1
         #
-        # Consumes connection from pool
-        db_conn = ConnectionPool.claim_from_pool()
+        # Creates database connection
+        db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
+                                    user=ev_loader.var_get('user'),
+                                    host=ev_loader.var_get('host'),
+                                    service=ev_loader.var_get('service'),
+                                    port=ev_loader.var_get('port'),
+                                    password=ev_loader.var_get('password'),
+                                    logger=logger)
         #
         start_time = time.clock()
-        db_conn[2].execute_script(user=ev_loader.var_get('user'),
-                                  password=ev_loader.var_get('password'),
-                                  instance_name=ev_loader.var_get('instance_name'),
-                                  filename=transaction_path + "/" + transaction_name,
-                                  params=None)
+        db_conn.execute_script(user=ev_loader.var_get('user'),
+                               password=ev_loader.var_get('password'),
+                               instance_name=ev_loader.var_get('instance_name'),
+                               filename=transaction_path + "/" + transaction_name,
+                               params=None)
         end_time = time.clock() - start_time
         logger.log('Successfully executed ' + transaction_name + " under " + str(end_time) + " seconds.")
-        #
-        # Returns connection to pool and makes it available for use
-        ConnectionPool.return_to_pool(db_conn)
         #
         Workload.__active_thread_count -= 1
 

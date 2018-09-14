@@ -78,7 +78,8 @@ class ScriptInitializer:
         delete_trace_alert_logs = str(g_config.get_value('Benchmark','delete_trace_alert_logs')).title()
         #
         # WorkloadGeneration
-        intervals = int(g_config.get_value('WorkloadGeneration','intervals'))
+        execution_intervals = int(g_config.get_value('WorkloadGeneration','execution_intervals'))
+        statistic_intervals = int(g_config.get_value('WorkloadGeneration','statistic_intervals'))
         parallel_cap = int(g_config.get_value('WorkloadGeneration','parallel_cap'))
         #
         # Load into global dictionary
@@ -131,7 +132,8 @@ class ScriptInitializer:
                             'time_out_in_seconds':time_out_in_seconds,
                             'refresh_rep_table':refresh_rep_table,
                             'delete_trace_alert_logs':delete_trace_alert_logs,
-                            'intervals':intervals,
+                            'execution_intervals':execution_intervals,
+                            'statistic_intervals':statistic_intervals,
                             'parallel_cap':parallel_cap
                             })
         #
@@ -153,8 +155,7 @@ class ScriptInitializer:
                               'port':ev_loader.var_get('port'),
                               'password':ev_loader.var_get('password')}
         #
-        # +1 is required for the 'scheduler.py' script, because an extra thread will be required to poll and record oracle metrics.
-        ConnectionPool.create_connection_pool(max_connections=ev_loader.var_get('parallel_cap') + 1,
+        ConnectionPool.create_connection_pool(max_connections=ev_loader.var_get('parallel_cap') + 2,
                                               connection_details=connection_details,
                                               logger=self.logger)
         #

@@ -200,6 +200,8 @@ class DatabaseInterface:
     #
     def execute_script(self, user, password, instance_name, filename, params):
         """
+        NB: - THIS METHOD SHOULD BE CONVERTED INTO A STATIC METHOD IN DUE TIME
+
         This method allows .SQL scripts to be invoked through SQL Plus
         :param user: Database instance username
         :param password: Database instance password

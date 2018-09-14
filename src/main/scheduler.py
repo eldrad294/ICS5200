@@ -21,9 +21,19 @@ file_name = os.path.basename(__file__).split('.')[0]
 #
 from src.framework.script_initializer import ScriptInitializer
 from src.data.workload import Workload
+from src.framework.db_interface import DatabaseInterface
 si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir, home_dir=home_dir, log_name_prefix=file_name)
 ev_loader = si.get_global_config()
 logger = si.initialize_logger()
+#
+# Creates database connection
+db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
+                            user=ev_loader.var_get('user'),
+                            host=ev_loader.var_get('host'),
+                            service=ev_loader.var_get('service'),
+                            port=ev_loader.var_get('port'),
+                            password=ev_loader.var_get('password'),
+                            logger=logger)
 active_thread_count = 0
 """
 ------------------------------------------------------------
@@ -41,7 +51,27 @@ for filename in os.listdir(dml_path):
     if filename.endswith(".sql"):
         transaction_bank.append(filename)
 #
+# Prepare database for flashback
+restore_point_name = ev_loader.var_get('user') + "_scheduler_rp"
+db_conn.execute_script(user=ev_loader.var_get('sysuser'),
+                       password=ev_loader.var_get('syspassword'),
+                       instance_name=ev_loader.var_get('instance_name'),
+                       filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_tearup.sql",
+                       params=None)
+#
 while True:
+    #
+    # Create restore point
+    db_conn.execute_script(user=ev_loader.var_get('sysuser'),
+                           password=ev_loader.var_get('syspassword'),
+                           instance_name=ev_loader.var_get('instance_name'),
+                           filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_restore_create.sql",
+                           params=[restore_point_name])
+    logger.log('Created restore point ' + restore_point_name + '..')
+    #
+    Workload.execute_statistic_gatherer(ev_loader=ev_loader,
+                                        logger=logger)
+    #
     for script in transaction_bank:
         #
         if 'query' in script:
@@ -62,5 +92,20 @@ while True:
         Workload.barrier(ev_loader=ev_loader)
         #
         # Pause N seconds between every execution to avoid overwhelming the schedule
-        time.sleep(ev_loader.var_get('intervals'))
-#
+        time.sleep(ev_loader.var_get('execution_intervals'))
+    #
+    # Enable Flashback
+    db_conn.execute_script(user=ev_loader.var_get('sysuser'),
+                           password=ev_loader.var_get('syspassword'),
+                           instance_name=ev_loader.var_get('instance_name'),
+                           filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
+                           params=[restore_point_name])
+    logger.log('Flash backed to ' + restore_point_name + "..")
+    #
+    # Drop Restore Point
+    db_conn.execute_script(user=ev_loader.var_get('sysuser'),
+                           password=ev_loader.var_get('syspassword'),
+                           instance_name=ev_loader.var_get('instance_name'),
+                           filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_restore_drop.sql",
+                           params=[restore_point_name])
+    logger.log('Dropped restore point ' + restore_point_name + '..')
