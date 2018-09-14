@@ -47,6 +47,7 @@ class ScriptInitializer:
         spark_logConf = g_config.get_value('SparkContext','spark_logConf')
         spark_python_worker_reuse = g_config.get_value('SparkContext','spark_python_worker_reuse')
         #
+        # Logging
         write_to_disk = g_config.get_value("EnvironmentSettings","write_to_disk")
         write_to_screen = g_config.get_value("EnvironmentSettings","write_to_screen")
         log_file_name = g_config.get_value("EnvironmentSettings","log_file_name")
@@ -74,6 +75,7 @@ class ScriptInitializer:
         iterations = int(g_config.get_value('Benchmark','iterations'))
         time_out_in_seconds = int(g_config.get_value('Benchmark','time_out_in_seconds'))
         refresh_rep_table = str(g_config.get_value('Benchmark','refresh_rep_table')).title()
+        delete_trace_alert_logs = str(g_config.get_value('Benchmark','delete_trace_alert_logs')).title()
         #
         # WorkloadGeneration
         intervals = int(g_config.get_value('WorkloadGeneration','intervals'))
@@ -128,6 +130,7 @@ class ScriptInitializer:
                             'iterations':iterations,
                             'time_out_in_seconds':time_out_in_seconds,
                             'refresh_rep_table':refresh_rep_table,
+                            'delete_trace_alert_logs':delete_trace_alert_logs,
                             'intervals':intervals,
                             'parallel_cap':parallel_cap
                             })
