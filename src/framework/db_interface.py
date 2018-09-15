@@ -198,7 +198,8 @@ class DatabaseInterface:
             if command is not None and command != "" and command != '\n\n':
                 self.execute_dml(command)
     #
-    def execute_script(self, user, password, instance_name, filename, params):
+    @staticmethod
+    def execute_script(user, password, instance_name, filename, params, logger):
         """
         NB: - THIS METHOD SHOULD BE CONVERTED INTO A STATIC METHOD IN DUE TIME
 
@@ -214,12 +215,12 @@ class DatabaseInterface:
         if params is not None and len(params) > 0:
             for param in params:
                 sys += " " + str(param)
-        self.__logger.log(sys)
+        logger.log(sys)
         output = os.system(sys)
         if output != 0:
-            self.__logger.log('"Exception raised during generation of TPC files..Terminating process!"')
+            logger.log('"Exception raised during generation of TPC files..Terminating process!"')
             raise Exception("Exception raised during generation of TPC files..Terminating process!")
-        self.__logger.log(filename + " executed!")
+        logger.log(filename + " executed!")
     #
     def close(self):
         """

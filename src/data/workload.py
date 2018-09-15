@@ -1,8 +1,9 @@
 #
 # Module Imports
 from src.framework.db_interface import DatabaseInterface
+from src.utils.snapshot_control import Snapshots
 from multiprocessing import Process
-import time, cx_Oracle
+import time, cx_Oracle, csv
 #
 class Workload:
     #
@@ -63,6 +64,16 @@ class Workload:
                          "and dhsql.instance_number = dhsnap.instance_number "\
                          "and dhsnap.snap_id between :snap_begin and :snap_end"
         #
+        # Opens CSV file
+        try:
+            rep_hist_snapshot = open(ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_hist_snapshot.csv", 'a')
+            rep_hist_csv = csv.writer(rep_hist_snapshot, dialect='excel')
+        except FileNotFoundError:
+            logger.log('REP_HIST_SNAPSHOT.csv was not found!')
+            raise FileExistsError('REP_HIST_SNAPSHOT.csv was not found!')
+        except Exception as e:
+            logger.log('An exception was raised during writing to file! [' + str(e) + ']')
+        #
         # Creates database connection
         db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                                     user=ev_loader.var_get('user'),
@@ -74,14 +85,26 @@ class Workload:
         db_conn.connect()
         while True:
             #
-            snap_begin = 0
-            time.sleep(ev_loader.var_get('statistic_intervals'))
-            snap_end = 0
-            #
             try:
+                #
+                # Create begin snapshot
+                Snapshots.capture_snapshot(db_conn=db_conn, logger=logger)
+                snap_begin = Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)
+                #
+                # Wait N seconds
+                time.sleep(ev_loader.var_get('statistic_intervals'))
+                #
+                # Create end snapshot
+                Snapshots.capture_snapshot(db_conn=db_conn, logger=logger)
+                snap_end = Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)
+                #
                 logger.log('Polling metrics from instance..')
                 res_cur = db_conn.execute_query(query=query_sql_stat,
-                                                   params={"snap_begin":snap_begin,"snap_end":snap_end})
+                                                params={"snap_begin":snap_begin,"snap_end":snap_end})
+                #
+                # Write cursor to csv file
+                [rep_hist_csv.writerow(row) for row in res_cur]
+                #
             except cx_Oracle.DatabaseError as e:
                 logger.log('Oracle exception caught [' + str(e) + ']')
                 kill_signal = 1
@@ -91,8 +114,11 @@ class Workload:
             if kill_signal > 0:
                 break
         #
+        # Closes csv file/s
+        rep_hist_csv.close()
+        #
         # Closes database connection
-        db_conn.close() # This line most will most likely not be needed given that the database would have just restarted
+        db_conn.close() # This line most will most likely not be needed given that the database would have just restarted, and bounded all connections
         Workload.__active_thread_count -= 1
         logger.log('Killed statistic gatherer..')
     #
@@ -111,21 +137,13 @@ class Workload:
         """
         Workload.__active_thread_count += 1
         #
-        # Creates database connection
-        db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
-                                    user=ev_loader.var_get('user'),
-                                    host=ev_loader.var_get('host'),
-                                    service=ev_loader.var_get('service'),
-                                    port=ev_loader.var_get('port'),
-                                    password=ev_loader.var_get('password'),
-                                    logger=logger)
-        #
         start_time = time.clock()
-        db_conn.execute_script(user=ev_loader.var_get('user'),
-                               password=ev_loader.var_get('password'),
-                               instance_name=ev_loader.var_get('instance_name'),
-                               filename=transaction_path + "/" + transaction_name,
-                               params=None)
+        DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
+                                         password=ev_loader.var_get('password'),
+                                         instance_name=ev_loader.var_get('instance_name'),
+                                         filename=transaction_path + "/" + transaction_name,
+                                         params=None,
+                                         logger=logger)
         end_time = time.clock() - start_time
         logger.log('Successfully executed ' + transaction_name + " under " + str(end_time) + " seconds.")
         #
