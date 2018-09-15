@@ -592,7 +592,7 @@ create table REP_HIST_SNAPSHOT tablespace tpcds1 nologging as
 create table REP_VSQL_PLAN tablespace tpcds1 nologging as
     select *
     from v$sql_plan
-    and 1=0;
+    where 1=0;
 alter table STORE_SALES enable row movement;
 alter table CATALOG_SALES enable row movement;
 alter table WEB_SALES enable row movement;
