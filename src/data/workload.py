@@ -62,6 +62,17 @@ class Workload:
                          "and dhsql.dbid = dhsnap.dbid "\
                          "and dhsql.instance_number = dhsnap.instance_number "\
                          "and dhsnap.snap_id between :snap_begin and :snap_end"
+        query_sql_plan = "select * " \
+                         "from v$sql_plan " \
+                         "where sql_id in ( " \
+                         "	select dhsql.sql_id " \
+                         "	from dba_hist_sqlstat dhsql, " \
+                         "	     dba_hist_snapshot dhsnap " \
+                         "	where dhsql.snap_id = dhsnap.snap_id " \
+                         "	and dhsql.dbid = dhsnap.dbid " \
+                         "	and dhsql.instance_number = dhsnap.instance_number " \
+                         "	and dhsnap.snap_id between :snap_begin and :snap_end " \
+                         ");"
         #
         # Opens CSV file
         try:
