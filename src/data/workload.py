@@ -55,8 +55,7 @@ class Workload:
                          "dhsnap.snap_level, "\
                          "dhsnap.error_count, "\
                          "dhsnap.snap_flag, "\
-                         "dhsnap.snap_timezone, "\
-                         "dhsnap.con_id "\
+                         "dhsnap.snap_timezone "\
                          "from dba_hist_sqlstat dhsql, "\
                          "dba_hist_snapshot dhsnap "\
                          "where dhsql.snap_id = dhsnap.snap_id "\

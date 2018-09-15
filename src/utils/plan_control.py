@@ -158,6 +158,8 @@ class XPlan:
     #
     def create_REP_EXECUTION_PLANS(self, db_conn):
         """
+        NB: THIS METHOD SHOULD BE EVENTUALLY CONVERTED INTO AN SQLPLUS INVOCATION
+
         Creates reporting table REP_EXECUTION_PLANS to save v$sql execution metrics.
         The table is a replica of v$sql, with 4 additional columns:
         1) TPC_TRANSACTION_NAME - Contains name of TPC Transaction

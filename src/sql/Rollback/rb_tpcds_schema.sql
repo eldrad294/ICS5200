@@ -53,5 +53,7 @@ drop table WEB_SITE;
 drop table REP_EXECUTION_PLANS;
 drop table REP_EXPLAIN_PLANS;
 drop table REP_TPC_DESCRIBE;
+drop table REP_HIST_SNAPSHOT;
+drop table REP_VSQL_PLAN;
 drop table MON_KILL_LONG_RUNNING;
 drop procedure kill_long_running;
