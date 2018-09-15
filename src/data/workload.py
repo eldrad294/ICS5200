@@ -63,21 +63,29 @@ class Workload:
                          "and dhsql.instance_number = dhsnap.instance_number "\
                          "and dhsnap.snap_id between :snap_begin and :snap_end"
         query_sql_plan = "select * " \
-                         "from v$sql_plan " \
-                         "where sql_id in ( " \
+                         "from v$sql_plan vsp " \
+                         "where vsp.sql_id in ( " \
                          "	select dhsql.sql_id " \
                          "	from dba_hist_sqlstat dhsql, " \
                          "	     dba_hist_snapshot dhsnap " \
                          "	where dhsql.snap_id = dhsnap.snap_id " \
                          "	and dhsql.dbid = dhsnap.dbid " \
                          "	and dhsql.instance_number = dhsnap.instance_number " \
-                         "	and dhsnap.snap_id between :snap_begin and :snap_end " \
-                         ");"
+                         "	and dhsnap.snap_id between '544' and '545' " \
+                         ") " \
+                         "and vsp.timestamp = ( " \
+                         "  select max(timestamp) " \
+                         "  from v$sql_plan " \
+                         "  where sql_id = vsp.sql_id " \
+                         ") " \
+                         "order by sql_id, id " \
         #
         # Opens CSV file
         try:
             rep_hist_snapshot = open(ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_hist_snapshot.csv", 'a')
+            rep_sql_plan = open(ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_vsql_plan.csv", 'a')
             rep_hist_csv = csv.writer(rep_hist_snapshot, dialect='excel')
+            rep_sql_csv = csv.writer(rep_sql_plan, dialect='excel')
         except FileNotFoundError:
             logger.log('REP_HIST_SNAPSHOT.csv was not found!')
             raise FileExistsError('REP_HIST_SNAPSHOT.csv was not found!')
@@ -109,11 +117,14 @@ class Workload:
                 snap_end = Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)
                 #
                 logger.log('Polling metrics from instance..')
-                res_cur = db_conn.execute_query(query=query_sql_stat,
-                                                params={"snap_begin":snap_begin,"snap_end":snap_end})
+                cur_hist_snapshot = db_conn.execute_query(query=query_sql_stat,
+                                                          params={"snap_begin":snap_begin,"snap_end":snap_end})
+                cur_sql_plan = db_conn.execute_query(query=query_sql_plan,
+                                                     params={"snap_begin":snap_begin,"snap_end":snap_end})
                 #
-                # Write cursor to csv file
-                [rep_hist_csv.writerow(row) for row in res_cur]
+                # Write cursors to csv files
+                [rep_hist_csv.writerow(row) for row in cur_hist_snapshot]
+                [rep_sql_csv.writerow(row) for row in cur_sql_plan]
                 #
             except cx_Oracle.DatabaseError as e:
                 logger.log('Oracle exception caught [' + str(e) + ']')
@@ -126,6 +137,7 @@ class Workload:
         #
         # Closes csv file/s
         rep_hist_csv.close()
+        rep_sql_csv.close()
         #
         # Closes database connection
         db_conn.close() # This line most will most likely not be needed given that the database would have just restarted, and bounded all connections

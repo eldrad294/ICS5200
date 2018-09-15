@@ -527,6 +527,72 @@ create table store_sales
     ss_net_profit             decimal(15,5)                 ,
     primary key (ss_item_sk, ss_ticket_number)
 ) tablespace tpcds10 nologging;
+CREATE TABLE REP_TPC_DESCRIBE (
+    tablename varchar2(100),
+    row_count number,
+    index_count number) tablespace tpcds10 nologging;
+create table REP_EXPLAIN_PLANS(
+    STATEMENT_ID    VARCHAR2(1000),
+    PLAN_ID VARCHAR2(400),
+    TIMESTAMP        DATE,
+    REMARKS   VARCHAR2(1000),
+    OPERATION       VARCHAR2(1000),
+    OPTIONS VARCHAR2(1000),
+    OBJECT_NODE     VARCHAR2(1000),
+    OBJECT_OWNER    VARCHAR2(1000),
+    OBJECT_NAME     VARCHAR2(1000),
+    OBJECT_INSTANCE NUMBER(38),
+    OBJECT_TYPE VARCHAR2(1000),
+    OPTIMIZER       VARCHAR2(1000),
+    SEARCH_COLUMNS  NUMBER,
+    ID      NUMBER(38)      ,
+    PARENT_ID     NUMBER(38),
+    DEPTH number(38),
+    POSITION  NUMBER(38),
+    COST        NUMBER(38),
+    CARDINALITY NUMBER(38),
+    BYTES       NUMBER(38),
+    OTHER_TAG  VARCHAR2(1000),
+    PARTITION_START  VARCHAR2(1000),
+    PARTITION_STOP  VARCHAR2(1000),
+    PARTITION_ID    NUMBER(38),
+    DISTRIBUTION        VARCHAR2(1000),
+    CPU_COST        NUMBER(38),
+    IO_COST     NUMBER(38),
+    TEMP_SPACE  NUMBER(38),
+    ACCESS_PREDICATES   VARCHAR2(4000),
+    FILTER_PREDICATES               VARCHAR2(4000),
+    TIME    NUMBER(38),
+    TPC_TRANSACTION_NAME varchar2(20),
+    STATEMENT_HASH_SUM varchar2(4000),
+    BENCHMARK_ITERATION varchar2(2),
+    GATHERED_STATS varchar2(5) )
+tablespace tpcds10 nologging;
+create table REP_EXECUTION_PLANS tablespace tpcds10 nologging as select * from v$sql where 1=0;
+alter table REP_EXECUTION_PLANS add TPC_TRANSACTION_NAME varchar2(20);
+alter table REP_EXECUTION_PLANS add STATEMENT_HASH_SUM varchar2(4000);
+alter table REP_EXECUTION_PLANS add BENCHMARK_ITERATION varchar2(2);
+alter table REP_EXECUTION_PLANS add GATHERED_STATS varchar2(5);
+create table REP_HIST_SNAPSHOT tablespace tpcds10 nologging as
+    select dhsql.*,
+           dhsnap.startup_time,
+           dhsnap.begin_interval_time,
+           dhsnap.end_interval_time,
+           dhsnap.flush_elapsed,
+           dhsnap.snap_level,
+           dhsnap.error_count,
+           dhsnap.snap_flag,
+           dhsnap.snap_timezone
+    from dba_hist_sqlstat dhsql,
+         dba_hist_snapshot dhsnap
+    where dhsql.snap_id = dhsnap.snap_id
+    and dhsql.dbid = dhsnap.dbid
+    and dhsql.instance_number = dhsnap.instance_number
+    and 1=0;
+create table REP_VSQL_PLAN tablespace tpcds10 nologging as
+    select *
+    from v$sql_plan
+    and 1=0;
 alter table STORE_SALES enable row movement;
 alter table CATALOG_SALES enable row movement;
 alter table WEB_SALES enable row movement;
