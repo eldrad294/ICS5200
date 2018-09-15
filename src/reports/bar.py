@@ -2,7 +2,7 @@ from plotly.offline import plot
 from plotly.graph_objs import *
 from src.data.loading import FileLoader
 import plotly.graph_objs as go
-import os, numpy as np, pandas as pd
+import os, numpy as np
 #
 class BarCharts:
     #
