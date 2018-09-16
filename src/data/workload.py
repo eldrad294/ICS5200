@@ -117,10 +117,10 @@ class Workload:
                 Snapshots.capture_snapshot(db_conn=db_conn, logger=logger)
                 snap_end = Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)
                 #
-                logger.log('Polling metrics from dba_hist_sqlstat between SNAPIDs [' + snap_begin + ',' + snap_end + '] ..')
+                logger.log('Polling metrics from dba_hist_sqlstat between SNAPIDs [' + str(snap_begin) + ',' + str(snap_end) + '] ..')
                 cur_hist_snapshot = db_conn.execute_query(query=query_sql_stat,
                                                           params={"snap_begin":snap_begin,"snap_end":snap_end})
-                logger.log('Polling metrics from v$sql_plan between SNAPIDs [' + snap_begin + ',' + snap_end + '] ..')
+                logger.log('Polling metrics from v$sql_plan between SNAPIDs [' + str(snap_begin) + ',' + str(snap_end) + '] ..')
                 cur_sql_plan = db_conn.execute_query(query=query_sql_plan,
                                                      params={"snap_begin":snap_begin,"snap_end":snap_end})
                 #
