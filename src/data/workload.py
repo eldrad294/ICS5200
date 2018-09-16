@@ -39,7 +39,7 @@ class Workload:
         This method is tasked with polling the database instance and extract metric every N seconds. Extracted metrics
         are saved in .csv format on disk.
 
-        This method executes indefinitely, until the schedule is terminated.
+        This method executes indefinitely, until the scheduler is terminated.
         :param ev_loader:
         :param logger:
         :return:
