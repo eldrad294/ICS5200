@@ -129,11 +129,9 @@ class Workload:
                 [rep_sql_csv.writerow(row) for row in cur_sql_plan]
                 logger.log('Metrics successfully written to file..')
                 #
-            except cx_Oracle.DatabaseError as e:
-                logger.log('Oracle exception caught [' + str(e) + ']')
-                kill_signal = 1
             except Exception as e:
                 logger.log('An exception was caught in method ''__statistic_gatherer'' [' + str(e) + ']')
+                kill_signal = 1
             #
             if kill_signal > 0:
                 break
