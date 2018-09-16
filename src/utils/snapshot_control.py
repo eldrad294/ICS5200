@@ -18,7 +18,7 @@ class Snapshots:
                              "from dba_hist_snapshot"
         snap_id = db_conn.execute_query(query=max_snapshot_query,
                                         fetch_single=True)
-        return snap_id
+        return snap_id[0]
     #
     @staticmethod
     def __validate(db_conn, logger):
