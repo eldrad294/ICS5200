@@ -3,9 +3,7 @@
 This script is used to generate reports
 The script will:
 * TBD
---------------------------
-"""
-"""
+
 ---------------------------------------------------
 SCRIPT WARM UP - Module Import & Path Configuration
 ---------------------------------------------------
