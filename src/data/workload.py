@@ -117,15 +117,17 @@ class Workload:
                 Snapshots.capture_snapshot(db_conn=db_conn, logger=logger)
                 snap_end = Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)
                 #
-                logger.log('Polling metrics from instance..')
+                logger.log('Polling metrics from dba_hist_sqlstat..')
                 cur_hist_snapshot = db_conn.execute_query(query=query_sql_stat,
                                                           params={"snap_begin":snap_begin,"snap_end":snap_end})
+                logger.log('Polling metrics from v$sql_plan..')
                 cur_sql_plan = db_conn.execute_query(query=query_sql_plan,
                                                      params={"snap_begin":snap_begin,"snap_end":snap_end})
                 #
                 # Write cursors to csv files
                 [rep_hist_csv.writerow(row) for row in cur_hist_snapshot]
                 [rep_sql_csv.writerow(row) for row in cur_sql_plan]
+                logger.log('Metrics successfully written to file..')
                 #
             except cx_Oracle.DatabaseError as e:
                 logger.log('Oracle exception caught [' + str(e) + ']')
@@ -164,7 +166,7 @@ class Workload:
         DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
                                          password=ev_loader.var_get('password'),
                                          instance_name=ev_loader.var_get('instance_name'),
-                                         filename=transaction_path + "/" + transaction_name,
+                                         filename=transaction_path + transaction_name,
                                          params=None,
                                          logger=logger,
                                          redirect_path=ev_loader.var_get('project_dir') + "/log/sqlplusoutput.txt")
