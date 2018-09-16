@@ -123,6 +123,10 @@ class Workload:
                 logger.log('Polling metrics from v$sql_plan..')
                 cur_sql_plan = db_conn.execute_query(query=query_sql_plan,
                                                      params={"snap_begin":snap_begin,"snap_end":snap_end})
+                logger.log(query_sql_stat)
+                logger.log(cur_hist_snapshot)
+                logger.log(query_sql_plan)
+                logger.log(cur_sql_plan)
                 #
                 # Write cursors to csv files
                 [rep_hist_csv.writerow(row) for row in cur_hist_snapshot]
