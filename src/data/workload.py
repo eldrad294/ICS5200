@@ -165,7 +165,8 @@ class Workload:
                                          instance_name=ev_loader.var_get('instance_name'),
                                          filename=transaction_path + "/" + transaction_name,
                                          params=None,
-                                         logger=logger)
+                                         logger=logger,
+                                         redirect_path=ev_loader.var_get('project_dir') + "/log/sqlplusoutput.txt")
         end_time = time.clock() - start_time
         logger.log('Successfully executed ' + transaction_name + " under " + str(end_time) + " seconds.")
         #

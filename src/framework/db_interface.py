@@ -199,7 +199,7 @@ class DatabaseInterface:
                 self.execute_dml(command)
     #
     @staticmethod
-    def execute_script(user, password, instance_name, filename, params, logger):
+    def execute_script(user=None, password=None, instance_name=None, filename=None, params=None, logger=None, redirect_path=None):
         """
         NB: - THIS METHOD SHOULD BE CONVERTED INTO A STATIC METHOD IN DUE TIME
 
@@ -209,12 +209,16 @@ class DatabaseInterface:
         :param instance_name: Database instance name
         :param filename: Filename of the script to be executed through SQL+
         :param params: Params which require to be passed in addition to the script (Passed as a list)
+        :param logger: Logger object used for logging capability
+        :param redirect_path: Dictates sqlplus output
         :return:
         """
         sys = "exit | sqlplus " + user + "/" + password + "@" + instance_name + " @" + filename
         if params is not None and len(params) > 0:
             for param in params:
                 sys += " " + str(param)
+        if redirect_path is not None:
+            sys += " > " + redirect_path
         logger.log(sys)
         output = os.system(sys)
         if output != 0:
