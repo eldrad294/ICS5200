@@ -28,8 +28,8 @@ logger = si.initialize_logger()
 active_thread_count = 0
 #
 # Makes relavent checks to ensure metric csv files exist
-rep_hist_snapshot_path = ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_hist_snapshot.csv"
-rep_sql_plan_path = ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_vsql_plan.csv"
+rep_hist_snapshot_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_hist_snapshot.csv"
+rep_sql_plan_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_vsql_plan.csv"
 rep_hist_snapshot_exists = os.path.isfile(rep_hist_snapshot_path)
 rep_sql_plan_exists = os.path.isfile(rep_sql_plan_path)
 #
@@ -86,7 +86,8 @@ while True:
     #
     # This thread oversees metric extraction and saves to local generated files
     Workload.execute_statistic_gatherer(ev_loader=ev_loader,
-                                        logger=logger)
+                                        logger=logger,
+                                        path_bank=[rep_hist_snapshot_path,rep_sql_plan_path])
     #
     for script in transaction_bank:
         #

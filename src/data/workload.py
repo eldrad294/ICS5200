@@ -23,18 +23,18 @@ class Workload:
         p.start()
     #
     @staticmethod
-    def execute_statistic_gatherer(ev_loader, logger):
+    def execute_statistic_gatherer(ev_loader, logger, path_bank):
         """
         Wrapper method for '__statistic_gatherer'
         :param ev_loader:
         :param logger:
         :return:
         """
-        p = Process(target=Workload.__statistic_gatherer, args=(ev_loader, logger))
+        p = Process(target=Workload.__statistic_gatherer, args=(ev_loader, logger, path_bank))
         p.start()
     #
     @staticmethod
-    def __statistic_gatherer(ev_loader, logger):
+    def __statistic_gatherer(ev_loader, logger, path_bank):
         """
         This method is tasked with polling the database instance and extract metric every N seconds. Extracted metrics
         are saved in .csv format on disk.
@@ -42,6 +42,7 @@ class Workload:
         This method executes indefinitely, until the scheduler is terminated.
         :param ev_loader:
         :param logger:
+        :param path_bank
         :return:
         """
         logger.log('Initiating statistic gatherer..')
@@ -82,8 +83,8 @@ class Workload:
         #
         # Opens CSV file
         try:
-            rep_hist_snapshot = open(ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_hist_snapshot.csv", 'a')
-            rep_sql_plan = open(ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_vsql_plan.csv", 'a')
+            rep_hist_snapshot = open(path_bank[0], 'a')
+            rep_sql_plan = open(path_bank[1], 'a')
             rep_hist_csv = csv.writer(rep_hist_snapshot, dialect='excel')
             rep_sql_csv = csv.writer(rep_sql_plan, dialect='excel')
         except FileNotFoundError:
