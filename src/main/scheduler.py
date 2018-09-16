@@ -35,12 +35,15 @@ rep_sql_plan_exists = os.path.isfile(rep_sql_plan_path)
 #
 if ev_loader.var_get('renew_csv') == 'True':
     #
-    if not rep_hist_snapshot_exists:
-        os.mknod(rep_hist_snapshot_path)
-        logger.log('Created file ' + rep_hist_snapshot_path)
-    if not rep_hist_snapshot_exists:
-        os.mknod(rep_sql_plan_path)
-        logger.log('Created file ' + rep_sql_plan_path)
+    if rep_hist_snapshot_exists:
+        os.remove(rep_hist_snapshot_path)
+    if rep_sql_plan_exists:
+        os.remove(rep_sql_plan_path)
+    #
+    os.mknod(rep_hist_snapshot_path)
+    logger.log('Created file ' + rep_hist_snapshot_path)
+    os.mknod(rep_sql_plan_path)
+    logger.log('Created file ' + rep_sql_plan_path)
     #
 elif ev_loader.var_get('renew_csv') == 'False':
     #
