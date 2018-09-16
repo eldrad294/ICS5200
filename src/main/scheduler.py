@@ -26,6 +26,28 @@ si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir, home_dir=home_d
 ev_loader = si.get_global_config()
 logger = si.initialize_logger()
 active_thread_count = 0
+#
+# Makes relavent checks to ensure metric csv files exist
+rep_hist_snapshot_path = ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_hist_snapshot.csv"
+rep_sql_plan_path = ev_loader.var_get('src_dir') + "/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_vsql_plan.csv"
+rep_hist_snapshot_exists = os.path.isfile(rep_hist_snapshot_path)
+rep_sql_plan_exists = os.path.isfile(rep_sql_plan_path)
+#
+if ev_loader.var_get('renew_csv') == 'True':
+    #
+    if not rep_hist_snapshot_exists:
+        os.mknod(rep_hist_snapshot_path)
+        logger.log('Created file ' + rep_hist_snapshot_path)
+    if not rep_hist_snapshot_exists:
+        os.mknod(rep_sql_plan_path)
+        logger.log('Created file ' + rep_sql_plan_path)
+    #
+elif ev_loader.var_get('renew_csv') == 'False':
+    #
+    if not rep_hist_snapshot_exists:
+        raise FileNotFoundError(rep_hist_snapshot_path)
+    if not rep_hist_snapshot_exists:
+        raise FileNotFoundError(rep_sql_plan_path)
 """
 ------------------------------------------------------------
 SCRIPT EXECUTION - Workload Start
@@ -35,12 +57,12 @@ query_path = ev_loader.var_get('src_dir')+"/sql/Runtime/TPC-DS/" + ev_loader.var
 dml_path = ev_loader.var_get('src_dir')+"/sql/Runtime/TPC-DS/" + ev_loader.var_get("user") + "/DML/"
 #
 transaction_bank = [] # Keeps reference of which Query/DML scripts are eligible for execution
-for filename in os.listdir(query_path):
-    if filename.endswith(".sql"):
-        transaction_bank.append(filename)
-for filename in os.listdir(dml_path):
-    if filename.endswith(".sql"):
-        transaction_bank.append(filename)
+for j in range(1, 100):
+    filename = 'query_' + str(j) + '.sql'
+    transaction_bank.append(filename)
+for j in range(1, 43):
+    filename = 'dml_' + str(j) + '.sql'
+    transaction_bank.append(filename)
 #
 # Prepare database for flashback
 restore_point_name = ev_loader.var_get('user') + "_scheduler_rp"

@@ -88,7 +88,7 @@ class Workload:
             rep_sql_csv = csv.writer(rep_sql_plan, dialect='excel')
         except FileNotFoundError:
             logger.log('REP_HIST_SNAPSHOT.csv was not found!')
-            raise FileExistsError('REP_HIST_SNAPSHOT.csv was not found!')
+            raise FileNotFoundError('REP_HIST_SNAPSHOT.csv was not found!')
         except Exception as e:
             logger.log('An exception was raised during writing to file! [' + str(e) + ']')
         #
