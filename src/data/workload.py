@@ -72,7 +72,7 @@ class Workload:
                          "	where dhsql.snap_id = dhsnap.snap_id " \
                          "	and dhsql.dbid = dhsnap.dbid " \
                          "	and dhsql.instance_number = dhsnap.instance_number " \
-                         "	and dhsnap.snap_id between '544' and '545' " \
+                         "	and dhsnap.snap_id between :snap_begin and :snap_end " \
                          ") " \
                          "and vsp.timestamp = ( " \
                          "  select max(timestamp) " \
