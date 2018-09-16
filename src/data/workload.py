@@ -79,7 +79,7 @@ class Workload:
                          "  from v$sql_plan " \
                          "  where sql_id = vsp.sql_id " \
                          ") " \
-                         "order by sql_id, id " \
+                         "order by sql_id, id"
         #
         # Opens CSV file
         try:
@@ -109,6 +109,7 @@ class Workload:
                 # Create begin snapshot
                 Snapshots.capture_snapshot(db_conn=db_conn, logger=logger)
                 snap_begin = Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)
+                logger.log(snap_begin)
                 #
                 # Wait N seconds
                 time.sleep(ev_loader.var_get('statistic_intervals'))
@@ -116,6 +117,7 @@ class Workload:
                 # Create end snapshot
                 Snapshots.capture_snapshot(db_conn=db_conn, logger=logger)
                 snap_end = Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)
+                logger.log(snap_end)
                 #
                 logger.log('Polling metrics from dba_hist_sqlstat..')
                 cur_hist_snapshot = db_conn.execute_query(query=query_sql_stat,
