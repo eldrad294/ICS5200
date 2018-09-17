@@ -13,10 +13,10 @@ class Workload:
     def execute_transaction(ev_loader, logger, transaction_path, transaction_name):
         """
         Wrapper method for method '__execute_and_forget'
-        :param ev_loader:
-        :param logger:
-        :param transaction_path:
-        :param transaction_name:
+        :param ev_loader: Environment context
+        :param logger: Logger context
+        :param transaction_path: Directory path to contained file
+        :param transaction_name: File name containing TPC-DS transaction
         :return:
         """
         p = Process(target=Workload.__execute_and_forget, args=(ev_loader, logger, transaction_path, transaction_name))
@@ -26,8 +26,8 @@ class Workload:
     def execute_statistic_gatherer(ev_loader, logger, path_bank):
         """
         Wrapper method for '__statistic_gatherer'
-        :param ev_loader:
-        :param logger:
+        :param ev_loader: Environment context
+        :param logger: Logger context
         :return:
         """
         p = Process(target=Workload.__statistic_gatherer, args=(ev_loader, logger, path_bank))
@@ -39,10 +39,16 @@ class Workload:
         This method is tasked with polling the database instance and extract metric every N seconds. Extracted metrics
         are saved in .csv format on disk.
 
+        The targetted tables for metric extraction are denoted below:
+        * DBA_HIST_SQLSTAT
+        * DBA_HIST_SYSMETRIC_SUMMARY
+        * DBA_HIST_SYSSTAT
+        * V$SQL_PLAN
+
         This method executes indefinitely, until the scheduler is terminated.
-        :param ev_loader:
-        :param logger:
-        :param path_bank
+        :param ev_loader: Environment context
+        :param logger: Logger context
+        :param path_bank: List of csv files which will be written to during method invocation
         :return:
         """
         logger.log('Initiating statistic gatherer..')
@@ -62,7 +68,7 @@ class Workload:
                          "where dhsql.snap_id = dhsnap.snap_id "\
                          "and dhsql.dbid = dhsnap.dbid "\
                          "and dhsql.instance_number = dhsnap.instance_number "\
-                         "and dhsnap.snap_id between :snap_begin and :snap_end"
+                         "and dhsnap.snap_id = :snap"
         query_sql_plan = "select * " \
                          "from v$sql_plan vsp " \
                          "where vsp.sql_id in ( " \
@@ -72,7 +78,7 @@ class Workload:
                          "	where dhsql.snap_id = dhsnap.snap_id " \
                          "	and dhsql.dbid = dhsnap.dbid " \
                          "	and dhsql.instance_number = dhsnap.instance_number " \
-                         "	and dhsnap.snap_id between :snap_begin and :snap_end " \
+                         "	and dhsnap.snap_id = :snap " \
                          ") " \
                          "and vsp.timestamp = ( " \
                          "  select max(timestamp) " \
@@ -92,19 +98,39 @@ class Workload:
                                         "where dhss.snap_id = dhsnap.snap_id " \
                                         "and dhss.dbid = dhsnap.dbid " \
                                         "and dhss.instance_number = dhsnap.instance_number " \
-                                        "and dhsnap.snap_id between :snap_begin and :snap_end"
+                                        "and dhsnap.snap_id = :snap"
+        query_hist_sysstat = "select dhsys.*, " \
+                            "       dhs.startup_time, " \
+                            "       dhs.begin_interval_time, " \
+                            "       dhs.end_interval_time, " \
+                            "       dhs.flush_elapsed, " \
+                            "       dhs.snap_level, " \
+                            "       dhs.error_count, " \
+                            "       dhs.snap_flag, " \
+                            "       dhs.snap_timezone " \
+                            "from dba_hist_sysstat dhsys, " \
+                            "     dba_hist_snapshot dhs " \
+                            "where dhsys.snap_id = dhs.snap_id " \
+                            "and dhsys.dbid = dhs.dbid " \
+                            "and dhsys.instance_number = dhs.instance_number " \
+                            "and dhs.snap_id = :snap "
         #
-        # Opens CSV file
         try:
+            #
+            # Opens CSV file
             rep_hist_snapshot = open(path_bank[0], 'a')
             rep_sql_plan = open(path_bank[1], 'a')
             rep_hist_sysmetric_summary = open(path_bank[2], 'a')
+            rep_hist_sysstat = open(path_bank[3],'a')
+            #
             rep_hist_csv = csv.writer(rep_hist_snapshot, dialect='excel')
             rep_sql_csv = csv.writer(rep_sql_plan, dialect='excel')
             rep_hist_sysmetric_summary_csv = csv.writer(rep_hist_sysmetric_summary, dialect='excel')
+            rep_hist_sysstat_csv = csv.writer(rep_hist_sysstat, dialect='excel')
+            #
         except FileNotFoundError:
-            logger.log('REP_HIST_SNAPSHOT.csv was not found!')
-            raise FileNotFoundError('REP_HIST_SNAPSHOT.csv was not found!')
+            logger.log('Statistic file was not found!')
+            raise FileNotFoundError('Statistic file was not found!')
         except Exception as e:
             logger.log('An exception was raised during writing to file! [' + str(e) + ']')
         #
@@ -117,35 +143,41 @@ class Workload:
                                     password=ev_loader.var_get('password'),
                                     logger=logger)
         db_conn.connect()
+        #
+        # Create begin snapshot - This snap id is not saved to file since the time interval captured here is unknown.
+        # Therefore this snap id establishes a base snapshot from which to base future snapshots.
+        Snapshots.capture_snapshot(db_conn=db_conn, logger=logger)
+        snap = Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)
+        #
         while True:
             #
             try:
-                #
-                # Create begin snapshot
-                Snapshots.capture_snapshot(db_conn=db_conn, logger=logger)
-                snap_begin = Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)
                 #
                 # Wait N seconds
                 time.sleep(ev_loader.var_get('statistic_intervals'))
                 #
                 # Create end snapshot
                 Snapshots.capture_snapshot(db_conn=db_conn, logger=logger)
-                snap_end = Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)
+                snap = Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)
                 #
-                logger.log('Polling metrics from dba_hist_sqlstat between SNAPIDs [' + str(snap_begin) + ',' + str(snap_end) + '] ..')
+                logger.log('Polling metrics from dba_hist_sqlstat with snapid [' + str(snap) + '] ..')
                 cur_hist_snapshot = db_conn.execute_query(query=query_sql_stat,
-                                                          params={"snap_begin":snap_begin,"snap_end":snap_end})
-                logger.log('Polling metrics from v$sql_plan between SNAPIDs [' + str(snap_begin) + ',' + str(snap_end) + '] ..')
+                                                          params={"snap":snap})
+                logger.log('Polling metrics from v$sql_plan with snapid [' + str(snap) + '] ..')
                 cur_sql_plan = db_conn.execute_query(query=query_sql_plan,
-                                                     params={"snap_begin":snap_begin,"snap_end":snap_end})
-                logger.log('Polling metrics from dba_hist_sysmetric_summary')
+                                                     params={"snap":snap})
+                logger.log('Polling metrics from dba_hist_sysmetric_summary with snapid [' + str(snap) + ']')
                 cur_hist_sysmetric = db_conn.execute_query(query=query_hist_sysmetric_summary,
-                                                           params={"snap_begin":snap_begin,"snap_end":snap_end})
+                                                           params={"snap":snap})
+                logger.log('Polling metrics from dba_hist_sysstat with snapid [' + str(snap) + ']')
+                cur_hist_sysstat = db_conn.execute_query(query=query_hist_sysstat,
+                                                         params={"snap": snap})
                 #
                 # Write cursors to csv files
                 [rep_hist_csv.writerow(row) for row in cur_hist_snapshot]
                 [rep_sql_csv.writerow(row) for row in cur_sql_plan]
                 [rep_hist_sysmetric_summary_csv.writerow(row) for row in cur_hist_sysmetric]
+                [rep_hist_sysstat_csv.writerow(row) for row in cur_hist_sysstat]
                 logger.log('Metrics successfully written to file..')
                 #
             except Exception as e:
@@ -172,10 +204,10 @@ class Workload:
 
         This method is designed to be executed and forgotten. Once executed, this child will no longer be controlled by the
         driver.
-        :param ev_loader:
-        :param logger:
-        :param transaction_path:
-        :param transaction_name:
+        :param ev_loader: Environment context
+        :param logger: Logger context
+        :param transaction_path: Directory path to contained file
+        :param transaction_name: File name containing TPC-DS transaction
         :return:
         """
         Workload.__active_thread_count += 1
@@ -198,7 +230,7 @@ class Workload:
     def barrier(ev_loader):
         """
         Halts driver from proceeding any further if active thread count is greater than 'parallel_cap'
-        :param ev_loader:
+        :param ev_loader: Environment context
         :return:
         """
         while True:
@@ -212,8 +244,8 @@ class Workload:
         """
         Retrieves column headers to populate csv reports (containing the extracted metrics)
         :param report_type: Currently supports two report types: 'rep_hist_snapshot','rep_vsql_plan'
-        :param ev_loader:
-        :param logger:
+        :param ev_loader: Environment context
+        :param logger: Logger context
         :return:
         """
         if report_type is None:
@@ -250,6 +282,26 @@ class Workload:
                     "select table_name, column_name, column_id " \
                     "from dba_tab_columns " \
                     "where table_name = 'DBA_HIST_SYSMETRIC_SUMMARY' " \
+                    "union all " \
+                    "select table_name, column_name, column_id " \
+                    "from dba_tab_columns " \
+                    "where table_name = 'DBA_HIST_SNAPSHOT' " \
+                    "and column_name in ('STARTUP_TIME', " \
+                    "					'BEGIN_INTERVAL_TIME', " \
+                    "					'END_INTERVAL_TIME', " \
+                    "					'FLUSH_ELAPSED', " \
+                    "					'SNAP_LEVEL', " \
+                    "					'ERROR_COUNT', " \
+                    "					'SNAP_FLAG', " \
+                    "					'SNAP_TIMEZONE') " \
+                    ") order by table_name desc, " \
+                    "		   column_id asc"
+        elif report_type == 'rep_hist_sysstat':
+            query = "select column_name " \
+                    "from ( " \
+                    "select table_name, column_name, column_id " \
+                    "from dba_tab_columns " \
+                    "where table_name = 'DBA_HIST_SYSSTAT' " \
                     "union all " \
                     "select table_name, column_name, column_id " \
                     "from dba_tab_columns " \

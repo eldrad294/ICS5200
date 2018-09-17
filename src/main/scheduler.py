@@ -31,9 +31,11 @@ active_thread_count = 0
 rep_hist_snapshot_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_hist_snapshot.csv"
 rep_sql_plan_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_vsql_plan.csv"
 rep_hist_sysmetric_summary_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_hist_sysmetric_summary.csv"
+rep_hist_sysstat_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_hist_sysstat.csv"
 rep_hist_snapshot_exists = os.path.isfile(rep_hist_snapshot_path)
 rep_sql_plan_exists = os.path.isfile(rep_sql_plan_path)
 rep_hist_sysmetric_summary_exists = os.path.isfile(rep_hist_sysmetric_summary_path)
+rep_hist_sysstat_exists = os.path.isfile(rep_hist_sysstat_path)
 #
 if ev_loader.var_get('renew_csv') == 'True':
     #
@@ -43,6 +45,8 @@ if ev_loader.var_get('renew_csv') == 'True':
         os.remove(rep_sql_plan_path)
     if rep_hist_sysmetric_summary_exists:
         os.remove(rep_hist_sysmetric_summary_path)
+    if rep_hist_sysstat_exists:
+        os.remove(rep_hist_sysstat_path)
     #
     os.mknod(rep_hist_snapshot_path)
     logger.log('Created file ' + rep_hist_snapshot_path)
@@ -50,30 +54,47 @@ if ev_loader.var_get('renew_csv') == 'True':
     logger.log('Created file ' + rep_sql_plan_path)
     os.mknod(rep_hist_sysmetric_summary_path)
     logger.log('Created file ' + rep_hist_sysmetric_summary_path)
+    os.mknod(rep_hist_sysstat_path)
+    logger.log('Created file ' + rep_hist_sysstat_path)
     #
-    # Create file headers
+    # Create file headers - REP_HIST_SNAPSHOT
     col_list = Workload.get_script_headers(report_type='rep_hist_snapshot',ev_loader=ev_loader,logger=logger)
     rep_hist_snapshot = open(rep_hist_snapshot_path, 'a')
     rep_hist_csv = csv.writer(rep_hist_snapshot, dialect='excel')
     [rep_hist_csv.writerow(row) for row in col_list]
     rep_hist_csv.close()
+    #
+    # Create file headers - REP_VSQL_PLAN
     col_list = Workload.get_script_headers(report_type='rep_vsql_plan',ev_loader=ev_loader,logger=logger)
     rep_vsql_plan = open(rep_sql_plan_path, 'a')
     rep_plan_csv = csv.writer(rep_vsql_plan, dialect='excel')
     [rep_plan_csv.writerow(row) for row in col_list]
     rep_plan_csv.close()
+    #
+    # Create file headers - REP_HIST_SYSMETRIC_SUMMARY
     col_list = Workload.get_script_headers(report_type='rep_hist_sysmetric_summary', ev_loader=ev_loader, logger=logger)
     rep_hist_sysmetric_summary = open(rep_hist_sysmetric_summary_path, 'a')
     rep_hist_sysmetric_summary_csv = csv.writer(rep_hist_sysmetric_summary, dialect='excel')
     [rep_hist_sysmetric_summary_csv.writerow(row) for row in col_list]
     rep_hist_sysmetric_summary_csv.close()
     #
+    # Create file headers - REP_HIST_SYSSTAT
+    col_list = Workload.get_script_headers(report_type='rep_hist_sysstat', ev_loader=ev_loader, logger=logger)
+    rep_hist_sysstat = open(rep_hist_sysstat_path, 'a')
+    rep_hist_sysstat_csv = csv.writer(rep_hist_sysstat, dialect='excel')
+    [rep_hist_sysstat_csv.writerow(row) for row in col_list]
+    rep_hist_sysstat_csv.close()
+    #
 elif ev_loader.var_get('renew_csv') == 'False':
     #
     if not rep_hist_snapshot_exists:
         raise FileNotFoundError(rep_hist_snapshot_path)
-    if not rep_hist_snapshot_exists:
+    if not rep_sql_plan_exists:
         raise FileNotFoundError(rep_sql_plan_path)
+    if not rep_hist_sysmetric_summary_exists:
+        raise FileNotFoundError(rep_hist_sysmetric_summary_path)
+    if not rep_hist_sysstat_exists:
+        raise FileNotFoundError(rep_hist_sysstat_path)
 """
 ------------------------------------------------------------
 SCRIPT EXECUTION - Workload Start
@@ -113,7 +134,10 @@ while True:
     # This thread oversees metric extraction and saves to local generated files
     Workload.execute_statistic_gatherer(ev_loader=ev_loader,
                                         logger=logger,
-                                        path_bank=[rep_hist_snapshot_path,rep_sql_plan_path,rep_hist_sysmetric_summary_path])
+                                        path_bank=[rep_hist_snapshot_path,
+                                                   rep_sql_plan_path,
+                                                   rep_hist_sysmetric_summary_path,
+                                                   rep_hist_sysstat_path])
     #
     for script in transaction_bank:
         #
