@@ -84,6 +84,13 @@ if result == 0:
     db_conn.close()
     raise Exception('[' + ev_loader.var_get('user') + '] schema tables were not found..terminating script!')
 #
+# Strip optimizer stats
+logger.log('Starting optimizer stats dropping..')
+OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
+                                                logger=logger,
+                                                tpctype=ev_loader.var_get('user'))
+logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
+#
 # Prepare database for flashback
 restore_point_name = ev_loader.var_get('user') + "_benchmark_rp"
 DatabaseInterface.execute_script(user=ev_loader.var_get('sysuser'),
@@ -113,16 +120,16 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
                                      logger=logger)
     logger.log('Created restore point ' + restore_point_name + '..')
     #
-    # Database connection would have to be reopened at this point, due to db restart
-    db_conn.connect()
-    #
     # Drop stats during first half of the benchmark, Gather stats during first half of the benchmark.
     if i > (ev_loader.var_get('iterations')):
         stats = True
     else:
         stats = False
     #
-    if stats:
+    if i == int(ev_loader.var_get('iterations')) + 1:
+        #
+        # Database connection would have to be reopened at this point, due to db restart
+        db_conn.connect()
         #
         # Gather optimizer stats
         logger.log('Starting optimizer stats generation..')
@@ -130,16 +137,7 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
                                                           logger=logger,
                                                           tpctype=ev_loader.var_get('user'))
         logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
-    else:
-        #
-        # Strip optimizer stats
-        logger.log('Starting optimizer stats dropping..')
-        OptimizerStatistics.remove_optimizer_statistics(db_conn=db_conn,
-                                                        logger=logger,
-                                                        tpctype=ev_loader.var_get('user'))
-        logger.log('Schema [' + ev_loader.var_get('user') + '] stripped of optimizer stats..')
-    #
-    db_conn.close()
+        db_conn.close()
     #
     # Execute All Queries
     for j in range(1, 100):
