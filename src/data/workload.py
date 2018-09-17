@@ -188,10 +188,10 @@ class Workload:
                 break
         #
         # Closes csv file/s
-        rep_hist_csv.close()
-        rep_sql_csv.close()
-        rep_hist_sysmetric_summary_csv.close()
-        rep_hist_sysstat_csv.close()
+        rep_hist_snapshot.close()
+        rep_sql_plan.close()
+        rep_hist_sysmetric_summary.close()
+        rep_hist_sysstat.close()
         #
         # Closes database connection
         db_conn.close() # This line most will most likely not be needed given that the database would have just restarted, and bounded all connections
