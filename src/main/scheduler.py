@@ -30,8 +30,10 @@ active_thread_count = 0
 # Makes relavent checks to ensure metric csv files exist
 rep_hist_snapshot_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_hist_snapshot.csv"
 rep_sql_plan_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_vsql_plan.csv"
+rep_hist_sysmetric_summary_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_hist_sysmetric_summary.csv"
 rep_hist_snapshot_exists = os.path.isfile(rep_hist_snapshot_path)
 rep_sql_plan_exists = os.path.isfile(rep_sql_plan_path)
+rep_hist_sysmetric_summary_exists = os.path.isfile(rep_hist_sysmetric_summary_path)
 #
 if ev_loader.var_get('renew_csv') == 'True':
     #
@@ -39,11 +41,15 @@ if ev_loader.var_get('renew_csv') == 'True':
         os.remove(rep_hist_snapshot_path)
     if rep_sql_plan_exists:
         os.remove(rep_sql_plan_path)
+    if rep_hist_sysmetric_summary_exists:
+        os.remove(rep_hist_sysmetric_summary_path)
     #
     os.mknod(rep_hist_snapshot_path)
     logger.log('Created file ' + rep_hist_snapshot_path)
     os.mknod(rep_sql_plan_path)
     logger.log('Created file ' + rep_sql_plan_path)
+    os.mknod(rep_hist_sysmetric_summary_path)
+    logger.log('Created file ' + rep_hist_sysmetric_summary_path)
     #
     # Create file headers
     col_list = Workload.get_script_headers(report_type='rep_hist_snapshot',ev_loader=ev_loader,logger=logger)
@@ -56,6 +62,11 @@ if ev_loader.var_get('renew_csv') == 'True':
     rep_plan_csv = csv.writer(rep_vsql_plan, dialect='excel')
     [rep_plan_csv.writerow(row) for row in col_list]
     rep_plan_csv.close()
+    col_list = Workload.get_script_headers(report_type='rep_hist_sysmetric_summary', ev_loader=ev_loader, logger=logger)
+    rep_hist_sysmetric_summary = open(rep_hist_sysmetric_summary_path, 'a')
+    rep_hist_sysmetric_summary_csv = csv.writer(rep_hist_sysmetric_summary, dialect='excel')
+    [rep_hist_sysmetric_summary_csv.writerow(row) for row in col_list]
+    rep_hist_sysmetric_summary_csv.close()
     #
 elif ev_loader.var_get('renew_csv') == 'False':
     #
@@ -102,7 +113,7 @@ while True:
     # This thread oversees metric extraction and saves to local generated files
     Workload.execute_statistic_gatherer(ev_loader=ev_loader,
                                         logger=logger,
-                                        path_bank=[rep_hist_snapshot_path,rep_sql_plan_path])
+                                        path_bank=[rep_hist_snapshot_path,rep_sql_plan_path,rep_hist_sysmetric_summary_path])
     #
     for script in transaction_bank:
         #

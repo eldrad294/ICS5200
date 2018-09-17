@@ -80,13 +80,28 @@ class Workload:
                          "  where sql_id = vsp.sql_id " \
                          ") " \
                          "order by sql_id, id"
+        query_hist_sysmetric_summary = "select dhss.*, " \
+                                        "       dhsnap.startup_time, " \
+                                        "       dhsnap.flush_elapsed, " \
+                                        "       dhsnap.snap_level, " \
+                                        "       dhsnap.error_count, " \
+                                        "       dhsnap.snap_flag, " \
+                                        "       dhsnap.snap_timezone " \
+                                        "from DBA_HIST_SYSMETRIC_SUMMARY dhss, " \
+                                        "     dba_hist_snapshot dhsnap " \
+                                        "where dhss.snap_id = dhsnap.snap_id " \
+                                        "and dhss.dbid = dhsnap.dbid " \
+                                        "and dhss.instance_number = dhsnap.instance_number " \
+                                        "and dhsnap.snap_id between :snap_begin and :snap_end"
         #
         # Opens CSV file
         try:
             rep_hist_snapshot = open(path_bank[0], 'a')
             rep_sql_plan = open(path_bank[1], 'a')
+            rep_hist_sysmetric_summary = open(path_bank[2], 'a')
             rep_hist_csv = csv.writer(rep_hist_snapshot, dialect='excel')
             rep_sql_csv = csv.writer(rep_sql_plan, dialect='excel')
+            rep_hist_sysmetric_summary_csv = csv.writer(rep_hist_sysmetric_summary, dialect='excel')
         except FileNotFoundError:
             logger.log('REP_HIST_SNAPSHOT.csv was not found!')
             raise FileNotFoundError('REP_HIST_SNAPSHOT.csv was not found!')
@@ -123,10 +138,14 @@ class Workload:
                 logger.log('Polling metrics from v$sql_plan between SNAPIDs [' + str(snap_begin) + ',' + str(snap_end) + '] ..')
                 cur_sql_plan = db_conn.execute_query(query=query_sql_plan,
                                                      params={"snap_begin":snap_begin,"snap_end":snap_end})
+                logger.log('Polling metrics from dba_hist_sysmetric_summary')
+                cur_hist_sysmetric = db_conn.execute_query(query=query_hist_sysmetric_summary,
+                                                           params={"snap_begin":snap_begin,"snap_end":snap_end})
                 #
                 # Write cursors to csv files
                 [rep_hist_csv.writerow(row) for row in cur_hist_snapshot]
                 [rep_sql_csv.writerow(row) for row in cur_sql_plan]
+                [rep_hist_sysmetric_summary_csv.writerow(row) for row in cur_hist_sysmetric]
                 logger.log('Metrics successfully written to file..')
                 #
             except Exception as e:
@@ -139,6 +158,7 @@ class Workload:
         # Closes csv file/s
         rep_hist_csv.close()
         rep_sql_csv.close()
+        rep_hist_sysmetric_summary_csv.close()
         #
         # Closes database connection
         db_conn.close() # This line most will most likely not be needed given that the database would have just restarted, and bounded all connections
@@ -224,6 +244,26 @@ class Workload:
                     "from all_tab_columns " \
                     "where table_name = 'V_$SQL_PLAN' " \
                     "order by column_id"
+        elif report_type == 'rep_hist_sysmetric_summary':
+            query = "select column_name " \
+                    "from ( " \
+                    "select table_name, column_name, column_id " \
+                    "from dba_tab_columns " \
+                    "where table_name = 'DBA_HIST_SYSMETRIC_SUMMARY' " \
+                    "union all " \
+                    "select table_name, column_name, column_id " \
+                    "from dba_tab_columns " \
+                    "where table_name = 'DBA_HIST_SNAPSHOT' " \
+                    "and column_name in ('STARTUP_TIME', " \
+                    "					'BEGIN_INTERVAL_TIME', " \
+                    "					'END_INTERVAL_TIME', " \
+                    "					'FLUSH_ELAPSED', " \
+                    "					'SNAP_LEVEL', " \
+                    "					'ERROR_COUNT', " \
+                    "					'SNAP_FLAG', " \
+                    "					'SNAP_TIMEZONE') " \
+                    ") order by table_name desc, " \
+                    "		   column_id asc"
         else:
             raise ValueError('Unsupported type!')
         #
