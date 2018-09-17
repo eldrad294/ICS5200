@@ -22,9 +22,17 @@ file_name = os.path.basename(__file__).split('.')[0]
 from src.framework.script_initializer import ScriptInitializer
 from src.data.workload import Workload
 from src.framework.db_interface import DatabaseInterface
+from src.utils.stats_control import OptimizerStatistics
 si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir, home_dir=home_dir, log_name_prefix=file_name)
 ev_loader = si.get_global_config()
 logger = si.initialize_logger()
+db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
+                            user=ev_loader.var_get('user'),
+                            host=ev_loader.var_get('host'),
+                            service=ev_loader.var_get('service'),
+                            port=ev_loader.var_get('port'),
+                            password=ev_loader.var_get('password'),
+                            logger=logger)
 active_thread_count = 0
 #
 # Makes relavent checks to ensure metric csv files exist
@@ -100,6 +108,16 @@ elif ev_loader.var_get('renew_csv') == 'False':
 SCRIPT EXECUTION - Workload Start
 ------------------------------------------------------------
 """
+db_conn.connect()
+#
+# Gather optimizer stats
+logger.log('Starting optimizer stats generation..')
+OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
+                                                  logger=logger,
+                                                  tpctype=ev_loader.var_get('user'))
+logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
+db_conn.close()
+#
 query_path = ev_loader.var_get('src_dir')+"/sql/Runtime/TPC-DS/" + ev_loader.var_get("user") + "/Query/"
 dml_path = ev_loader.var_get('src_dir')+"/sql/Runtime/TPC-DS/" + ev_loader.var_get("user") + "/DML/"
 #
