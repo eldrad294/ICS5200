@@ -111,6 +111,19 @@ dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var
 # Execute Queries + DML for n number of iterations
 for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
     #
+    if i == int(ev_loader.var_get('iterations')) + 1:
+        #
+        # Database connection would have to be reopened at this point, due to db restart
+        db_conn.connect()
+        #
+        # Gather optimizer stats
+        logger.log('Starting optimizer stats generation..')
+        OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
+                                                          logger=logger,
+                                                          tpctype=ev_loader.var_get('user'))
+        logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
+        db_conn.close()
+    #
     # Create restore point
     DatabaseInterface.execute_script(user=ev_loader.var_get('sysuser'),
                                      password=ev_loader.var_get('syspassword'),
@@ -125,19 +138,6 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
         stats = True
     else:
         stats = False
-    #
-    if i == int(ev_loader.var_get('iterations')) + 1:
-        #
-        # Database connection would have to be reopened at this point, due to db restart
-        db_conn.connect()
-        #
-        # Gather optimizer stats
-        logger.log('Starting optimizer stats generation..')
-        OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
-                                                          logger=logger,
-                                                          tpctype=ev_loader.var_get('user'))
-        logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
-        db_conn.close()
     #
     # Execute All Queries
     for j in range(1, 100):

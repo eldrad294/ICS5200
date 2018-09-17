@@ -45,6 +45,18 @@ if ev_loader.var_get('renew_csv') == 'True':
     os.mknod(rep_sql_plan_path)
     logger.log('Created file ' + rep_sql_plan_path)
     #
+    # Create file headers
+    col_list = Workload.get_script_headers(report_type='rep_hist_snapshot',ev_loader=ev_loader,logger=logger)
+    rep_hist_snapshot = open(rep_hist_snapshot_path, 'a')
+    rep_hist_csv = csv.writer(rep_hist_snapshot, dialect='excel')
+    [rep_hist_csv.writerow(row) for row in col_list]
+    rep_hist_csv.close()
+    col_list = Workload.get_script_headers(report_type='rep_vsql_plan',ev_loader=ev_loader,logger=logger)
+    rep_vsql_plan = open(rep_sql_plan_path, 'a')
+    rep_plan_csv = csv.writer(rep_vsql_plan, dialect='excel')
+    [rep_plan_csv.writerow(row) for row in col_list]
+    rep_plan_csv.close()
+    #
 elif ev_loader.var_get('renew_csv') == 'False':
     #
     if not rep_hist_snapshot_exists:

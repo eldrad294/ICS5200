@@ -186,3 +186,58 @@ class Workload:
                 break
             else:
                 time.sleep(4)
+    #
+    @staticmethod
+    def get_script_headers(report_type=None, ev_loader=None, logger=None):
+        """
+        Retrieves column headers to populate csv reports (containing the extracted metrics)
+        :param report_type: Currently supports two report types: 'rep_hist_snapshot','rep_vsql_plan'
+        :param ev_loader:
+        :param logger:
+        :return:
+        """
+        if report_type is None:
+            raise ValueError('Report Type was not specified!')
+        #
+        if report_type == 'rep_hist_snapshot':
+            query = "select column_name " \
+                    "from ( " \
+                    "select table_name, column_name, column_id " \
+                    "from dba_tab_columns " \
+                    "where table_name = 'DBA_HIST_SQLSTAT' " \
+                    "union all " \
+                    "select table_name, column_name, column_id " \
+                    "from dba_tab_columns " \
+                    "where table_name = 'DBA_HIST_SNAPSHOT' " \
+                    "and column_name in ('STARTUP_TIME', " \
+                    "					'BEGIN_INTERVAL_TIME', " \
+                    "					'END_INTERVAL_TIME', " \
+                    "					'FLUSH_ELAPSED', " \
+                    "					'SNAP_LEVEL', " \
+                    "					'ERROR_COUNT', " \
+                    "					'SNAP_FLAG', " \
+                    "					'SNAP_TIMEZONE') " \
+                    ") order by table_name desc, " \
+                    "		   column_id asc"
+        elif report_type == 'rep_vsql_plan':
+            query = "select column_name " \
+                    "from all_tab_columns " \
+                    "where table_name = 'V_$SQL_PLAN' " \
+                    "order by column_id"
+        else:
+            raise ValueError('Unsupported type!')
+        #
+        db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
+                                    user=ev_loader.var_get('user'),
+                                    host=ev_loader.var_get('host'),
+                                    service=ev_loader.var_get('service'),
+                                    port=ev_loader.var_get('port'),
+                                    password=ev_loader.var_get('password'),
+                                    logger=logger)
+        db_conn.connect()
+        res = db_conn.execute_query(query=query,params=None)
+        db_conn.close()
+        column_list = []
+        for row in res:
+            column_list.append(row)
+        return column_list
