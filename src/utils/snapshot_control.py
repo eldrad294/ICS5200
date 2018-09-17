@@ -32,7 +32,7 @@ class Snapshots:
         #
         max_snapshot_query = "select snap_id " \
                              "from dba_hist_snapshot " \
-                             "where end_interval_time = select max(end_interval_time) from dba_hist_snapshot"
+                             "where end_interval_time = (select max(end_interval_time) from dba_hist_snapshot)"
         snap_id = db_conn.execute_query(query=max_snapshot_query,
                                         fetch_single=True)
         return snap_id[0]
