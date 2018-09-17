@@ -594,6 +594,36 @@ create table REP_VSQL_PLAN tablespace tpcds100 nologging as
     select *
     from v$sql_plan
     where 1=0;
+create table REP_HIST_SYSMETRIC_SUMMARY tablespace tpcds100 nologging as
+    select dhss.*,
+           dhsnap.startup_time,
+           dhsnap.flush_elapsed,
+           dhsnap.snap_level,
+           dhsnap.error_count,
+           dhsnap.snap_flag,
+           dhsnap.snap_timezone
+    from DBA_HIST_SYSMETRIC_SUMMARY dhss,
+         dba_hist_snapshot dhsnap
+    where dhss.snap_id = dhsnap.snap_id
+    and dhss.dbid = dhsnap.dbid
+    and dhss.instance_number = dhsnap.instance_number
+    and 1=0;
+create table REP_HIST_SYSSTAT tablespace tpcds100 nologging as
+    select dhsys.*,
+           dhs.startup_time,
+           dhs.begin_interval_time,
+           dhs.end_interval_time,
+           dhs.flush_elapsed,
+           dhs.snap_level,
+           dhs.error_count,
+           dhs.snap_flag,
+           dhs.snap_timezone
+    from DBA_HIST_SYSSTAT dhsys,
+         dba_hist_snapshot dhs
+    where dhsys.snap_id = dhs.snap_id
+    and dhsys.dbid = dhs.dbid
+    and dhsys.instance_number = dhs.instance_number
+    and 1=0;
 alter table STORE_SALES enable row movement;
 alter table CATALOG_SALES enable row movement;
 alter table WEB_SALES enable row movement;

@@ -58,30 +58,30 @@ if ev_loader.var_get('renew_csv') == 'True':
     logger.log('Created file ' + rep_hist_sysstat_path)
     #
     # Create file headers - REP_HIST_SNAPSHOT
-    col_list = Workload.get_script_headers(report_type='rep_hist_snapshot',ev_loader=ev_loader,logger=logger)
     rep_hist_snapshot = open(rep_hist_snapshot_path, 'a')
     rep_hist_csv = csv.writer(rep_hist_snapshot, dialect='excel')
+    col_list = Workload.get_script_headers(report_type='rep_hist_snapshot',ev_loader=ev_loader,logger=logger)
     [rep_hist_csv.writerow(row) for row in col_list]
     rep_hist_csv.close()
     #
     # Create file headers - REP_VSQL_PLAN
-    col_list = Workload.get_script_headers(report_type='rep_vsql_plan',ev_loader=ev_loader,logger=logger)
     rep_vsql_plan = open(rep_sql_plan_path, 'a')
     rep_plan_csv = csv.writer(rep_vsql_plan, dialect='excel')
+    col_list = Workload.get_script_headers(report_type='rep_vsql_plan',ev_loader=ev_loader,logger=logger)
     [rep_plan_csv.writerow(row) for row in col_list]
     rep_plan_csv.close()
     #
     # Create file headers - REP_HIST_SYSMETRIC_SUMMARY
-    col_list = Workload.get_script_headers(report_type='rep_hist_sysmetric_summary', ev_loader=ev_loader, logger=logger)
     rep_hist_sysmetric_summary = open(rep_hist_sysmetric_summary_path, 'a')
     rep_hist_sysmetric_summary_csv = csv.writer(rep_hist_sysmetric_summary, dialect='excel')
+    col_list = Workload.get_script_headers(report_type='rep_hist_sysmetric_summary', ev_loader=ev_loader, logger=logger)
     [rep_hist_sysmetric_summary_csv.writerow(row) for row in col_list]
     rep_hist_sysmetric_summary_csv.close()
     #
     # Create file headers - REP_HIST_SYSSTAT
-    col_list = Workload.get_script_headers(report_type='rep_hist_sysstat', ev_loader=ev_loader, logger=logger)
     rep_hist_sysstat = open(rep_hist_sysstat_path, 'a')
     rep_hist_sysstat_csv = csv.writer(rep_hist_sysstat, dialect='excel')
+    col_list = Workload.get_script_headers(report_type='rep_hist_sysstat', ev_loader=ev_loader, logger=logger)
     [rep_hist_sysstat_csv.writerow(row) for row in col_list]
     rep_hist_sysstat_csv.close()
     #
