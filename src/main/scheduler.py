@@ -5,7 +5,7 @@ SCRIPT WARM UP - Module Import & Path Configuration
 """
 #
 # Module Imports
-import sys, os, time
+import sys, os, time, csv
 from os.path import dirname, abspath
 #
 # Retrieving relative paths for project directory
