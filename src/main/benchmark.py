@@ -276,7 +276,9 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
     else:
         logger.log("Executed iteration [" + str(i-1) + "] of removed stats benchmark")
 """
+------------------------------------------------------------
 SCRIPT CLOSEUP - Cleanup
+------------------------------------------------------------
 """
 #
 # Close CSV file
