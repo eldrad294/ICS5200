@@ -81,14 +81,13 @@ if ev_loader.var_get('renew_csv') == 'True':
     rep_execution_plans = open(rep_execution_plans_path, 'a')
     rep_execution_plans_csv = csv.writer(rep_execution_plans, dialect='excel')
     col_list = Workload.get_script_headers(report_type='rep_execution_plans', ev_loader=ev_loader, logger=logger)
-    [rep_execution_plans_csv.writerow(row) for row in col_list]
+    rep_execution_plans_csv.writerow(col_list)
     #
     # Create file headers - REP_EXPLAIN_PLANS
     rep_explain_plans = open(rep_explain_plans_path, 'a')
     rep_explain_plans_csv = csv.writer(rep_explain_plans, dialect='excel')
     col_list = Workload.get_script_headers(report_type='rep_explain_plans', ev_loader=ev_loader, logger=logger)
-    [rep_explain_plans_csv.writerow(row) for row in col_list]
-
+    rep_explain_plans_csv.writerow(col_list)
     #
     # Close CSV file
     rep_execution_plans.close()
