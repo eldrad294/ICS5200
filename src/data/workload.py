@@ -318,15 +318,45 @@ class Workload:
                     ") order by table_name desc, " \
                     "		   column_id asc"
         elif report_type == 'rep_execution_plans':
-            query = "select column_name " \
+            query = "select * " \
+                    "from ( " \
+                    "select column_name " \
                     "from dba_tab_columns " \
                     "where table_name = 'V_$SQL' " \
-                    "order by column_id"
+                    "order by column_id " \
+                    ") t " \
+                    "union all " \
+                    "select 'TPC_TRANSACTION_NAME' " \
+                    "from dual " \
+                    "union all " \
+                    "select 'STATEMENT_HASH_SUM' " \
+                    "from dual " \
+                    "union all " \
+                    "select 'BENCHMARK_ITERATION' " \
+                    "from dual " \
+                    "union all " \
+                    "select 'GATHERED_STATS' " \
+                    "from dual"
         elif report_type == 'rep_explain_plans':
-            query = "select column_name " \
+            query = "select * " \
+                    "from ( " \
+                    "select column_name " \
                     "from dba_tab_columns " \
                     "where table_name = 'PLAN_TABLE$' " \
-                    "order by column_id"
+                    "order by column_id " \
+                    ") t " \
+                    "union all " \
+                    "select 'TPC_TRANSACTION_NAME' " \
+                    "from dual " \
+                    "union all " \
+                    "select 'STATEMENT_HASH_SUM' " \
+                    "from dual " \
+                    "union all " \
+                    "select 'BENCHMARK_ITERATION' " \
+                    "from dual " \
+                    "union all " \
+                    "select 'GATHERED_STATS' " \
+                    "from dual"
         else:
             raise ValueError('Unsupported type!')
         #
