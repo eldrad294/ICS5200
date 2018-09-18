@@ -343,6 +343,37 @@ class Workload:
                     "select column_name " \
                     "from dba_tab_columns " \
                     "where table_name = 'PLAN_TABLE$' " \
+                    "and column_name in ('STATEMENT_ID', " \
+                    "					'PLAN_ID', " \
+                    "					'TIMESTAMP', " \
+                    "					'REMARKS', " \
+                    "					'OPERATION', " \
+                    "					'OPTIONS', " \
+                    "					'OBJECT_NODE', " \
+                    "					'OBJECT_OWNER', " \
+                    "					'OBJECT_NAME', " \
+                    "					'OBJECT_INSTANCE', " \
+                    "					'OBJECT_TYPE', " \
+                    "					'OPTIMIZER', " \
+                    "					'SEARCH_COLUMNS', " \
+                    "					'ID', " \
+                    "					'PARENT_ID', " \
+                    "					'DEPTH', " \
+                    "					'POSITION', " \
+                    "					'COST', " \
+                    "					'CARDINALITY', " \
+                    "					'BYTES', " \
+                    "					'OTHER_TAG', " \
+                    "					'PARTITION_START', " \
+                    "					'PARTITION_STOP', " \
+                    "					'PARTITION_ID', " \
+                    "					'DISTRIBUTION', " \
+                    "					'CPU_COST', " \
+                    "					'IO_COST', " \
+                    "					'TEMP_SPACE', " \
+                    "					'ACCESS_PREDICATES', " \
+                    "					'FILTER_PREDICATES', " \
+                    "					'TIME') " \
                     "order by column_id " \
                     ") t " \
                     "union all " \
