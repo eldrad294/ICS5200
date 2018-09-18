@@ -82,31 +82,17 @@ if ev_loader.var_get('renew_csv') == 'True':
     rep_execution_plans_csv = csv.writer(rep_execution_plans, dialect='excel')
     col_list = Workload.get_script_headers(report_type='rep_execution_plans', ev_loader=ev_loader, logger=logger)
     [rep_execution_plans_csv.writerow(row) for row in col_list]
-    rep_execution_plans.close()
     #
     # Create file headers - REP_EXPLAIN_PLANS
     rep_explain_plans = open(rep_explain_plans_path, 'a')
     rep_explain_plans_csv = csv.writer(rep_explain_plans, dialect='excel')
     col_list = Workload.get_script_headers(report_type='rep_explain_plans', ev_loader=ev_loader, logger=logger)
     [rep_explain_plans_csv.writerow(row) for row in col_list]
-    rep_explain_plans.close()
 else:
     if not rep_execution_plans_exists:
         raise FileNotFoundError(rep_execution_plans_path)
     if not rep_explain_plans_exists:
         raise FileNotFoundError(rep_explain_plans_path)
-#
-try:
-    os.remove(csv_rep_execution_plans)
-    os.remove(csv_rep_explain_plans)
-except Exception as e:
-    logger.log(str(e))
-finally:
-    rep_execution_plans_file = open(csv_rep_execution_plans, "a")
-    rep_explain_plans_file = open(csv_rep_explain_plans, "a")
-    #
-    execution_output = csv.writer(rep_execution_plans_file, dialect='excel')
-    explain_output = csv.writer(rep_explain_plans_file, dialect='excel')
 #
 # Check whether schema needs creating - executed only if relevant tables are not found
 sql_statement = "select count(*) from user_tables where table_name = 'DBGEN_VERSION'"
@@ -272,9 +258,9 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
     #
     db_conn.connect()
     cur_res = db_conn.execute_query(query='select * from rep_execution_plans')
-    [execution_output.writerow(row) for row in cur_res]
+    [rep_execution_plans_csv.writerow(row) for row in cur_res]
     cur_res = db_conn.execute_query(query='select * from rep_explain_plans')
-    [explain_output.writerow(row) for row in cur_res]
+    [rep_explain_plans_csv.writerow(row) for row in cur_res]
     db_conn.close()
     # #
     # Enable Flashback
@@ -313,8 +299,8 @@ SCRIPT CLOSEUP - Cleanup
 """
 #
 # Close CSV file
-rep_execution_plans_file.close()
-rep_explain_plans_file.close()
+rep_execution_plans.close()
+rep_explain_plans.close()
 #
 # Revert database post flashback - back to normal state (noarchive mode)
 DatabaseInterface.execute_script(user=ev_loader.var_get('sysuser'),
