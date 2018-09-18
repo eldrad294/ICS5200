@@ -174,7 +174,8 @@ while True:
                                      transaction_name=script)
         #
         # Block further spawning of threads beyond the limit dictated by 'ev_loader.var_get("parallel_cap")'
-        Workload.barrier(ev_loader=ev_loader)
+        Workload.parallel_barrier(ev_loader=ev_loader,
+                                  logger=logger)
         #
         # Pause N seconds between every execution to avoid overwhelming the scheduler
         time.sleep(ev_loader.var_get('execution_intervals'))

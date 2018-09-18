@@ -8,6 +8,7 @@ import time, cx_Oracle, csv
 class Workload:
     #
     __active_thread_count = 0 # Denotes how many active threads are running, to avoid resource starvation
+    __total_transaction_count = 0 # Denotes total transaction count which finished executing
     #
     @staticmethod
     def execute_transaction(ev_loader, logger, transaction_path, transaction_name):
@@ -225,10 +226,11 @@ class Workload:
         logger.log('Successfully executed ' + transaction_name + " under " + str(end_time) + " seconds.")
         #
         Workload.__active_thread_count -= 1
+        Workload.__total_transaction_count += 1
 
     #
     @staticmethod
-    def barrier(ev_loader):
+    def parallel_barrier(ev_loader, logger):
         """
         Halts driver from proceeding any further if active thread count is greater than 'parallel_cap'
         :param ev_loader: Environment context
@@ -238,7 +240,13 @@ class Workload:
             if Workload.__active_thread_count < ev_loader.var_get('parallel_cap'):
                 break
             else:
-                time.sleep(4)
+                logger.log('Sleeping - waiting for threads to finish before launching more executions..')
+                time.sleep(10)
+    #
+    @staticmethod
+    def workload_barrier(max_transaction_count):
+        while True:
+            if Workload
     #
     @staticmethod
     def get_script_headers(report_type=None, ev_loader=None, logger=None):
