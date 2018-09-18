@@ -261,10 +261,21 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
     # Offload rep_execution_plans & rep_explain_plans into csv
     #
     db_conn.connect()
+    #
+    rep_execution_plans = open(rep_execution_plans_path, 'a')
+    rep_execution_plans_csv = csv.writer(rep_execution_plans, dialect='excel')
     cur_res = db_conn.execute_query(query='select * from rep_execution_plans')
     [rep_execution_plans_csv.writerow(row) for row in cur_res]
+    #
+    rep_explain_plans = open(rep_explain_plans_path, 'a')
+    rep_explain_plans_csv = csv.writer(rep_explain_plans, dialect='excel')
     cur_res = db_conn.execute_query(query='select * from rep_explain_plans')
     [rep_explain_plans_csv.writerow(row) for row in cur_res]
+    #
+    # Close CSV file
+    rep_execution_plans.close()
+    rep_explain_plans.close()
+    #
     db_conn.close()
     # #
     # Enable Flashback
@@ -301,10 +312,6 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
 SCRIPT CLOSEUP - Cleanup
 ------------------------------------------------------------
 """
-#
-# Close CSV file
-rep_execution_plans.close()
-rep_explain_plans.close()
 #
 # Revert database post flashback - back to normal state (noarchive mode)
 DatabaseInterface.execute_script(user=ev_loader.var_get('sysuser'),
