@@ -47,6 +47,7 @@ ev_loader = si.get_global_config()
 logger = si.initialize_logger()
 from src.utils.plan_control import XPlan
 from src.utils.stats_control import OptimizerStatistics
+from src.data.workload import Workload
 db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                             user=ev_loader.var_get('user'),
                             host=ev_loader.var_get('host'),
@@ -59,12 +60,42 @@ xp = XPlan(logger=logger,
 #
 db_conn.connect()
 #
-# Create metric table
-xp.create_REP_EXECUTION_PLANS(db_conn=db_conn)
-xp.create_REP_EXPLAIN_PLANS(db_conn=db_conn)
+rep_execution_plans_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Benchmark/rep_execution_plans.csv"
+rep_explain_plans_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Benchmark/rep_explain_plans.csv"
+rep_execution_plans_exists = os.path.isfile(rep_execution_plans_path)
+rep_explain_plans_exists = os.path.isfile(rep_explain_plans_path)
 #
-csv_rep_execution_plans = "/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_execution_plans.csv"
-csv_rep_explain_plans = "/home/gabriels/ICS5200/src/sql/Runtime/TPC-DS/tpcds1/Benchmark/rep_explain_plans.csv"
+if ev_loader.var_get('renew_csv') == 'True':
+    #
+    if rep_execution_plans_exists:
+        os.remove(rep_execution_plans_path)
+    if rep_explain_plans_exists:
+        os.remove(rep_explain_plans_path)
+    #
+    os.mknod(rep_execution_plans_path)
+    logger.log('Created file ' + rep_execution_plans_path)
+    os.mknod(rep_explain_plans_path)
+    logger.log('Created file ' + rep_explain_plans_path)
+    #
+    # Create file headers - REP_EXECUTION_PLANS
+    rep_execution_plans = open(rep_execution_plans_path, 'a')
+    rep_execution_plans_csv = csv.writer(rep_execution_plans, dialect='excel')
+    col_list = Workload.get_script_headers(report_type='rep_execution_plans', ev_loader=ev_loader, logger=logger)
+    [rep_execution_plans_csv.writerow(row) for row in col_list]
+    rep_execution_plans.close()
+    #
+    # Create file headers - REP_EXPLAIN_PLANS
+    rep_explain_plans = open(rep_explain_plans_path, 'a')
+    rep_explain_plans_csv = csv.writer(rep_explain_plans, dialect='excel')
+    col_list = Workload.get_script_headers(report_type='rep_explain_plans', ev_loader=ev_loader, logger=logger)
+    [rep_explain_plans_csv.writerow(row) for row in col_list]
+    rep_explain_plans.close()
+else:
+    if not rep_execution_plans_exists:
+        raise FileNotFoundError(rep_execution_plans_path)
+    if not rep_explain_plans_exists:
+        raise FileNotFoundError(rep_explain_plans_path)
+#
 try:
     os.remove(csv_rep_execution_plans)
     os.remove(csv_rep_explain_plans)
