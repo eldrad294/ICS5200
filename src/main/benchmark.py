@@ -88,6 +88,11 @@ if ev_loader.var_get('renew_csv') == 'True':
     rep_explain_plans_csv = csv.writer(rep_explain_plans, dialect='excel')
     col_list = Workload.get_script_headers(report_type='rep_explain_plans', ev_loader=ev_loader, logger=logger)
     [rep_explain_plans_csv.writerow(row) for row in col_list]
+
+    #
+    # Close CSV file
+    rep_execution_plans.close()
+    rep_explain_plans.close()
 else:
     if not rep_execution_plans_exists:
         raise FileNotFoundError(rep_execution_plans_path)
