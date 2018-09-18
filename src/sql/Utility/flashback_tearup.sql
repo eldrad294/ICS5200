@@ -1,4 +1,4 @@
-shutdown immediate;
+shutdown abort;
 startup mount;
 alter database archivelog;
 alter database flashback on;

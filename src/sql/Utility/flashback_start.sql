@@ -1,4 +1,4 @@
-shutdown immediate;
+shutdown abort;
 startup mount;
 alter database archivelog;
 FLASHBACK DATABASE TO RESTORE POINT &1;
