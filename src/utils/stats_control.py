@@ -9,14 +9,14 @@ class OptimizerStatistics:
                                        tpc_type=tpctype)
         #
         params = {"statown": tpctype.upper(),
-                  "estimate_percent":"DBMS_STATS.AUTO_SAMPLE_SIZE",
+                  "estimate_percent":100,
                   "degree":60,
                   "granularity":'ALL',
-                  "cascade":'TRUE',
+                  "cascade":True,
                   "method_opt":'FOR ALL COLUMNS',
                   "options":'GATHER',
-                  "gather_sys":'TRUE',
-                  "no_invalidate":'DBMS_STATS.AUTO_INVALIDATE'}
+                  "gather_sys":True,
+                  "no_invalidate":True}
         db_conn.execute_proc(name='dbms_stats.gather_database_stats',
                              parameters=params)
     #
