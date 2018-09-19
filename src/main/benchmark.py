@@ -155,7 +155,7 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
         stats = False
     #
     # Execute All Queries
-    for j in range(98, 100):
+    for j in range(1, 100):
         filename = 'query_'+str(j)+'.sql'
         with open(query_path + filename) as file:
             logger.log('Generating execution metrics for [' + filename + ']..')
@@ -191,7 +191,7 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
                         db_conn.close()
     #
     # Execute All DML
-    for j in range(41, 43):
+    for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
         #
