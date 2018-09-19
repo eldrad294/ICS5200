@@ -1,7 +1,8 @@
 #
 # Module Imports
 from os.path import expanduser
-import os, pandas as pd
+import os
+import pandas as pd
 home = expanduser("~")
 #
 class TPC_Wrapper:
