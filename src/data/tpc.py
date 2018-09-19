@@ -1,7 +1,7 @@
 #
 # Module Imports
 from os.path import expanduser
-import os
+import os, pandas as pd
 home = expanduser("~")
 #
 class TPC_Wrapper:
@@ -267,3 +267,18 @@ class TPC_Wrapper:
                     break
             newfilename += i
         return newfilename + ".dat"
+    #
+    def get_order_sequence(self, stream_identification_number=None, tpc_type=None):
+        """
+        Parses order.csv into a pandas dataframe, and returns order sequence based on input stream number
+        :param stream_number:
+        :param tpc_type:
+        :return:
+        """
+        #
+        # Input validation
+        self.__validate_input(tpc_type=tpc_type)
+        #
+        headers = [i for i in range(0,21)]
+        sequence_df = pd.read_csv(ev_loader.var_get('project_dir') + '/data/' + tpc_type.upper() + '/order.csv', names=headers)
+        return list(sequence_df[stream_identification_number].values)

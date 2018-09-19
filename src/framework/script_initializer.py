@@ -78,10 +78,9 @@ class ScriptInitializer:
         delete_trace_alert_logs = str(g_config.get_value('Benchmark','delete_trace_alert_logs')).title()
         #
         # WorkloadGeneration
-        execution_intervals = int(g_config.get_value('WorkloadGeneration','execution_intervals'))
         statistic_intervals = int(g_config.get_value('WorkloadGeneration','statistic_intervals'))
-        parallel_cap = int(g_config.get_value('WorkloadGeneration','parallel_cap'))
         renew_csv = str(g_config.get_value('WorkloadGeneration','renew_csv')).title()
+        stream_total = int(g_config.get_value('WorkloadGeneration','stream_total'))
         #
         # Load into global dictionary
         ev_loader.var_load({'project_dir':project_dir,
@@ -133,10 +132,9 @@ class ScriptInitializer:
                             'time_out_in_seconds':time_out_in_seconds,
                             'refresh_rep_table':refresh_rep_table,
                             'delete_trace_alert_logs':delete_trace_alert_logs,
-                            'execution_intervals':execution_intervals,
                             'statistic_intervals':statistic_intervals,
-                            'parallel_cap':parallel_cap,
-                            'renew_csv':renew_csv
+                            'renew_csv':renew_csv,
+                            'stream_total':stream_total
                             })
         #
         # Environment var loading

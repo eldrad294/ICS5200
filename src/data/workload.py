@@ -7,19 +7,18 @@ import time, cx_Oracle, csv
 #
 class Workload:
     #
-    __active_thread_count = 0 # Denotes how many active threads are running, to avoid resource starvation
-    #
     @staticmethod
-    def execute_transaction(ev_loader, logger, transaction_path, transaction_name):
+    def execute_transaction(ev_loader, logger, transaction_path, query_stream):
         """
         Wrapper method for method '__execute_and_forget'
         :param ev_loader: Environment context
         :param logger: Logger context
         :param transaction_path: Directory path to contained file
         :param transaction_name: File name containing TPC-DS transaction
+        :param query_stream: List of queries ordered as indicated by stream_identification_number
         :return:
         """
-        p = Process(target=Workload.__execute_and_forget, args=(ev_loader, logger, transaction_path, transaction_name))
+        p = Process(target=Workload.__execute_and_forget, args=(ev_loader, logger, transaction_path, query_stream))
         p.start()
     #
     @staticmethod
@@ -52,7 +51,6 @@ class Workload:
         :return:
         """
         logger.log('Initiating statistic gatherer..')
-        Workload.__active_thread_count += 1
         kill_signal = 0
         query_sql_stat = "select dhsql.*, " \
                          "dhsnap.startup_time, " \
@@ -195,11 +193,10 @@ class Workload:
         #
         # Closes database connection
         db_conn.close() # This line most will most likely not be needed given that the database would have just restarted, and bounded all connections
-        Workload.__active_thread_count -= 1
         logger.log('Killed statistic gatherer..')
     #
     @staticmethod
-    def __execute_and_forget(ev_loader, logger, transaction_path, transaction_name):
+    def __execute_and_forget(ev_loader, logger, transaction_path, query_stream):
         """
         This method executes a TPC-DS transaction (query/dml), and left to finish.
 
@@ -209,36 +206,21 @@ class Workload:
         :param logger: Logger context
         :param transaction_path: Directory path to contained file
         :param transaction_name: File name containing TPC-DS transaction
+        :param query_stream: List of queries ordered as indicated by stream_identification_number
         :return:
         """
-        Workload.__active_thread_count += 1
-        #
-        start_time = time.clock()
-        DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
-                                         password=ev_loader.var_get('password'),
-                                         instance_name=ev_loader.var_get('instance_name'),
-                                         filename=transaction_path + transaction_name,
-                                         params=None,
-                                         logger=logger,
-                                         redirect_path=ev_loader.var_get('project_dir') + "/log/sqlplusoutput.txt")
-        end_time = time.clock() - start_time
-        logger.log('Successfully executed ' + transaction_name + " under " + str(end_time) + " seconds.")
-        #
-        Workload.__active_thread_count -= 1
-    #
-    @staticmethod
-    def parallel_barrier(ev_loader, logger):
-        """
-        Halts driver from proceeding any further if active thread count is greater than 'parallel_cap'
-        :param ev_loader: Environment context
-        :return:
-        """
-        while True:
-            if Workload.__active_thread_count < ev_loader.var_get('parallel_cap'):
-                break
-            else:
-                logger.log('Sleeping - waiting for threads to finish before launching more executions..')
-                time.sleep(10)
+        for query_id in query_stream:
+            #
+            query_name = 'query_' + str(query_id) + '.sql'
+            #
+            DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
+                                             password=ev_loader.var_get('password'),
+                                             instance_name=ev_loader.var_get('instance_name'),
+                                             filename=transaction_path + query_name,
+                                             params=None,
+                                             logger=logger,
+                                             redirect_path=ev_loader.var_get('project_dir') + "/log/sqlplusoutput.txt")
+            logger.log('Successfully executed [' + query_name + ']')
     #
     @staticmethod
     def get_script_headers(report_type=None, ev_loader=None, logger=None):
