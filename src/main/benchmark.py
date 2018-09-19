@@ -138,10 +138,10 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
         db_conn.connect()
         #
         # Gather optimizer stats
-        logger.log('Starting optimizer stats generation..')
-        OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
-                                                          logger=logger,
-                                                          tpctype=ev_loader.var_get('user'))
+        # logger.log('Starting optimizer stats generation..')
+        # OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
+        #                                                   logger=logger,
+        #                                                   tpctype=ev_loader.var_get('user'))
         logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
         db_conn.close()
     #
