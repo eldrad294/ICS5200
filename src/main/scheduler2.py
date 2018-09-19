@@ -33,6 +33,7 @@ db_conn = DatabaseInterface(instance_name=ev_loader.var_get('instance_name'),
                             port=ev_loader.var_get('port'),
                             password=ev_loader.var_get('password'),
                             logger=logger)
+active_thread_count = 0
 #
 # Makes relavent checks to ensure metric csv files exist
 rep_hist_snapshot_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_hist_snapshot.csv"
@@ -120,10 +121,86 @@ db_conn.close()
 query_path = ev_loader.var_get('src_dir')+"/sql/Runtime/TPC-DS/" + ev_loader.var_get("user") + "/Query/"
 dml_path = ev_loader.var_get('src_dir')+"/sql/Runtime/TPC-DS/" + ev_loader.var_get("user") + "/DML/"
 #
-query_bank, dml_bank = [], [] # Keeps reference of which Query/DML scripts are eligible for execution
+transaction_bank = [] # Keeps reference of which Query/DML scripts are eligible for execution
 for j in range(1, 100):
     filename = 'query_' + str(j) + '.sql'
-    query_bank.append(filename)
+    transaction_bank.append(filename)
 for j in range(1, 43):
     filename = 'dml_' + str(j) + '.sql'
-    dml_bank.append(filename)
+    transaction_bank.append(filename)
+#
+# Prepare database for flashback
+restore_point_name = ev_loader.var_get('user') + "_scheduler_rp"
+DatabaseInterface.execute_script(user=ev_loader.var_get('sysuser'),
+                                 password=ev_loader.var_get('syspassword'),
+                                 instance_name=ev_loader.var_get('instance_name'),
+                                 filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_tearup.sql",
+                                 params=None,
+                                 logger=logger)
+#
+while True:
+    #
+    # Create restore point
+    DatabaseInterface.execute_script(user=ev_loader.var_get('sysuser'),
+                                     password=ev_loader.var_get('syspassword'),
+                                     instance_name=ev_loader.var_get('instance_name'),
+                                     filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_restore_create.sql",
+                                     params=[restore_point_name],
+                                     logger=logger)
+    logger.log('Created restore point ' + restore_point_name + '..')
+    #
+    # This thread oversees metric extraction and saves to local generated files
+    Workload.execute_statistic_gatherer(ev_loader=ev_loader,
+                                        logger=logger,
+                                        path_bank=[rep_hist_snapshot_path,
+                                                   rep_sql_plan_path,
+                                                   rep_hist_sysmetric_summary_path,
+                                                   rep_hist_sysstat_path])
+    #
+    for script in transaction_bank:
+        #
+        if 'query' in script:
+            transaction_path = query_path
+        elif 'dml' in script:
+            transaction_path = dml_path
+        else:
+            logger.log('Script name malformed!')
+            raise LookupError('Script name malformed!')
+        #
+        # Execute script on a forked process
+        Workload.execute_transaction(ev_loader=ev_loader,
+                                     logger=logger,
+                                     transaction_path=transaction_path,
+                                     transaction_name=script)
+        #
+        # Block further spawning of threads beyond the limit dictated by 'ev_loader.var_get("parallel_cap")'
+        Workload.parallel_barrier(ev_loader=ev_loader,
+                                  logger=logger)
+        #
+        # Pause N seconds between every execution to avoid overwhelming the scheduler
+        time.sleep(ev_loader.var_get('execution_intervals'))
+    #
+    # Enable Flashback
+    DatabaseInterface.execute_script(user=ev_loader.var_get('sysuser'),
+                                     password=ev_loader.var_get('syspassword'),
+                                     instance_name=ev_loader.var_get('instance_name'),
+                                     filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
+                                     params=[restore_point_name],
+                                     logger=logger)
+    logger.log('Flash backed to ' + restore_point_name + "..")
+    #
+    # Drop Restore Point
+    DatabaseInterface.execute_script(user=ev_loader.var_get('sysuser'),
+                                     password=ev_loader.var_get('syspassword'),
+                                     instance_name=ev_loader.var_get('instance_name'),
+                                     filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_restore_drop.sql",
+                                     params=[restore_point_name],
+                                     logger=logger)
+    logger.log('Dropped restore point ' + restore_point_name + '..')
+    #
+    # Delete alert / trace files generated by database '/oracle/diag/rdbms/gabsam/gabsam/'
+    if ev_loader.var_get('delete_trace_alert_logs') == 'True':
+        sys = 'rm /oracle/diag/rdbms/gabsam/gabsam/alert/* /oracle/diag/rdbms/gabsam/gabsam/trace/*'
+        output = os.system(sys)
+        if output != 0:
+            logger.log('Removal of oracle alter/trace file raised error code ' + str(output) + '!')

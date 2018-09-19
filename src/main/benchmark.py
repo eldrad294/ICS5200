@@ -104,15 +104,6 @@ result = int(db_conn.execute_query(sql_statement, fetch_single=True)[0])
 if result == 0:
     db_conn.close()
     raise Exception('[' + ev_loader.var_get('user') + '] schema tables were not found..terminating script!')
-""" TEST """
-#
-# Gather optimizer stats
-logger.log('Starting optimizer stats generation..')
-OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
-                                                  logger=logger,
-                                                  tpctype=ev_loader.var_get('user'))
-logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
-""" END TEST """
 #
 # Strip optimizer stats
 logger.log('Starting optimizer stats dropping..')

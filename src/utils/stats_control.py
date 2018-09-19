@@ -15,7 +15,6 @@ class OptimizerStatistics:
                   "cascade":True,
                   "method_opt":'FOR ALL COLUMNS',
                   "options":'GATHER',
-                  "gather_sys":True,
                   "no_invalidate":True}
         db_conn.execute_proc(name='dbms_stats.gather_database_stats',
                              parameters=params)
