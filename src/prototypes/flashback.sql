@@ -1,3 +1,8 @@
+select log_mode from v$database;
+
+select * from V$FLASH_RECOVERY_AREA_USAGE;
+--
+select * from v$restore_point;
 --
 -- Creates a restore point
 CREATE RESTORE POINT before_upgrade;

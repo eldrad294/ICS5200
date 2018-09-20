@@ -137,7 +137,7 @@ def __load_and_delete(tpc):
     """
     Wrapper method which contains functionality used to invoke sqlldr, load data, and delete the TPC-DS generated files
     :param tpc: Instance of class 'tpc.py'
-    :return: None
+    :return:
     """
     #
     # Retrieve eligible data file names
@@ -160,6 +160,13 @@ def __load_and_delete(tpc):
             tpc.delete_data(tpc_type="TPC-DS", file_name=file_names[i])
 #
 def __power_test(tpc, ev_loader, logger):
+    """
+    Executes all TPC-DS queries serially
+    :param tpc: TPC context object
+    :param ev_loader: Environment Variable Context
+    :param logger: Logging Context
+    :return:
+    """
     #
     # Retrieve query stream sequence
     query_stream = tpc.get_order_sequence(stream_identification_number=0, tpc_type='TPC-DS')
@@ -176,6 +183,18 @@ def __power_test(tpc, ev_loader, logger):
                                          redirect_path=ev_loader.var_get('project_dir') + "/log/sqlplusoutput.txt")
 #
 def __throughput_test(tpc, ev_loader, logger):
+    """
+    Executes a number of parallel slaves denoted by 'S' - Number of concurrent query streams.
+
+    Once all slaves are kicked off, the process establishes a code barrier so as to allow all slaves to finish before
+    proceding any further.
+    :param tpc: TPC context object
+    :param ev_loader: Environment Variable Context
+    :param logger: Logging Context
+    :return:
+    """
+    #
+    slave_list = []
     #
     # Iterate over all query streams and execute in parallel
     for i in range(0, ev_loader.var_get('stream_total')+1):
@@ -184,13 +203,15 @@ def __throughput_test(tpc, ev_loader, logger):
         query_stream = tpc.get_order_sequence(stream_identification_number=i, tpc_type='TPC-DS')
         #
         # Execute script on a forked process
-        Workload.execute_transaction(ev_loader=ev_loader,
-                                     logger=logger,
-                                     transaction_path=transaction_path,
-                                     query_stream=query_stream)
+        slave = Workload.execute_transaction(ev_loader=ev_loader,
+                                             logger=logger,
+                                             transaction_path=transaction_path,
+                                             query_stream=query_stream)
+        slave_list.append(slave)
     #
     # Create Barrier to allow all parallel executions to finish
-
+    for slave in slave_list:
+        slave.join()
 #
 """
 ------------------------------------------------------------
@@ -256,4 +277,8 @@ while True:
     #
     # 7) Throughput Test 1
     logger.log("Initiating throughput test 1 for schema [" + ev_loader.var_get('user') + "]..")
+    __throughput_test(tpc=tpc, ev_loader=ev_loader, logger=logger)
+    #
+    # 9) Throughput Test 2
+    logger.log("Initiating throughput test 2 for schema [" + ev_loader.var_get('user') + "]..")
     __throughput_test(tpc=tpc, ev_loader=ev_loader, logger=logger)

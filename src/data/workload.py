@@ -16,10 +16,11 @@ class Workload:
         :param transaction_path: Directory path to contained file
         :param transaction_name: File name containing TPC-DS transaction
         :param query_stream: List of queries ordered as indicated by stream_identification_number
-        :return:
+        :return: Return slave process for barrier monitoring
         """
         p = Process(target=Workload.__execute_and_forget, args=(ev_loader, logger, transaction_path, query_stream))
         p.start()
+        return p
     #
     @staticmethod
     def execute_statistic_gatherer(ev_loader, logger, path_bank):
