@@ -8,15 +8,10 @@ class OptimizerStatistics:
                                        logger=logger,
                                        tpc_type=tpctype)
         #
-        params = {"statown": tpctype.upper(),
-                  "estimate_percent":100,
+        params = {"ownname": tpctype.upper(),
                   "degree":60,
-                  "granularity":'ALL',
-                  "cascade":True,
-                  "method_opt":'FOR ALL COLUMNS',
-                  "options":'GATHER',
-                  "no_invalidate":True}
-        db_conn.execute_proc(name='dbms_stats.gather_database_stats',
+                  "cascade":True}
+        db_conn.execute_proc(name='dbms_stats.gather_schema_stats',
                              parameters=params)
     #
     @staticmethod
@@ -25,8 +20,8 @@ class OptimizerStatistics:
                                        logger=logger,
                                        tpc_type=tpctype)
         #
-        params = {"statown":tpctype.upper()}
-        db_conn.execute_proc(name='dbms_stats.delete_database_stats',
+        params = {"ownname":tpctype.upper()}
+        db_conn.execute_proc(name='dbms_stats.delete_schema_stats',
                              parameters=params)
     #
     @staticmethod
