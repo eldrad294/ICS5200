@@ -181,20 +181,20 @@ class Workload:
                 #
             except Exception as e:
                 logger.log('An exception was caught in method ''__statistic_gatherer'' [' + str(e) + ']')
-                kill_signal = 1
-            #
-            if kill_signal > 0:
-                break
-        #
-        # Closes csv file/s
-        rep_hist_snapshot.close()
-        rep_sql_plan.close()
-        rep_hist_sysmetric_summary.close()
-        rep_hist_sysstat.close()
-        #
-        # Closes database connection
-        db_conn.close() # This line most will most likely not be needed given that the database would have just restarted, and bounded all connections
-        logger.log('Killed statistic gatherer..')
+        #         kill_signal = 1
+        #     #
+        #     if kill_signal > 0:
+        #         break
+        # #
+        # # Closes csv file/s
+        # rep_hist_snapshot.close()
+        # rep_sql_plan.close()
+        # rep_hist_sysmetric_summary.close()
+        # rep_hist_sysstat.close()
+        # #
+        # # Closes database connection
+        # db_conn.close() # This line most will most likely not be needed given that the database would have just restarted, and bounded all connections
+        # logger.log('Killed statistic gatherer..')
     #
     @staticmethod
     def __execute_and_forget(ev_loader, logger, transaction_path, query_stream):

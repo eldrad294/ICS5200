@@ -23,6 +23,8 @@ from src.framework.script_initializer import ScriptInitializer
 from src.data.workload import Workload
 from src.framework.db_interface import DatabaseInterface
 from src.utils.stats_control import OptimizerStatistics
+from src.utils.plan_control import XPlan
+from timeit import default_timer as timer
 si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir, home_dir=home_dir, log_name_prefix=file_name)
 ev_loader = si.get_global_config()
 logger = si.initialize_logger()
@@ -47,6 +49,9 @@ tpc = TPC_Wrapper(ev_loader=ev_loader,
 fl = FileLoader(ev_loader=ev_loader,
                 logger=logger,
                 spark_context=spark_context)
+#
+# xp = XPlan(logger=logger,
+#            ev_loader=ev_loader)
 #
 # Makes relevent checks to ensure metric csv files exist
 rep_hist_snapshot_path = ev_loader.var_get('src_dir') + "/sql/Runtime/TPC-DS/" + ev_loader.var_get('user') + "/Schedule/rep_hist_snapshot.csv"
@@ -213,6 +218,52 @@ def __throughput_test(tpc, ev_loader, logger):
     for slave in slave_list:
         slave.join()
 #
+def _data_maintenance_test(dml_path, db_conn, logger):
+    """
+    Executes a number of serial TPC-DS maintenance transactions totalling up to 42 units of work (transactions).
+
+    :param dml_path: Path of dml transaction file
+    :param db_conn: Database connection context
+    :param logger: Logging Context
+    :return:
+    """
+    #
+    # Execute All DML
+    for j in range(1, 43):
+        filename = 'dml_' + str(j) + '.sql'
+        #
+        with open(dml_path + filename) as file:
+            data = file.read()
+            check_if_plsql = XPlan.check_if_plsql_block(statement=data)
+            #
+            if check_if_plsql:
+                #
+                # Executes PL/SQL block
+                #sql = xp.execution_plan_syntax(data)
+                sql = data
+                try:
+                    db_conn.connect()
+                    db_conn.execute_dml(dml=sql, params=None)
+                except Exception as e:
+                    logger.log(str(e))
+                finally:
+                    db_conn.close()
+            else:
+                # Executes statements as a series of sql statements
+                dml_list = data.split(';')
+                for dml in dml_list:
+                    dml = dml.replace("\n"," ")
+                    if dml.isspace() is not True and dml != "":
+                        #dml = xp.execution_plan_syntax(dml)
+                        try:
+                            db_conn.connect()
+                            db_conn.execute_dml(dml=dml, params=None)
+                        except Exception as e:
+                            logger.log(str(e))
+                        finally:
+                            db_conn.close()
+        #
+        logger.log('Successfully executed [' + filename + "]")
 """
 ------------------------------------------------------------
 SCRIPT EXECUTION - Workload Loop
@@ -230,55 +281,85 @@ while True:
     #
     # 1) Dropping prior schema
     logger.log('Dropping schema [' + ev_loader.var_get('user') + ']..')
+    start = timer()
     DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
                                      password=ev_loader.var_get('password'),
                                      instance_name=ev_loader.var_get('instance_name'),
                                      filename=ev_loader.var_get("src_dir") + "/sql/Rollback/rb_tpcds_schema.sql",
                                      params=None,
                                      logger=logger)
+    logger.log('Executed under [' + str(timer() - start) + '] seconds')
     #
     # 2) Creating new schema for preparation of data loading
     logger.log('Preparing schema [' + ev_loader.var_get('user') + ']..')
+    start = timer()
     DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
                                      password=ev_loader.var_get('password'),
                                      instance_name=ev_loader.var_get('instance_name'),
                                      filename=ev_loader.var_get("src_dir") + "/sql/Installation/schema_tables_" + ev_loader.var_get('user') + ".sql",
                                      params=None,
                                      logger=logger)
+    logger.log('Executed under [' + str(timer() - start) + '] seconds')
     #
     # 3.1) Creating TPC-DS Data
     logger.log('Generating data of ' + str(ev_loader.var_get('data_size')) + 'G..')
+    start = timer()
     tpc.generate_data(tpc_type='TPC-DS')
+    logger.log('Executed under [' + str(timer() - start) + '] seconds')
     #
     # 3.2) Loading TPC-DS Data
     logger.log('Loading data into schema [' + ev_loader.var_get('user') + ']')
+    start = timer()
     __load_and_delete(tpc=tpc)
+    logger.log('Executed under [' + str(timer() - start) + '] seconds')
     #
     # 4) Creating indexes on loaded data
     logger.log('Building indexes on schema [' + ev_loader.var_get('user') + ']')
+    start = timer()
     DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
                                      password=ev_loader.var_get('password'),
                                      instance_name=ev_loader.var_get('instance_name'),
                                      filename=ev_loader.var_get("src_dir") + "/sql/Installation/schema_indexes_" + ev_loader.var_get('user') + ".sql",
                                      params=None,
                                      logger=logger)
+    logger.log('Executed under [' + str(timer() - start) + '] seconds')
     #
     # 5) Gather Optimizer Statistics
     logger.log('Gathering database wide optimizer statistics for schema [' + ev_loader.var_get('user') + ']')
+    start = timer()
     db_conn.connect()
     OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
                                                       logger=logger,
                                                       tpctype=ev_loader.var_get('user'))
     db_conn.close()
+    logger.log('Executed under [' + str(timer() - start) + '] seconds')
     #
     # 6) Power Test
     logger.log("Initiating power test for schema [" + ev_loader.var_get('user') + "]..")
+    start = timer()
     __power_test(tpc=tpc, ev_loader=ev_loader, logger=logger)
+    logger.log('Executed under [' + str(timer() - start) + '] seconds')
     #
     # 7) Throughput Test 1
     logger.log("Initiating throughput test 1 for schema [" + ev_loader.var_get('user') + "]..")
+    start = timer()
     __throughput_test(tpc=tpc, ev_loader=ev_loader, logger=logger)
+    logger.log('Executed under [' + str(timer() - start) + '] seconds')
+    #
+    # 8) Data Maintenance Test 1
+    logger.log("Initiating maintenance test 1 for schema [" + ev_loader.var_get('user') + "]")
+    start = timer()
+    _data_maintenance_test(dml_path=dml_path,db_conn=db_conn,logger=logger)
+    logger.log('Executed under [' + str(timer() - start) + '] seconds')
     #
     # 9) Throughput Test 2
     logger.log("Initiating throughput test 2 for schema [" + ev_loader.var_get('user') + "]..")
+    start = timer()
     __throughput_test(tpc=tpc, ev_loader=ev_loader, logger=logger)
+    logger.log('Executed under [' + str(timer() - start) + '] seconds')
+    #
+    # 10) Data Maintenance Test 2
+    logger.log("Initiating maintenance test 2 for schema [" + ev_loader.var_get('user') + "]")
+    start = timer()
+    _data_maintenance_test(dml_path=dml_path, db_conn=db_conn, logger=logger)
+    logger.log('Executed under [' + str(timer() - start) + '] seconds')
