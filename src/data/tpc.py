@@ -283,6 +283,6 @@ class TPC_Wrapper:
         headers = [i for i in range(0,21)]
         print("HEADERS: " + str(headers))
         sequence_df = pd.read_csv(ev_loader.var_get('project_dir') + '/data/' + tpc_type.upper() + '/order.csv', names=headers)
-        print(sequence_df[stream_identification_number].values)
-        print(list(sequence_df[stream_identification_number].values))
-        return list(sequence_df[stream_identification_number].values)
+        print(sequence_df[[stream_identification_number]].values)
+        print(list(sequence_df[[stream_identification_number]].values))
+        return list(sequence_df[[stream_identification_number]].values)
