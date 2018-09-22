@@ -179,8 +179,8 @@ def __power_test(tpc, ev_loader, logger):
     # Retrieve query stream sequence
     query_stream = tpc.get_order_sequence(stream_identification_number=0, tpc_type='TPC-DS',ev_loader=ev_loader)
     #
-    for i in range(0, len(query_stream)):
-        query_name = 'query_' + str(query_stream[i]) + '.sql'
+    for number in query_stream:
+        query_name = 'query_' + str(number) + '.sql'
         #
         DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
                                          password=ev_loader.var_get('password'),
@@ -282,61 +282,61 @@ Workload.execute_statistic_gatherer(ev_loader=ev_loader,
                                                rep_hist_sysmetric_summary_path,
                                                rep_hist_sysstat_path])
 while True:
-    #
-    # 1) Dropping prior schema
-    logger.log('Dropping schema [' + ev_loader.var_get('user') + ']..')
-    start = timer()
-    DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
-                                     password=ev_loader.var_get('password'),
-                                     instance_name=ev_loader.var_get('instance_name'),
-                                     filename=ev_loader.var_get("src_dir") + "/sql/Rollback/rb_tpcds_schema.sql",
-                                     params=None,
-                                     logger=logger)
-    logger.log('Executed under [' + str(timer() - start) + '] seconds')
-    #
-    # 2) Creating new schema for preparation of data loading
-    logger.log('Preparing schema [' + ev_loader.var_get('user') + ']..')
-    start = timer()
-    DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
-                                     password=ev_loader.var_get('password'),
-                                     instance_name=ev_loader.var_get('instance_name'),
-                                     filename=ev_loader.var_get("src_dir") + "/sql/Installation/schema_tables_" + ev_loader.var_get('user') + ".sql",
-                                     params=None,
-                                     logger=logger)
-    logger.log('Executed under [' + str(timer() - start) + '] seconds')
-    #
-    # 3.1) Creating TPC-DS Data
-    logger.log('Generating data of ' + str(ev_loader.var_get('data_size')) + 'G..')
-    start = timer()
-    tpc.generate_data(tpc_type='TPC-DS')
-    logger.log('Executed under [' + str(timer() - start) + '] seconds')
-    #
-    # 3.2) Loading TPC-DS Data
-    logger.log('Loading data into schema [' + ev_loader.var_get('user') + ']')
-    start = timer()
-    __load_and_delete(tpc=tpc)
-    logger.log('Executed under [' + str(timer() - start) + '] seconds')
-    #
-    # 4) Creating indexes on loaded data
-    logger.log('Building indexes on schema [' + ev_loader.var_get('user') + ']')
-    start = timer()
-    DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
-                                     password=ev_loader.var_get('password'),
-                                     instance_name=ev_loader.var_get('instance_name'),
-                                     filename=ev_loader.var_get("src_dir") + "/sql/Installation/schema_indexes_" + ev_loader.var_get('user') + ".sql",
-                                     params=None,
-                                     logger=logger)
-    logger.log('Executed under [' + str(timer() - start) + '] seconds')
-    #
-    # 5) Gather Optimizer Statistics
-    logger.log('Gathering database wide optimizer statistics for schema [' + ev_loader.var_get('user') + ']')
-    start = timer()
-    db_conn.connect()
-    OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
-                                                      logger=logger,
-                                                      tpctype=ev_loader.var_get('user'))
-    db_conn.close()
-    logger.log('Executed under [' + str(timer() - start) + '] seconds')
+    # #
+    # # 1) Dropping prior schema
+    # logger.log('Dropping schema [' + ev_loader.var_get('user') + ']..')
+    # start = timer()
+    # DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
+    #                                  password=ev_loader.var_get('password'),
+    #                                  instance_name=ev_loader.var_get('instance_name'),
+    #                                  filename=ev_loader.var_get("src_dir") + "/sql/Rollback/rb_tpcds_schema.sql",
+    #                                  params=None,
+    #                                  logger=logger)
+    # logger.log('Executed under [' + str(timer() - start) + '] seconds')
+    # #
+    # # 2) Creating new schema for preparation of data loading
+    # logger.log('Preparing schema [' + ev_loader.var_get('user') + ']..')
+    # start = timer()
+    # DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
+    #                                  password=ev_loader.var_get('password'),
+    #                                  instance_name=ev_loader.var_get('instance_name'),
+    #                                  filename=ev_loader.var_get("src_dir") + "/sql/Installation/schema_tables_" + ev_loader.var_get('user') + ".sql",
+    #                                  params=None,
+    #                                  logger=logger)
+    # logger.log('Executed under [' + str(timer() - start) + '] seconds')
+    # #
+    # # 3.1) Creating TPC-DS Data
+    # logger.log('Generating data of ' + str(ev_loader.var_get('data_size')) + 'G..')
+    # start = timer()
+    # tpc.generate_data(tpc_type='TPC-DS')
+    # logger.log('Executed under [' + str(timer() - start) + '] seconds')
+    # #
+    # # 3.2) Loading TPC-DS Data
+    # logger.log('Loading data into schema [' + ev_loader.var_get('user') + ']')
+    # start = timer()
+    # __load_and_delete(tpc=tpc)
+    # logger.log('Executed under [' + str(timer() - start) + '] seconds')
+    # #
+    # # 4) Creating indexes on loaded data
+    # logger.log('Building indexes on schema [' + ev_loader.var_get('user') + ']')
+    # start = timer()
+    # DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
+    #                                  password=ev_loader.var_get('password'),
+    #                                  instance_name=ev_loader.var_get('instance_name'),
+    #                                  filename=ev_loader.var_get("src_dir") + "/sql/Installation/schema_indexes_" + ev_loader.var_get('user') + ".sql",
+    #                                  params=None,
+    #                                  logger=logger)
+    # logger.log('Executed under [' + str(timer() - start) + '] seconds')
+    # #
+    # # 5) Gather Optimizer Statistics
+    # logger.log('Gathering database wide optimizer statistics for schema [' + ev_loader.var_get('user') + ']')
+    # start = timer()
+    # db_conn.connect()
+    # OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
+    #                                                   logger=logger,
+    #                                                   tpctype=ev_loader.var_get('user'))
+    # db_conn.close()
+    # logger.log('Executed under [' + str(timer() - start) + '] seconds')
     #
     # 6) Power Test
     logger.log("Initiating power test for schema [" + ev_loader.var_get('user') + "]..")
