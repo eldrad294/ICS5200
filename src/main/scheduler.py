@@ -26,6 +26,8 @@ from src.utils.stats_control import OptimizerStatistics
 from src.utils.plan_control import XPlan
 from timeit import default_timer as timer
 from src.data.tpc import TPC_Wrapper
+from src.data.loading import FileLoader
+#
 si = ScriptInitializer(project_dir=project_dir, src_dir=src_dir, home_dir=home_dir, log_name_prefix=file_name)
 ev_loader = si.get_global_config()
 logger = si.initialize_logger()
