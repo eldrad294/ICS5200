@@ -269,7 +269,7 @@ class TPC_Wrapper:
             newfilename += i
         return newfilename + ".dat"
     #
-    def get_order_sequence(self, stream_identification_number=None, tpc_type=None):
+    def get_order_sequence(self, stream_identification_number=None, tpc_type=None, ev_loader=None):
         """
         Parses order.csv into a pandas dataframe, and returns order sequence based on input stream number
         :param stream_number:

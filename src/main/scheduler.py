@@ -177,7 +177,7 @@ def __power_test(tpc, ev_loader, logger):
     """
     #
     # Retrieve query stream sequence
-    query_stream = tpc.get_order_sequence(stream_identification_number=0, tpc_type='TPC-DS')
+    query_stream = tpc.get_order_sequence(stream_identification_number=0, tpc_type='TPC-DS',ev_loader=ev_loader)
     #
     for i in range(0, len(query_stream)):
         query_name = 'query_' + str(query_stream[i]) + '.sql'
@@ -209,7 +209,7 @@ def __throughput_test(tpc, ev_loader, logger):
     for i in range(0, ev_loader.var_get('stream_total')+1):
         #
         # Retrieve query stream sequence
-        query_stream = tpc.get_order_sequence(stream_identification_number=i, tpc_type='TPC-DS')
+        query_stream = tpc.get_order_sequence(stream_identification_number=i, tpc_type='TPC-DS',ev_loader=ev_loader)
         #
         # Execute script on a forked process
         slave = Workload.execute_transaction(ev_loader=ev_loader,
