@@ -189,6 +189,7 @@ def __power_test(tpc, ev_loader, logger):
                                          params=None,
                                          logger=logger,
                                          redirect_path=ev_loader.var_get('project_dir') + "/log/sqlplusoutput.txt")
+        logger.log('Executed ' + query_name)
 #
 def __throughput_test(tpc, ev_loader, logger):
     """
