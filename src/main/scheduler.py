@@ -191,7 +191,7 @@ def __power_test(tpc, ev_loader, logger):
                                          redirect_path=ev_loader.var_get('project_dir') + "/log/sqlplusoutput.txt")
         logger.log('Executed ' + query_name)
 #
-def __throughput_test(tpc, ev_loader, logger):
+def __throughput_test(tpc, ev_loader, logger, transaction_path):
     """
     Executes a number of parallel slaves denoted by 'S' - Number of concurrent query streams.
 
@@ -347,7 +347,7 @@ while True:
     # 7) Throughput Test 1
     logger.log("Initiating throughput test 1 for schema [" + ev_loader.var_get('user') + "]..")
     start = timer()
-    __throughput_test(tpc=tpc, ev_loader=ev_loader, logger=logger)
+    __throughput_test(tpc=tpc, ev_loader=ev_loader, logger=logger, transaction_path=query_path)
     logger.log('Executed under [' + str(timer() - start) + '] seconds')
     #
     # 8) Data Maintenance Test 1
@@ -359,7 +359,7 @@ while True:
     # 9) Throughput Test 2
     logger.log("Initiating throughput test 2 for schema [" + ev_loader.var_get('user') + "]..")
     start = timer()
-    __throughput_test(tpc=tpc, ev_loader=ev_loader, logger=logger)
+    __throughput_test(tpc=tpc, ev_loader=ev_loader, logger=logger, transaction_path=query_path)
     logger.log('Executed under [' + str(timer() - start) + '] seconds')
     #
     # 10) Data Maintenance Test 2
