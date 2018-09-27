@@ -126,18 +126,20 @@ dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var
 # Execute Queries + DML for n number of iterations
 for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
     #
-    # if i == int(ev_loader.var_get('iterations')) + 1:
-    #     #
-    #     # Database connection would have to be reopened at this point, due to db restart
-    #     db_conn.connect()
-    #     #
-    #     # Gather optimizer stats
-    #     logger.log('Starting optimizer stats generation..')
-    #     OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
-    #                                                       logger=logger,
-    #                                                       tpctype=ev_loader.var_get('user'))
-    #     logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
-    #     db_conn.close()
+    if i < 4:
+        pass
+    if i == int(ev_loader.var_get('iterations')) + 1:
+        #
+        # Database connection would have to be reopened at this point, due to db restart
+        db_conn.connect()
+        #
+        # Gather optimizer stats
+        logger.log('Starting optimizer stats generation..')
+        OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
+                                                          logger=logger,
+                                                          tpctype=ev_loader.var_get('user'))
+        logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
+        db_conn.close()
     # #
     # # Create restore point
     # DatabaseInterface.execute_script(user=ev_loader.var_get('sysuser'),
@@ -153,45 +155,45 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
         stats = True
     else:
         stats = False
-    # #
-    # # Execute All Queries
-    # for j in range(1, 100):
-    #     filename = 'query_'+str(j)+'.sql'
-    #     with open(query_path + filename) as file:
-    #         logger.log('Generating execution metrics for [' + filename + ']..')
-    #         data = file.read()
-    #         sql_list = data.split(';')
-    #         for sql in sql_list:
-    #             sql = sql.replace("\n", " ")
-    #             if sql.isspace() is not True and sql != "":
-    #                 sql = xp.execution_plan_syntax(sql)
-    #                 try:
-    #                     db_conn.connect()
-    #                     db_conn.execute_dml(dml=sql, params=None)
-    #                     logger.log('Successfully executed [' + filename + "]")
-    #                 except Exception as e:
-    #                     logger.log(str(e))
-    #                 finally:
-    #                     db_conn.close()
-    #                     db_conn.connect()
-    #                     xp.generateExecutionPlan(sql=sql,
-    #                                              binds=None,
-    #                                              selection=None,
-    #                                              transaction_name=filename,
-    #                                              iteration_run=i,
-    #                                              gathered_stats=stats,
-    #                                              db_conn=db_conn)
-    #                     xp.generateExplainPlan(sql=sql,
-    #                                            binds=None,
-    #                                            selection=None,
-    #                                            transaction_name=filename,
-    #                                            iteration_run=i,
-    #                                            gathered_stats=stats,
-    #                                            db_conn=db_conn)
-    #                     db_conn.close()
+    #
+    # Execute All Queries
+    for j in range(1, 100):
+        filename = 'query_'+str(j)+'.sql'
+        with open(query_path + filename) as file:
+            logger.log('Generating execution metrics for [' + filename + ']..')
+            data = file.read()
+            sql_list = data.split(';')
+            for sql in sql_list:
+                sql = sql.replace("\n", " ")
+                if sql.isspace() is not True and sql != "":
+                    sql = xp.execution_plan_syntax(sql)
+                    try:
+                        db_conn.connect()
+                        db_conn.execute_dml(dml=sql, params=None)
+                        logger.log('Successfully executed [' + filename + "]")
+                    except Exception as e:
+                        logger.log(str(e))
+                    finally:
+                        db_conn.close()
+                        db_conn.connect()
+                        xp.generateExecutionPlan(sql=sql,
+                                                 binds=None,
+                                                 selection=None,
+                                                 transaction_name=filename,
+                                                 iteration_run=i,
+                                                 gathered_stats=stats,
+                                                 db_conn=db_conn)
+                        xp.generateExplainPlan(sql=sql,
+                                               binds=None,
+                                               selection=None,
+                                               transaction_name=filename,
+                                               iteration_run=i,
+                                               gathered_stats=stats,
+                                               db_conn=db_conn)
+                        db_conn.close()
     #
     # Execute All DML
-    for j in range(30, 43):
+    for j in range(1, 43):
         filename = 'dml_' + str(j) + '.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
         #
