@@ -191,7 +191,7 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
     #                     db_conn.close()
     #
     # Execute All DML
-    for j in range(28, 43):
+    for j in range(29, 43):
         filename = 'dml_' + str(j) + '.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
         #
