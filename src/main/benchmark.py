@@ -147,12 +147,12 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
     #                                  params=[restore_point_name],
     #                                  logger=logger)
     # logger.log('Created restore point ' + restore_point_name + '..')
-    # #
-    # # Drop stats during first half of the benchmark, Gather stats during first half of the benchmark.
-    # if i > (ev_loader.var_get('iterations')):
-    #     stats = True
-    # else:
-    #     stats = False
+    #
+    # Drop stats during first half of the benchmark, Gather stats during first half of the benchmark.
+    if i > (ev_loader.var_get('iterations')):
+        stats = True
+    else:
+        stats = False
     # #
     # # Execute All Queries
     # for j in range(1, 100):
