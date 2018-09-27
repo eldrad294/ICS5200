@@ -126,72 +126,72 @@ dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var
 # Execute Queries + DML for n number of iterations
 for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
     #
-    if i == int(ev_loader.var_get('iterations')) + 1:
-        #
-        # Database connection would have to be reopened at this point, due to db restart
-        db_conn.connect()
-        #
-        # Gather optimizer stats
-        logger.log('Starting optimizer stats generation..')
-        OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
-                                                          logger=logger,
-                                                          tpctype=ev_loader.var_get('user'))
-        logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
-        db_conn.close()
-    #
-    # Create restore point
-    DatabaseInterface.execute_script(user=ev_loader.var_get('sysuser'),
-                                     password=ev_loader.var_get('syspassword'),
-                                     instance_name=ev_loader.var_get('instance_name'),
-                                     filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_restore_create.sql",
-                                     params=[restore_point_name],
-                                     logger=logger)
-    logger.log('Created restore point ' + restore_point_name + '..')
-    #
-    # Drop stats during first half of the benchmark, Gather stats during first half of the benchmark.
-    if i > (ev_loader.var_get('iterations')):
-        stats = True
-    else:
-        stats = False
-    #
-    # Execute All Queries
-    for j in range(1, 100):
-        filename = 'query_'+str(j)+'.sql'
-        with open(query_path + filename) as file:
-            logger.log('Generating execution metrics for [' + filename + ']..')
-            data = file.read()
-            sql_list = data.split(';')
-            for sql in sql_list:
-                sql = sql.replace("\n", " ")
-                if sql.isspace() is not True and sql != "":
-                    sql = xp.execution_plan_syntax(sql)
-                    try:
-                        db_conn.connect()
-                        db_conn.execute_dml(dml=sql, params=None)
-                        logger.log('Successfully executed [' + filename + "]")
-                    except Exception as e:
-                        logger.log(str(e))
-                    finally:
-                        db_conn.close()
-                        db_conn.connect()
-                        xp.generateExecutionPlan(sql=sql,
-                                                 binds=None,
-                                                 selection=None,
-                                                 transaction_name=filename,
-                                                 iteration_run=i,
-                                                 gathered_stats=stats,
-                                                 db_conn=db_conn)
-                        xp.generateExplainPlan(sql=sql,
-                                               binds=None,
-                                               selection=None,
-                                               transaction_name=filename,
-                                               iteration_run=i,
-                                               gathered_stats=stats,
-                                               db_conn=db_conn)
-                        db_conn.close()
+    # if i == int(ev_loader.var_get('iterations')) + 1:
+    #     #
+    #     # Database connection would have to be reopened at this point, due to db restart
+    #     db_conn.connect()
+    #     #
+    #     # Gather optimizer stats
+    #     logger.log('Starting optimizer stats generation..')
+    #     OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
+    #                                                       logger=logger,
+    #                                                       tpctype=ev_loader.var_get('user'))
+    #     logger.log('Schema [' + ev_loader.var_get('user') + '] has had stats gathered..')
+    #     db_conn.close()
+    # #
+    # # Create restore point
+    # DatabaseInterface.execute_script(user=ev_loader.var_get('sysuser'),
+    #                                  password=ev_loader.var_get('syspassword'),
+    #                                  instance_name=ev_loader.var_get('instance_name'),
+    #                                  filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_restore_create.sql",
+    #                                  params=[restore_point_name],
+    #                                  logger=logger)
+    # logger.log('Created restore point ' + restore_point_name + '..')
+    # #
+    # # Drop stats during first half of the benchmark, Gather stats during first half of the benchmark.
+    # if i > (ev_loader.var_get('iterations')):
+    #     stats = True
+    # else:
+    #     stats = False
+    # #
+    # # Execute All Queries
+    # for j in range(1, 100):
+    #     filename = 'query_'+str(j)+'.sql'
+    #     with open(query_path + filename) as file:
+    #         logger.log('Generating execution metrics for [' + filename + ']..')
+    #         data = file.read()
+    #         sql_list = data.split(';')
+    #         for sql in sql_list:
+    #             sql = sql.replace("\n", " ")
+    #             if sql.isspace() is not True and sql != "":
+    #                 sql = xp.execution_plan_syntax(sql)
+    #                 try:
+    #                     db_conn.connect()
+    #                     db_conn.execute_dml(dml=sql, params=None)
+    #                     logger.log('Successfully executed [' + filename + "]")
+    #                 except Exception as e:
+    #                     logger.log(str(e))
+    #                 finally:
+    #                     db_conn.close()
+    #                     db_conn.connect()
+    #                     xp.generateExecutionPlan(sql=sql,
+    #                                              binds=None,
+    #                                              selection=None,
+    #                                              transaction_name=filename,
+    #                                              iteration_run=i,
+    #                                              gathered_stats=stats,
+    #                                              db_conn=db_conn)
+    #                     xp.generateExplainPlan(sql=sql,
+    #                                            binds=None,
+    #                                            selection=None,
+    #                                            transaction_name=filename,
+    #                                            iteration_run=i,
+    #                                            gathered_stats=stats,
+    #                                            db_conn=db_conn)
+    #                     db_conn.close()
     #
     # Execute All DML
-    for j in range(1, 43):
+    for j in range(28, 43):
         filename = 'dml_' + str(j) + '.sql'
         logger.log('Generating execution metrics for [' + filename + ']..')
         #
@@ -271,15 +271,15 @@ for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
     rep_explain_plans.close()
     #
     db_conn.close()
-    # #
-    # Enable Flashback
-    DatabaseInterface.execute_script(user=ev_loader.var_get('sysuser'),
-                                     password=ev_loader.var_get('syspassword'),
-                                     instance_name=ev_loader.var_get('instance_name'),
-                                     filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
-                                     params=[restore_point_name],
-                                     logger=logger)
-    logger.log('Flashbacked to ' + restore_point_name + "..")
+    # # #
+    # # Enable Flashback
+    # DatabaseInterface.execute_script(user=ev_loader.var_get('sysuser'),
+    #                                  password=ev_loader.var_get('syspassword'),
+    #                                  instance_name=ev_loader.var_get('instance_name'),
+    #                                  filename=ev_loader.var_get("src_dir") + "/sql/Utility/flashback_start.sql",
+    #                                  params=[restore_point_name],
+    #                                  logger=logger)
+    # logger.log('Flashbacked to ' + restore_point_name + "..")
     #
     # Delete alert / trace files generated by database '/oracle/diag/rdbms/gabsam/gabsam/'
     if ev_loader.var_get('delete_trace_alert_logs') == 'True':
