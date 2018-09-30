@@ -54,6 +54,8 @@ class Workload:
         logger.log('Initiating statistic gatherer..')
         kill_signal = 0
         query_sql_stat = "select dhsql.*, " \
+                         "dhst.sql_text, " \
+                         "dhst.command_type, " \
                          "dhsnap.startup_time, " \
                          "dhsnap.begin_interval_time, " \
                          "dhsnap.end_interval_time, " \
@@ -63,13 +65,16 @@ class Workload:
                          "dhsnap.snap_flag, "\
                          "dhsnap.snap_timezone "\
                          "from dba_hist_sqlstat dhsql, "\
-                         "dba_hist_snapshot dhsnap "\
+                         "dba_hist_snapshot dhsnap, "\
+                         "dba_hist_sqltext dhst " \
                          "where dhsql.snap_id = dhsnap.snap_id "\
                          "and dhsql.dbid = dhsnap.dbid "\
                          "and dhsql.instance_number = dhsnap.instance_number "\
+                         "and dhsql.dbid = dhst.dbid " \
+                         "and dhsql.sql_id = dhst.sql_id " \
                          "and dhsnap.snap_id = :snap"
         query_sql_plan = "select * " \
-                         "from v$sql_plan vsp " \
+                         "from dba_hist_sql_plan vsp " \
                          "where vsp.sql_id in ( " \
                          "	select dhsql.sql_id " \
                          "	from dba_hist_sqlstat dhsql, " \
@@ -238,11 +243,17 @@ class Workload:
         if report_type == 'rep_hist_snapshot':
             query = "select column_name " \
                     "from ( " \
-                    "select table_name, column_name, column_id " \
+                    "select table_name, column_name, column_id, 1 as table_order " \
                     "from dba_tab_columns " \
                     "where table_name = 'DBA_HIST_SQLSTAT' " \
                     "union all " \
-                    "select table_name, column_name, column_id " \
+                    "select table_name, column_name, column_id, 2 as table_order " \
+                    "from dba_tab_columns " \
+                    "where table_name = 'DBA_HIST_SQLTEXT' " \
+                    "and column_name in ('SQL_TEXT', " \
+                    "                    'COMMAND_TYPE') " \
+                    "union all " \
+                    "select table_name, column_name, column_id, 3 as table_order " \
                     "from dba_tab_columns " \
                     "where table_name = 'DBA_HIST_SNAPSHOT' " \
                     "and column_name in ('STARTUP_TIME', " \
@@ -253,12 +264,12 @@ class Workload:
                     "					'ERROR_COUNT', " \
                     "					'SNAP_FLAG', " \
                     "					'SNAP_TIMEZONE') " \
-                    ") order by table_name desc, " \
-                    "		   column_id asc"
+                    ") order by table_order asc, " \
+                    "		   column_id asc "
         elif report_type == 'rep_vsql_plan':
             query = "select column_name " \
                     "from all_tab_columns " \
-                    "where table_name = 'V_$SQL_PLAN' " \
+                    "where table_name = 'DBA_HIST_SQL_PLAN' " \
                     "order by column_id"
         elif report_type == 'rep_hist_sysmetric_summary':
             query = "select column_name " \

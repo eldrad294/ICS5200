@@ -126,8 +126,8 @@ dml_path = ev_loader.var_get("src_dir") + "/sql/Runtime/TPC-DS/" + ev_loader.var
 # Execute Queries + DML for n number of iterations
 for i in range(1, (ev_loader.var_get('iterations') * 2)+1):
     #
-    if i < 2:
-        continue
+    # if i < 2:
+    #     continue
     if i == int(ev_loader.var_get('iterations')) + 1:
         #
         # Database connection would have to be reopened at this point, due to db restart
