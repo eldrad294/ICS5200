@@ -3,12 +3,12 @@
 from src.framework.db_interface import DatabaseInterface
 from src.utils.snapshot_control import Snapshots
 from multiprocessing import Process
-import time, cx_Oracle, csv
+import time, cx_Oracle, csv, random
 #
 class Workload:
     #
     @staticmethod
-    def execute_transaction(ev_loader, logger, transaction_path, query_stream):
+    def execute_transaction(ev_loader, logger, transaction_path, query_stream, variant_path, outliers):
         """
         Wrapper method for method '__execute_and_forget'
         :param ev_loader: Environment context
@@ -18,7 +18,7 @@ class Workload:
         :param query_stream: List of queries ordered as indicated by stream_identification_number
         :return: Return slave process for barrier monitoring
         """
-        p = Process(target=Workload.__execute_and_forget, args=(ev_loader, logger, transaction_path, query_stream))
+        p = Process(target=Workload.__execute_and_forget, args=(ev_loader, logger, transaction_path, query_stream, variant_path, outliers))
         p.start()
         return p
     #
@@ -202,7 +202,7 @@ class Workload:
         # logger.log('Killed statistic gatherer..')
     #
     @staticmethod
-    def __execute_and_forget(ev_loader, logger, transaction_path, query_stream):
+    def __execute_and_forget(ev_loader, logger, transaction_path, query_stream, variant_path, outliers):
         """
         This method executes a TPC-DS transaction (query/dml), and left to finish.
 
@@ -217,12 +217,15 @@ class Workload:
         """
         for query_id in query_stream:
             #
-            query_name = 'query_' + str(query_id) + '.sql'
+            path = transaction_path + 'query_' + str(query_id) + '.sql'
+            #
+            if int(query_id) in outliers and random.random() >= ev_loader.var_get('outlier_threshold'):
+                path = variant_path + 'query_' + str(query_id) + '.sql'
             #
             DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
                                              password=ev_loader.var_get('password'),
                                              instance_name=ev_loader.var_get('instance_name'),
-                                             filename=transaction_path + query_name,
+                                             filename=path,
                                              params=None,
                                              logger=logger,
                                              redirect_path=ev_loader.var_get('project_dir') + "/log/sqlplusoutput.txt")

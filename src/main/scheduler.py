@@ -5,7 +5,7 @@ SCRIPT WARM UP - Module Import & Path Configuration
 """
 #
 # Module Imports
-import sys, os, time, csv
+import sys, os, time, csv, random
 from os.path import dirname, abspath
 #
 # Retrieving relative paths for project directory
@@ -124,6 +124,8 @@ elif ev_loader.var_get('renew_csv') == 'False':
         raise FileNotFoundError(rep_hist_sysmetric_summary_path)
     if not rep_hist_sysstat_exists:
         raise FileNotFoundError(rep_hist_sysstat_path)
+#
+outliers = (5,10,14,18,22,27,35,36,51,67,70,77,80,86)
 """
 ------------------------------------------------------------
 SCRIPT EXECUTION - Workload Start
@@ -132,6 +134,7 @@ SCRIPT EXECUTION - Workload Start
 #
 query_path = ev_loader.var_get('src_dir')+"/sql/Runtime/TPC-DS/" + ev_loader.var_get("user") + "/Query/"
 dml_path = ev_loader.var_get('src_dir')+"/sql/Runtime/TPC-DS/" + ev_loader.var_get("user") + "/DML/"
+variant_path = ev_loader.var_get('src_dir')+"/sql/Runtime/TPC-DS/variants/"
 #
 query_bank, dml_bank = [], [] # Keeps reference of which Query/DML scripts are eligible for execution
 for j in range(1, 100):
@@ -180,12 +183,15 @@ def __power_test(tpc, ev_loader, logger):
     query_stream = tpc.get_order_sequence(stream_identification_number=0, tpc_type='TPC-DS',ev_loader=ev_loader)
     #
     for number in query_stream:
-        query_name = 'query_' + str(number) + '.sql'
+        path = query_path + 'query_' + str(number) + '.sql'
+        #
+        if int(number) in outliers and random.random() >= ev_loader.var_get('outlier_threshold'):
+            path = variant_path + 'query_' + str(number) + '.sql'
         #
         DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
                                          password=ev_loader.var_get('password'),
                                          instance_name=ev_loader.var_get('instance_name'),
-                                         filename=query_path + query_name,
+                                         filename=path,
                                          params=None,
                                          logger=logger,
                                          redirect_path=ev_loader.var_get('project_dir') + "/log/sqlplusoutput.txt")
@@ -215,6 +221,8 @@ def __throughput_test(tpc, ev_loader, logger, transaction_path):
         slave = Workload.execute_transaction(ev_loader=ev_loader,
                                              logger=logger,
                                              transaction_path=transaction_path,
+                                             variant_path=variant_path,
+                                             outliers=outliers,
                                              query_stream=query_stream)
         slave_list.append(slave)
     #

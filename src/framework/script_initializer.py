@@ -81,6 +81,7 @@ class ScriptInitializer:
         statistic_intervals = int(g_config.get_value('WorkloadGeneration','statistic_intervals'))
         renew_csv = str(g_config.get_value('WorkloadGeneration','renew_csv')).title()
         stream_total = int(g_config.get_value('WorkloadGeneration','stream_total'))
+        outlier_threshold = float(g_config.get_value('WorkloadGeneration','outlier_threshold'))
         #
         # Load into global dictionary
         ev_loader.var_load({'project_dir':project_dir,
@@ -134,7 +135,8 @@ class ScriptInitializer:
                             'delete_trace_alert_logs':delete_trace_alert_logs,
                             'statistic_intervals':statistic_intervals,
                             'renew_csv':renew_csv,
-                            'stream_total':stream_total
+                            'stream_total':stream_total,
+                            'outlier_threshold':outlier_threshold
                             })
         #
         # Environment var loading
