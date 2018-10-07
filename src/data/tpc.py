@@ -285,4 +285,6 @@ class TPC_Wrapper:
                                   delimiter='\t',
                                   header=0,
                                   names=headers)
-        return list(sequence_df[stream_identification_number].values)
+        idetification_numbers = list(sequence_df[stream_identification_number].values)
+        idetification_numbers = [int(i) for i in idetification_numbers]
+        return idetification_numbers
