@@ -221,8 +221,8 @@ class Workload:
             #
             path = transaction_path + 'query_' + str(query_id) + '.sql'
             #
-            if int(query_id) in outliers and random.random() >= ev_loader.var_get('outlier_threshold'):
-                path = variant_path + 'query_' + str(query_id) + '.sql'
+            # if int(query_id) in outliers and random.random() >= ev_loader.var_get('outlier_threshold'):
+            #     path = variant_path + 'query_' + str(query_id) + '.sql'
             #
             DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
                                              password=ev_loader.var_get('password'),

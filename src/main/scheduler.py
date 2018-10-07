@@ -187,8 +187,8 @@ def __power_test(tpc, ev_loader, logger):
     for number in query_stream:
         path = query_path + 'query_' + str(number) + '.sql'
         #
-        if int(number) in outliers and random.random() >= ev_loader.var_get('outlier_threshold'):
-            path = variant_path + 'query_' + str(number) + '.sql'
+        # if int(number) in outliers and random.random() >= ev_loader.var_get('outlier_threshold'):
+        #     path = variant_path + 'query_' + str(number) + '.sql'
         #
         DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
                                          password=ev_loader.var_get('password'),
