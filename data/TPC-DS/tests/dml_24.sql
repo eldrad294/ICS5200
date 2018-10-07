@@ -2,7 +2,7 @@ drop table websv;
 create table websv tablespace tpcds_benchmark as
 select web_site_seq.nextVal web_site_sk
       ,wsit_web_site_id web_site_id
-      ,sysdate web_rec_start_date
+      ,to_char(sysdate,'yyyymmdd') web_rec_start_date
       ,cast(null as date) web_rec_end_date
       ,wsit_site_name web_name
       ,d1.d_date_sk web_open_date_sk
@@ -29,7 +29,6 @@ select web_site_seq.nextVal web_site_sk
 from  s_web_site left outer join date_dim d1 on (d1.d_date = wsit_open_date)
                    left outer join date_dim d2 on (d2.d_date = wsit_closed_date),
       web_site
-where web_site_id = wsit_web_site_id
-  and web_rec_end_date is null;
+where web_site_id = wsit_web_site_id;
 select count(*) from s_web_site;
 select count(*) from websv;

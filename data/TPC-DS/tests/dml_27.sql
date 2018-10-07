@@ -1,5 +1,5 @@
 update call_center
-set cc_rec_end_date = sysdate
+set cc_rec_end_date = to_char(sysdate,'yyyymmdd')
 where cc_call_center_id in (
   select cc_call_center_id
   from call_center)

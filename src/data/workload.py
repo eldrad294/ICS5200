@@ -52,7 +52,7 @@ class Workload:
         :return:
         """
         logger.log('Initiating statistic gatherer..')
-        kill_signal = 0
+        # kill_signal = 0
         query_sql_stat = "select dhsql.*, " \
                          "dhst.sql_text, " \
                          "dhst.command_type, " \
@@ -186,6 +186,8 @@ class Workload:
                 #
             except Exception as e:
                 logger.log('An exception was caught in method ''__statistic_gatherer'' [' + str(e) + ']')
+                db_conn.close()
+                break
         #         kill_signal = 1
         #     #
         #     if kill_signal > 0:

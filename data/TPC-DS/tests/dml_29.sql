@@ -2,7 +2,7 @@ drop table itemv;
 create table itemv tablespace tpcds_benchmark as
 select item_seq.nextVal i_item_sk
       ,item_item_id i_item_id
-      ,sysdate i_rec_start_date
+      ,to_char(sysdate,'yyyymmdd') i_rec_start_date
       ,cast(NULL as date) i_rec_end_date
       ,item_item_description i_item_desc
       ,item_list_price i_current_price

@@ -2,7 +2,7 @@ drop table storv;
 create table storv tablespace tpcds_benchmark as
 select store_seq.nextVal s_store_sk
       ,stor_store_id s_store_id
-      ,sysdate s_rec_start_date
+      ,to_char(sysdate,'yyyymmdd') s_rec_start_date
       ,cast(NULL as date) s_rec_end_date
       ,d1.d_date_sk s_closed_date_sk
       ,stor_name s_store_name

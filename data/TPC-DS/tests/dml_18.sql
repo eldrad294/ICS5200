@@ -12,7 +12,5 @@ select * from
      ,date_dim d1
      ,date_dim d2
  where web_open_date_sk = d1.d_date_sk
-   and web_close_date_sk = d2.d_date_sk
-   and web_rec_end_date is null)
+   and web_close_date_sk = d2.d_date_sk)
 where rownum < 6;
- 

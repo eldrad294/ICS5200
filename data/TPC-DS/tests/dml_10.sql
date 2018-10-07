@@ -11,7 +11,7 @@ create table s_item tablespace tpcds_benchmark as
        ,i_units item_units
        ,i_container item_container
  from item
- where i_rec_end_date is null 
+ where i_rec_end_date is null
    and rownum < 1000);
 delete from s_item where item_item_id in (select ITEM_ITEM_ID from (select ITEM_ITEM_ID ,count(*) cnt from s_item group by ITEM_ITEM_ID) where cnt > 1);
 commit;
