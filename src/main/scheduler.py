@@ -182,6 +182,7 @@ def __power_test(tpc, ev_loader, logger):
     #
     # Retrieve query stream sequence
     query_stream = tpc.get_order_sequence(stream_identification_number=0, tpc_type='TPC-DS',ev_loader=ev_loader)
+    logger.log(query_stream)
     #
     for number in query_stream:
         path = query_path + 'query_' + str(number) + '.sql'
