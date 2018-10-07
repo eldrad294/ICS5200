@@ -231,7 +231,6 @@ class Workload:
                                              params=None,
                                              logger=logger,
                                              redirect_path=ev_loader.var_get('project_dir') + "/log/sqlplusoutput.txt")
-            logger.log('Successfully executed [' + query_name + ']')
     #
     @staticmethod
     def get_script_headers(report_type=None, ev_loader=None, logger=None):
