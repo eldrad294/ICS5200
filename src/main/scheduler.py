@@ -216,7 +216,7 @@ def __throughput_test(tpc, ev_loader, logger, transaction_path):
         #
         # Retrieve query stream sequence
         query_stream = tpc.get_order_sequence(stream_identification_number=i, tpc_type='TPC-DS',ev_loader=ev_loader)
-        print(query_stream)
+        logger.log(str(i) + " - " + str(query_stream))
         #
         # Execute script on a forked process
         slave = Workload.execute_transaction(ev_loader=ev_loader,
