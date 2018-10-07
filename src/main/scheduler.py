@@ -182,10 +182,10 @@ def __power_test(tpc, ev_loader, logger):
     #
     # Retrieve query stream sequence
     query_stream = tpc.get_order_sequence(stream_identification_number=0, tpc_type='TPC-DS',ev_loader=ev_loader)
-    logger.log(query_stream)
     #
     for number in query_stream:
         path = query_path + 'query_' + str(number) + '.sql'
+        logger.log(path)
         #
         # if int(number) in outliers and random.random() >= ev_loader.var_get('outlier_threshold'):
         #     path = variant_path + 'query_' + str(number) + '.sql'
@@ -197,7 +197,6 @@ def __power_test(tpc, ev_loader, logger):
                                          params=None,
                                          logger=logger,
                                          redirect_path=ev_loader.var_get('project_dir') + "/log/sqlplusoutput.txt")
-        logger.log('Executed ' + query_name)
 #
 def __throughput_test(tpc, ev_loader, logger, transaction_path):
     """
