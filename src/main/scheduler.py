@@ -185,7 +185,6 @@ def __power_test(tpc, ev_loader, logger):
     #
     for number in query_stream:
         path = query_path + 'query_' + str(number) + '.sql'
-        logger.log(path)
         #
         # if int(number) in outliers and random.random() >= ev_loader.var_get('outlier_threshold'):
         #     path = variant_path + 'query_' + str(number) + '.sql'
@@ -378,8 +377,8 @@ while True:
     # 8) Data Maintenance Test 1
     logger.log("Initiating maintenance test 1 for schema [" + ev_loader.var_get('user') + "]")
     start = timer()
-    db_conn.connect()
     _data_maintenance_test(dml_path=dml_path,db_conn=db_conn,logger=logger)
+    db_conn.connect()
     logger.log('SCHEDULER TASK[DATA_MAINTENANCE_1] SNAP_ID[' + str(Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)) + ']')
     db_conn.close()
     logger.log('Executed under [' + str(timer() - start) + '] seconds')
@@ -396,8 +395,8 @@ while True:
     # 10) Data Maintenance Test 2
     logger.log("Initiating maintenance test 2 for schema [" + ev_loader.var_get('user') + "]")
     start = timer()
-    db_conn.connect()
     _data_maintenance_test(dml_path=dml_path, db_conn=db_conn, logger=logger)
+    db_conn.connect()
     logger.log('SCHEDULER TASK[DATA_MAINTENANCE_2] SNAP_ID[' + str(Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)) + ']')
     db_conn.close()
     logger.log('Executed under [' + str(timer() - start) + '] seconds')
