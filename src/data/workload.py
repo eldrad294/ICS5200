@@ -7,7 +7,7 @@ import time, cx_Oracle, csv, random
 #
 class Workload:
     #
-    @staticmethod
+    # @staticmethod
     # def execute_transaction(ev_loader, logger, transaction_path, query_stream, variant_path, outliers):
     #     """
     #     Wrapper method for method '__execute_and_forget'
