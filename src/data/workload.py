@@ -215,14 +215,16 @@ class Workload:
         :param transaction_path: Directory path to contained file
         :param transaction_name: File name containing TPC-DS transaction
         :param query_stream: List of queries ordered as indicated by stream_identification_number
+        :param variant_path: File path corresponding to variant TPC-DS Queries
+        :param outliers: Outlier threshold (Percentage)
         :return:
         """
         for query_id in query_stream:
             #
             path = transaction_path + 'query_' + str(query_id) + '.sql'
             #
-            # if int(query_id) in outliers and random.random() >= ev_loader.var_get('outlier_threshold'):
-            #     path = variant_path + 'query_' + str(query_id) + '.sql'
+            if int(query_id) in outliers and random.random() > ev_loader.var_get('outlier_threshold'):
+                path = variant_path + 'query_' + str(query_id) + '.sql'
             #
             DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
                                              password=ev_loader.var_get('password'),
