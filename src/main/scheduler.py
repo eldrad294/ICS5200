@@ -223,7 +223,7 @@ def __throughput_test(tpc, ev_loader, logger, transaction_path):
                                              transaction_path=transaction_path,
                                              query_stream=query_stream,
                                              variant_path=variant_path,
-                                             outliers=outliers,)
+                                             outliers=outliers)
         slave_list.append(slave)
     #
     # Start all threads
