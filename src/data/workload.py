@@ -7,20 +7,18 @@ import time, cx_Oracle, csv, random
 #
 class Workload:
     #
-    # @staticmethod
-    # def execute_transaction(ev_loader, logger, transaction_path, query_stream, variant_path, outliers):
-    #     """
-    #     Wrapper method for method '__execute_and_forget'
-    #     :param ev_loader: Environment context
-    #     :param logger: Logger context
-    #     :param transaction_path: Directory path to contained file
-    #     :param transaction_name: File name containing TPC-DS transaction
-    #     :param query_stream: List of queries ordered as indicated by stream_identification_number
-    #     :return: Return slave process for barrier monitoring
-    #     """
-    #     p = Process(target=Workload.__execute_and_forget, args=(ev_loader, logger, transaction_path, query_stream, variant_path, outliers))
-    #     p.start()
-    #     return p
+    @staticmethod
+    def execute_transaction(ev_loader, logger, transaction_path, query_stream, variant_path, outliers):
+        """
+        Wrapper method for method '__execute_and_forget'
+        :param ev_loader: Environment context
+        :param logger: Logger context
+        :param transaction_path: Directory path to contained file
+        :param transaction_name: File name containing TPC-DS transaction
+        :param query_stream: List of queries ordered as indicated by stream_identification_number
+        :return: Return slave process for barrier monitoring
+        """
+        return Process(target=Workload.__execute_and_forget, args=(ev_loader, logger, transaction_path, query_stream, variant_path, outliers))
     #
     @staticmethod
     def execute_statistic_gatherer(ev_loader, logger, path_bank):
