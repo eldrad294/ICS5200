@@ -202,7 +202,7 @@ class Workload:
         # logger.log('Killed statistic gatherer..')
     #
     @staticmethod
-    def execute_and_forget(ev_loader, logger, transaction_path, query_stream, variant_path, outliers):
+    def __execute_and_forget(ev_loader, logger, transaction_path, query_stream, variant_path, outliers):
         """
         This method executes a TPC-DS transaction (query/dml), and left to finish.
 
