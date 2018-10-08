@@ -20,15 +20,15 @@ class Workload:
         """
         slave_list = []
         for stream in query_stream:
-            logger.log('-----------------BUILDING_SLAVE-----------------')
+            #logger.log('-----------------BUILDING_SLAVE-----------------')
             slave_list.append(Process(target=Workload.__execute_and_forget, args=(ev_loader, logger, transaction_path, stream, variant_path, outliers)))
         #
         for slave in slave_list:
-            logger.log('-----------------START_SLAVE-----------------')
+            #logger.log('-----------------START_SLAVE-----------------')
             slave.start()
         #
         for slave in slave_list:
-            logger.log('-----------------WAITING FOR SLAVE TO JOIN-----------------')
+            #logger.log('-----------------WAITING FOR SLAVE TO JOIN-----------------')
             slave.join()
     #
     @staticmethod
