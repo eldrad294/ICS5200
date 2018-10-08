@@ -213,7 +213,9 @@ def __throughput_test(tpc, ev_loader, logger, transaction_path):
     for i in range(0, ev_loader.var_get('stream_total') + 1):
         # Retrieve query stream sequence
         query_stream = tpc.get_order_sequence(stream_identification_number=i, tpc_type='TPC-DS', ev_loader=ev_loader)
+        logger.log(query_stream)
         total_query_streams.append(query_stream)
+    logger.log(total_query_streams)
     logger.log('entry2')
     #
     Workload.execute_transaction(ev_loader=ev_loader,
