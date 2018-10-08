@@ -212,6 +212,7 @@ def __throughput_test(tpc, ev_loader, logger, transaction_path):
     slave_list = []
     #
     # Iterate over all query streams and execute in parallel
+    logger.log('-----------------STARTING THROUGHPUT-----------------')
     for i in range(0, ev_loader.var_get('stream_total')+1):
         #
         # Retrieve query stream sequence
@@ -225,12 +226,14 @@ def __throughput_test(tpc, ev_loader, logger, transaction_path):
                                              outliers=outliers,
                                              query_stream=query_stream)
         slave_list.append(slave)
+    logger.log('-----------------STARTED ALL SLAVES THROUGHPUT-----------------')
     #
     # Create Barrier to allow all parallel executions to finish
     for slave in slave_list:
+        logger.log('-----------------WAITING FOR SLAVE TO JOIN-----------------')
         slave.join()
 #
-def _data_maintenance_test(dml_path, db_conn, logger):
+def __data_maintenance_test(dml_path, db_conn, logger):
     """
     Executes a number of serial TPC-DS maintenance transactions totalling up to 42 units of work (transactions).
 
@@ -377,7 +380,7 @@ while True:
     # 8) Data Maintenance Test 1
     logger.log("Initiating maintenance test 1 for schema [" + ev_loader.var_get('user') + "]")
     start = timer()
-    _data_maintenance_test(dml_path=dml_path,db_conn=db_conn,logger=logger)
+    __data_maintenance_test(dml_path=dml_path,db_conn=db_conn,logger=logger)
     db_conn.connect()
     logger.log('SCHEDULER TASK[DATA_MAINTENANCE_1] SNAP_ID[' + str(Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)) + ']')
     db_conn.close()
@@ -395,7 +398,7 @@ while True:
     # 10) Data Maintenance Test 2
     logger.log("Initiating maintenance test 2 for schema [" + ev_loader.var_get('user') + "]")
     start = timer()
-    _data_maintenance_test(dml_path=dml_path, db_conn=db_conn, logger=logger)
+    __data_maintenance_test(dml_path=dml_path, db_conn=db_conn, logger=logger)
     db_conn.connect()
     logger.log('SCHEDULER TASK[DATA_MAINTENANCE_2] SNAP_ID[' + str(Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)) + ']')
     db_conn.close()
