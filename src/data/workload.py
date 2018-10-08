@@ -18,7 +18,37 @@ class Workload:
         :param query_stream: List of queries ordered as indicated by stream_identification_number
         :return: Return slave process for barrier monitoring
         """
-        return Process(target=Workload.__execute_and_forget, args=(ev_loader, logger, transaction_path, query_stream, variant_path, outliers))
+        def __execute_and_forget(ev_loader, logger, transaction_path, query_stream, variant_path, outliers):
+            """
+            This method executes a TPC-DS transaction (query/dml), and left to finish.
+
+            This method is designed to be executed and forgotten. Once executed, this child will no longer be controlled by the
+            driver.
+            :param ev_loader: Environment context
+            :param logger: Logger context
+            :param transaction_path: Directory path to contained file
+            :param transaction_name: File name containing TPC-DS transaction
+            :param query_stream: List of queries ordered as indicated by stream_identification_number
+            :param variant_path: File path corresponding to variant TPC-DS Queries
+            :param outliers: Outlier threshold (Percentage)
+            :return:
+            """
+            for query_id in query_stream:
+                #
+                path = transaction_path + 'query_' + str(query_id) + '.sql'
+                #
+                if int(query_id) in outliers and random.random() > ev_loader.var_get('outlier_threshold'):
+                    path = variant_path + 'query_' + str(query_id) + '.sql'
+                #
+                DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
+                                                 password=ev_loader.var_get('password'),
+                                                 instance_name=ev_loader.var_get('instance_name'),
+                                                 filename=path,
+                                                 params=None,
+                                                 logger=logger,
+                                                 redirect_path=ev_loader.var_get(
+                                                     'project_dir') + "/log/sqlplusoutput.txt")
+        return Process(target=__execute_and_forget, args=(ev_loader, logger, transaction_path, query_stream, variant_path, outliers))
     #
     @staticmethod
     def execute_statistic_gatherer(ev_loader, logger, path_bank):
@@ -201,36 +231,36 @@ class Workload:
         # db_conn.close() # This line most will most likely not be needed given that the database would have just restarted, and bounded all connections
         # logger.log('Killed statistic gatherer..')
     #
-    @staticmethod
-    def __execute_and_forget(ev_loader, logger, transaction_path, query_stream, variant_path, outliers):
-        """
-        This method executes a TPC-DS transaction (query/dml), and left to finish.
-
-        This method is designed to be executed and forgotten. Once executed, this child will no longer be controlled by the
-        driver.
-        :param ev_loader: Environment context
-        :param logger: Logger context
-        :param transaction_path: Directory path to contained file
-        :param transaction_name: File name containing TPC-DS transaction
-        :param query_stream: List of queries ordered as indicated by stream_identification_number
-        :param variant_path: File path corresponding to variant TPC-DS Queries
-        :param outliers: Outlier threshold (Percentage)
-        :return:
-        """
-        for query_id in query_stream:
-            #
-            path = transaction_path + 'query_' + str(query_id) + '.sql'
-            #
-            if int(query_id) in outliers and random.random() > ev_loader.var_get('outlier_threshold'):
-                path = variant_path + 'query_' + str(query_id) + '.sql'
-            #
-            DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
-                                             password=ev_loader.var_get('password'),
-                                             instance_name=ev_loader.var_get('instance_name'),
-                                             filename=path,
-                                             params=None,
-                                             logger=logger,
-                                             redirect_path=ev_loader.var_get('project_dir') + "/log/sqlplusoutput.txt")
+    # @staticmethod
+    # def __execute_and_forget(ev_loader, logger, transaction_path, query_stream, variant_path, outliers):
+    #     """
+    #     This method executes a TPC-DS transaction (query/dml), and left to finish.
+    #
+    #     This method is designed to be executed and forgotten. Once executed, this child will no longer be controlled by the
+    #     driver.
+    #     :param ev_loader: Environment context
+    #     :param logger: Logger context
+    #     :param transaction_path: Directory path to contained file
+    #     :param transaction_name: File name containing TPC-DS transaction
+    #     :param query_stream: List of queries ordered as indicated by stream_identification_number
+    #     :param variant_path: File path corresponding to variant TPC-DS Queries
+    #     :param outliers: Outlier threshold (Percentage)
+    #     :return:
+    #     """
+    #     for query_id in query_stream:
+    #         #
+    #         path = transaction_path + 'query_' + str(query_id) + '.sql'
+    #         #
+    #         if int(query_id) in outliers and random.random() > ev_loader.var_get('outlier_threshold'):
+    #             path = variant_path + 'query_' + str(query_id) + '.sql'
+    #         #
+    #         DatabaseInterface.execute_script(user=ev_loader.var_get('user'),
+    #                                          password=ev_loader.var_get('password'),
+    #                                          instance_name=ev_loader.var_get('instance_name'),
+    #                                          filename=path,
+    #                                          params=None,
+    #                                          logger=logger,
+    #                                          redirect_path=ev_loader.var_get('project_dir') + "/log/sqlplusoutput.txt")
     #
     @staticmethod
     def get_script_headers(report_type=None, ev_loader=None, logger=None):
