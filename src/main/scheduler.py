@@ -212,7 +212,6 @@ def __throughput_test(tpc, ev_loader, logger, transaction_path):
     for i in range(0, ev_loader.var_get('stream_total') + 1):
         # Retrieve query stream sequence
         query_stream = tpc.get_order_sequence(stream_identification_number=i, tpc_type='TPC-DS', ev_loader=ev_loader)
-        logger.log(query_stream)
         total_query_streams.append(query_stream)
     #
     Workload.execute_transaction(ev_loader=ev_loader,
@@ -336,26 +335,26 @@ Workload.execute_statistic_gatherer(ev_loader=ev_loader,
                                                rep_hist_sysmetric_summary_path,
                                                rep_hist_sysstat_path])
 while True:
-    # #
-    # # 5) Gather Optimizer Statistics
-    # logger.log('Gathering database wide optimizer statistics for schema [' + ev_loader.var_get('user') + ']')
-    # start = timer()
-    # db_conn.connect()
-    # OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
-    #                                                   logger=logger,
-    #                                                   tpctype=ev_loader.var_get('user'))
-    # logger.log('SCHEDULER TASK[GATHER_STATS] SNAP_ID[' + str(Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)) + ']')
-    # db_conn.close()
-    # logger.log('Executed under [' + str(timer() - start) + '] seconds')
-    # #
-    # # 6) Power Test
-    # logger.log("Initiating power test for schema [" + ev_loader.var_get('user') + "]..")
-    # start = timer()
-    # __power_test(tpc=tpc, ev_loader=ev_loader, logger=logger)
-    # db_conn.connect()
-    # logger.log('SCHEDULER TASK[POWER_TEST] SNAP_ID[' + str(Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)) + ']')
-    # db_conn.close()
-    # logger.log('Executed under [' + str(timer() - start) + '] seconds')
+    #
+    # 5) Gather Optimizer Statistics
+    logger.log('Gathering database wide optimizer statistics for schema [' + ev_loader.var_get('user') + ']')
+    start = timer()
+    db_conn.connect()
+    OptimizerStatistics.generate_optimizer_statistics(db_conn=db_conn,
+                                                      logger=logger,
+                                                      tpctype=ev_loader.var_get('user'))
+    logger.log('SCHEDULER TASK[GATHER_STATS] SNAP_ID[' + str(Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)) + ']')
+    db_conn.close()
+    logger.log('Executed under [' + str(timer() - start) + '] seconds')
+    #
+    # 6) Power Test
+    logger.log("Initiating power test for schema [" + ev_loader.var_get('user') + "]..")
+    start = timer()
+    __power_test(tpc=tpc, ev_loader=ev_loader, logger=logger)
+    db_conn.connect()
+    logger.log('SCHEDULER TASK[POWER_TEST] SNAP_ID[' + str(Snapshots.get_max_snapid(db_conn=db_conn, logger=logger)) + ']')
+    db_conn.close()
+    logger.log('Executed under [' + str(timer() - start) + '] seconds')
     #
     # 7) Throughput Test 1
     logger.log("Initiating throughput test 1 for schema [" + ev_loader.var_get('user') + "]..")
