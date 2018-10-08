@@ -19,6 +19,7 @@ sys.path.append(project_dir)
 sys.path.append(src_dir)
 file_name = os.path.basename(__file__).split('.')[0]
 #
+from multiprocessing import Process
 from src.framework.script_initializer import ScriptInitializer
 from src.data.workload import Workload
 from src.framework.db_interface import DatabaseInterface
@@ -219,13 +220,16 @@ def __throughput_test(tpc, ev_loader, logger, transaction_path):
         query_stream = tpc.get_order_sequence(stream_identification_number=i, tpc_type='TPC-DS', ev_loader=ev_loader)
         #
         # Execute script on a forked process
-        slave = Workload.execute_transaction(ev_loader=ev_loader,
-                                             logger=logger,
-                                             transaction_path=transaction_path,
-                                             variant_path=variant_path,
-                                             outliers=outliers,
-                                             query_stream=query_stream)
-        slave_list.append(slave)
+        # slave = Workload.execute_transaction(ev_loader=ev_loader,
+        #                                      logger=logger,
+        #                                      transaction_path=transaction_path,
+        #                                      variant_path=variant_path,
+        #                                      outliers=outliers,
+        #                                      query_stream=query_stream)
+        p = Process(target=Workload.execute_and_forget,
+                    args=(ev_loader, logger, transaction_path, query_stream, variant_path, outliers))
+        p.start()
+        slave_list.append(p)
     logger.log('-----------------STARTED ALL SLAVES THROUGHPUT-----------------')
     #
     # Create Barrier to allow all parallel executions to finish
