@@ -18,11 +18,13 @@ class Workload:
         :param query_stream: List of queries ordered as indicated by stream_identification_number
         :return: Return slave process for barrier monitoring
         """
+        logger.log('entry2.1')
         slave_list = []
         for stream in query_stream:
             logger.log('-----------------BUILDING_SLAVE-----------------')
             slave_list.append(Process(target=Workload.__execute_and_forget, args=(ev_loader, logger, transaction_path, stream, variant_path, outliers)))
         #
+        logger.log('entry2.2')
         for slave in slave_list:
             logger.log('-----------------START_SLAVE-----------------')
             slave.start()

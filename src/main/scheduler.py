@@ -208,11 +208,13 @@ def __throughput_test(tpc, ev_loader, logger, transaction_path):
     :param logger: Logging Context
     :return:
     """
+    logger.log('entry1')
     total_query_streams=[]
     for i in range(0, ev_loader.var_get('stream_total') + 1):
         # Retrieve query stream sequence
         query_stream = tpc.get_order_sequence(stream_identification_number=i, tpc_type='TPC-DS', ev_loader=ev_loader)
         total_query_streams.append(query_stream)
+    logger.log('entry2')
     #
     Workload.execute_transaction(ev_loader=ev_loader,
                                  logger=logger,
@@ -220,33 +222,7 @@ def __throughput_test(tpc, ev_loader, logger, transaction_path):
                                  query_stream=total_query_streams,
                                  variant_path=variant_path,
                                  outliers=outliers)
-    # #
-    # slave_list = []
-    # #
-    # # Iterate over all query streams and execute in parallel
-    # for i in range(0, ev_loader.var_get('stream_total')+1):
-    #     #
-    #     # Retrieve query stream sequence
-    #     query_stream = tpc.get_order_sequence(stream_identification_number=i, tpc_type='TPC-DS', ev_loader=ev_loader)
-    #     #
-    #     # Execute script on a forked process
-    #     slave = Workload.execute_transaction(ev_loader=ev_loader,
-    #                                          logger=logger,
-    #                                          transaction_path=transaction_path,
-    #                                          query_stream=query_stream,
-    #                                          variant_path=variant_path,
-    #                                          outliers=outliers)
-    #     slave_list.append(slave)
-    # #
-    # # Start all threads
-    # for slave in slave_list:
-    #     logger.log('-----------------START_SLAVE-----------------')
-    #     slave.start()
-    # #
-    # # Create Barrier to allow all parallel executions to finish
-    # for slave in slave_list:
-    #     logger.log('-----------------WAITING FOR SLAVE TO JOIN-----------------')
-    #     slave.join()
+    logger.log('entry3')
 #
 def __data_maintenance_test(dml_path, db_conn, logger):
     """
