@@ -93,12 +93,15 @@ class Workload:
                          "	and dhsql.instance_number = dhsnap.instance_number " \
                          "	and dhsnap.snap_id = :snap " \
                          ") " \
-                         "and vsp.timestamp = ( " \
-                         "  select max(timestamp) " \
-                         "  from v$sql_plan " \
-                         "  where sql_id = vsp.sql_id " \
-                         ") " \
-                         "order by sql_id, id"
+                         "and vsp.timestamp between ( " \
+                         "  select max(BEGIN_INTERVAL_TIME) " \
+                         "  from DBA_HIST_SNAPSHOT " \
+                         "  where snap_id = :snap " \
+                         ") and ( " \
+                         "  select max(END_INTERVAL_TIME) " \
+                         "  from DBA_HIST_SNAPSHOT " \
+                         "  where snap_id = :snap " \
+                         ") order by sql_id, id"
         query_hist_sysmetric_summary = "select dhss.*, " \
                                         "       dhsnap.startup_time, " \
                                         "       dhsnap.flush_elapsed, " \
