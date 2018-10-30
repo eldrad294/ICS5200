@@ -82,26 +82,73 @@ class Workload:
                          "and dhsql.dbid = dhst.dbid " \
                          "and dhsql.sql_id = dhst.sql_id " \
                          "and dhsnap.snap_id = :snap"
-        query_sql_plan = "select * " \
-                         "from dba_hist_sql_plan vsp " \
-                         "where vsp.sql_id in ( " \
-                         "	select dhsql.sql_id " \
-                         "	from dba_hist_sqlstat dhsql, " \
-                         "	     dba_hist_snapshot dhsnap " \
-                         "	where dhsql.snap_id = dhsnap.snap_id " \
-                         "	and dhsql.dbid = dhsnap.dbid " \
-                         "	and dhsql.instance_number = dhsnap.instance_number " \
-                         "	and dhsnap.snap_id = :snap " \
-                         ") " \
-                         "and vsp.timestamp between ( " \
-                         "  select max(BEGIN_INTERVAL_TIME) " \
-                         "  from DBA_HIST_SNAPSHOT " \
-                         "  where snap_id = :snap " \
-                         ") and ( " \
-                         "  select max(END_INTERVAL_TIME) " \
-                         "  from DBA_HIST_SNAPSHOT " \
-                         "  where snap_id = :snap " \
-                         ") order by sql_id, id"
+        # query_sql_plan = "select * " \
+        #                  "from dba_hist_sql_plan vsp " \
+        #                  "where vsp.sql_id in ( " \
+        #                  "	select dhsql.sql_id " \
+        #                  "	from dba_hist_sqlstat dhsql, " \
+        #                  "	     dba_hist_snapshot dhsnap " \
+        #                  "	where dhsql.snap_id = dhsnap.snap_id " \
+        #                  "	and dhsql.dbid = dhsnap.dbid " \
+        #                  "	and dhsql.instance_number = dhsnap.instance_number " \
+        #                  "	and dhsnap.snap_id = :snap " \
+        #                  ") " \
+        #                  "and vsp.timestamp between ( " \
+        #                  "  select max(BEGIN_INTERVAL_TIME) " \
+        #                  "  from DBA_HIST_SNAPSHOT " \
+        #                  "  where snap_id = :snap " \
+        #                  ") and ( " \
+        #                  "  select max(END_INTERVAL_TIME) " \
+        #                  "  from DBA_HIST_SNAPSHOT " \
+        #                  "  where snap_id = :snap " \
+        #                  ") order by sql_id, id"
+        query_sql_plan = "select dhs3.sql_text, " \
+                            "       dhs4.sql_id, " \
+                            "       dhs4.plan_hash_value, " \
+                            "       dhs4.id, " \
+                            "       dhs4.OPERATION, " \
+                            "       dhs4.OPTIONS, " \
+                            "       dhs4.OBJECT_NODE, " \
+                            "       dhs4.OBJECT#, " \
+                            "       dhs4.OBJECT_OWNER, " \
+                            "       dhs4.OBJECT_NAME, " \
+                            "       dhs4.OBJECT_ALIAS, " \
+                            "       dhs4.OBJECT_TYPE, " \
+                            "       dhs4.OPTIMIZER, " \
+                            "       dhs4.PARENT_ID, " \
+                            "       dhs4.depth, " \
+                            "       dhs4.POSITION, " \
+                            "       dhs4.SEARCH_COLUMNS, " \
+                            "       dhs4.COST, " \
+                            "       dhs4.CARDINALITY, " \
+                            "       dhs4.BYTES, " \
+                            "       dhs4.PARTITION_START, " \
+                            "       dhs4.PARTITION_STOP, " \
+                            "       dhs4.partition_id, " \
+                            "       dhs4.DISTRIBUTION, " \
+                            "       dhs4.CPU_COST, " \
+                            "       dhs4.IO_COST, " \
+                            "       dhs4.TEMP_SPACE, " \
+                            "       dhs4.ACCESS_PREDICATES, " \
+                            "       dhs4.FILTER_PREDICATES, " \
+                            "       dhs4.projection, " \
+                            "       dhs4.TIME, " \
+                            "       dhs4.QBLOCK_NAME, " \
+                            "       dhs4.TIMESTAMP " \
+                            "from dba_hist_sqlstat dhs2, " \
+                            "     dba_hist_sqltext dhs3, " \
+                            "     dba_hist_sql_plan dhs4 " \
+                            "where dhs2.sql_id = dhs3.sql_id " \
+                            "and dhs2.dbid = dhs3.dbid " \
+                            "and dhs2.snap_id = (select max(snap_id) from dba_hist_snapshot) " \
+                            "and dhs2.DBID = (select max(dbid) from dba_hist_snapshot where snap_id = :snap )" \
+                            "and dhs2.parsing_schema_name = '" + ev_loader.var_get('user') + "' " \
+                            "and dhs3.sql_id = dhs4.sql_id " \
+                            "and dhs3.dbid = dhs4.dbid " \
+                            "and dhs3.CON_DBID = dhs4.CON_DBID " \
+                            "order by dhs4.timestamp, " \
+                            "         dhs4.plan_hash_value, " \
+                            "         dhs4.id"
         query_hist_sysmetric_summary = "select dhss.*, " \
                                         "       dhsnap.startup_time, " \
                                         "       dhsnap.flush_elapsed, " \
