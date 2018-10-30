@@ -10,7 +10,13 @@ Dissertation - Breakdown
   - Paper Layout
 3) Lit. Review
   - Relational Databases Performance Estimates & Optimizers
+    * What is the Optimizer
+    * Types of Optimizers (CBO, RBO, Other)
+    * CBO Fundamentals
   - SQL & Access Plans
+    * What is an Access Plan
+    * Oracle Terminology - Difference between an explain & Execution Plan
+    * Access Plan Generation (SQL Compilation + Diagram)
   - Optimizer Stats
     * Description
     * Cost (Cost required to generate)
