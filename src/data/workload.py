@@ -140,9 +140,9 @@ class Workload:
                             "     dba_hist_sql_plan dhs4 " \
                             "where dhs2.sql_id = dhs3.sql_id " \
                             "and dhs2.dbid = dhs3.dbid " \
-                            "and dhs2.snap_id = (select max(snap_id) from dba_hist_snapshot) " \
-                            "and dhs2.DBID = (select max(dbid) from dba_hist_snapshot where snap_id = :snap )" \
-                            "and dhs2.parsing_schema_name = '" + ev_loader.var_get('user') + "' " \
+                            "and dhs2.snap_id = :snap " \
+                            "and dhs2.DBID = (select max(dbid) from dba_hist_snapshot where snap_id = :snap ) " \
+                            "and dhs2.parsing_schema_name = '" + ev_loader.var_get('user').upper() + "' " \
                             "and dhs3.sql_id = dhs4.sql_id " \
                             "and dhs3.dbid = dhs4.dbid " \
                             "and dhs3.CON_DBID = dhs4.CON_DBID " \
