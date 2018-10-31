@@ -368,8 +368,7 @@ class Workload:
                     '       "projection", ' \
                     '       "time", ' \
                     '       "qblock_name", ' \
-                    '       "timestamp" ' \
-                    'from dual '
+                    '       "timestamp" from dual'
         elif report_type == 'rep_hist_sysmetric_summary':
             query = "select column_name " \
                     "from ( " \
