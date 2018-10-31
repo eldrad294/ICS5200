@@ -368,7 +368,7 @@ class Workload:
                     '       "projection", ' \
                     '       "time", ' \
                     '       "qblock_name", ' \
-                    '       "timestamp" from dual'
+                    '       "time_stamp" from dual'
             logger.log(query)
         elif report_type == 'rep_hist_sysmetric_summary':
             query = "select column_name " \
