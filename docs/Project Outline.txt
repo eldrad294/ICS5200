@@ -11,7 +11,6 @@ Dissertation - Breakdown
 3) Lit. Review
   - Relational Databases Performance Estimates & Optimizers
     * What is the Optimizer
-    * Types of Optimizers (CBO, RBO, Other)
     * CBO Fundamentals
   - SQL & Access Plans
     * What is an Access Plan
