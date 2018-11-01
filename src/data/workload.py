@@ -336,39 +336,39 @@ class Workload:
             #         "from all_tab_columns " \
             #         "where table_name = 'DBA_HIST_SQL_PLAN' " \
             #         "order by column_id"
-            query = "select 'sql_text', " \
-                    "       'sql_id', " \
-                    "       'plan_hash_value', " \
-                    "       'id', " \
-                    "       'operation', " \
-                    "       'options', " \
-                    "       'object_node', " \
-                    "       'object#', " \
-                    "       'object_owner', " \
-                    "       'object_name', " \
-                    "       'object_alias', " \
-                    "       'object_type', " \
-                    "       'optimizer', " \
-                    "       'parent_id', " \
-                    "       'depth', " \
-                    "       'position', " \
-                    "       'search_columns', " \
-                    "       'cost', " \
-                    "       'cardinality', " \
-                    "       'bytes', " \
-                    "       'partition_start', " \
-                    "       'partition_stop', " \
-                    "       'partition_id', " \
-                    "       'distribution', " \
-                    "       'cpu_cost', " \
-                    "       'io_cost', " \
-                    "       'temp_space', " \
-                    "       'access_predicates', " \
-                    "       'filter_predicates', " \
-                    "       'projection', " \
-                    "       'time', " \
-                    "       'qblock_name', " \
-                    "       'timestamp' from dual"
+            query = "select 'SQL_TEXT', " \
+                    "       'SQL_ID', " \
+                    "       'PLAN_HASH_VALUE', " \
+                    "       'ID', " \
+                    "       'OPERATION', " \
+                    "       'OPTIONS', " \
+                    "       'OBJECT_NODE', " \
+                    "       'OBJECT#', " \
+                    "       'OBJECT_OWNER', " \
+                    "       'OBJECT_NAME', " \
+                    "       'OBJECT_ALIAS', " \
+                    "       'OBJECT_TYPE', " \
+                    "       'OPTIMIZER', " \
+                    "       'PARENT_ID', " \
+                    "       'DEPTH', " \
+                    "       'POSITION', " \
+                    "       'SEARCH_COLUMNS', " \
+                    "       'COST', " \
+                    "       'CARDINALITY', " \
+                    "       'BYTES', " \
+                    "       'PARTITION_START', " \
+                    "       'PARTITION_STOP', " \
+                    "       'PARTITION_ID', " \
+                    "       'DISTRIBUTION', " \
+                    "       'CPU_COST', " \
+                    "       'IO_COST', " \
+                    "       'TEMP_SPACE', " \
+                    "       'ACCESS_PREDICATES', " \
+                    "       'FILTER_PREDICATES', " \
+                    "       'PROJECTION', " \
+                    "       'TIME', " \
+                    "       'QBLOCK_NAME', " \
+                    "       'TIMESTAMP' from dual"
         elif report_type == 'rep_hist_sysmetric_summary':
             query = "select column_name " \
                     "from ( " \
