@@ -30,17 +30,17 @@ import time
 # Script Start
 tpcds='TPCDS1' # Schema upon which to operate test
 y_label = ['CPU_TIME_DELTA','OPTIMIZER_COST','EXECUTIONS_DELTA','ELAPSED_TIME_DELTA'] # Denotes which label to use for time series experiments
-parallel_degree = 10
+parallel_degree = 2
 #
 # Read data from file into Pandas Dataframes
 #
 # Open Data
-# rep_hist_snapshot_path = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds + '/rep_hist_snapshot.csv'
-# rep_hist_sysmetric_summary_path = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds + '/rep_hist_sysmetric_summary.csv'
-# rep_hist_sysstat_path = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds + '/rep_hist_sysstat.csv'
-rep_hist_snapshot_path = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds + '/v1/rep_hist_snapshot.csv'
-rep_hist_sysmetric_summary_path = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds + '/v1/rep_hist_sysmetric_summary.csv'
-rep_hist_sysstat_path = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds + '/v1/rep_hist_sysstat.csv'
+rep_hist_snapshot_path = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds + '/v1/rep_hist_snapshot.csv'
+rep_hist_sysmetric_summary_path = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds + '/v1/rep_hist_sysmetric_summary.csv'
+rep_hist_sysstat_path = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds + '/v1/rep_hist_sysstat.csv'
+# rep_hist_snapshot_path = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds + '/v1/rep_hist_snapshot.csv'
+# rep_hist_sysmetric_summary_path = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds + '/v1/rep_hist_sysmetric_summary.csv'
+# rep_hist_sysstat_path = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds + '/v1/rep_hist_sysstat.csv'
 #
 rep_hist_snapshot_df = pd.read_csv(rep_hist_snapshot_path)
 rep_hist_sysmetric_summary_df = pd.read_csv(rep_hist_sysmetric_summary_path)
@@ -448,7 +448,7 @@ class RandomForest:
     def write_results_to_disk(path, iteration, lag, test_split, estimator, score, time_train):
         file_exists = os.path.isfile(path)
         with open(path, 'a') as csvfile:
-            headers = ['iteration', 'lag', 'test_split', 'estimator, score', 'time_train']
+            headers = ['iteration', 'lag', 'test_split', 'estimator', 'score', 'time_train']
             writer = csv.DictWriter(csvfile, delimiter=',', lineterminator='\n', fieldnames=headers)
             if not file_exists:
                 writer.writeheader()  # file doesn't exist yet, write a header
