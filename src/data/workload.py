@@ -103,7 +103,7 @@ class Workload:
         #                  "  where snap_id = :snap " \
         #                  ") order by sql_id, id"
         query_sql_plan = "select dhs3.sql_text, " \
-                            "    dhs4,* " \
+                            "    dhs4.* " \
                             "from dba_hist_sqlstat dhs2, " \
                             "     dba_hist_sqltext dhs3, " \
                             "     dba_hist_sql_plan dhs4 " \
