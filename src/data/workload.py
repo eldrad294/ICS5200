@@ -103,38 +103,7 @@ class Workload:
         #                  "  where snap_id = :snap " \
         #                  ") order by sql_id, id"
         query_sql_plan = "select dhs3.sql_text, " \
-                            "       dhs4.sql_id, " \
-                            "       dhs4.plan_hash_value, " \
-                            "       dhs4.id, " \
-                            "       dhs4.OPERATION, " \
-                            "       dhs4.OPTIONS, " \
-                            "       dhs4.OBJECT_NODE, " \
-                            "       dhs4.OBJECT#, " \
-                            "       dhs4.OBJECT_OWNER, " \
-                            "       dhs4.OBJECT_NAME, " \
-                            "       dhs4.OBJECT_ALIAS, " \
-                            "       dhs4.OBJECT_TYPE, " \
-                            "       dhs4.OPTIMIZER, " \
-                            "       dhs4.PARENT_ID, " \
-                            "       dhs4.depth, " \
-                            "       dhs4.POSITION, " \
-                            "       dhs4.SEARCH_COLUMNS, " \
-                            "       dhs4.COST, " \
-                            "       dhs4.CARDINALITY, " \
-                            "       dhs4.BYTES, " \
-                            "       dhs4.PARTITION_START, " \
-                            "       dhs4.PARTITION_STOP, " \
-                            "       dhs4.partition_id, " \
-                            "       dhs4.DISTRIBUTION, " \
-                            "       dhs4.CPU_COST, " \
-                            "       dhs4.IO_COST, " \
-                            "       dhs4.TEMP_SPACE, " \
-                            "       dhs4.ACCESS_PREDICATES, " \
-                            "       dhs4.FILTER_PREDICATES, " \
-                            "       dhs4.projection, " \
-                            "       dhs4.TIME, " \
-                            "       dhs4.QBLOCK_NAME, " \
-                            "       dhs4.TIMESTAMP " \
+                            "    dhs4,* " \
                             "from dba_hist_sqlstat dhs2, " \
                             "     dba_hist_sqltext dhs3, " \
                             "     dba_hist_sql_plan dhs4 " \
@@ -336,39 +305,18 @@ class Workload:
             #         "from all_tab_columns " \
             #         "where table_name = 'DBA_HIST_SQL_PLAN' " \
             #         "order by column_id"
-            query = "select 'SQL_TEXT'," \
-                    "'SQL_ID'," \
-                    "'PLAN_HASH_VALUE'," \
-                    "'ID'," \
-                    "'OPERATION'," \
-                    "'OPTIONS'," \
-                    "'OBJECT_NODE'," \
-                    "'OBJECT#'," \
-                    "'OBJECT_OWNER'," \
-                    "'OBJECT_NAME'," \
-                    "'OBJECT_ALIAS'," \
-                    "'OBJECT_TYPE'," \
-                    "'OPTIMIZER'," \
-                    "'PARENT_ID'," \
-                    "'DEPTH'," \
-                    "'POSITION'," \
-                    "'SEARCH_COLUMNS'," \
-                    "'COST'," \
-                    "'CARDINALITY'," \
-                    "'BYTES'," \
-                    "'PARTITION_START'," \
-                    "'PARTITION_STOP'," \
-                    "'PARTITION_ID'," \
-                    "'DISTRIBUTION'," \
-                    "'CPU_COST'," \
-                    "'IO_COST'," \
-                    "'TEMP_SPACE'," \
-                    "'ACCESS_PREDICATES'," \
-                    "'FILTER_PREDICATES'," \
-                    "'PROJECTION'," \
-                    "'TIME'," \
-                    "'QBLOCK_NAME'," \
-                    "'TIMESTAMP' from dual"
+            query = "select column_name " \
+                    "from ( " \
+                    "select table_name, column_name, column_id " \
+                    "from dba_tab_columns " \
+                    "where table_name = 'DBA_HIST_SQLTEXT' " \
+                    "and column_name = 'SQL_TEXT' " \
+                    "union " \
+                    "select table_name, column_name, column_id " \
+                    "from dba_tab_columns " \
+                    "where table_name = 'DBA_HIST_SQL_PLAN' " \
+                    ") order by table_name, " \
+                    "           column_id "
         elif report_type == 'rep_hist_sysmetric_summary':
             query = "select column_name " \
                     "from ( " \
