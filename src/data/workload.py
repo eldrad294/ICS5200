@@ -103,7 +103,28 @@ class Workload:
         #                  "  where snap_id = :snap " \
         #                  ") order by sql_id, id"
         query_sql_plan = "select dhs3.sql_text, " \
-                            "    dhs4.* " \
+                            "    dhs4.sql_id, " \
+                            "    dhs4.plan_hash_value, " \
+                            "    dhs4.id, " \
+                            "    dhs4.operation, " \
+                            "    dhs4.options, " \
+                            "    dhs4.object_node, " \
+                            "    dhs4.object_owner, " \
+                            "    dhs4.object_name, " \
+                            "    dhs4.object_alias, " \
+                            "    dhs4.object_type, " \
+                            "    dhs4.optimizer, " \
+                            "    dhs4.depth, " \
+                            "    dhs4.search_columns, " \
+                            "    dhs4.cost, " \
+                            "    dhs4.cardinality, " \
+                            "    dhs4.bytes, " \
+                            "    dhs4.cpu_cost, " \
+                            "    dhs4.io_cost, " \
+                            "    dhs4.temp_space, " \
+                            "    dhs4.time, " \
+                            "    dhs4.qblock_name, " \
+                            "    dhs4.timestamp " \
                             "from dba_hist_sqlstat dhs2, " \
                             "     dba_hist_sqltext dhs3, " \
                             "     dba_hist_sql_plan dhs4 " \
