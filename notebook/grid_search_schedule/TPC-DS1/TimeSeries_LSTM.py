@@ -291,10 +291,12 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     df = data
     cols, names = list(), list()
     # input sequence (t-n, ... t-1)
-    for i in range(n_in, 0, -1):
-        cols.append(df.shift(i))
-        names += [('var%d(t-%d)' % (j+1, i)) for j in range(n_vars)]
+    if n_in != 0:
+        for i in range(n_in, 0, -1):
+            cols.append(df.shift(i))
+            names += [('var%d(t-%d)' % (j+1, i)) for j in range(n_vars)]
     # forecast sequence (t, t+1, ... t+n)
+    n_out += 1
     for i in range(0, n_out):
         cols.append(df.shift(-i))
         if i == 0:
@@ -309,28 +311,28 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
         agg.dropna(inplace=True)
     return agg
 #
-def remove_n_time_steps(data, n_in=1):
-    if n_in == 0:
+def remove_n_time_steps(data, n=1):
+    if n == 0:
         return data
     df = data
     headers = df.columns
     dropped_headers = []
-    for header in headers:
-        if "(t)" in header:
-            dropped_headers.append(header)
+    #     for header in headers:
+    #         if "(t)" in header:
+    #             dropped_headers.append(header)
     #
-    for i in range(1,n_in):
+    for i in range(1,n+1):
         for header in headers:
-            if "(t-"+str(i)+")" in header:
+            if "(t+"+str(i)+")" in header:
                 dropped_headers.append(str(header))
     #
     return df.drop(dropped_headers, axis=1)
 #
 # Frame as supervised learning set
-shifted_df = series_to_supervised(df, lag, 1)
+shifted_df = series_to_supervised(df, 0, lag)
 #
 # Seperate labels from features
-y_df_column_names = shifted_df.columns[len(df.columns):len(df.columns) + len(y_label)]
+y_df_column_names = shifted_df.columns[len(df.columns)*lag:len(df.columns)*lag + len(y_label)]
 y_df = shifted_df[y_df_column_names]
 X_df = shifted_df.drop(columns=y_df_column_names)
 print('\n-------------\nFeatures')
@@ -341,7 +343,7 @@ print(y_df.columns)
 print(y_df.shape)
 #
 # Delete middle timesteps
-X_df = remove_n_time_steps(data=X_df, n_in=lag)
+X_df = remove_n_time_steps(data=X_df, n=lag)
 print('\n-------------\nFeatures After Time Shift')
 print(X_df.columns)
 print(X_df.shape)
@@ -393,21 +395,18 @@ class LSTM:
         #
         # self.model.add(ke.layers.Dense(y_train.shape[1]))
         self.model.add(ke.layers.Dense(layers[-1]))
-        self.model.add(ke.layers.Activation('sigmoid'))
         #
         if self.mode == 'regression':
             self.loss_func = 'mae'
+            self.model.add(ke.layers.Activation('linear'))
         elif self.mode == 'classification':
             self.loss_func = 'categorical_crossentropy'
+            self.model.add(ke.layers.Activation('softmax'))
         else:
             self.loss_func = None
         #
-        if self.mode == 'regression':
-            self.model.compile(loss=self.loss_func, optimizer=optimizer)
-        elif self.mode == 'classification':
-            self.model.compile(loss=self.loss_func, optimizer=optimizer, metrics=['accuracy'])
-        #
         # Map Discretize function to matrices
+        self.model.compile(loss=self.loss_func, optimizer=optimizer, metrics=['accuracy'])
         self.vecfunc = np.vectorize(discretize_value)
         print(self.model.summary())
 
@@ -461,49 +460,20 @@ class LSTM:
                     yv_c.append(discretize_value(amount=val))
                 for val in yhat[:, i]:
                     yhat_c.append(discretize_value(amount=val))
-                f1 = f1_score(yv_c, yhat_c,
+                f1 = f1_score(yv_c,
+                              yhat_c,
                               average='micro')  # Calculate metrics globally by counting the total true positives, false negatives and false positives.
                 print('Test FScore [' + y_labels[i] + ']: ' + str(f1))
-                #
-                fpr_RF, tpr_RF, thresholds_RF = roc_curve(yv_c, yhat_c)
-                auc_RF = roc_auc_score(yv_c, yhat_c)
-                roc_values.append([fpr_RF, tpr_RF, thresholds_RF, auc_RF, y_labels[i]])
-                print('AUC RF:%.3f' % auc_RF)
             #
-            if plot:
-                for fpr_RF, tpr_RF, thresholds_RF, auc_RF, label in roc_values:
-                    plt.plot(fpr_RF, tpr_RF, 'r-', label='RF AUC label[' + label + ']: %.3f' % auc_RF)
-                plt.plot([0, 1], [0, 1], 'k-', label='random')
-                plt.plot([0, 0, 1, 1], [0, 1, 1, 1], 'g-', label='perfect')
-                plt.legend()
-                plt.xlabel('False Positive Rate')
-                plt.ylabel('True Positive Rate')
-                plt.show()
         elif self.mode == 'classification':
             yhat = self.vecfunc(yhat)
             #
             # F1-Score Evaluation
             for i in range(len(y_labels)):
-                f1 = f1_score(y[:, i], yhat[:, i],
+                f1 = f1_score(y[:, i],
+                              yhat[:, i],
                               average='micro')  # Calculate metrics globally by counting the total true positives, false negatives and false positives.
                 print('Test FScore [' + y_labels[i] + ']: ' + str(f1))
-                #
-                fpr_RF, tpr_RF, thresholds_RF = roc_curve(y, yhat)
-                auc_RF = roc_auc_score(y, yhat)
-                roc_values.append([fpr_RF, tpr_RF, thresholds_RF, auc_RF, y_labels[i]])
-                print('AUC RF:%.3f' % auc_RF)
-            #
-            if plot:
-                for fpr_RF, tpr_RF, thresholds_RF, auc_RF, label in roc_values:
-                    plt.plot(fpr_RF, tpr_RF, 'r-', label='RF AUC label[' + label + ']: %.3f' % auc_RF)
-                plt.plot([0, 1], [0, 1], 'k-', label='random')
-                plt.plot([0, 0, 1, 1], [0, 1, 1, 1], 'g-', label='perfect')
-                plt.legend()
-                plt.xlabel('False Positive Rate')
-                plt.ylabel('True Positive Rate')
-                plt.show()
-            else:
-                return roc_values
         #
         if plot:
             for i in range(0, len(y[0])):
