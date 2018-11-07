@@ -102,8 +102,7 @@ class Workload:
         #                  "  from DBA_HIST_SNAPSHOT " \
         #                  "  where snap_id = :snap " \
         #                  ") order by sql_id, id"
-        query_sql_plan = "select dhs3.sql_text, " \
-                            "    dhs4.sql_id, " \
+        query_sql_plan = "select dhs4.sql_id, " \
                             "    dhs4.plan_hash_value, " \
                             "    dhs4.id, " \
                             "    dhs4.operation, " \
@@ -328,11 +327,6 @@ class Workload:
             #         "order by column_id"
             query = "select column_name " \
                     "from ( " \
-                    "select table_name, column_name, column_id " \
-                    "from dba_tab_columns " \
-                    "where table_name = 'DBA_HIST_SQLTEXT' " \
-                    "and column_name = 'SQL_TEXT' " \
-                    "union " \
                     "select table_name, column_name, column_id " \
                     "from dba_tab_columns " \
                     "where table_name = 'DBA_HIST_SQL_PLAN' " \
