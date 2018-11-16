@@ -39,4 +39,4 @@ from (select item_sk
 where web_cumulative > store_cumulative
 order by item_sk
         ,d_date
- ) where rownum <= 10000;
+ ) where rownum <= 100;

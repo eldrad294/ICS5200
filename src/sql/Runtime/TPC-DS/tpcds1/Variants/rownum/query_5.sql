@@ -1,5 +1,5 @@
 with ssr as
- (select /*+full(salesreturns)*/ s_store_id,
+ (select s_store_id,
         sum(sales_price) as sales,
         sum(profit) as profit,
         sum(return_amt) as returns,

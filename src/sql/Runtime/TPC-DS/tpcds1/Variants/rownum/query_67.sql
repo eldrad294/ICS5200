@@ -9,7 +9,7 @@ from (select i_category
             ,s_store_id
             ,sumsales
             ,rank() over (partition by i_category order by sumsales desc) rk
-      from (select /*+full(store_sales)*/ i_category
+      from (select i_category
                   ,i_class
                   ,i_brand
                   ,i_product_name

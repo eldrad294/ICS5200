@@ -1,4 +1,4 @@
-select * from (select  /*+full(WEB_SALES)*/
+select * from (select
     sum(ws_net_paid) as total_sum
    ,i_category
    ,i_class
@@ -12,7 +12,7 @@ select * from (select  /*+full(WEB_SALES)*/
    ,date_dim       d1
    ,item
  where
-    d1.d_month_seq between 1194 and 1194+11
+    d1.d_month_seq between 1194 and 1194+22
  and d1.d_date_sk = ws_sold_date_sk
  and i_item_sk  = ws_item_sk
  group by rollup(i_category,i_class)
@@ -20,4 +20,4 @@ select * from (select  /*+full(WEB_SALES)*/
    lochierarchy desc,
    case when lochierarchy = 0 then i_category end,
    rank_within_parent
-  ) where rownum <= 10000;
+  ) where rownum <= 100;

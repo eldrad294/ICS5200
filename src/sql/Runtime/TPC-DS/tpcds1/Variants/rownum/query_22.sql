@@ -1,4 +1,4 @@
-select * from (select  /*+use_nl(date_dim,item)*/ i_product_name
+select * from (select i_product_name
              ,i_brand
              ,i_class
              ,i_category

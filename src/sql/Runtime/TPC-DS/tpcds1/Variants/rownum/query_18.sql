@@ -1,4 +1,4 @@
-select * from (select  /*+full(catalog_sales)*/ i_item_id,
+select * from (select i_item_id,
         ca_country,
         ca_state,
         ca_county,

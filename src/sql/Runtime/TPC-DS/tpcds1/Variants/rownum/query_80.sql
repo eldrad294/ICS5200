@@ -1,6 +1,5 @@
 with ssr as
- (select  /*+use_nl(date_dim,store)*/
-          s_store_id as store_id,
+ (select  s_store_id as store_id,
           sum(ss_ext_sales_price) as sales,
           sum(coalesce(sr_return_amt, 0)) as returns,
           sum(ss_net_profit - coalesce(sr_net_loss, 0)) as profit
@@ -21,7 +20,7 @@ with ssr as
  group by s_store_id)
  ,
  csr as
- (select  /*+use_nl(date_dim,store)*/
+ (select
           cp_catalog_page_id as catalog_page_id,
           sum(cs_ext_sales_price) as sales,
           sum(coalesce(cr_return_amount, 0)) as returns,
@@ -43,7 +42,7 @@ with ssr as
 group by cp_catalog_page_id)
  ,
  wsr as
- (select /*+use_nl(date_dim,store)*/
+ (select
           web_site_id,
           sum(ws_ext_sales_price) as sales,
           sum(coalesce(wr_return_amt, 0)) as returns,

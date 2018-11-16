@@ -1,56 +1,55 @@
 select * from (select
+  ca_state,
   cd_gender,
   cd_marital_status,
-  cd_education_status,
-  count(*) cnt1,
-  cd_purchase_estimate,
-  count(*) cnt2,
-  cd_credit_rating,
-  count(*) cnt3,
   cd_dep_count,
-  count(*) cnt4,
+  count(*) cnt1,
+  avg(cd_dep_count),
+  stddev_samp(cd_dep_count),
+  sum(cd_dep_count),
   cd_dep_employed_count,
-  count(*) cnt5,
+  count(*) cnt2,
+  avg(cd_dep_employed_count),
+  stddev_samp(cd_dep_employed_count),
+  sum(cd_dep_employed_count),
   cd_dep_college_count,
-  count(*) cnt6
+  count(*) cnt3,
+  avg(cd_dep_college_count),
+  stddev_samp(cd_dep_college_count),
+  sum(cd_dep_college_count)
  from
   customer c,customer_address ca,customer_demographics
  where
   c.c_current_addr_sk = ca.ca_address_sk and
-  ca_county in ('Fairfield County','Campbell County','Washtenaw County','Escambia County','Cleburne County') and
   cd_demo_sk = c.c_current_cdemo_sk and
-  exists (select /*+full(date_dim) full(STORE_SALES)*/ *
+  exists (select *
           from store_sales,date_dim
           where c.c_customer_sk = ss_customer_sk and
                 ss_sold_date_sk = d_date_sk and
-                d_year = 2001 and
-                d_moy between 3 and 3+3) and
+                d_year = 1999 and
+                d_qoy < 4) and
    (exists (select *
             from web_sales,date_dim
             where c.c_customer_sk = ws_bill_customer_sk and
                   ws_sold_date_sk = d_date_sk and
-                  d_year = 2001 and
-                  d_moy between 3 ANd 3+3) or
-    exists (select /*+full(catalog_sales)*/ *
+                  d_year = 1999 and
+                  d_qoy < 4) or
+    exists (select *
             from catalog_sales,date_dim
             where c.c_customer_sk = cs_ship_customer_sk and
                   cs_sold_date_sk = d_date_sk and
-                  d_year = 2001 and
-                  d_moy between 3 and 3+3))
- group by cd_gender,
+                  d_year = 1999 and
+                  d_qoy < 4))
+ group by ca_state,
+          cd_gender,
           cd_marital_status,
-          cd_education_status,
-          cd_purchase_estimate,
-          cd_credit_rating,
           cd_dep_count,
           cd_dep_employed_count,
           cd_dep_college_count
- order by cd_gender,
+ order by ca_state,
+          cd_gender,
           cd_marital_status,
-          cd_education_status,
-          cd_purchase_estimate,
-          cd_credit_rating,
           cd_dep_count,
           cd_dep_employed_count,
           cd_dep_college_count
- ) where rownum <= 10000;
+  ) where rownum <= 10000;

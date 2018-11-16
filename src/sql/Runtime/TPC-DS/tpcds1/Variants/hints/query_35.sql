@@ -52,4 +52,4 @@ select * from (select
           cd_dep_count,
           cd_dep_employed_count,
           cd_dep_college_count
-  ) where rownum <= 10000;
+  ) where rownum <= 100;

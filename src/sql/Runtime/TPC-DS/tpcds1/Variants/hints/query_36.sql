@@ -24,4 +24,4 @@ select * from (select /*+full(STORE_SALES)*/
    lochierarchy desc
   ,case when lochierarchy = 0 then i_category end
   ,rank_within_parent
-   ) where rownum <= 10000;
+   ) where rownum <= 100;

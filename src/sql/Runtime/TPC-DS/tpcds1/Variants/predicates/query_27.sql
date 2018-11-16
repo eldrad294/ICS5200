@@ -1,4 +1,4 @@
-select * from (select /*+full(store_sales)*/ i_item_id,
+select * from (select i_item_id,
         s_state, grouping(s_state) g_state,
         avg(ss_quantity) agg1,
         avg(ss_list_price) agg2,
@@ -9,7 +9,7 @@ select * from (select /*+full(store_sales)*/ i_item_id,
        ss_item_sk = i_item_sk and
        ss_store_sk = s_store_sk and
        ss_cdemo_sk = cd_demo_sk and
-       cd_gender = 'M' and
+       cd_gender in ('M','F') and
        cd_marital_status = 'W' and
        cd_education_status = 'Secondary' and
        d_year = 1999 and
@@ -17,4 +17,4 @@ select * from (select /*+full(store_sales)*/ i_item_id,
  group by rollup (i_item_id, s_state)
  order by i_item_id
          ,s_state
-  ) where rownum <= 10000;
+  ) where rownum <= 100;
