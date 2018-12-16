@@ -31,6 +31,7 @@ select * from (select  channel, item, return_ratio, return_rank, currency_rank f
                          and ws_sold_date_sk = d_date_sk
                          and d_year = 1998
                          and d_moy = 11
+            and rownum <= 10000
  		group by ws.ws_item_sk
  	) in_web
  ) web
@@ -40,6 +41,7 @@ select * from (select  channel, item, return_ratio, return_rank, currency_rank f
  or
  web.currency_rank <= 10
  )
+ and rownum <= 10000
  union
  select 
  'catalog' as channel
@@ -74,6 +76,7 @@ select * from (select  channel, item, return_ratio, return_rank, currency_rank f
                          and cs_sold_date_sk = d_date_sk
                          and d_year = 1998
                          and d_moy = 11
+            and rownum <= 10000
                  group by cs.cs_item_sk
  	) in_cat
  ) catalog
@@ -83,6 +86,7 @@ select * from (select  channel, item, return_ratio, return_rank, currency_rank f
  or
  catalog.currency_rank <=10
  )
+ and rownum <= 10000
  union
  select 
  'store' as channel
@@ -113,10 +117,11 @@ select * from (select  channel, item, return_ratio, return_rank, currency_rank f
                          and ss_sold_date_sk = d_date_sk
                          and d_year = 1998
                          and d_moy = 11
+            and rownum <= 10000
  		group by sts.ss_item_sk
  	) in_store
  ) store
- where  (
+ where rownum <= 10000 and (
  store.return_rank <= 10
  or 
  store.currency_rank <= 10

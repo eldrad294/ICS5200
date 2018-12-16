@@ -32,6 +32,7 @@ and ss_sold_date_sk   = d1.d_date_sk
 and sr_returned_date_sk   = d2.d_date_sk
 and ss_customer_sk = sr_customer_sk
 and ss_store_sk = s_store_sk
+and rownum <= 10000
 group by
    s_store_name
   ,s_company_id

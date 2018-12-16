@@ -19,6 +19,7 @@ select * from (select
  and s_store_sk  = ss_store_sk
  and s_state in ('SD','TN','GA','SC',
                  'MO','AL','MI','OH')
+ and rownum <= 10000
  group by rollup(i_category,i_class)
  order by
    lochierarchy desc

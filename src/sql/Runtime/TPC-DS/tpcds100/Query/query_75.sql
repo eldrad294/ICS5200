@@ -18,6 +18,7 @@ WITH all_sales AS (
                           LEFT JOIN catalog_returns ON (cs_order_number=cr_order_number 
                                                     AND cs_item_sk=cr_item_sk)
        WHERE i_category='Sports'
+       and rownum <= 10000
        UNION
        SELECT d_year
              ,i_brand_id
@@ -31,6 +32,7 @@ WITH all_sales AS (
                         LEFT JOIN store_returns ON (ss_ticket_number=sr_ticket_number 
                                                 AND ss_item_sk=sr_item_sk)
        WHERE i_category='Sports'
+       and rownum <= 10000
        UNION
        SELECT d_year
              ,i_brand_id
@@ -43,7 +45,8 @@ WITH all_sales AS (
                       JOIN date_dim ON d_date_sk=ws_sold_date_sk
                       LEFT JOIN web_returns ON (ws_order_number=wr_order_number 
                                             AND ws_item_sk=wr_item_sk)
-       WHERE i_category='Sports') sales_detail
+       WHERE i_category='Sports'
+       and rownum <= 10000) sales_detail
  GROUP BY d_year, i_brand_id, i_class_id, i_category_id, i_manufact_id)
 select * from ( SELECT  prev_yr.d_year AS prev_year
                           ,curr_yr.d_year AS year
@@ -63,5 +66,6 @@ select * from ( SELECT  prev_yr.d_year AS prev_year
    AND curr_yr.d_year=2000
    AND prev_yr.d_year=2000-1
    AND CAST(curr_yr.sales_cnt AS DECIMAL(17,2))/CAST(prev_yr.sales_cnt AS DECIMAL(17,2))<0.9
+   and rownum <= 10000
  ORDER BY sales_cnt_diff,sales_amt_diff
   ) where rownum <= 100;

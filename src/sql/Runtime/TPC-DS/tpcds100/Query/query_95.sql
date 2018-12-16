@@ -2,7 +2,8 @@ with ws_wh as
 (select ws1.ws_order_number,ws1.ws_warehouse_sk wh1,ws2.ws_warehouse_sk wh2
  from web_sales ws1,web_sales ws2
  where ws1.ws_order_number = ws2.ws_order_number
-   and ws1.ws_warehouse_sk <> ws2.ws_warehouse_sk)
+   and ws1.ws_warehouse_sk <> ws2.ws_warehouse_sk
+   and rownum <= 10000 )
 select * from ( select  
    count(distinct ws_order_number) as "order count"
   ,sum(ws_ext_ship_cost) as "total shipping cost"
@@ -21,9 +22,12 @@ and ca_state = 'AR'
 and ws1.ws_web_site_sk = web_site_sk
 and web_company_name = 'pri'
 and ws1.ws_order_number in (select ws_order_number
-                            from ws_wh)
+                            from ws_wh
+                            where rownum <= 10000 )
 and ws1.ws_order_number in (select wr_order_number
                             from web_returns,ws_wh
-                            where wr_order_number = ws_wh.ws_order_number)
+                            where wr_order_number = ws_wh.ws_order_number
+                            and rownum <= 10000 )
+and rownum <= 10000
 order by count(distinct ws_order_number)
  ) where rownum <= 100;

@@ -1,64 +1,40 @@
-select sum (ss_quantity)
- from store_sales, store, customer_demographics, customer_address, date_dim
- where s_store_sk = ss_store_sk
- and  ss_sold_date_sk = d_date_sk and d_year = 2002
- and  
- (
-  (
-   cd_demo_sk = ss_cdemo_sk
-   and 
-   cd_marital_status = 'S'
-   and 
-   cd_education_status = '2 yr Degree'
-   and 
-   ss_sales_price between 100.00 and 150.00  
-   )
- or
-  (
-  cd_demo_sk = ss_cdemo_sk
-   and 
-   cd_marital_status = 'U'
-   and 
-   cd_education_status = '4 yr Degree'
-   and 
-   ss_sales_price between 50.00 and 100.00   
-  )
- or 
- (
-  cd_demo_sk = ss_cdemo_sk
-  and 
-   cd_marital_status = 'D'
-   and 
-   cd_education_status = 'Secondary'
-   and 
-   ss_sales_price between 150.00 and 200.00  
- )
- )
- and
- (
-  (
-  ss_addr_sk = ca_address_sk
-  and
-  ca_country = 'United States'
-  and
-  ca_state in ('ND', 'FL', 'LA')
-  and ss_net_profit between 0 and 2000  
-  )
- or
-  (ss_addr_sk = ca_address_sk
-  and
-  ca_country = 'United States'
-  and
-  ca_state in ('IL', 'GA', 'TX')
-  and ss_net_profit between 150 and 3000 
-  )
- or
-  (ss_addr_sk = ca_address_sk
-  and
-  ca_country = 'United States'
-  and
-  ca_state in ('KY', 'NV', 'IA')
-  and ss_net_profit between 50 and 25000 
-  )
- )
-;
+SELECT Sum (ss_quantity) 
+FROM   store_sales, 
+       store, 
+       customer_demographics, 
+       customer_address, 
+       date_dim 
+WHERE  s_store_sk = ss_store_sk 
+       AND ss_sold_date_sk = d_date_sk 
+       AND d_year = 2002
+       and rownum <= 10000
+       AND ( ( cd_demo_sk = ss_cdemo_sk 
+               AND cd_marital_status = 'S' 
+               AND cd_education_status = '2 yr Degree' 
+               AND ss_sales_price BETWEEN 100.00 AND 150.00
+               and rownum <= 10000)
+              OR ( cd_demo_sk = ss_cdemo_sk 
+                   AND cd_marital_status = 'U' 
+                   AND cd_education_status = '4 yr Degree' 
+                   AND ss_sales_price BETWEEN 50.00 AND 100.00
+                   and rownum <= 10000)
+              OR ( cd_demo_sk = ss_cdemo_sk 
+                   AND cd_marital_status = 'D' 
+                   AND cd_education_status = 'Secondary' 
+                   AND ss_sales_price BETWEEN 150.00 AND 200.00
+                   and rownum <= 10000) )
+       AND ( ( ss_addr_sk = ca_address_sk 
+               AND ca_country = 'United States' 
+               AND ca_state IN ( 'ND', 'FL', 'LA' ) 
+               AND ss_net_profit BETWEEN 0 AND 2000
+               and rownum <= 10000)
+              OR ( ss_addr_sk = ca_address_sk 
+                   AND ca_country = 'United States' 
+                   AND ca_state IN ( 'IL', 'GA', 'TX' ) 
+                   AND ss_net_profit BETWEEN 150 AND 3000
+                   and rownum <= 10000)
+              OR ( ss_addr_sk = ca_address_sk 
+                   AND ca_country = 'United States' 
+                   AND ca_state IN ( 'KY', 'NV', 'IA' ) 
+                   AND ss_net_profit BETWEEN 50 AND 25000
+                   and rownum <= 10000) );

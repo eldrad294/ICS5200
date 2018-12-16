@@ -26,8 +26,10 @@ from (select i_category
           and ss_item_sk=i_item_sk
           and ss_store_sk = s_store_sk
           and d_month_seq between 1215 and 1215+11
+          and rownum <= 10000
        group by  rollup(i_category, i_class, i_brand, i_product_name, d_year, d_qoy, d_moy,s_store_id))dw1) dw2
 where rk <= 100
+and rownum <= 10000
 order by i_category
         ,i_class
         ,i_brand

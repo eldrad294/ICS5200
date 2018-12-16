@@ -33,6 +33,7 @@ select * from (select  i_item_id
    and sr_item_sk = cs_item_sk
    and cs_sold_date_sk = d3.d_date_sk
    and d3.d_quarter_name in ('2001Q1','2001Q2','2001Q3')
+   and rownum <= 10000
  group by i_item_id
          ,i_item_desc
          ,s_state

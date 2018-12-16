@@ -10,6 +10,7 @@ select * from (select  dt.d_year
  	and item.i_manager_id = 1  	
  	and dt.d_moy=11
  	and dt.d_year=2002
+ 	and rownum <= 10000
  group by 	dt.d_year
  		,item.i_category_id
  		,item.i_category

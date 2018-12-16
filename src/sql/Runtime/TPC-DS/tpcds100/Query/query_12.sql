@@ -11,7 +11,8 @@ from
     	,item 
     	,date_dim
 where 
-	ws_item_sk = i_item_sk 
+	ws_item_sk = i_item_sk
+	and rownum <= 10000
   	and i_category in ('Books', 'Sports', 'Men')
   	and ws_sold_date_sk = d_date_sk
 	and d_date between to_char(to_date('1998-04-06','yyyy/mm/dd'),'yyyy-mm-dd')

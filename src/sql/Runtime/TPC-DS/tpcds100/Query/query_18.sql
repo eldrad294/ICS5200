@@ -23,6 +23,7 @@ select * from (select  i_item_id,
        d_year = 1998 and
        ca_state in ('WA','GA','NC'
                    ,'ME','WY','OK','IN')
+       and rownum <= 10000
  group by rollup (i_item_id, ca_country, ca_state, ca_county)
  order by ca_country,
         ca_state, 

@@ -15,6 +15,7 @@ select * from (select
     d1.d_month_seq between 1218 and 1218+11
  and d1.d_date_sk = ws_sold_date_sk
  and i_item_sk  = ws_item_sk
+ and rownum <= 10000
  group by rollup(i_category,i_class)
  order by
    lochierarchy desc,

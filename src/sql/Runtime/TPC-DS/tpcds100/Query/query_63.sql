@@ -10,6 +10,7 @@ from (select i_manager_id
         and ss_sold_date_sk = d_date_sk
         and ss_store_sk = s_store_sk
         and d_month_seq in (1189,1189+1,1189+2,1189+3,1189+4,1189+5,1189+6,1189+7,1189+8,1189+9,1189+10,1189+11)
+        and rownum <= 10000
         and ((    i_category in ('Books','Children','Electronics')
               and i_class in ('personal','portable','reference','self-help')
               and i_brand in ('scholaramalgamalg #14','scholaramalgamalg #7',

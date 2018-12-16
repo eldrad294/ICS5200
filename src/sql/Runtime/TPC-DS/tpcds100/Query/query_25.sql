@@ -32,6 +32,7 @@ select * from (select
  and cs_sold_date_sk = d3.d_date_sk
  and d3.d_moy               between 4 and  10 
  and d3.d_year              = 2000
+ and rownum <= 10000
  group by
  i_item_id
  ,i_item_desc

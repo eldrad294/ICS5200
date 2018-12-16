@@ -17,6 +17,7 @@ select * from (select  *
      and inv_date_sk    = d_date_sk
      and d_date between (to_char(to_date('2002-02-27','yyyy/mm/dd') - 30,'yyyy-mm-dd'))
                     and (to_char(to_date('2002-02-27','yyyy/mm/dd') + 30,'yyyy-mm-dd'))
+     and rownum <= 10000
    group by w_warehouse_name, i_item_id) x
  where (case when inv_before > 0 
              then inv_after / inv_before 

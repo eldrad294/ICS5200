@@ -22,6 +22,7 @@ with my_customers as (
          and c_customer_sk = cs_or_ws_sales.customer_sk
          and d_moy = 2
          and d_year = 1998
+         and rownum <= 10000
  )
  , my_revenue as (
  select c_customer_sk,
@@ -40,14 +41,17 @@ with my_customers as (
                                  from   date_dim where d_year = 1998 and d_moy = 2)
                            and  (select distinct d_month_seq+3
                                  from   date_dim where d_year = 1998 and d_moy = 2)
+        and rownum <= 10000
  group by c_customer_sk
  )
  , segments as
  (select cast((revenue/50) as int) as segment
   from   my_revenue
+  where rownum <= 10000
  )
  select * from ( select  segment, count(*) as num_customers, segment*50 as segment_base
  from segments
+ where rownum <= 10000
  group by segment
  order by segment, num_customers
   ) where rownum <= 100;

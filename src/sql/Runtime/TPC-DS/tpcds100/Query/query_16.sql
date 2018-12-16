@@ -12,6 +12,7 @@ where
            (to_char(to_date('2002-4-01','yyyy/mm/dd') + 60,'yyyy-mm-dd'))
 and cs1.cs_ship_date_sk = d_date_sk
 and cs1.cs_ship_addr_sk = ca_address_sk
+and rownum <= 10000
 and ca_state = 'WV'
 and cs1.cs_call_center_sk = cc_call_center_sk
 and cc_county in ('Ziebach County','Luce County','Richland County','Daviess County',
@@ -20,9 +21,11 @@ and cc_county in ('Ziebach County','Luce County','Richland County','Daviess Coun
 and exists (select *
             from catalog_sales cs2
             where cs1.cs_order_number = cs2.cs_order_number
-              and cs1.cs_warehouse_sk <> cs2.cs_warehouse_sk)
+              and cs1.cs_warehouse_sk <> cs2.cs_warehouse_sk
+              and rownum <= 1)
 and not exists(select *
                from catalog_returns cr1
-               where cs1.cs_order_number = cr1.cr_order_number)
+               where cs1.cs_order_number = cr1.cr_order_number
+               and rownum <= 1)
 order by count(distinct cs_order_number)
  ) where rownum <= 100;

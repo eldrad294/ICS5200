@@ -9,6 +9,7 @@ select * from (select  i_product_name
        where inv_date_sk=d_date_sk
               and inv_item_sk=i_item_sk
               and d_month_seq between 1188 and 1188 + 11
+              and rownum <= 10000
        group by rollup(i_product_name
                        ,i_brand
                        ,i_class

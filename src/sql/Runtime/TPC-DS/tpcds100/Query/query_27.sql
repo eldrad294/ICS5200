@@ -14,6 +14,7 @@ select * from (select  i_item_id,
        cd_education_status = 'Secondary' and
        d_year = 1999 and
        s_state in ('MO','AL', 'MI', 'TN', 'LA', 'SC')
+       and rownum <= 10000
  group by rollup (i_item_id, s_state)
  order by i_item_id
          ,s_state

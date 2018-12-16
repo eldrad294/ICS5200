@@ -7,7 +7,8 @@ with customer_total_return as
      ,customer_address
  where wr_returned_date_sk = d_date_sk 
    and d_year =2002
-   and wr_returning_addr_sk = ca_address_sk 
+   and wr_returning_addr_sk = ca_address_sk
+   and rownum <= 10000
  group by wr_returning_customer_sk
          ,ca_state)
  select * from ( select  c_customer_id,c_salutation,c_first_name,c_last_name,c_preferred_cust_flag
@@ -22,6 +23,7 @@ with customer_total_return as
        and ca_address_sk = c_current_addr_sk
        and ca_state = 'IN'
        and ctr1.ctr_customer_sk = c_customer_sk
+       and rownum <= 10000
  order by c_customer_id,c_salutation,c_first_name,c_last_name,c_preferred_cust_flag
                   ,c_birth_day,c_birth_month,c_birth_year,c_birth_country,c_login,c_email_address
                   ,c_last_review_date,ctr_total_return

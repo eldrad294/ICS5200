@@ -31,6 +31,7 @@ select * from (select
  and sr_item_sk             = cs_item_sk
  and cs_sold_date_sk        = d3.d_date_sk     
  and d3.d_year              in (1999,1999+1,1999+2)
+ and rownum <= 10000
  group by
     i_item_id
    ,i_item_desc

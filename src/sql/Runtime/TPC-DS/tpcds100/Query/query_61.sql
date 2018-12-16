@@ -19,7 +19,8 @@ from
    and   (p_channel_dmail = 'Y' or p_channel_email = 'Y' or p_channel_tv = 'Y')
    and   s_gmt_offset = -6
    and   d_year = 1998
-   and   d_moy  = 11) promotional_sales,
+   and   d_moy  = 11
+   and rownum <= 10000) promotional_sales,
   (select sum(ss_ext_sales_price) total
    from  store_sales
         ,store
@@ -36,6 +37,7 @@ from
    and   i_category = 'Electronics'
    and   s_gmt_offset = -6
    and   d_year = 1998
-   and   d_moy  = 11) all_sales
+   and   d_moy  = 11
+   and rownum <= 10000) all_sales
 order by promotions, total
  ) where rownum <= 100;

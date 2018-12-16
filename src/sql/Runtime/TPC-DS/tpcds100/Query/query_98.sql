@@ -16,6 +16,7 @@ where
   	and ss_sold_date_sk = d_date_sk
 	and d_date between to_char(to_date('1998-04-10','yyyy/mm/dd'),'yyyy-mm-dd')
 				and (to_char(to_date('1998-04-10','yyyy/mm/dd') + 30,'yyyy-mm-dd'))
+    and rownum <= 10000
 group by 
 	i_item_id
         ,i_item_desc 

@@ -19,7 +19,9 @@ select c_last_name
              household_demographics.hd_dep_count/ household_demographics.hd_vehicle_count else null end > 1
     and date_dim.d_year in (1999,1999+1,1999+2)
     and store.s_county in ('Fairfield County','Luce County','Richland County','Williamson County')
+    and rownum <= 10000
     group by ss_ticket_number,ss_customer_sk) dj,customer
     where ss_customer_sk = c_customer_sk
       and cnt between 1 and 5
+      and rownum <= 10000
     order by cnt desc, c_last_name asc;

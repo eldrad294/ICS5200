@@ -9,7 +9,8 @@ select * from (select  i_brand_id brand_id, i_brand brand, i_manufact_id, i_manu
    and ss_customer_sk = c_customer_sk 
    and c_current_addr_sk = ca_address_sk
    and substr(ca_zip,1,5) <> substr(s_zip,1,5) 
-   and ss_store_sk = s_store_sk 
+   and ss_store_sk = s_store_sk
+   and rownum <= 10000
  group by i_brand
       ,i_brand_id
       ,i_manufact_id

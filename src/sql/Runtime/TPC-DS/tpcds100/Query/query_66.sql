@@ -115,6 +115,7 @@ select * from (select
         and d_year = 2002
  	and t_time between 23180 and 23180+28800 
  	and sm_carrier in ('DHL','UPS')
+ 	and rownum <= 10000
      group by 
         w_warehouse_name
  	,w_warehouse_sq_ft
@@ -195,6 +196,7 @@ select * from (select
         and d_year = 2002
  	and t_time between 23180 AND 23180+28800 
  	and sm_carrier in ('DHL','UPS')
+ 	and rownum <= 10000
      group by 
         w_warehouse_name
  	,w_warehouse_sq_ft

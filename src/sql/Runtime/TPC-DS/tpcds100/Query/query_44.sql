@@ -4,11 +4,13 @@ from(select *
            from (select ss_item_sk item_sk,avg(ss_net_profit) rank_col 
                  from store_sales ss1
                  where ss_store_sk = 146
+                 and rownum <= 10000
                  group by ss_item_sk
                  having avg(ss_net_profit) > 0.9*(select avg(ss_net_profit) rank_col
                                                   from store_sales
                                                   where ss_store_sk = 146
                                                     and ss_addr_sk is null
+                                                    and rownum <= 10000
                                                   group by ss_store_sk))V1)V11
      where rnk  < 11) asceding,
     (select *
@@ -16,11 +18,13 @@ from(select *
            from (select ss_item_sk item_sk,avg(ss_net_profit) rank_col
                  from store_sales ss1
                  where ss_store_sk = 146
+                 and rownum <= 10000
                  group by ss_item_sk
                  having avg(ss_net_profit) > 0.9*(select avg(ss_net_profit) rank_col
                                                   from store_sales
                                                   where ss_store_sk = 146
                                                     and ss_addr_sk is null
+                                                    and rownum <= 10000
                                                   group by ss_store_sk))V2)V21
      where rnk  < 11) descending,
 item i1,
@@ -28,5 +32,6 @@ item i2
 where asceding.rnk = descending.rnk 
   and i1.i_item_sk=asceding.item_sk
   and i2.i_item_sk=descending.item_sk
+  and rownum <= 10000
 order by asceding.rnk
  ) where rownum <= 100;

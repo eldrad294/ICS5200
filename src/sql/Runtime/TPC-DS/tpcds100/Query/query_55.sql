@@ -6,6 +6,7 @@ select * from (select  i_brand_id brand_id, i_brand brand,
  	and i_manager_id=86
  	and d_moy=12
  	and d_year=1998
+ 	and rownum <= 10000
  group by i_brand, i_brand_id
  order by ext_price desc, i_brand_id
  ) where rownum <= 100 ;

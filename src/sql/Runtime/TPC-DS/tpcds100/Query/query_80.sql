@@ -17,6 +17,7 @@ with ssr as
        and i_current_price > 50
        and ss_promo_sk = p_promo_sk
        and p_channel_tv = 'N'
+       and rownum <= 10000
  group by s_store_id)
  ,
  csr as
@@ -38,6 +39,7 @@ with ssr as
        and i_current_price > 50
        and cs_promo_sk = p_promo_sk
        and p_channel_tv = 'N'
+       and rownum <= 10000
 group by cp_catalog_page_id)
  ,
  wsr as
@@ -59,6 +61,7 @@ group by cp_catalog_page_id)
        and i_current_price > 50
        and ws_promo_sk = p_promo_sk
        and p_channel_tv = 'N'
+       and rownum <= 10000
 group by web_site_id)
  select * from ( select  channel
         , id
@@ -72,6 +75,7 @@ group by web_site_id)
         , returns
         , profit
  from   ssr
+ where rownum <= 10000
  union all
  select 'catalog channel' as channel
         , 'catalog_page' || catalog_page_id as id
@@ -79,6 +83,7 @@ group by web_site_id)
         , returns
         , profit
  from  csr
+ where rownum <= 10000
  union all
  select 'web channel' as channel
         , 'web_site' || web_site_id as id
@@ -86,6 +91,7 @@ group by web_site_id)
         , returns
         , profit
  from   wsr
+ where rownum <= 10000
  ) x
  group by rollup (channel, id)
  order by channel

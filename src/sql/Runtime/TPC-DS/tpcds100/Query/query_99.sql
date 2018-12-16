@@ -22,6 +22,7 @@ and cs_ship_date_sk   = d_date_sk
 and cs_warehouse_sk   = w_warehouse_sk
 and cs_ship_mode_sk   = sm_ship_mode_sk
 and cs_call_center_sk = cc_call_center_sk
+and rownum <= 10000
 group by
    substr(w_warehouse_name,1,20)
   ,sm_type

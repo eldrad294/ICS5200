@@ -22,6 +22,7 @@ and ws_ext_discount_amt
           and d_date between to_char(to_date('2001-01-27','yyyy/mm/dd'),'yyyy-mm-dd') and
                              (to_char(to_date('2001-01-27','yyyy/mm/dd') + 90,'yyyy-mm-dd'))
           and d_date_sk = ws_sold_date_sk 
-      ) 
+      )
+and rownum <= 10000
 order by sum(ws_ext_discount_amt)
  ) where rownum <= 100;

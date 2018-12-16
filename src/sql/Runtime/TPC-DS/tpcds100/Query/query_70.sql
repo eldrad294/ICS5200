@@ -27,6 +27,7 @@ select * from (select
                      ) tmp1 
                where ranking <= 5
              )
+ and rownum <= 10000
  group by rollup(s_state,s_county)
  order by
    lochierarchy desc
