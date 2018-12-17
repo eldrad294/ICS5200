@@ -27,6 +27,7 @@ select * from (select
                      ) tmp1 
                where ranking <= 5
              )
+ and ss_item_sk = '95700'
  and rownum <= 10000
  group by rollup(s_state,s_county)
  order by
