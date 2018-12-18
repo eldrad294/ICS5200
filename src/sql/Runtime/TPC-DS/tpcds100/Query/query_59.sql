@@ -10,6 +10,8 @@ with wss as
         sum(case when (d_day_name='Saturday') then ss_sales_price else null end) sat_sales
  from store_sales,date_dim
  where d_date_sk = ss_sold_date_sk
+ and ss_item_sk between 95700 and 100000
+ and ss_ticket_number between 1 and 100000
  and rownum <= 10000
  group by d_week_seq,ss_store_sk
  )
