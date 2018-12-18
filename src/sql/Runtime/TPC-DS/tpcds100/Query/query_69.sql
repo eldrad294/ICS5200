@@ -13,6 +13,7 @@ select * from (select
   c.c_current_addr_sk = ca.ca_address_sk and
   ca_state in ('OH','MO','NC') and
   cd_demo_sk = c.c_current_cdemo_sk and
+  ca_address_sk between 587 and 1587 and
   rownum <= 10000 and
   exists (select *
           from store_sales,date_dim
