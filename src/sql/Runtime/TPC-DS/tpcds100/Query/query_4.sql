@@ -22,6 +22,7 @@ WITH year_total
                 AND ss_sold_date_sk = d_date_sk
                 and ss_item_sk between 95700 and 99999
                 and ss_ticket_number between 312917 and 332917
+                and d_date_sk between 2415522 and 2425522
                 and rownum <= 10000
          GROUP  BY c_customer_id,
                    c_first_name,
@@ -58,6 +59,7 @@ WITH year_total
                 AND cs_sold_date_sk = d_date_sk
                 and cs_item_sk between 100000 and 110000
                 and cs_order_number between 55012 and 100000
+                and d_date_sk between 2415522 and 2425522
                 and rownum <= 10000
          GROUP  BY c_customer_id,
                    c_first_name,
@@ -94,6 +96,7 @@ WITH year_total
                 AND ws_sold_date_sk = d_date_sk
                 and ws_item_sk between 100000 and 110000
                 and ws_order_number between 630308 and 900000
+                and d_date_sk between 2415522 and 2425522
                 and rownum <= 10000
          GROUP  BY c_customer_id,
                    c_first_name,

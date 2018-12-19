@@ -1,9 +1,10 @@
-select count(*) 
+select count(*)
 from ((select distinct c_last_name, c_first_name, d_date
        from store_sales, date_dim, customer
        where store_sales.ss_sold_date_sk = date_dim.d_date_sk
          and store_sales.ss_customer_sk = customer.c_customer_sk
          and d_month_seq between 1216 and 1216+11
+         and c_customer_sk between 1 and 999
          and rownum <= 10000)
        minus
       (select distinct c_last_name, c_first_name, d_date
@@ -11,6 +12,7 @@ from ((select distinct c_last_name, c_first_name, d_date
        where catalog_sales.cs_sold_date_sk = date_dim.d_date_sk
          and catalog_sales.cs_bill_customer_sk = customer.c_customer_sk
          and d_month_seq between 1216 and 1216+11
+         and c_customer_sk between 1 and 999
          and rownum <= 10000)
        minus
       (select distinct c_last_name, c_first_name, d_date
@@ -18,6 +20,7 @@ from ((select distinct c_last_name, c_first_name, d_date
        where web_sales.ws_sold_date_sk = date_dim.d_date_sk
          and web_sales.ws_bill_customer_sk = customer.c_customer_sk
          and d_month_seq between 1216 and 1216+11
+         and c_customer_sk between 1 and 999
          and rownum <= 10000)
 ) cool_cust
 ;

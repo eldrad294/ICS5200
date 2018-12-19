@@ -1,7 +1,7 @@
 with my_customers as (
  select distinct c_customer_sk
         , c_current_addr_sk
- from   
+ from
         ( select cs_sold_date_sk sold_date_sk,
                  cs_bill_customer_sk customer_sk,
                  cs_item_sk item_sk
@@ -22,6 +22,7 @@ with my_customers as (
          and c_customer_sk = cs_or_ws_sales.customer_sk
          and d_moy = 2
          and d_year = 1998
+         and d_date_sk between 2470000 and 2500000
          and rownum <= 10000
  )
  , my_revenue as (
@@ -38,9 +39,12 @@ with my_customers as (
         and ss_sold_date_sk = d_date_sk
         and c_customer_sk = ss_customer_sk
         and d_month_seq between (select distinct d_month_seq+1
-                                 from   date_dim where d_year = 1998 and d_moy = 2)
+                                 from   date_dim where d_year = 1998 and d_moy = 2
+                                 and d_date_sk between 2400000 and 2500000)
                            and  (select distinct d_month_seq+3
-                                 from   date_dim where d_year = 1998 and d_moy = 2)
+                                 from   date_dim where d_year = 1998 and d_moy = 2
+                                 and d_date_sk between 2400000 and 2500000)
+        and d_date_sk between 2400000 and 2500000
         and rownum <= 10000
  group by c_customer_sk
  )
