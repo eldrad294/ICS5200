@@ -192,6 +192,7 @@ WITH cross_items
                  FROM   store_sales,
                         date_dim
                  WHERE  ss_sold_date_sk = d_date_sk
+                 		and d_date_sk between 500 and 999
                         AND d_year BETWEEN 2000 AND 2000 + 2
                         and rownum <= 10000
                  UNION ALL
