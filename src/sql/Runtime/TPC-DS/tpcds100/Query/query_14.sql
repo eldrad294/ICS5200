@@ -11,7 +11,7 @@ WITH cross_items
                         AND ss_sold_date_sk = d1.d_date_sk
                         AND d1.d_year BETWEEN 2000 AND 2000 + 2
                         and iss.i_item_sk between 579 and 900
-                        and d1.d_date_sk between 2415022 and 2455022
+                        and d1.d_date_sk between  2454000 and 2455022
                  INTERSECT
                  SELECT ics.i_brand_id,
                         ics.i_class_id,
@@ -23,7 +23,7 @@ WITH cross_items
                         AND cs_sold_date_sk = d2.d_date_sk
                         AND d2.d_year BETWEEN 2000 AND 2000 + 2
                         and ics.i_item_sk between 579 and 900
-                        and d2.d_date_sk between 2415022 and 2455022
+                        and d2.d_date_sk between  2454000 and 2455022
                  INTERSECT
                  SELECT iws.i_brand_id,
                         iws.i_class_id,
@@ -34,7 +34,7 @@ WITH cross_items
                  WHERE  ws_item_sk = iws.i_item_sk
                         AND ws_sold_date_sk = d3.d_date_sk
                         and iws.i_item_sk between 579 and 999
-                        and d3.d_date_sk between 2415022 and 2455022
+                        and d3.d_date_sk between  2454000 and 2455022
                         AND d3.d_year BETWEEN 2000 AND 2000 + 2)
          WHERE  i_brand_id = brand_id
                 AND i_class_id = class_id
@@ -49,7 +49,7 @@ WITH cross_items
                         date_dim
                  WHERE  ss_sold_date_sk = d_date_sk
                         AND d_year BETWEEN 2000 AND 2000 + 2
-                        and d_date_sk between 2415022 and 2455022
+                        and d_date_sk between  2454000 and 2455022
                         and rownum <= 10000
                  UNION ALL
                  SELECT cs_quantity   quantity,
@@ -57,7 +57,7 @@ WITH cross_items
                  FROM   catalog_sales,
                         date_dim
                  WHERE  cs_sold_date_sk = d_date_sk
-                 		and d_date_sk between 2415022 and 2455022
+                 		and d_date_sk between  2454000 and 2455022
                         AND d_year BETWEEN 2000 AND 2000 + 2
                         and rownum <= 10000
                  UNION ALL
@@ -66,7 +66,7 @@ WITH cross_items
                  FROM   web_sales,
                         date_dim
                  WHERE  ws_sold_date_sk = d_date_sk
-                 		and d_date_sk between 2415022 and 2455022
+                 		and d_date_sk between  2454000 and 2455022
                         AND d_year BETWEEN 2000 AND 2000 + 2
                         and rownum <= 10000) x)
 SELECT *
@@ -93,13 +93,14 @@ FROM   (SELECT channel,
                       AND d_year = 2000 + 2
                       AND d_moy = 11
                       and i_item_sk between 579 and 999
+                      and d_date_sk between  2454000 and 2455022
                       and rownum <= 10000
                GROUP  BY i_brand_id,
                          i_class_id,
                          i_category_id
                HAVING Sum(ss_quantity * ss_list_price) > (SELECT average_sales
                                                           FROM   avg_sales
-                                                          where rownum <= 10000)
+                                                          where rownum <= 100)
                UNION ALL
                SELECT 'catalog'                        channel,
                       i_brand_id,
@@ -112,9 +113,10 @@ FROM   (SELECT channel,
                       date_dim
                WHERE  cs_item_sk IN (SELECT ss_item_sk
                                      FROM   cross_items
-                                     where rownum <= 10000)
+                                     where rownum <= 100)
                       AND cs_item_sk = i_item_sk
                       AND cs_sold_date_sk = d_date_sk
+                      and d_date_sk between  2454000 and 2455022
                       AND d_year = 2000 + 2
                       AND d_moy = 11
                       and i_item_sk between 579 and 999
@@ -124,7 +126,7 @@ FROM   (SELECT channel,
                          i_category_id
                HAVING Sum(cs_quantity * cs_list_price) > (SELECT average_sales
                                                           FROM   avg_sales
-                                                          where rownum <= 10000)
+                                                          where rownum <= 100)
                UNION ALL
                SELECT 'web'                            channel,
                       i_brand_id,
@@ -136,13 +138,15 @@ FROM   (SELECT channel,
                       item,
                       date_dim
                WHERE  ws_item_sk IN (SELECT ss_item_sk
-                                     FROM   cross_items)
+                                     FROM   cross_items
+                                     where rownum <= 100)
                       AND ws_item_sk = i_item_sk
                       AND ws_sold_date_sk = d_date_sk
                       AND d_year = 2000 + 2
                       AND d_moy = 11
                       and i_item_sk between 579 and 999
-                      and rownum <= 10000
+                      and d_date_sk between  2454000 and 2455022
+                      and rownum <= 100
                GROUP  BY i_brand_id,
                          i_class_id,
                          i_category_id
