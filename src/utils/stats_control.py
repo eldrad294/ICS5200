@@ -9,7 +9,7 @@ class OptimizerStatistics:
                                        tpc_type=tpctype)
         #
         params = {"ownname": tpctype.upper(),
-                  "degree":60,
+                  "degree":20,
                   "cascade":True}
         db_conn.execute_proc(name='dbms_stats.gather_schema_stats',
                              parameters=params)
