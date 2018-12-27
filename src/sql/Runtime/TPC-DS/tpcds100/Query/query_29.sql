@@ -33,6 +33,7 @@ select * from (select
  and d3.d_year              in (1999,1999+1,1999+2)
  and sr_item_sk between 99700 and 120000
  and sr_ticket_number between 1943327 and 2003327
+ and d1.d_date_sk between 2415522 and 2425522
  and rownum <= 10000
  group by
     i_item_id

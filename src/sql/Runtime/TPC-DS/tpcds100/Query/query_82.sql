@@ -9,6 +9,7 @@ select * from (select  i_item_id
  and i_manufact_id in (636,171,140,466)
  and inv_quantity_on_hand between 100 and 500
  and ss_item_sk = i_item_sk
+ and i_item_sk between 579 and 800
  and rownum <= 10000
  group by i_item_id,i_item_desc,i_current_price
  order by i_item_id

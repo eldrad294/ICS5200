@@ -7,6 +7,7 @@ select * from (select  dt.d_year
      ,item
  where dt.d_date_sk = store_sales.ss_sold_date_sk
     and store_sales.ss_item_sk = item.i_item_sk
+    and d_Date_sk between 2415522 and 2425522
     and item.i_manager_id = 1
     and dt.d_moy=11
     and dt.d_year=1998

@@ -3,22 +3,25 @@ select * from (select  c_last_name
        ,ca_city
        ,bought_city
        ,ss_ticket_number
-       ,amt,profit 
+       ,amt,profit
  from
    (select ss_ticket_number
           ,ss_customer_sk
           ,ca_city bought_city
           ,sum(ss_coupon_amt) amt
           ,sum(ss_net_profit) profit
-    from store_sales,date_dim,store,household_demographics,customer_address 
+    from store_sales,date_dim,store,household_demographics,customer_address
     where store_sales.ss_sold_date_sk = date_dim.d_date_sk
-    and store_sales.ss_store_sk = store.s_store_sk  
+    and d_date_sk between 2415522 and 2425522
+    and hd_demo_sk between 579 and 800
+    and ca_address_sk between 579 and 800
+    and store_sales.ss_store_sk = store.s_store_sk
     and store_sales.ss_hdemo_sk = household_demographics.hd_demo_sk
     and store_sales.ss_addr_sk = customer_address.ca_address_sk
     and (household_demographics.hd_dep_count = 6 or
          household_demographics.hd_vehicle_count= 0)
     and date_dim.d_dow in (6,0)
-    and date_dim.d_year in (1999,1999+1,1999+2) 
+    and date_dim.d_year in (1999,1999+1,1999+2)
     and store.s_city in ('Five Points','Centerville','Oak Grove','Fairview','Liberty')
     and rownum <= 10000
     group by ss_ticket_number,ss_customer_sk,ss_addr_sk,ca_city) dn,customer,customer_address current_addr

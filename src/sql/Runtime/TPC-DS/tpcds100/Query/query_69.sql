@@ -1,4 +1,4 @@
-select * from (select  
+select * from (select
   cd_gender,
   cd_marital_status,
   cd_education_status,
@@ -29,7 +29,7 @@ select * from (select
                   d_year = 1999 and
                   d_moy between 2 and 2+2
                   and rownum <= 1) and
-    not exists (select * 
+    not exists (select *
             from catalog_sales,date_dim
             where c.c_customer_sk = cs_ship_customer_sk and
                   cs_sold_date_sk = d_date_sk and

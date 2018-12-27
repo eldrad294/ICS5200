@@ -1,4 +1,4 @@
-select * from (select  
+select * from (select
    count(distinct cs_order_number) as "order count"
   ,sum(cs_ext_ship_cost) as "total shipping cost"
   ,sum(cs_net_profit) as "total net profit"
@@ -10,6 +10,7 @@ from
 where
     d_date between to_char(to_date('2002-4-01','yyyy/mm/dd'),'yyyy-mm-dd') and
            (to_char(to_date('2002-4-01','yyyy/mm/dd') + 60,'yyyy-mm-dd'))
+and ca_address_sk between 579 and 700
 and cs1.cs_ship_date_sk = d_date_sk
 and cs1.cs_ship_addr_sk = ca_address_sk
 and rownum <= 10000

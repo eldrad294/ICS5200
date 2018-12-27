@@ -12,6 +12,7 @@ FROM   (SELECT Substr(r_reason_desc, 1, 20),
                date_dim,
                reason
         WHERE  ws_web_page_sk = wp_web_page_sk
+               and d_date_sk between 2415522 and 2425522
                AND ws_item_sk = wr_item_sk
                AND ws_order_number = wr_order_number
                AND ws_sold_date_sk = d_date_sk

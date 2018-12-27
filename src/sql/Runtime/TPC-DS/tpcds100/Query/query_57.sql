@@ -20,6 +20,7 @@ WITH v1
                 date_dim,
                 call_center
          WHERE  cs_item_sk = i_item_sk
+                and d_date_sk between 2415522 and 2425522
                 AND cs_sold_date_sk = d_date_sk
                 AND cc_call_center_sk = cs_call_center_sk
                 and i_item_sk between 1 and 999

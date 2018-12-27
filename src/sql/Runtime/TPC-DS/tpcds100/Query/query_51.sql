@@ -11,6 +11,9 @@ WITH web_v1
          FROM   web_sales,
                 date_dim
          WHERE  ws_sold_date_sk = d_date_sk
+                and d_date_sk between 2415522 and 2425522
+                and ws_item_sk between 100000 and 110000
+                and ws_order_number between 17840 and 50000
                 AND d_month_seq BETWEEN 1212 AND 1212 + 11
                 AND ws_item_sk IS NOT NULL
                 and rownum <= 10000
@@ -29,6 +32,9 @@ WITH web_v1
          FROM   store_sales,
                 date_dim
          WHERE  ss_sold_date_sk = d_date_sk
+                and d_date_sk between 2415522 and 2425522
+                and ss_item_sk between 95700 and 1000000
+                and  ss_ticket_number between 36615 and 40000
                 AND d_month_seq BETWEEN 1212 AND 1212 + 11
                 AND ss_item_sk IS NOT NULL
                 and rownum <= 10000
@@ -70,7 +76,7 @@ FROM   (SELECT *
                                                  AND web.d_date = store.d_date )
                        )x)y
         WHERE  web_cumulative > store_cumulative
-        and rownum <= 10000
+        and rownum <= 100
         ORDER  BY item_sk,
                   d_date)
 WHERE  ROWNUM <= 100;

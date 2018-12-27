@@ -5,6 +5,7 @@ FROM   store_sales,
        customer_address,
        date_dim
 WHERE  s_store_sk = ss_store_sk
+       and ca_address_sk between 579 and 800
        AND ss_sold_date_sk = d_date_sk
        AND d_year = 2002
        and rownum <= 10000

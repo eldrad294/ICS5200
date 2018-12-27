@@ -12,6 +12,7 @@ with ssr as
  where ss_sold_date_sk = d_date_sk
        and d_date between to_char(to_date('1999-08-29','yyyy/mm/dd'),'yyyy-mm-dd')
                   and (to_char(to_date('1999-08-29','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
+                  and d_date_sk between 2415522 and 2425522
        and ss_store_sk = s_store_sk
        and ss_item_sk = i_item_sk
        and i_current_price > 50
@@ -32,6 +33,10 @@ with ssr as
      item,
      promotion
  where cs_sold_date_sk = d_date_sk
+       and cs_item_sk between 100000 and 110000
+       and d_date_sk between 2415522 and 2425522
+       and cs_order_number between 853 and 4000
+       and d_date_sk between 2415522 and 2425522
        and d_date between to_char(to_date('1999-08-29','yyyy/mm/dd'),'yyyy-mm-dd')
                   and (to_char(to_date('1999-08-29','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
         and cs_catalog_page_sk = cp_catalog_page_sk
@@ -57,6 +62,9 @@ group by cp_catalog_page_id)
        and d_date between to_char(to_date('1999-08-29','yyyy/mm/dd'),'yyyy-mm-dd')
                   and (to_char(to_date('1999-08-29','yyyy/mm/dd') +  30,'yyyy-mm-dd'))
         and ws_web_site_sk = web_site_sk
+        and d_date_sk between 2415522 and 2425522
+        and wr_item_sk between 104700 and 105700
+        and wr_order_number between 504800 and 600800
        and ws_item_sk = i_item_sk
        and i_current_price > 50
        and ws_promo_sk = p_promo_sk
@@ -68,7 +76,7 @@ group by web_site_id)
         , sum(sales) as sales
         , sum(returns) as returns
         , sum(profit) as profit
- from 
+ from
  (select 'store channel' as channel
         , 'store' || store_id as id
         , sales

@@ -7,6 +7,8 @@ select * from (select  cast(amc as decimal(15,4))*cast(pmc as decimal(15,4)) am_
          and time_dim.t_hour between 12 and 12+1
          and household_demographics.hd_dep_count = 9
          and web_page.wp_char_count between 5000 and 5200
+         and ws_item_sk between 100000 and 110000
+         and ws_order_number between 17840 and 50000
          and rownum <= 10000 ) at,
       ( select count(*) pmc
        from web_sales, household_demographics , time_dim, web_page
@@ -16,6 +18,8 @@ select * from (select  cast(amc as decimal(15,4))*cast(pmc as decimal(15,4)) am_
          and time_dim.t_hour between 15 and 15+1
          and household_demographics.hd_dep_count = 9
          and web_page.wp_char_count between 5000 and 5200
+         and ws_item_sk between 100000 and 110000
+         and ws_order_number between 17840 and 50000
          and rownum <= 10000 ) pt
  order by am_pm_ratio
   ) where rownum <= 100;

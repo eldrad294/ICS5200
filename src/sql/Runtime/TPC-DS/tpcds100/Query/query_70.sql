@@ -13,6 +13,7 @@ FROM   (SELECT Sum(ss_net_profit)                     AS total_sum,
                date_dim d1,
                store
         WHERE  d1.d_month_seq BETWEEN 1187 AND 1187 + 11
+               and d1.d_date_sk between 2415522 and 2425522
                AND d1.d_date_sk = ss_sold_date_sk
                AND s_store_sk = ss_store_sk
                AND s_state IN (SELECT s_state
@@ -30,6 +31,7 @@ FROM   (SELECT Sum(ss_net_profit)                     AS total_sum,
                                               date_dim
                                        WHERE  d_month_seq BETWEEN
                                               1187 AND 1187 + 11
+                                              and d_date_sk between 2415522 and 2425522
                                               AND d_date_sk = ss_sold_date_sk
                                               AND s_store_sk = ss_store_sk
                                        GROUP  BY s_state) tmp1

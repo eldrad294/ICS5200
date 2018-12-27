@@ -12,7 +12,7 @@ WITH year_total
                 AND ss_sold_date_sk = d_date_sk
                 AND d_year IN ( 2001, 2001 + 1 )
                 and c_customer_sk between 1 and 999
-                and d_date_sk between 2000000 and 3000000
+                and d_date_sk between 2415522 and 2425522
                 and rownum <= 10000
          GROUP  BY c_customer_id,
                    c_first_name,
@@ -29,6 +29,7 @@ WITH year_total
                 web_sales,
                 date_dim
          WHERE  c_customer_sk = ws_bill_customer_sk
+                and d_date_sk between 2415522 and 2425522
                 AND ws_sold_date_sk = d_date_sk
                 AND d_year IN ( 2001, 2001 + 1 )
                 and rownum <= 10000

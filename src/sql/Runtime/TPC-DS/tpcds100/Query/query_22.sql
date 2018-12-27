@@ -7,6 +7,7 @@ select * from (select  i_product_name
            ,date_dim
            ,item
        where inv_date_sk=d_date_sk
+              and inv_date_sk between 2450815 and 2459815
               and inv_item_sk=i_item_sk
               and d_month_seq between 1188 and 1188 + 11
               and rownum <= 10000

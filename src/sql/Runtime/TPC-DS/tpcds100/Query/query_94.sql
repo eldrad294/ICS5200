@@ -1,4 +1,4 @@
-select * from (select  
+select * from (select
    count(distinct ws_order_number) as "order count"
   ,sum(ws_ext_ship_cost) as "total shipping cost"
   ,sum(ws_net_profit) as "total net profit"
@@ -11,6 +11,7 @@ where
     d_date between to_char(to_date('2002-4-01','yyyy/mm/dd'),'yyyy-mm-dd') and
            (to_char(to_date('2002-4-01','yyyy/mm/dd') + 60,'yyyy-mm-dd'))
 and ws1.ws_ship_date_sk = d_date_sk
+and ca_address_sk between 579 and 900
 and ws1.ws_ship_addr_sk = ca_address_sk
 and ca_state = 'NY'
 and ws1.ws_web_site_sk = web_site_sk

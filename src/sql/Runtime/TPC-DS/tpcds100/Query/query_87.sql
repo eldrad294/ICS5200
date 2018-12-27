@@ -5,6 +5,7 @@ from ((select distinct c_last_name, c_first_name, d_date
          and store_sales.ss_customer_sk = customer.c_customer_sk
          and d_month_seq between 1216 and 1216+11
          and c_customer_sk between 1 and 999
+         and d_date_sk between 2415522 and 2425522
          and rownum <= 10000)
        minus
       (select distinct c_last_name, c_first_name, d_date
@@ -13,6 +14,7 @@ from ((select distinct c_last_name, c_first_name, d_date
          and catalog_sales.cs_bill_customer_sk = customer.c_customer_sk
          and d_month_seq between 1216 and 1216+11
          and c_customer_sk between 1 and 999
+         and d_date_sk between 2415522 and 2425522
          and rownum <= 10000)
        minus
       (select distinct c_last_name, c_first_name, d_date
@@ -21,6 +23,7 @@ from ((select distinct c_last_name, c_first_name, d_date
          and web_sales.ws_bill_customer_sk = customer.c_customer_sk
          and d_month_seq between 1216 and 1216+11
          and c_customer_sk between 1 and 999
+         and d_date_sk between 2415522 and 2425522
          and rownum <= 10000)
 ) cool_cust
 ;

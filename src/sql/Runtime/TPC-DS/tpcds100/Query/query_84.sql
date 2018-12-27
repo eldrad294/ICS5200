@@ -14,6 +14,6 @@ select * from (select  c_customer_id as customer_id
    and cd_demo_sk = c_current_cdemo_sk
    and hd_demo_sk = c_current_hdemo_sk
    and sr_cdemo_sk = cd_demo_sk
-   and rownum <= 10000
+   and rownum <= 100
  order by c_customer_id
   ) where rownum <= 100;

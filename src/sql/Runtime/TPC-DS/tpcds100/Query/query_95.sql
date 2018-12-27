@@ -2,9 +2,11 @@ with ws_wh as
 (select ws1.ws_order_number,ws1.ws_warehouse_sk wh1,ws2.ws_warehouse_sk wh2
  from web_sales ws1,web_sales ws2
  where ws1.ws_order_number = ws2.ws_order_number
+   and ws1.ws_item_sk between 100000 and 110000
+   and ws1.ws_order_number between 17840 and 50000
    and ws1.ws_warehouse_sk <> ws2.ws_warehouse_sk
    and rownum <= 10000 )
-select * from ( select  
+select * from ( select
    count(distinct ws_order_number) as "order count"
   ,sum(ws_ext_ship_cost) as "total shipping cost"
   ,sum(ws_net_profit) as "total net profit"
@@ -16,6 +18,8 @@ from
 where
     d_date between '1999-3-01' and
            (to_char(to_date('1999-3-01','yyyy/mm/dd') + 60,'yyyy-mm-dd'))
+and ws1.ws_item_sk between 100000 and 110000
+and ws1.ws_order_number between 17840 and 50000
 and ws1.ws_ship_date_sk = d_date_sk
 and ws1.ws_ship_addr_sk = ca_address_sk
 and ca_state = 'AR'

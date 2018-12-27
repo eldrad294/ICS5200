@@ -217,7 +217,7 @@ FROM   (SELECT s_store_name,
                                        customer
                                 WHERE  ca_address_sk = c_current_addr_sk
                                        AND c_preferred_cust_flag = 'Y'
-                                       --and cd_demo_sk between
+                                       and c_customer_sk between 579 and 900
                                        and rownum <= 10000
                                 GROUP  BY ca_zip
                                 HAVING Count(*) > 10)A1)A2) V1
@@ -226,6 +226,7 @@ FROM   (SELECT s_store_name,
                AND d_qoy = 2
                AND d_year = 1998
                AND ( Substr(s_zip, 1, 2) = Substr(V1.ca_zip, 1, 2) )
+               and d_date_sk between 2415522 and 2419522
                and rownum <= 10000
         GROUP  BY s_store_name
         ORDER  BY s_store_name)

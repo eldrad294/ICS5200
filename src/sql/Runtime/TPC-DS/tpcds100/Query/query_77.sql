@@ -65,6 +65,7 @@ WITH ss
                                                'yyyy/mm/dd') +
                                                30,
                                        'yyyy-mm-dd') )
+                                       and d_date_sk between 2415522 and 2425522
                 and rownum <= 10000
          GROUP  BY cr_call_center_sk),
      ws
@@ -83,7 +84,7 @@ WITH ss
                                                30,
                                        'yyyy-mm-dd') )
                 AND ws_web_page_sk = wp_web_page_sk
-                and d_date_sk between 2410000 and 2420000
+                and d_date_sk between 2415522 and 2425522
                 and rownum <= 10000
          GROUP  BY wp_web_page_sk),
      wr
@@ -94,6 +95,7 @@ WITH ss
                 date_dim,
                 web_page
          WHERE  wr_returned_date_sk = d_date_sk
+                and d_date_sk between 2415522 and 2425522
                 AND d_date BETWEEN To_char(To_date('2000-08-23', 'yyyy/mm/dd'),
                                    'yyyy-mm-dd')
                                    AND (

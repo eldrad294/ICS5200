@@ -6,14 +6,16 @@ from
         ,promotion
         ,date_dim
         ,customer
-        ,customer_address 
+        ,customer_address
         ,item
    where ss_sold_date_sk = d_date_sk
+   and d_date_sk between 2415522 and 2425522
+   and   ca_address_sk between 579 and 800
    and   ss_store_sk = s_store_sk
    and   ss_promo_sk = p_promo_sk
    and   ss_customer_sk= c_customer_sk
    and   ca_address_sk = c_current_addr_sk
-   and   ss_item_sk = i_item_sk 
+   and   ss_item_sk = i_item_sk
    and   ca_gmt_offset = -6
    and   i_category = 'Electronics'
    and   (p_channel_dmail = 'Y' or p_channel_email = 'Y' or p_channel_tv = 'Y')
@@ -29,6 +31,8 @@ from
         ,customer_address
         ,item
    where ss_sold_date_sk = d_date_sk
+   and d_date_sk between 2415522 and 2425522
+   and   ca_address_sk between 579 and 800
    and   ss_store_sk = s_store_sk
    and   ss_customer_sk= c_customer_sk
    and   ca_address_sk = c_current_addr_sk

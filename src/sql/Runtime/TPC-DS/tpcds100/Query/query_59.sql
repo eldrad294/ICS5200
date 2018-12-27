@@ -1,4 +1,4 @@
-with wss as 
+with wss as
  (select d_week_seq,
         ss_store_sk,
         sum(case when (d_day_name='Sunday') then ss_sales_price else null end) sun_sales,
@@ -10,6 +10,7 @@ with wss as
         sum(case when (d_day_name='Saturday') then ss_sales_price else null end) sat_sales
  from store_sales,date_dim
  where d_date_sk = ss_sold_date_sk
+ and d_date_sk between 2415522 and 2425522
  and ss_item_sk between 95700 and 100000
  and ss_ticket_number between 1 and 100000
  and rownum <= 10000
@@ -27,7 +28,8 @@ with wss as
         ,fri_sales fri_sales1,sat_sales sat_sales1
   from wss,store,date_dim d
   where d.d_week_seq = wss.d_week_seq and
-        ss_store_sk = s_store_sk and 
+  d.d_date_sk between 2415522 and 2425522 and
+        ss_store_sk = s_store_sk and
         d_month_seq between 1179 and 1179 + 11
         and rownum <= 10000) y,
  (select s_store_name s_store_name2,wss.d_week_seq d_week_seq2
@@ -37,7 +39,8 @@ with wss as
         ,fri_sales fri_sales2,sat_sales sat_sales2
   from wss,store,date_dim d
   where d.d_week_seq = wss.d_week_seq and
-        ss_store_sk = s_store_sk and 
+        d.d_date_sk between 2415522 and 2425522 and
+        ss_store_sk = s_store_sk and
         d_month_seq between 1179+ 12 and 1179 + 23
         and rownum <= 10000) x
  where s_store_id1=s_store_id2

@@ -1,13 +1,15 @@
 select * from (select  distinct(i_product_name)
  from item i1
  where i_manufact_id between 748 and 748+40
+   and i1.i_item_sk between 579 and 800
    and rownum <= 10000
    and (select count(*) as item_cnt
         from item
-        where (i_manufact = i1.i_manufact and
+        where (i_manufact = i1.i_manufact
+        and i1.i_item_sk between 579 and 800 and
         rownum <= 10000 and
-        ((i_category = 'Women' and 
-        (i_color = 'gainsboro' or i_color = 'aquamarine') and 
+        ((i_category = 'Women' and
+        (i_color = 'gainsboro' or i_color = 'aquamarine') and
         (i_units = 'Ounce' or i_units = 'Dozen') and
         (i_size = 'medium' or i_size = 'economy')
         ) or
@@ -27,8 +29,8 @@ select * from (select  distinct(i_product_name)
         (i_size = 'medium' or i_size = 'economy')
         ))) or
        (i_manufact = i1.i_manufact and
-        ((i_category = 'Women' and 
-        (i_color = 'blanched' or i_color = 'tomato') and 
+        ((i_category = 'Women' and
+        (i_color = 'blanched' or i_color = 'tomato') and
         (i_units = 'Tbl' or i_units = 'Case') and
         (i_size = 'medium' or i_size = 'economy')
         ) or

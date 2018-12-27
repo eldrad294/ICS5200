@@ -1,4 +1,4 @@
-select  
+select
         cc_call_center_id Call_Center,
         cc_name Call_Center_Name,
         cc_manager Manager,
@@ -13,12 +13,13 @@ from
         household_demographics
 where
         cr_call_center_sk       = cc_call_center_sk
+and     cd_demo_sk between 579 and 800
 and     cr_returned_date_sk     = d_date_sk
 and     cr_returning_customer_sk= c_customer_sk
 and     cd_demo_sk              = c_current_cdemo_sk
 and     hd_demo_sk              = c_current_hdemo_sk
 and     ca_address_sk           = c_current_addr_sk
-and     d_year                  = 2000 
+and     d_year                  = 2000
 and     d_moy                   = 11
 and     ( (cd_marital_status       = 'M' and cd_education_status     = 'Unknown')
         or(cd_marital_status       = 'W' and cd_education_status     = 'Advanced Degree'))
