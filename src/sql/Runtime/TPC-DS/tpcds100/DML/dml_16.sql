@@ -1,7 +1,21 @@
-drop view cadrv;
 drop table cadrv;
-create view cadrv as
-select cust_customer_id ,cust_street_number ,concat(cust_street_name1,cust_street_name2) street ,cust_street_type ,cust_suite_number ,cust_city ,cust_county ,cust_state ,cust_zip ,cust_country
-from s_customer_m;
+drop view cadrv;
+create table cadrv tablespace tpcds_benchmark as
+(select ca_address_id ca_address_id
+      ,cust_street_number ca_street_number
+      ,concat(concat(rtrim(cust_street_name1),' '),rtrim(cust_street_name2)) ca_street_name
+      ,cust_street_type ca_street_type
+      ,cust_suite_number ca_suite_number
+      ,cust_city ca_city
+      ,cust_county ca_county
+      ,cust_state ca_state
+      ,cust_zip ca_zip
+      ,cust_country ca_country
+      ,cust_loc_type ca_location_type
+from s_customer_m  
+    ,customer
+    ,customer_address
+where cust_customer_id = c_customer_id
+  and c_current_addr_sk = ca_address_sk);
 select count(*) from s_customer_m;
 select count(*) from cadrv;
