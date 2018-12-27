@@ -17,6 +17,7 @@ from store_sales
     ,customer
     ,customer_address
 where ss_ticket_number = sr_ticket_number
+and c_customer_sk between 579 and 900
   and ss_item_sk = sr_item_sk
   and ss_customer_sk = c_customer_sk
   and ss_item_sk = i_item_sk
