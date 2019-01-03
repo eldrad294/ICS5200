@@ -1,0 +1,62 @@
+------------------------
+Dissertation - Breakdown
+40,000 words
+------------------------
+1) Abstract
+2) Intro
+  - Problem Domain
+  - Problem Definition
+  - Proposed work
+  - Paper Layout
+3) Lit. Review
+  - RDBMS Optimization
+    - RDBMS Optimizer
+    - CBO Fundamentals
+    - Optimizer Access Plans
+    - Query Compilation and Access Plan Generation
+    - Interpreting the Access Plan
+  - Optimizer Statistics
+    - Optimizer Statistics Upkeep
+    - Optimizer Statistics Timeliness
+    - Optimizer Statistics Precision
+    - CBO Fallacies and Statistical Limitations
+  - Database Autonomy
+    - Machine Learning Application in Commercial RDBMS
+    - RDBMS Machine Learning
+  - Database Workloads
+    - Workload Characterization
+    - Workload Traces
+  - Performance Prediction
+    - Deep Learning Applicability for RDBMS Performance Prediction
+    - Deep Learning Network Architectures
+    - Time Series Predictions
+  - Access Plan Analysis
+    - Access Plan Outlier Detection
+    - SQL Feature Encoding
+    - Query Driven Statistics Collection
+4) Methodology / Solution
+  - Dataset Description And Choice (TPC-DS)
+    - TPC-DS Benchmark
+    - Choosing TPC-DS
+    - Benchmark TPC-DS Suite
+  - Generating Trace Data 
+    - TPC-DS and Database Integration (Oracle)
+    - Generating Workloads (TPCDS 1,10,100)
+    - Workload Modifications
+      - TPC-DS 100 Modifications
+      - TPC-DS Query Outliers
+    - Trace Description
+  - Experiment Approach
+    - Time Series Analysis
+    - Top Consumer Analysis
+    - Query Sequence Analysis
+    - Plan Pattern Anomaly Detection
+    - Optimizer Statistics Recommendation through Plan Analysis
+5) Evaluation + Results
+  - High / Low Peak Detection
+  - Access Plan Outlier Detection
+  - Plan Pattern Anamoly detection
+6) Future work
+7) Conclusions
+8) References
+9) Appendix ??
