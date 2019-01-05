@@ -41,17 +41,18 @@ Dissertation - Breakdown
       - Query Workload
       - Data Maintenance Workload
     - Choosing TPC-DS
+    - Data Sizing and Loading
   - Generating Trace Data 
-    - TPC-DS and Database Integration (Oracle)
-    - Generating Workloads (TPCDS 1,10,100)
-    - Workload Modifications
-      - TPC-DS 100 Modifications
+    - Workload Sequence (TPCDS 1,10,100)
+    - Benchmark Modifications
+      - TPC-DS Load Test
+      - TPC-DS 100
       - TPC-DS Query Outliers
     - Trace Description
   - Experiment Approach
     - Time Series Analysis
-    - Top Consumer Analysis
     - Query Sequence Analysis
+    - Top Consumer Analysis
     - Plan Pattern Anomaly Detection
     - Optimizer Statistics Recommendation through Plan Analysis
 5) Evaluation + Results
