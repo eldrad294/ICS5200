@@ -50,11 +50,14 @@ Dissertation - Breakdown
       - TPC-DS Query Outliers
     - Trace Description
   - Experiment Approach
-    - Time Series Analysis
-    - Query Sequence Analysis
-    - Top Consumer Analysis
-    - Plan Pattern Anomaly Detection
-    - Optimizer Statistics Recommendation through Plan Analysis
+    - Statistical Timelines
+      - Supervised Approach
+      - Unsupervised Approach
+    - Statistical Precision
+      - Query Sequence Analysis
+      - Top Consumer Analysis
+      - Plan Pattern Anomaly Detection
+      - Optimizer Statistics Recommendation through Plan Analysis
 5) Evaluation + Results
   - High / Low Peak Detection
   - Access Plan Outlier Detection
