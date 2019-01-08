@@ -57,7 +57,6 @@ Dissertation - Breakdown
       - Query Sequence Analysis
       - Top Consumer Analysis
       - Plan Pattern Anomaly Detection
-      - Optimizer Statistics Recommendation through Plan Analysis
 5) Evaluation + Results
   - High / Low Peak Detection
   - Access Plan Outlier Detection
