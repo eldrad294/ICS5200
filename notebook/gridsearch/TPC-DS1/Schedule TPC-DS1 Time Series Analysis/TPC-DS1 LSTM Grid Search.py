@@ -1,15 +1,9 @@
-import scipy as sc
 import numpy as np
 import matplotlib.pyplot as plt
-from statsmodels.graphics.gofplots import qqplot
 import pandas as pd
-import statsmodels
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, f1_score, accuracy_score
-import sklearn as sk
-import theano
-import tensorflow
 import plaidml.keras
 plaidml.keras.install_backend()
 import keras as ke
@@ -18,6 +12,135 @@ import csv
 import os.path
 import time
 
+tpcds='TPCDS1'
+y_label = ['CPU_TIME_DELTA','OPTIMIZER_COST','EXECUTIONS_DELTA','ELAPSED_TIME_DELTA'] # Denotes which label to use for time series experiments
+nrows=None
+bin_value = 2
+if bin_value < 2:
+    raise ValueError('Number of buckets must be greater than 1')
+
+# Root path
+root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
+# root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
+
+### Read data from file into Pandas Dataframes
+rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
+rep_hist_sysmetric_summary_path = root_dir + '/rep_hist_sysmetric_summary.csv'
+rep_hist_sysstat_path = root_dir + '/rep_hist_sysstat.csv'
+#rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
+#rep_hist_sysmetric_summary_path = root_dir + '/rep_hist_sysmetric_summary.csv'
+#rep_hist_sysstat_path = root_dir + '/rep_hist_sysstat.csv'
+
+rep_hist_snapshot_df = pd.read_csv(rep_hist_snapshot_path, nrows=nrows)
+rep_hist_sysmetric_summary_df = pd.read_csv(rep_hist_sysmetric_summary_path, nrows=nrows)
+rep_hist_sysstat_df = pd.read_csv(rep_hist_sysstat_path, nrows=nrows)
+
+def prettify_header(headers):
+    """
+    Cleans header list from unwated character strings
+    """
+    header_list = []
+    [header_list.append(header.replace("(","").replace(")","").replace("'","").replace(",","")) for header in headers]
+    return header_list
+
+rep_hist_snapshot_df.columns = prettify_header(rep_hist_snapshot_df.columns.values)
+rep_hist_sysmetric_summary_df.columns = prettify_header(rep_hist_sysmetric_summary_df.columns.values)
+rep_hist_sysstat_df.columns = prettify_header(rep_hist_sysstat_df.columns.values)
+
+### Pivoting Tables and Changing Matrix Shapes
+rep_hist_sysmetric_summary_df = rep_hist_sysmetric_summary_df.pivot(index='SNAP_ID', columns='METRIC_NAME', values='AVERAGE')
+rep_hist_sysmetric_summary_df.reset_index(inplace=True)
+rep_hist_sysmetric_summary_df[['SNAP_ID']] = rep_hist_sysmetric_summary_df[['SNAP_ID']].astype(int)
+rep_hist_sysmetric_summary_df.reset_index(inplace=True)
+rep_hist_sysmetric_summary_df.sort_values(by=['SNAP_ID'],inplace=True,ascending=True)
+rep_hist_sysstat_df = rep_hist_sysstat_df.pivot(index='SNAP_ID', columns='STAT_NAME', values='VALUE')
+rep_hist_sysstat_df.reset_index(inplace=True)
+rep_hist_sysstat_df[['SNAP_ID']] = rep_hist_sysstat_df[['SNAP_ID']].astype(int)
+#rep_hist_sysstat_df = rep_hist_sysstat_df.groupby(['SNAP_ID']).sum()
+rep_hist_sysstat_df.reset_index(inplace=True)
+rep_hist_sysstat_df.sort_values(by=['SNAP_ID'],inplace=True,ascending=True)
+rep_hist_sysmetric_summary_df.rename(str.upper, inplace=True, axis='columns')
+rep_hist_sysstat_df.rename(str.upper, inplace=True, axis='columns')
+rep_hist_snapshot_df = rep_hist_snapshot_df.groupby(['SNAP_ID','DBID','INSTANCE_NUMBER']).sum()
+rep_hist_snapshot_df.reset_index(inplace=True)
+
+### Dealing with Empty Values
+def get_na_columns(df, headers):
+    """
+    Return columns which consist of NAN values
+    """
+    na_list = []
+    for head in headers:
+        if df[head].isnull().values.any():
+            na_list.append(head)
+    return na_list
+
+def fill_na(df):
+    """
+    Replaces NA columns with 0s
+    """
+    return df.fillna(0)
+
+rep_hist_snapshot_df = fill_na(df=rep_hist_snapshot_df)
+rep_hist_sysmetric_summary_df = fill_na(df=rep_hist_sysmetric_summary_df)
+rep_hist_sysstat_df = fill_na(df=rep_hist_sysstat_df)
+
+### Merging Frames
+df = pd.merge(rep_hist_snapshot_df, rep_hist_sysmetric_summary_df,how='inner',on ='SNAP_ID')
+df = pd.merge(df, rep_hist_sysstat_df,how='inner',on ='SNAP_ID')
+
+### Data Ordering
+df.sort_values(by=['SNAP_ID'], ascending=True, inplace=True)
+
+### Floating point precision conversion
+df.astype('float32', inplace=True)
+df = np.round(df, 3) # rounds to 3 dp
+
+### Feature Selection
+def drop_flatline_columns(df):
+    columns = df.columns
+    flatline_features = []
+    for i in range(len(columns)):
+        try:
+            std = df[columns[i]].std()
+            if std == 0:
+                flatline_features.append(columns[i])
+        except:
+            pass
+
+    print('\nShape before changes: [' + str(df.shape) + ']')
+    df = df.drop(columns=flatline_features)
+    print('Shape after changes: [' + str(df.shape) + ']')
+    print('Dropped a total [' + str(len(flatline_features)) + ']')
+    return df
+
+df = drop_flatline_columns(df=df)
+dropped_columns_df = ['PLAN_HASH_VALUE',
+                      'OPTIMIZER_ENV_HASH_VALUE',
+                      'LOADED_VERSIONS',
+                      'VERSION_COUNT',
+                      'PARSING_SCHEMA_ID',
+                      'PARSING_USER_ID',
+                      'CON_DBID',
+                      'SNAP_LEVEL',
+                      'SNAP_FLAG',
+                      'COMMAND_TYPE']
+df.drop(columns=dropped_columns_df, inplace=True)
+
+### Data Normalization
+scaler = MinMaxScaler(feature_range=(0, 1))
+df_normalized_values = scaler.fit_transform(df.values)
+df = pd.DataFrame(data=df_normalized_values, columns=df.columns)
+del df_normalized_values
+
+### Rearranging Labels
+y_label.append('SNAP_ID')
+y_df = df[y_label]
+del y_label[-1]
+df.drop(columns=y_label, inplace=True)
+df = pd.merge(y_df,df,on='SNAP_ID',sort=False,left_on=None, right_on=None)
+
+### Time Series Shifting
 def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     """
     Frame a time series as a supervised learning dataset.
@@ -119,7 +242,7 @@ class LSTM:
             self.model.add(ke.layers.LSTM(X_train.shape[2], input_shape=(X_train.shape[1], X_train.shape[2]),
                                           return_sequences=True))
         self.model.add(ke.layers.LSTM(X.shape[2], input_shape=(X.shape[1], X.shape[2])))
-        if dropout > 1 and droptout < 0:
+        if dropout > 1 and dropout < 0:
             raise ValueError('Dropout parameter exceeded! Must be a value between 0 and 1.')
         self.model.add(ke.layers.Dropout(dropout))
         self.model.add(ke.layers.Dense(y.shape[1]))
@@ -276,7 +399,7 @@ class LSTM:
 
 # Test Harness
 iteration = 0
-max_lag_param = 15
+lag = 5
 # Training / Test Split Subsets. Test subset is split 50/50 for validation/test
 test_harness_param = (.5, .6, .7, .8, .9)
 batch = (10, 25, 50, 75, 100)
@@ -284,76 +407,72 @@ epochs = (50, 100, 150)
 lstm_depth = (1, 2, 3)
 dropout = (.1, .2, .3, .4, .5)
 
-# Test Multiple Time Splits (Lag)
-for lag in range(1, max_lag_param+1):
+t0 = time.time()  # Capture Time Shot
+shifted_df = series_to_supervised(df, lag, lag)  # Shifting both in past and future
 
-    t0 = time.time()  # Capture Time Shot
+# Separate labels from features
+y_df_column_names = shifted_df.columns[len(df.columns):len(df.columns) + len(y_label)]
+y_df = shifted_df[y_df_column_names]
+X_df = shifted_df.drop(columns=y_df_column_names)
 
-    shifted_df = series_to_supervised(df, lag, lag)  # Shifting both in past and future
+# Test Multiple Train/Validation Splits
+for test_split in test_harness_param:
+    X_train, X_validate, y_train, y_validate = train_test_split(X_df, y_df, test_size=test_split)
+    X_train = X_train.values
+    y_train = y_train.values
+    X_validate, X_test, y_validate, y_test = train_test_split(X_validate, y_validate, test_size=.5)
+    X_validate = X_validate.values
+    y_validate = y_validate.values
 
-    # Separate labels from features
-    y_df_column_names = shifted_df.columns[len(df.columns):len(df.columns) + len(y_label)]
-    y_df = shifted_df[y_df_column_names]
-    X_df = shifted_df.drop(columns=y_df_column_names)
+    # Reshape for fitting in LSTM
+    X_train = X_train.reshape((X_train.shape[0], 1, X_train.shape[1]))
+    X_validate = X_validate.reshape((X_validate.shape[0], 1, X_validate.shape[1]))
 
-    # Test Multiple Train/Validation Splits
-    for test_split in test_harness_param:
-        X_train, X_validate, y_train, y_validate = train_test_split(X_df, y_df, test_size=test_split)
-        X_train = X_train.values
-        y_train = y_train.values
-        X_validate, X_test, y_validate, y_test = train_test_split(X_validate, y_validate, test_size=.5)
-        X_validate = X_validate.values
-        y_validate = y_validate.values
+    for depth in lstm_depth:
+        for drop in dropout:
+            for epoch in epochs:
+                for batch_size in batch:
 
-        # Reshape for fitting in LSTM
-        X_train = X_train.reshape((X_train.shape[0], 1, X_train.shape[1]))
-        X_validate = X_validate.reshape((X_validate.shape[0], 1, X_validate.shape[1]))
+                    # Build model
+                    model = LSTM(X=X_train,
+                                 y=y_train,
+                                 loss_func='categorical_crossentropy',
+                                 activation='sigmoid',
+                                 optimizer='adam',
+                                 mode='classification',
+                                 lstm_layers=depth,
+                                 dropout=drop)
 
-        for depth in lstm_depth:
-            for drop in dropout:
-                for epoch in epochs:
-                    for batch_size in batch:
+                    # Train model
+                    model.fit_model(X_train=X_train,
+                                    X_test=X_validate,
+                                    y_train=y_train,
+                                    y_test=y_validate,
+                                    epochs=epoch,
+                                    batch_size=batch_size,
+                                    verbose=2,
+                                    shuffle=False,
+                                    plot=False)
 
-                        # Build model
-                        model = LSTM(X=X_train,
-                                     y=y_train,
-                                     loss_func='categorical_crossentropy',
-                                     activation='sigmoid',
-                                     optimizer='adam',
-                                     mode='classification',
-                                     lstm_layers=depth,
-                                     dropout=drop)
+                    # Evaluate the model
+                    rmse = model.predict_and_evaluate(X=X_validate,
+                                                      y=y_validate,
+                                                      y_labels=y_label,
+                                                      plot=False)
 
-                        # Train model
-                        model.fit_model(X_train=X_train,
-                                        X_test=X_validate,
-                                        y_train=y_train,
-                                        y_test=y_validate,
-                                        epochs=epoch,
-                                        batch_size=batch_size,
-                                        verbose=2,
-                                        shuffle=False,
-                                        plot=False)
+                    t1 = time.time()
+                    time_total = t1 - t0
 
-                        # Evaluate the model
-                        rmse = model.predict_and_evaluate(X=X_validate,
-                                                          y=y_validate,
-                                                          y_labels=y_label,
-                                                          plot=False)
+                    # Write results to disk
+                    LSTM.write_results_to_disk(path="TPC-DS1 LSTM Grid Search.csv",
+                                               iteration=iteration,
+                                               lag=lag,
+                                               test_split=test_split,
+                                               batch=batch_size,
+                                               depth=depth,
+                                               epoch=epoch,
+                                               dropout=drop,
+                                               score=str(rmse),
+                                               time_train=time_total)
 
-                        t1 = time.time()
-                        time_total = t1 - t0
-
-                        # Write results to disk
-                        LSTM.write_results_to_disk(path="time_series_lstm_regression_results.csv",
-                                                   iteration=iteration,
-                                                   lag=lag,
-                                                   test_split=test_split,
-                                                   batch=batch_size,
-                                                   depth=depth,
-                                                   epoch=epoch,
-                                                   dropout=drop,
-                                                   score=str(rmse),
-                                                   time_train=time_total)
-
-                        iteration += 1
+                    iteration += 1
