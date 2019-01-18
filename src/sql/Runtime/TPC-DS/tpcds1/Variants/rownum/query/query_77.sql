@@ -24,7 +24,7 @@ with ss as
        and sr_store_sk = s_store_sk
  group by s_store_sk),
  cs as
- (select /*+full(CATALOG_SALES)*/ cs_call_center_sk,
+ (select cs_call_center_sk,
         sum(cs_ext_sales_price) as sales,
         sum(cs_net_profit) as profit
  from catalog_sales,
