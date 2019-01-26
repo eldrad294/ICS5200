@@ -44,8 +44,8 @@ parallel_degree = -1
 y_label = ['CPU_TIME_DELTA','OPTIMIZER_COST','EXECUTIONS_DELTA','ELAPSED_TIME_DELTA']
 
 # Root path
-root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
-#root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
+# root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
+root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
 
 # Open Data
 rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
@@ -387,39 +387,39 @@ def remove_n_time_steps(data, n=1):
 
 
 # Frame as supervised learning set
-# shifted_df = series_to_supervised(df, lag, lag)
+shifted_df = series_to_supervised(df, lag, lag)
 
 # Seperate labels from features
-# y_row = []
-# for i in range(lag + 1, (lag * 2) + 2):
-#     y_df_column_names = shifted_df.columns[len(df.columns) * i:len(df.columns) * i + len(y_label)]
-#     y_row.append(y_df_column_names)
-#     print(y_df_column_names)
-#     print(type(y_df_column_names))
-# y_df_column_names = []
-# for row in y_row:
-#     for val in row:
-#         y_df_column_names.append(val)
+y_row = []
+for i in range(lag + 1, (lag * 2) + 2):
+    y_df_column_names = shifted_df.columns[len(df.columns) * i:len(df.columns) * i + len(y_label)]
+    y_row.append(y_df_column_names)
+    print(y_df_column_names)
+    print(type(y_df_column_names))
+y_df_column_names = []
+for row in y_row:
+    for val in row:
+        y_df_column_names.append(val)
 
-# # y_df_column_names = shifted_df.columns[len(df.columns)*lag:len(df.columns)*lag + len(y_label)]
-# y_df = shifted_df[y_df_column_names]
-# X_df = shifted_df.drop(columns=y_df_column_names)
-# print('\n-------------\nFeatures')
-# print(X_df.columns)
-# print(X_df.shape)
-# print('\n-------------\nLabels')
-# print(y_df.columns)
-# print(y_df.shape)
-#
-# # Delete middle timesteps
+# y_df_column_names = shifted_df.columns[len(df.columns)*lag:len(df.columns)*lag + len(y_label)]
+y_df = shifted_df[y_df_column_names]
+X_df = shifted_df.drop(columns=y_df_column_names)
+print('\n-------------\nFeatures')
+print(X_df.columns)
+print(X_df.shape)
+print('\n-------------\nLabels')
+print(y_df.columns)
+print(y_df.shape)
+
+# Delete middle timesteps
 # X_df = remove_n_time_steps(data=X_df, n=lag)
-# print('\n-------------\nFeatures After Time Shift')
-# print(X_df.columns)
-# print(X_df.shape)
-# # y_df = remove_n_time_steps(data=y_df, n=lag)
-# print('\n-------------\nLabels After Time Shift')
-# print(y_df.columns)
-# print(y_df.shape)
+print('\n-------------\nFeatures After Time Shift')
+print(X_df.columns)
+print(X_df.shape)
+# y_df = remove_n_time_steps(data=y_df, n=lag)
+print('\n-------------\nLabels After Time Shift')
+print(y_df.columns)
+print(y_df.shape)
 
 
 class FeatureEliminator:
@@ -591,7 +591,7 @@ print('-' * 30)
 print(X_df.head())
 print(X_df.shape)
 
-df = pd.concat([X_df, y_df], axis=1)
+# df = pd.concat([X_df, y_df], axis=1)
 
 
 # Random Forest
@@ -649,7 +649,6 @@ class RandomForest:
         :return: None
         """
         self.__model.fit(X, y)
-        print(self.__model)
 
     def predict(self, X):
         """
@@ -671,10 +670,6 @@ class RandomForest:
         if self.__mode == 'regression':
 
             # RMSE Evaluation
-            print(y.shape)
-            print(type(y))
-            print(yhat.shape)
-            print(type(yhat))
             rmse = math.sqrt(mean_squared_error(y, yhat))
             if not plot:
                 return rmse
@@ -743,61 +738,51 @@ class RandomForest:
                              'time_train': time_train})
 
 """ Hyper Parameter Grid Search """
+t0 = time.time()
 
-# Test Multiple Time Splits (Lag)
-for lag_val in range(1, lag+1):
-    t0 = time.time()
-    shifted_df = series_to_supervised(df, lag_val, 1)
+# Test Multiple Train/Validation Splits
+for test_split in test_harness_param:
+    X_train, X_validate, y_train, y_validate = train_test_split(X_df, y_df, test_size=test_split)
+    X_train = X_train.values
+    y_train = y_train.values
+    X_validate, X_test, y_validate, y_test = train_test_split(X_validate, y_validate, test_size=.5)
+    X_validate = X_validate.values
+    y_validate = y_validate.values
 
-    # Separate labels from features
-    y_df_column_names = shifted_df.columns[len(df.columns):len(df.columns) + len(y_label)]
-    y_df = shifted_df[y_df_column_names]
-    X_df = shifted_df.drop(columns=y_df_column_names)
-
-    # Delete middle time steps
-    X_df = remove_n_time_steps(data=X_df, n=lag_val)
-
-    # Test Multiple Train/Validation Splits
-    for test_split in test_harness_param:
-        X_train, X_validate, y_train, y_validate = train_test_split(X_df, y_df, test_size=test_split)
-        X_train = X_train.values
-        y_train = y_train.values
-        X_validate, X_test, y_validate, y_test = train_test_split(X_validate, y_validate, test_size=.5)
-        X_validate = X_validate.values
-        y_validate = y_validate.values
-
-        # Train Multiple Regression Forest Models using various estimators
-        for features in max_features:
-            for depth in max_depth:
-                model = RandomForest(mode='regression',
-                                     n_estimators=n_estimators,
-                                     parallel_degree=parallel_degree,
-                                     max_depth=depth,
-                                     y_label=y_label,
-                                     lag=lag_val,
-                                     max_features=features)
-                model.fit_model(X=X_train,
-                                y=y_train)
-                yhat, rmse_list = [], []
-                for i in range(0, X_validate.shape[0]):
-                    X = np.array([X_validate[i, :]])
-                    y = model.predict(X)
-                    model.fit_model(X=X,
-                                    y=y)  # Online Learning, Training on validation predictions.
-                    yhat.extend(y)
+    # Train Multiple Regression Forest Models using various estimators
+    for features in max_features:
+        for depth in max_depth:
+            model = RandomForest(mode='regression',
+                                 n_estimators=n_estimators,
+                                 parallel_degree=parallel_degree,
+                                 max_depth=depth,
+                                 y_label=y_label,
+                                 lag=lag,
+                                 max_features=features)
+            model.fit_model(X=X_train,
+                            y=y_train)
+            yhat, rmse_list = [], []
+            for i in range(0, X_validate.shape[0]):
+                X = np.array([X_validate[i, :]])
+                y = model.predict(X)
+                model.fit_model(X=X,
+                                y=y)  # Online Learning, Training on validation predictions.
+                yhat.extend(y)
                 rmse = model.evaluate(y=y_validate,
                                       yhat=np.array(yhat),
                                       plot=False)
                 rmse_list.append(rmse)
 
-                t1 = time.time()
-                time_total = t1 - t0
-                RandomForest.write_results_to_disk(path="time_series_random_forest_regression_results.csv",
-                                                   iteration=iteration,
-                                                   lag=lag_val,
-                                                   test_split=test_split,
-                                                   max_depth=depth,
-                                                   max_features=features,
-                                                   score=sum(rmse_list) / len(rmse_list),
-                                                   time_train=time_total)
-                iteration += 1
+            t1 = time.time()
+            time_total = t1 - t0
+            RandomForest.write_results_to_disk(path="time_series_random_forest_regression_results.csv",
+                                               iteration=iteration,
+                                               lag=lag,
+                                               test_split=test_split,
+                                               max_depth=depth,
+                                               max_features=features,
+                                               score=sum(rmse_list) / len(rmse_list),
+                                               time_train=time_total)
+
+            print('----------------------------'+str(iteration)+'----------------------------')
+            iteration += 1
