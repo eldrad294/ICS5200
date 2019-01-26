@@ -49,7 +49,7 @@ import time
 # Experiment Config
 tpcds='TPCDS1' # Schema upon which to operate test
 bin_value = 2
-nrows=10000
+nrows=None
 iteration = 0
 lag = 13
 test_harness_param = (.2,.3,.4,.5)
@@ -59,6 +59,7 @@ lstm_layers = (1,2,3)
 states = (False, True)
 drop_out = (0,.2,.4)
 parallel_degree = -1
+n_estimators = 300
 y_label = ['CPU_TIME_DELTA', 'OPTIMIZER_COST','EXECUTIONS_DELTA','ELAPSED_TIME_DELTA']
 
 # Root path
