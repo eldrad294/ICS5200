@@ -33,7 +33,7 @@ import time
 # Experiment Config
 tpcds='TPCDS1' # Schema upon which to operate test
 bin_value = 2
-nrows=50000
+nrows=None
 iteration = 0
 lag = 13
 test_harness_param = (.2,.3,.4,.5)
@@ -41,11 +41,11 @@ max_features=('sqrt','log2', None)
 max_depth=(3, 6, None)
 n_estimators = 300
 parallel_degree = -1
-y_label = ['CPU_TIME_DELTA','OPTIMIZER_COST','EXECUTIONS_DELTA','ELAPSED_TIME_DELTA']
+y_label = ['CPU_TIME_DELTA','ELAPSED_TIME_DELTA']
 
 # Root path
-# root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
-root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
+root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
+# root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
 
 # Open Data
 rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
@@ -670,7 +670,7 @@ class RandomForest:
         if self.__mode == 'regression':
 
             # RMSE Evaluation
-            rmse = math.sqrt(mean_squared_error(y, yhat))
+            rmse = math.sqrt(mean_squared_error(y, yhat.ravel()))
             if not plot:
                 return rmse
             print('Test RFR: %.3f\n-----------------------------\n\n' % rmse)
@@ -761,15 +761,15 @@ for test_split in test_harness_param:
                                  max_features=features)
             model.fit_model(X=X_train,
                             y=y_train)
-            yhat, rmse_list = [], []
+            rmse_list = []
             for i in range(0, X_validate.shape[0]):
                 X = np.array([X_validate[i, :]])
                 y = model.predict(X)
                 model.fit_model(X=X,
-                                y=y)  # Online Learning, Training on validation predictions.
-                yhat.extend(y)
-                rmse = model.evaluate(y=y_validate,
-                                      yhat=np.array(yhat),
+                                y=y)
+
+                rmse = model.evaluate(y=y_validate[i, :],
+                                      yhat=y,
                                       plot=False)
                 rmse_list.append(rmse)
 
