@@ -17,7 +17,6 @@ print('pandas: %s' % pd.__version__)
 import statsmodels
 print('statsmodels: %s' % statsmodels.__version__)
 # scikit-learn
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, f1_score, accuracy_score
 from sklearn.decomposition import PCA
@@ -49,7 +48,7 @@ import time
 # Experiment Config
 tpcds='TPCDS1' # Schema upon which to operate test
 bin_value = 2
-nrows=10000
+nrows=None
 iteration = 0
 lag = 13
 test_harness_param = (.2,.3,.4,.5)
@@ -59,7 +58,8 @@ lstm_layers = (1,2,3)
 states = (False, True)
 drop_out = (0,.2,.4)
 parallel_degree = -1
-y_label = ['CPU_TIME_DELTA', 'OPTIMIZER_COST','EXECUTIONS_DELTA','ELAPSED_TIME_DELTA']
+n_estimators = 300
+y_label = ['CPU_TIME_DELTA', 'ELAPSED_TIME_DELTA']
 
 # Root path
 #root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
@@ -350,84 +350,84 @@ print("Feature matrix shape: " + str(X_df.shape))
 # print(df.head())
 
 
-def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
-    """
-    Frame a time series as a supervised learning dataset.
-    Arguments:
-        data: Sequence of observations as a list or NumPy array.
-        n_in: Number of lag observations as input (X).
-        n_out: Number of observations as output (y).
-        dropnan: Boolean whether or not to drop rows with NaN values.
-    Returns:
-        Pandas DataFrame of series framed for supervised learning.
-    """
-    n_vars = 1 if type(data) is list else data.shape[1]
-    df = data
-    cols, names = list(), list()
-    # input sequence (t-n, ... t-1)
-    if n_in != 0:
-        for i in range(n_in, 0, -1):
-            cols.append(df.shift(i))
-            names += [('var%d(t-%d)' % (j + 1, i)) for j in range(n_vars)]
-    # forecast sequence (t, t+1, ... t+n)
-    n_out += 1
-    for i in range(0, n_out):
-        cols.append(df.shift(-i))
-        if i == 0:
-            names += [('var%d(t)' % (j + 1)) for j in range(n_vars)]
-        else:
-            names += [('var%d(t+%d)' % (j + 1, i)) for j in range(n_vars)]
-    # put it all together
-    agg = pd.concat(cols, axis=1)
-    agg.columns = names
-    # drop rows with NaN values
-    if dropnan:
-        agg.dropna(inplace=True)
-    return agg
-
-
-def remove_n_time_steps(data, n=1):
-    if n == 0:
-        return data
-    df = data
-    headers = df.columns
-    dropped_headers = []
-    #     for header in headers:
-    #         if "(t)" in header:
-    #             dropped_headers.append(header)
-
-    for i in range(1, n + 1):
-        for header in headers:
-            if "(t+" + str(i) + ")" in header:
-                dropped_headers.append(str(header))
-
-    return df.drop(dropped_headers, axis=1)
-
-
-# Frame as supervised learning set
-shifted_df = series_to_supervised(df, lag, lag)
-
-# Separate labels from features
-y_row = []
-for i in range(lag + 1, (lag * 2) + 2):
-    y_df_column_names = shifted_df.columns[len(df.columns) * i:len(df.columns) * i + len(y_label)]
-    y_row.append(y_df_column_names)
-    print(y_df_column_names)
-    print(type(y_df_column_names))
-y_df_column_names = []
-for row in y_row:
-    for val in row:
-        y_df_column_names.append(val)
-
-# y_df_column_names = shifted_df.columns[len(df.columns)*lag:len(df.columns)*lag + len(y_label)]
-y_df = shifted_df[y_df_column_names]
-X_df = shifted_df.drop(columns=y_df_column_names)
-print('\n-------------\nFeatures')
-print(X_df.columns)
-print(X_df.shape)
-print('\n-------------\nLabels')
-print(y_df.columns)
-print(y_df.shape)
+# def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
+#     """
+#     Frame a time series as a supervised learning dataset.
+#     Arguments:
+#         data: Sequence of observations as a list or NumPy array.
+#         n_in: Number of lag observations as input (X).
+#         n_out: Number of observations as output (y).
+#         dropnan: Boolean whether or not to drop rows with NaN values.
+#     Returns:
+#         Pandas DataFrame of series framed for supervised learning.
+#     """
+#     n_vars = 1 if type(data) is list else data.shape[1]
+#     df = data
+#     cols, names = list(), list()
+#     # input sequence (t-n, ... t-1)
+#     if n_in != 0:
+#         for i in range(n_in, 0, -1):
+#             cols.append(df.shift(i))
+#             names += [('var%d(t-%d)' % (j + 1, i)) for j in range(n_vars)]
+#     # forecast sequence (t, t+1, ... t+n)
+#     n_out += 1
+#     for i in range(0, n_out):
+#         cols.append(df.shift(-i))
+#         if i == 0:
+#             names += [('var%d(t)' % (j + 1)) for j in range(n_vars)]
+#         else:
+#             names += [('var%d(t+%d)' % (j + 1, i)) for j in range(n_vars)]
+#     # put it all together
+#     agg = pd.concat(cols, axis=1)
+#     agg.columns = names
+#     # drop rows with NaN values
+#     if dropnan:
+#         agg.dropna(inplace=True)
+#     return agg
+#
+#
+# def remove_n_time_steps(data, n=1):
+#     if n == 0:
+#         return data
+#     df = data
+#     headers = df.columns
+#     dropped_headers = []
+#     #     for header in headers:
+#     #         if "(t)" in header:
+#     #             dropped_headers.append(header)
+#
+#     for i in range(1, n + 1):
+#         for header in headers:
+#             if "(t+" + str(i) + ")" in header:
+#                 dropped_headers.append(str(header))
+#
+#     return df.drop(dropped_headers, axis=1)
+#
+#
+# # Frame as supervised learning set
+# shifted_df = series_to_supervised(df, lag, lag)
+#
+# # Separate labels from features
+# y_row = []
+# for i in range(lag + 1, (lag * 2) + 2):
+#     y_df_column_names = shifted_df.columns[len(df.columns) * i:len(df.columns) * i + len(y_label)]
+#     y_row.append(y_df_column_names)
+#     print(y_df_column_names)
+#     print(type(y_df_column_names))
+# y_df_column_names = []
+# for row in y_row:
+#     for val in row:
+#         y_df_column_names.append(val)
+#
+# # y_df_column_names = shifted_df.columns[len(df.columns)*lag:len(df.columns)*lag + len(y_label)]
+# y_df = shifted_df[y_df_column_names]
+# X_df = shifted_df.drop(columns=y_df_column_names)
+# print('\n-------------\nFeatures')
+# print(X_df.columns)
+# print(X_df.shape)
+# print('\n-------------\nLabels')
+# print(y_df.columns)
+# print(y_df.shape)
 #
 # # Delete middle timesteps
 # X_df = remove_n_time_steps(data=X_df, n=lag)
@@ -516,17 +516,17 @@ class FeatureEliminator:
 
         return self.__X_df[recommended_columns]
 
-fe = FeatureEliminator(X_df=X_df,
-                       y_df=y_df)
-column_mask, column_rankings = fe.rfe_selector(test_split=.7,
-                                               optimum_feature_count=X_df.shape[1] / 4,
-                                               parallel_degree=parallel_degree,
-                                               max_depth=1,
-                                               max_features='sqrt',
-                                               n_estimators=n_estimators)
-print(X_df.columns)
-X_df = fe.get_selected_features(column_mask=column_mask)
-print(X_df.columns)
+# fe = FeatureEliminator(X_df=X_df,
+#                        y_df=y_df)
+# column_mask, column_rankings = fe.rfe_selector(test_split=.7,
+#                                                optimum_feature_count=X_df.shape[1] / 4,
+#                                                parallel_degree=parallel_degree,
+#                                                max_depth=1,
+#                                                max_features='sqrt',
+#                                                n_estimators=n_estimators)
+# print(X_df.columns)
+# X_df = fe.get_selected_features(column_mask=column_mask)
+# print(X_df.columns)
 
 
 class PrincipalComponentAnalysisClass:
@@ -609,6 +609,47 @@ print('-' * 30)
 print(X_df.head())
 print(X_df.shape)
 
+class BinClass:
+    """
+    Takes data column, and scales them into discrete buckets. Parameter 'n' denotes number of buckets. This class needs
+    to be defined before the LSTM class, since it is referenced during the prediction stage. Since Keras models output a
+    continuous output (even when trained on discrete data), the 'BinClass' is required by the LSTM class.
+    """
+
+    @staticmethod
+    def __validate(df, n):
+        """
+        Validates class parameters
+        """
+        if df is None:
+            raise ValueError('Input data parameter is empty!')
+        elif n < 2:
+            raise ValueError('Number of buckets must be greater than 1')
+
+    @staticmethod
+    def __bucket_val(val, threshold, n):
+        """
+        Receives threshold value and buckets the val according to the passed threshold
+        """
+        for i in range(1, n+1):
+            if val <= threshold * i:
+                return i
+
+    @staticmethod
+    def discretize_value(df, n):
+        """
+        param: df - Input data
+        param: n - Number of buckets
+        """
+        BinClass.__validate(df, n)
+        for column in df.columns:
+            max_val = df[column].max(skipna=True)
+            threshold = max_val / n
+            df[column] = df[column].apply(lambda x: BinClass.__bucket_val(x, threshold, n))
+            if df[column].isnull().values.any():
+                df[column] = df[column].fillna(1)
+        return df
+
 
 # LSTM Class
 class LSTM:
@@ -640,10 +681,40 @@ class LSTM:
             raise ValueError('Dropout parameter exceeded! Must be a value between 0 and 1.')
 
         for i in range(0, lstm_layers - 1):  # If lstm_layers == 1, this for loop logic is skipped.
-            self.__model.add(ke.layers.LSTM(X_train.shape[2], input_shape=(X_train.shape[1], X_train.shape[2]),
-                                            return_sequences=True, stateful=stateful))
+            if stateful:
+                if i == 0:
+                    self.__model.add(ke.layers.LSTM(X.shape[2],
+                                                    batch_input_shape=(X.shape[1],
+                                                                       1,
+                                                                       X.shape[2]),
+                                                    return_sequences=True,
+                                                    stateful=stateful))
+                else:
+                    self.__model.add(ke.layers.LSTM(X.shape[2],
+                                                    input_shape=(X.shape[1],
+                                                                 X.shape[2]),
+                                                    return_sequences=True,
+                                                    stateful=stateful))
+            else:
+                self.__model.add(ke.layers.LSTM(X.shape[2],
+                                                input_shape=(X.shape[1],
+                                                             X.shape[2]),
+                                                return_sequences=True,
+                                                stateful=stateful))
             self.__model.add(ke.layers.Dropout(dropout))
-        self.__model.add(ke.layers.LSTM(X.shape[2], input_shape=(X.shape[1], X.shape[2]), stateful=stateful))
+        if lstm_layers > 1:
+            self.__model.add(ke.layers.LSTM(X.shape[2],
+                                            input_shape=(X.shape[1],
+                                                         X.shape[2]),
+                                            stateful=stateful,
+                                            return_sequences=False))
+        else:
+            self.__model.add(ke.layers.LSTM(X.shape[2],
+                                            batch_input_shape=(X.shape[1],
+                                                               1,
+                                                               X.shape[2]),
+                                            stateful=stateful,
+                                            return_sequences=False))
         self.__model.add(ke.layers.Dropout(dropout))
 
         self.__model.add(ke.layers.Dense(y.shape[1]))
@@ -653,8 +724,7 @@ class LSTM:
         print(self.__model.summary())
 
     def fit_model(self, X_train=None, X_test=None, y_train=None, y_test=None, epochs=50, batch_size=50, verbose=2,
-                  shuffle=False,
-                  plot=False):
+                  shuffle=False, plot=False):
         """
         Fit data to model & validate. Trains a number of epochs.
 
@@ -721,17 +791,17 @@ class LSTM:
         """
         # RMSE Evaluation
         if self.mode == 'regression':
-            rmse = math.sqrt(mean_squared_error(y, yhat))
+            rmse = math.sqrt(mean_squared_error(y, yhat.ravel()))
             if not plot:
                 return rmse
             print('Reported: ' + str(rmse) + ' rmse')
 
         elif self.mode == 'classification':
             column_names = []
-            for i in range(len(self.__y_labels)):
+            for i in range(len(self.__y_labels) * self.__lag):
                 column_names.append("column" + str(i))
 
-            # Denote category
+            # Denote category type
             if category == 1:
                 y = pd.DataFrame(y, columns=column_names)
                 y = BinClass.discretize_value(y, bin_value)
@@ -761,7 +831,7 @@ class LSTM:
                 plt.show()
 
     @staticmethod
-    def write_results_to_disk(path, iteration, test_split, batch, depth, dropout, epoch, layer, stateful, score,
+    def write_results_to_disk(path, iteration, lag, test_split, batch, dropout, epoch, layer, stateful, score,
                               time_train):
         """
         Static method which is used for test harness utilities. This method attempts a grid search across many
@@ -770,16 +840,15 @@ class LSTM:
         Attempted configurations:
         * Varied data test split
         * Varied batch sizes
-        * Varied LSTM neural depth
         * Varied epoch counts
 
         Each configuration is denoted with a score, and used to identify the most optimal configuration.
 
         :param: path       - (String) String denoting result csv output.
         :param: iteration  - (Integer) Integer denoting test iteration (Unique per test configuration).
+        :param: lag        - (Integer) Denotes lag time shift
         :param: test_split - (Float) Float denoting data sample sizes.
         :param: batch      - (Integer) Integer denoting LSTM batch size.
-        :param: depth      - (Integer) Integer denoting LSTM neuron depth size.
         :param: epoch      - (Integer) Integer denoting number of LSTM training iterations.
         :param: layer      - (Integer) Integer denoting number of LSTM layers
         :param: stateful   - (Bool) Boolean flag which denotes whether LSTM model is trained in stateful mode or not.
@@ -791,21 +860,21 @@ class LSTM:
         """
         file_exists = os.path.isfile(path)
         with open(path, 'a+') as csvfile:
-            headers = ['iteration', 'test_split', 'batch', 'depth', 'epoch', 'layer', 'stateful', 'dropout', 'score',
-                       'time_train']
+            headers = ['iteration', 'test_split', 'batch', 'epoch', 'layer', 'stateful', 'dropout', 'score',
+                       'time_train', 'lag']
             writer = csv.DictWriter(csvfile, delimiter=',', lineterminator='\n', fieldnames=headers)
             if not file_exists:
                 writer.writeheader()  # file doesn't exist yet, write a header
             writer.writerow({'iteration': iteration,
                              'test_split': test_split,
                              'batch': batch,
-                             'depth': depth,
                              'epoch': epoch,
                              'layer': layer,
                              'stateful': stateful,
                              'dropout': dropout,
                              'score': score,
-                             'time_train': time_train})
+                             'time_train': time_train,
+                             'lag': lag})
 
     @staticmethod
     def format_df(df, mode):
@@ -838,6 +907,8 @@ for test_split in test_harness_param:
     X_validate, X_test, y_validate, y_test = train_test_split(X_validate, y_validate, test_size=.5)
     X_validate = X_validate.values
     y_validate = y_validate.values
+    X_test = X_test.values
+    y_test = y_test.values
 
     # Ensure data is formatted evenly before timestep expansion
     X_train = LSTM.format_df(df=X_train, mode='train')
@@ -848,12 +919,18 @@ for test_split in test_harness_param:
     y_test = LSTM.format_df(df=y_test, mode='test')
 
     # Reshape for fitting in LSTM
+    print(y_train.shape)
+    print(y_validate.shape)
+    print(y_test.shape)
     X_train = X_train.reshape((int(X_train.shape[0] / lag), lag, X_train.shape[1]))
-    y_train = y_train[int(y_train.shape[0] / lag):]
+    y_train = y_train[0:int(y_train.shape[0] / lag),:]
     X_validate = X_validate.reshape((int(X_validate.shape[0] / lag), lag, X_validate.shape[1]))
-    y_validate = y_validate[int(y_validate.shape[0] / lag):]
+    y_validate = y_validate[0:int(y_validate.shape[0] / lag),:]
     X_test = X_test.reshape((int(X_test.shape[0] / lag), lag, X_test.shape[1]))
-    y_test = y_test[int(y_test.shape[0] / lag):]
+    y_test = y_test[0:int(y_test.shape[0] / lag),:]
+    print(y_train.shape)
+    print(y_validate.shape)
+    print(y_test.shape)
 
     # Train Multiple Regression Forest Models using various estimators
     for epochs in max_epochs:
@@ -861,6 +938,8 @@ for test_split in test_harness_param:
             for layer in lstm_layers:
                 for state in states:
                     for dropout in drop_out:
+                        if state:
+                            batch=1
                         model = LSTM(X=X_train,
                                      y=y_train,
                                      lag=lag,
@@ -872,16 +951,17 @@ for test_split in test_harness_param:
                                      dropout=dropout,
                                      stateful=state,
                                      y_labels=y_label)
+
                         model.fit_model(X_train=X_train,
                                         X_test=X_validate,
                                         y_train=y_train,
                                         y_test=y_validate,
                                         epochs=epochs,
-                                        batch_size=batch_size,
+                                        batch_size=batch,
                                         verbose=2,
                                         shuffle=False,
                                         plot=False)
-                        yhat, rmse_list = [], []
+                        rmse_list = []
                         for i in range(0, X_validate.shape[0]):
                             X = np.array([X_validate[i, :]])
                             y = model.predict(X)
@@ -892,19 +972,18 @@ for test_split in test_harness_param:
                                             verbose=1,
                                             shuffle=False,
                                             plot=False)  # Online Learning, Training on validation predictions.
-                            yhat.extend(y)
-                            rmse = model.evaluate(y=y_validate,
-                                                  yhat=np.array(yhat),
+                            rmse = model.evaluate(y=y_validate[i,:],
+                                                  yhat=y,
                                                   plot=False)
                             rmse_list.append(rmse)
 
                         t1 = time.time()
                         time_total = t1 - t0
-                        LSTM.write_results_to_disk(path="time_series_lstm_lag_shifting_results.csv",
+                        LSTM.write_results_to_disk(path="time_series_lstm_nonlag_shifting_results.csv",
                                                    iteration=iteration,
                                                    lag=lag,
                                                    test_split=test_split,
-                                                   epochs=epochs,
+                                                   epoch=epochs,
                                                    layer=layer,
                                                    stateful=state,
                                                    dropout=dropout,
