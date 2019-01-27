@@ -48,12 +48,12 @@ import time
 # Experiment Config
 tpcds='TPCDS1' # Schema upon which to operate test
 bin_value = 2
-nrows=None
+nrows=500000
 iteration = 0
 lag = 13
 test_harness_param = (.2,.3,.4,.5)
-max_epochs = (50, 100, 150)
-max_batch = (25, 50, 100, 150)
+max_epochs = (25, 50, 100)
+max_batch = (1, 25, 50, 100)
 lstm_layers = (1,2,3)
 states = (False, True)
 drop_out = (0,.2,.4)
@@ -658,7 +658,7 @@ class LSTM:
     """
 
     def __init__(self, X, y, lag, loss_func, activation, mode='regression', optimizer='sgd', lstm_layers=1, dropout=.0,
-                 stateful=False, y_labels=None):
+                 stateful=False, y_labels=None, num_classes=2):
         """
         Initiating the class creates a net with the established parameters
         :param X             - (Numpy 2D Array) Training data used to train the model (Features).
@@ -671,7 +671,8 @@ class LSTM:
         :param lstm_layers   - (Integer) Denotes the number of LSTM layers to be included in the model build.
         :param dropout       - (Float)   Denotes amount of dropout for model. This parameter must be a value between 0 and 1.
         :param stateful      - (Boolean) Denotes whether state is used as initial state for next training batch.
-        :param: y_labels - (List) List of target label names
+        :param: y_labels     - (List) List of target label names
+        :param: num_classes  - (Integer) Denotes number of classes to predict. This value equals the binning value.
         """
         self.mode = mode
         self.__lag = lag
@@ -684,8 +685,8 @@ class LSTM:
             if stateful:
                 if i == 0:
                     self.__model.add(ke.layers.LSTM(X.shape[2],
-                                                    batch_input_shape=(X.shape[1],
-                                                                       1,
+                                                    batch_input_shape=(X.shape[0],
+                                                                       X.shape[1],
                                                                        X.shape[2]),
                                                     return_sequences=True,
                                                     stateful=stateful))
@@ -709,23 +710,29 @@ class LSTM:
                                             stateful=stateful,
                                             return_sequences=False))
         else:
-            self.__model.add(ke.layers.LSTM(X.shape[2],
-                                            batch_input_shape=(X.shape[1],
-                                                               1,
-                                                               X.shape[2]),
-                                            stateful=stateful,
-                                            return_sequences=False))
+            if stateful:
+                self.__model.add(ke.layers.LSTM(X.shape[2],
+                                                batch_input_shape=(X.shape[0],
+                                                                   X.shape[1],
+                                                                   X.shape[2]),
+                                                stateful=stateful,
+                                                return_sequences=False))
+            else:
+                self.__model.add(ke.layers.LSTM(X.shape[2],
+                                                input_shape=(X.shape[1],
+                                                             X.shape[2]),
+                                                stateful=stateful,
+                                                return_sequences=False))
         self.__model.add(ke.layers.Dropout(dropout))
 
-        self.__model.add(ke.layers.Dense(y.shape[1]))
+        self.__model.add(ke.layers.Dense(num_classes))
         self.__model.add(ke.layers.Activation(activation.lower()))
         self.__model.compile(loss=loss_func, optimizer=optimizer, metrics=['accuracy'])
         self.__y_labels = y_labels
         print(self.__model.summary())
 
     def fit_model(self, X_train=None, X_test=None, y_train=None, y_test=None, epochs=50, batch_size=50, verbose=2,
-                  shuffle=False,
-                  plot=False):
+                  shuffle=False, plot=False):
         """
         Fit data to model & validate. Trains a number of epochs.
 
@@ -770,13 +777,14 @@ class LSTM:
             plt.legend(['train', 'validation'], loc='upper left')
             plt.show()
 
-    def predict(self, X):
+    def predict(self, X, batch_size):
         """
         Predicts label/s from input feature 'X'
         :param: X - Numpy matrix consisting of a single feature vector
+        :param: batch_size - (Integer) Denotes prediction batch size
         :return: Numpy matrix of predicted label output
         """
-        yhat = self.__model.predict(X)
+        yhat = self.__model.predict(X, batch_size=batch_size)
         return yhat
 
     def evaluate(self, y, yhat, plot=False, category=1):
@@ -878,27 +886,19 @@ class LSTM:
                              'lag': lag})
 
     @staticmethod
-    def format_df(df, mode):
+    def lag_multiple(X, lag):
         """
-        This method receives an input dataframe and a training mode. If the dataframe consists of an odd number of rows, a
-        single record is removed (to achieve an even number of rows). If the dataframe is a training subset, the row is pruned
-        to mantain temporal nature. Similarly, if the data subset is a validation/testing subset, the row is pruned from the end.
-        :param df: (Pandas) A dataframe consisting of input data.
-        :param mode: (String) Denotes mode, so as to determine whether record is pruned from begeinning of dataframe or at the end.
-        :return: (Pandas) Dataframe which was input, with a single potentially pruned row.
+        Divides the total number of rows by the lag value, until a perfect multiple amount is retrieved.
+        :param X: (Numpy) 2D array consisting of input.
+        :param lag: (Integer) Denotes time shift value.
+        :return: (Numpy) 2D array consisting of a perfect lag multiple rows.
         """
-        n_rows = df.shape[0]
-        if mode == 'train':
-            if n_rows % 2 != 0:
-                df = df[1:]
-        else:
-            if n_rows % 2 != 0:
-                df = df[:-1]
-        return df
+        n_rows = X.shape[0]
+        multiple = int(n_rows/lag)
+        max_new_rows = multiple * lag
+        return X[0:max_new_rows,:]
 
 """ Hyper Parameter Grid Search """
-
-t0 = time.time()
 
 # Test Multiple Train/Validation Splits
 for test_split in test_harness_param:
@@ -929,17 +929,19 @@ for test_split in test_harness_param:
                     for dropout in drop_out:
                         if state:
                             batch=1
+                        t0 = time.time()
                         model = LSTM(X=X_train,
                                      y=y_train,
                                      lag=lag,
-                                     loss_func='mean_squared_error',
+                                     loss_func='categorical_crossentropy',
                                      activation='softmax',
                                      optimizer='adam',
                                      mode='regression',
                                      lstm_layers=layer,
                                      dropout=dropout,
                                      stateful=state,
-                                     y_labels=y_label)
+                                     y_labels=y_label,
+                                     num_classes=bin_value)
                         model.fit_model(X_train=X_train,
                                         X_test=X_validate,
                                         y_train=y_train,
@@ -952,7 +954,7 @@ for test_split in test_harness_param:
                         rmse_list = []
                         for i in range(0, X_validate.shape[0]):
                             X = np.array([X_validate[i, :]])
-                            y = model.predict(X)
+                            y = model.predict(X, batch_size=batch)
                             model.fit_model(X_train=X,
                                             y_train=y,
                                             epochs=5,

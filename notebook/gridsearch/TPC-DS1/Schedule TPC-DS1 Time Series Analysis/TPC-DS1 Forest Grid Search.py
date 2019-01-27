@@ -738,7 +738,6 @@ class RandomForest:
                              'time_train': time_train})
 
 """ Hyper Parameter Grid Search """
-t0 = time.time()
 
 # Test Multiple Train/Validation Splits
 for test_split in test_harness_param:
@@ -752,6 +751,7 @@ for test_split in test_harness_param:
     # Train Multiple Regression Forest Models using various estimators
     for features in max_features:
         for depth in max_depth:
+            t0 = time.time()
             model = RandomForest(mode='regression',
                                  n_estimators=n_estimators,
                                  parallel_degree=parallel_degree,

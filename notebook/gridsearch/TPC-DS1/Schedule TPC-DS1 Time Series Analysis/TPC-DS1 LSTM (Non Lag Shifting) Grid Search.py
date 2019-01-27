@@ -48,12 +48,12 @@ import time
 # Experiment Config
 tpcds='TPCDS1' # Schema upon which to operate test
 bin_value = 2
-nrows=None
+nrows=500000
 iteration = 0
 lag = 13
 test_harness_param = (.2,.3,.4,.5)
-max_epochs = (50, 100, 150)
-max_batch = (25, 50, 100, 150)
+max_epochs = (25, 50, 100)
+max_batch = (1, 25, 50, 100)
 lstm_layers = (1,2,3)
 states = (False, True)
 drop_out = (0,.2,.4)
@@ -350,91 +350,91 @@ print("Feature matrix shape: " + str(X_df.shape))
 # print(df.head())
 
 
-# def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
-#     """
-#     Frame a time series as a supervised learning dataset.
-#     Arguments:
-#         data: Sequence of observations as a list or NumPy array.
-#         n_in: Number of lag observations as input (X).
-#         n_out: Number of observations as output (y).
-#         dropnan: Boolean whether or not to drop rows with NaN values.
-#     Returns:
-#         Pandas DataFrame of series framed for supervised learning.
-#     """
-#     n_vars = 1 if type(data) is list else data.shape[1]
-#     df = data
-#     cols, names = list(), list()
-#     # input sequence (t-n, ... t-1)
-#     if n_in != 0:
-#         for i in range(n_in, 0, -1):
-#             cols.append(df.shift(i))
-#             names += [('var%d(t-%d)' % (j + 1, i)) for j in range(n_vars)]
-#     # forecast sequence (t, t+1, ... t+n)
-#     n_out += 1
-#     for i in range(0, n_out):
-#         cols.append(df.shift(-i))
-#         if i == 0:
-#             names += [('var%d(t)' % (j + 1)) for j in range(n_vars)]
-#         else:
-#             names += [('var%d(t+%d)' % (j + 1, i)) for j in range(n_vars)]
-#     # put it all together
-#     agg = pd.concat(cols, axis=1)
-#     agg.columns = names
-#     # drop rows with NaN values
-#     if dropnan:
-#         agg.dropna(inplace=True)
-#     return agg
-#
-#
-# def remove_n_time_steps(data, n=1):
-#     if n == 0:
-#         return data
-#     df = data
-#     headers = df.columns
-#     dropped_headers = []
-#     #     for header in headers:
-#     #         if "(t)" in header:
-#     #             dropped_headers.append(header)
-#
-#     for i in range(1, n + 1):
-#         for header in headers:
-#             if "(t+" + str(i) + ")" in header:
-#                 dropped_headers.append(str(header))
-#
-#     return df.drop(dropped_headers, axis=1)
-#
-#
-# # Frame as supervised learning set
-# shifted_df = series_to_supervised(df, lag, lag)
-#
-# # Separate labels from features
-# y_row = []
-# for i in range(lag + 1, (lag * 2) + 2):
-#     y_df_column_names = shifted_df.columns[len(df.columns) * i:len(df.columns) * i + len(y_label)]
-#     y_row.append(y_df_column_names)
-#     print(y_df_column_names)
-#     print(type(y_df_column_names))
-# y_df_column_names = []
-# for row in y_row:
-#     for val in row:
-#         y_df_column_names.append(val)
-#
-# # y_df_column_names = shifted_df.columns[len(df.columns)*lag:len(df.columns)*lag + len(y_label)]
-# y_df = shifted_df[y_df_column_names]
-# X_df = shifted_df.drop(columns=y_df_column_names)
-# print('\n-------------\nFeatures')
-# print(X_df.columns)
-# print(X_df.shape)
-# print('\n-------------\nLabels')
-# print(y_df.columns)
-# print(y_df.shape)
-#
+def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
+    """
+    Frame a time series as a supervised learning dataset.
+    Arguments:
+        data: Sequence of observations as a list or NumPy array.
+        n_in: Number of lag observations as input (X).
+        n_out: Number of observations as output (y).
+        dropnan: Boolean whether or not to drop rows with NaN values.
+    Returns:
+        Pandas DataFrame of series framed for supervised learning.
+    """
+    n_vars = 1 if type(data) is list else data.shape[1]
+    df = data
+    cols, names = list(), list()
+    # input sequence (t-n, ... t-1)
+    if n_in != 0:
+        for i in range(n_in, 0, -1):
+            cols.append(df.shift(i))
+            names += [('var%d(t-%d)' % (j + 1, i)) for j in range(n_vars)]
+    # forecast sequence (t, t+1, ... t+n)
+    n_out += 1
+    for i in range(0, n_out):
+        cols.append(df.shift(-i))
+        if i == 0:
+            names += [('var%d(t)' % (j + 1)) for j in range(n_vars)]
+        else:
+            names += [('var%d(t+%d)' % (j + 1, i)) for j in range(n_vars)]
+    # put it all together
+    agg = pd.concat(cols, axis=1)
+    agg.columns = names
+    # drop rows with NaN values
+    if dropnan:
+        agg.dropna(inplace=True)
+    return agg
+
+
+def remove_n_time_steps(data, n=1):
+    if n == 0:
+        return data
+    df = data
+    headers = df.columns
+    dropped_headers = []
+    #     for header in headers:
+    #         if "(t)" in header:
+    #             dropped_headers.append(header)
+
+    for i in range(1, n + 1):
+        for header in headers:
+            if "(t+" + str(i) + ")" in header:
+                dropped_headers.append(str(header))
+
+    return df.drop(dropped_headers, axis=1)
+
+
+# Frame as supervised learning set
+shifted_df = series_to_supervised(df, 1, lag)
+
+# Separate labels from features
+y_row = []
+for i in range(lag + 1, (lag * 2) + 2):
+    y_df_column_names = shifted_df.columns[len(df.columns) * i:len(df.columns) * i + len(y_label)]
+    y_row.append(y_df_column_names)
+    print(y_df_column_names)
+    print(type(y_df_column_names))
+y_df_column_names = []
+for row in y_row:
+    for val in row:
+        y_df_column_names.append(val)
+
+# y_df_column_names = shifted_df.columns[len(df.columns)*lag:len(df.columns)*lag + len(y_label)]
+y_df = shifted_df[y_df_column_names]
+X_df = shifted_df.drop(columns=y_df_column_names)
+print('\n-------------\nFeatures')
+print(X_df.columns)
+print(X_df.shape)
+print('\n-------------\nLabels')
+print(y_df.columns)
+print(y_df.shape)
+
 # # Delete middle timesteps
 # X_df = remove_n_time_steps(data=X_df, n=lag)
 # print('\n-------------\nFeatures After Time Shift')
 # print(X_df.columns)
 # print(X_df.shape)
-# # y_df = remove_n_time_steps(data=y_df, n=lag)
+# y_df = remove_n_time_steps(data=y_df, n=lag)
 # print('\n-------------\nLabels After Time Shift')
 # print(y_df.columns)
 # print(y_df.shape)
@@ -658,7 +658,7 @@ class LSTM:
     """
 
     def __init__(self, X, y, lag, loss_func, activation, mode='regression', optimizer='sgd', lstm_layers=1, dropout=.0,
-                 stateful=False, y_labels=None):
+                 stateful=False, y_labels=None, num_classes=2):
         """
         Initiating the class creates a net with the established parameters
         :param X             - (Numpy 2D Array) Training data used to train the model (Features).
@@ -671,7 +671,8 @@ class LSTM:
         :param lstm_layers   - (Integer) Denotes the number of LSTM layers to be included in the model build.
         :param dropout       - (Float)   Denotes amount of dropout for model. This parameter must be a value between 0 and 1.
         :param stateful      - (Boolean) Denotes whether state is used as initial state for next training batch.
-        :param: y_labels - (List) List of target label names
+        :param: y_labels     - (List) List of target label names
+        :param: num_classes  - (Integer) Denotes number of classes to predict. This value equals the binning value.
         """
         self.mode = mode
         self.__lag = lag
@@ -684,8 +685,8 @@ class LSTM:
             if stateful:
                 if i == 0:
                     self.__model.add(ke.layers.LSTM(X.shape[2],
-                                                    batch_input_shape=(X.shape[1],
-                                                                       1,
+                                                    batch_input_shape=(X.shape[0],
+                                                                       X.shape[1],
                                                                        X.shape[2]),
                                                     return_sequences=True,
                                                     stateful=stateful))
@@ -709,15 +710,22 @@ class LSTM:
                                             stateful=stateful,
                                             return_sequences=False))
         else:
-            self.__model.add(ke.layers.LSTM(X.shape[2],
-                                            batch_input_shape=(X.shape[1],
-                                                               1,
-                                                               X.shape[2]),
-                                            stateful=stateful,
-                                            return_sequences=False))
+            if stateful:
+                self.__model.add(ke.layers.LSTM(X.shape[2],
+                                                batch_input_shape=(X.shape[0],
+                                                                   X.shape[1],
+                                                                   X.shape[2]),
+                                                stateful=stateful,
+                                                return_sequences=False))
+            else:
+                self.__model.add(ke.layers.LSTM(X.shape[2],
+                                                input_shape=(X.shape[1],
+                                                             X.shape[2]),
+                                                stateful=stateful,
+                                                return_sequences=False))
         self.__model.add(ke.layers.Dropout(dropout))
 
-        self.__model.add(ke.layers.Dense(y.shape[1]))
+        self.__model.add(ke.layers.Dense(num_classes))
         self.__model.add(ke.layers.Activation(activation.lower()))
         self.__model.compile(loss=loss_func, optimizer=optimizer, metrics=['accuracy'])
         self.__y_labels = y_labels
@@ -769,13 +777,14 @@ class LSTM:
             plt.legend(['train', 'validation'], loc='upper left')
             plt.show()
 
-    def predict(self, X):
+    def predict(self, X, batch_size):
         """
         Predicts label/s from input feature 'X'
         :param: X - Numpy matrix consisting of a single feature vector
+        :param: batch_size - (Integer) Denotes prediction batch size
         :return: Numpy matrix of predicted label output
         """
-        yhat = self.__model.predict(X)
+        yhat = self.__model.predict(X, batch_size=batch_size)
         return yhat
 
     def evaluate(self, y, yhat, plot=False, category=1):
@@ -877,27 +886,19 @@ class LSTM:
                              'lag': lag})
 
     @staticmethod
-    def format_df(df, mode):
+    def lag_multiple(X, lag):
         """
-        This method receives an input dataframe and a training mode. If the dataframe consists of an odd number of rows, a
-        single record is removed (to achieve an even number of rows). If the dataframe is a training subset, the row is pruned
-        to mantain temporal nature. Similarly, if the data subset is a validation/testing subset, the row is pruned from the end.
-        :param df: (Pandas) A dataframe consisting of input data.
-        :param mode: (String) Denotes mode, so as to determine whether record is pruned from begeinning of dataframe or at the end.
-        :return: (Pandas) Dataframe which was input, with a single potentially pruned row.
+        Divides the total number of rows by the lag value, until a perfect multiple amount is retrieved.
+        :param X: (Numpy) 2D array consisting of input.
+        :param lag: (Integer) Denotes time shift value.
+        :return: (Numpy) 2D array consisting of a perfect lag multiple rows.
         """
-        n_rows = df.shape[0]
-        if mode == 'train':
-            if n_rows % 2 != 0:
-                df = df[1:]
-        else:
-            if n_rows % 2 != 0:
-                df = df[:-1]
-        return df
+        n_rows = X.shape[0]
+        multiple = int(n_rows/lag)
+        max_new_rows = multiple * lag
+        return X[0:max_new_rows,:]
 
 """ Hyper Parameter Grid Search """
-
-t0 = time.time()
 
 # Test Multiple Train/Validation Splits
 for test_split in test_harness_param:
@@ -910,27 +911,21 @@ for test_split in test_harness_param:
     X_test = X_test.values
     y_test = y_test.values
 
-    # Ensure data is formatted evenly before timestep expansion
-    X_train = LSTM.format_df(df=X_train, mode='train')
-    y_train = LSTM.format_df(df=y_train, mode='train')
-    X_validate = LSTM.format_df(df=X_validate, mode='validate')
-    y_validate = LSTM.format_df(df=y_validate, mode='validate')
-    X_test = LSTM.format_df(df=X_test, mode='test')
-    y_test = LSTM.format_df(df=y_test, mode='test')
+    # Lag Multiples
+    X_train = LSTM.lag_multiple(X=X_train, lag=lag)
+    y_train = LSTM.lag_multiple(X=y_train, lag=lag)
+    X_validate = LSTM.lag_multiple(X=X_validate, lag=lag)
+    y_validate = LSTM.lag_multiple(X=y_validate, lag=lag)
+    X_test = LSTM.lag_multiple(X=X_test, lag=lag)
+    y_test = LSTM.lag_multiple(X=y_test, lag=lag)
 
     # Reshape for fitting in LSTM
-    print(y_train.shape)
-    print(y_validate.shape)
-    print(y_test.shape)
     X_train = X_train.reshape((int(X_train.shape[0] / lag), lag, X_train.shape[1]))
     y_train = y_train[0:int(y_train.shape[0] / lag),:]
     X_validate = X_validate.reshape((int(X_validate.shape[0] / lag), lag, X_validate.shape[1]))
     y_validate = y_validate[0:int(y_validate.shape[0] / lag),:]
     X_test = X_test.reshape((int(X_test.shape[0] / lag), lag, X_test.shape[1]))
     y_test = y_test[0:int(y_test.shape[0] / lag),:]
-    print(y_train.shape)
-    print(y_validate.shape)
-    print(y_test.shape)
 
     # Train Multiple Regression Forest Models using various estimators
     for epochs in max_epochs:
@@ -940,17 +935,19 @@ for test_split in test_harness_param:
                     for dropout in drop_out:
                         if state:
                             batch=1
+                        t0 = time.time()
                         model = LSTM(X=X_train,
                                      y=y_train,
                                      lag=lag,
-                                     loss_func='mean_squared_error',
+                                     loss_func='categorical_crossentropy',
                                      activation='softmax',
                                      optimizer='adam',
                                      mode='regression',
                                      lstm_layers=layer,
                                      dropout=dropout,
                                      stateful=state,
-                                     y_labels=y_label)
+                                     y_labels=y_label,
+                                     num_classes=bin_value)
 
                         model.fit_model(X_train=X_train,
                                         X_test=X_validate,
@@ -962,9 +959,12 @@ for test_split in test_harness_param:
                                         shuffle=False,
                                         plot=False)
                         rmse_list = []
+                        print('state: ' + str(state))
+                        print('layers: ' + str(layer))
+                        print(np.array([X_validate[0, :]]).shape)
                         for i in range(0, X_validate.shape[0]):
                             X = np.array([X_validate[i, :]])
-                            y = model.predict(X)
+                            y = model.predict(X, batch_size=batch)
                             model.fit_model(X_train=X,
                                             y_train=y,
                                             epochs=5,
