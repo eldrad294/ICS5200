@@ -51,11 +51,11 @@ bin_value = 2
 nrows=500000
 iteration = 0
 lag = 13
-test_harness_param = (.2,.3,.4,.5)
-max_epochs = (1, 25, 50, 100)
-max_batch = (1, 32, 64, 128)
-lstm_layers = (1,2,3)
-states = (True, False)
+test_harness_param = (.2, .3, .4, .5)
+max_epochs = (5, 25, 50, 100)
+max_batch = (32, 64, 128)
+lstm_layers = (1, 2, 3)
+states = (False, True)
 drop_out = (0,.2,.4)
 parallel_degree = -1
 n_estimators = 300
@@ -900,6 +900,19 @@ class LSTM:
         multiple = int(n_rows/lag)
         max_new_rows = multiple * lag
         return X[0:max_new_rows,:]
+
+""" Data Encoding """
+
+X_df = pd.DataFrame(BinClass.discretize_value(X_df.values, bin_value), columns=X_df.columns)
+y_df = pd.DataFrame(BinClass.discretize_value(y_df.values, bin_value), columns=y_df.columns)
+print(np.unique(X_df.values))
+print(np.unique(y_df.values))
+# X_df = pd.DataFrame(ke.utils.to_categorical(X_df.values, num_classes=None), columns=X_df.columns)
+# y_df = pd.DataFrame(ke.utils.to_categorical(y_df.values, num_classes=None), columns=y_df.columns)
+# print(np.unique(X_df.values))
+# print(np.unique(y_df.values))
+# print(X_df)
+# print(y_df)
 
 """ Hyper Parameter Grid Search """
 
