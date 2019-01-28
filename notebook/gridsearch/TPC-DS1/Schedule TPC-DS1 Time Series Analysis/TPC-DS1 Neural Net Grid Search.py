@@ -51,18 +51,18 @@ bin_value = 2
 nrows=300000
 iteration = 0
 lag = 13
-test_harness_param = (.2,.3,.4,.5)
-max_epochs = (5, 25, 50, 100)
+test_harness_param = (.2, .3, .4, .5)
+max_epochs = (5, 25, 50, 100, 150)
 max_batch = (32, 64, 128)
-layers = (1,2,3)
-drop_out = (0,.2,.4)
+layers = (1, 2, 3)
+drop_out = (0, .2, .4)
 parallel_degree = -1
 n_estimators = 300
-y_label = ['CPU_TIME_DELTA', 'ELAPSED_TIME_DELTA']
+y_label = ['CPU_TIME_DELTA','ELAPSED_TIME_DELTA']
 
 # Root path
-root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
-#root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
+# root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
+root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
 
 # Open Data
 rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
@@ -641,7 +641,7 @@ class BinClass:
         param: n - Number of buckets
         """
         if len(X.shape) == 1:
-            X = X.reshape(-1, 2)
+            X = np.reshape(X, (-1, 1))
 
         for i in range(X.shape[1]):
             max_val = X[:,i].max()
@@ -897,17 +897,6 @@ for test_split in test_harness_param:
     print("y_validate shape [" + str(y_validate.shape) + "] Type - " + str(type(y_validate)))
     print("y_test shape [" + str(y_test.shape) + "] Type - " + str(type(y_test)))
 
-    # X_train = BinClass.discretize_value(X_train, bin_value)
-    # X_validate = BinClass.discretize_value(X_validate, bin_value)
-    # X_test = BinClass.discretize_value(X_test, bin_value)
-    # y_train = BinClass.discretize_value(y_train, bin_value)
-    # y_validate = BinClass.discretize_value(y_validate, bin_value)
-    # y_test = BinClass.discretize_value(y_test, bin_value)
-    #
-    # X_train = ke.utils.to_categorical(X_train, num_classes=None)
-    # X_validate = ke.utils.to_categorical(X_validate, num_classes=None)
-    # X_test = ke.utils.to_categorical(X_test, num_classes=None)
-
     # Train Multiple Regression Forest Models using various estimators
     for epochs in max_epochs:
         for batch in max_batch:
@@ -918,7 +907,7 @@ for test_split in test_harness_param:
                                       y=y_train,
                                       lag=lag,
                                       loss_func='binary_crossentropy',
-                                      activation='relu',
+                                      activation='sigmoid',
                                       optimizer='adam',
                                       mode='classification',
                                       layers=layer,

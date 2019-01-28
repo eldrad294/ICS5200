@@ -62,8 +62,8 @@ n_estimators = 300
 y_label = ['CPU_TIME_DELTA', 'ELAPSED_TIME_DELTA']
 
 # Root path
-root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
-# root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
+# root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
+root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
 
 # Open Data
 rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
