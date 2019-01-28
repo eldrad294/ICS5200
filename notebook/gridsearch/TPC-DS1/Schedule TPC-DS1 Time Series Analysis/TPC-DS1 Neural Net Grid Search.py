@@ -48,22 +48,21 @@ import time
 # Experiment Config
 tpcds='TPCDS1' # Schema upon which to operate test
 bin_value = 2
-nrows=500000
+nrows=300000
 iteration = 0
 lag = 13
 test_harness_param = (.2,.3,.4,.5)
-max_epochs = (25, 50, 100)
-max_batch = (1, 25, 50, 100)
-lstm_layers = (1,2,3)
-states = (False, True)
+max_epochs = (5, 25, 50, 100)
+max_batch = (1, 32, 64, 128)
+layers = (1,2,3)
 drop_out = (0,.2,.4)
 parallel_degree = -1
 n_estimators = 300
 y_label = ['CPU_TIME_DELTA', 'ELAPSED_TIME_DELTA']
 
 # Root path
-#root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
-root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
+root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
+#root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
 
 # Open Data
 rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
@@ -405,7 +404,7 @@ def remove_n_time_steps(data, n=1):
 
 
 # Frame as supervised learning set
-shifted_df = series_to_supervised(df, 1, lag)
+shifted_df = series_to_supervised(df, lag, lag)
 
 # Separate labels from features
 y_row = []
@@ -428,13 +427,13 @@ print(X_df.shape)
 print('\n-------------\nLabels')
 print(y_df.columns)
 print(y_df.shape)
-
+#
 # # Delete middle timesteps
 # X_df = remove_n_time_steps(data=X_df, n=lag)
 # print('\n-------------\nFeatures After Time Shift')
 # print(X_df.columns)
 # print(X_df.shape)
-# y_df = remove_n_time_steps(data=y_df, n=lag)
+# # y_df = remove_n_time_steps(data=y_df, n=lag)
 # print('\n-------------\nLabels After Time Shift')
 # print(y_df.columns)
 # print(y_df.shape)
@@ -612,8 +611,8 @@ print(X_df.shape)
 class BinClass:
     """
     Takes data column, and scales them into discrete buckets. Parameter 'n' denotes number of buckets. This class needs
-    to be defined before the LSTM class, since it is referenced during the prediction stage. Since Keras models output a
-    continuous output (even when trained on discrete data), the 'BinClass' is required by the LSTM class.
+    to be defined before the NeuralNet class, since it is referenced during the prediction stage. Since Keras models output a
+    continuous output (even when trained on discrete data), the 'BinClass' is required by the NeuralNet class.
     """
 
     @staticmethod
@@ -636,29 +635,39 @@ class BinClass:
                 return i
 
     @staticmethod
-    def discretize_value(df, n):
+    def discretize_value(X, n):
         """
-        param: df - Input data
+        param: X - Input data
         param: n - Number of buckets
         """
-        BinClass.__validate(df, n)
-        for column in df.columns:
-            max_val = df[column].max(skipna=True)
+        if len(X.shape) == 1:
+            X = X.reshape(-1, 2)
+
+        for i in range(X.shape[1]):
+            max_val = X[:,i].max()
             threshold = max_val / n
-            df[column] = df[column].apply(lambda x: BinClass.__bucket_val(x, threshold, n))
-            if df[column].isnull().values.any():
-                df[column] = df[column].fillna(1)
-        return df
+            myfunc_vec = np.vectorize(lambda x: BinClass.__bucket_val(x, threshold, n))
+            X[:,i] = myfunc_vec(X[:,i])
+        return X
+
+        # BinClass.__validate(df, n)
+        # for column in df.columns:
+        #     max_val = df[column].max(skipna=True)
+        #     threshold = max_val / n
+        #     df[column] = df[column].apply(lambda x: BinClass.__bucket_val(x, threshold, n))
+        #     if df[column].isnull().values.any():
+        #         df[column] = df[column].fillna(1)
+        # return df
 
 
-# LSTM Class
-class LSTM:
+# NeuralNet Class
+class NeuralNet:
     """
-    Long Short Term Memory Neural Net Class
+    NeuralNet Class
     """
 
-    def __init__(self, X, y, lag, loss_func, activation, mode='regression', optimizer='sgd', lstm_layers=1, dropout=.0,
-                 stateful=False, y_labels=None, num_classes=2):
+    def __init__(self, X, y, lag, loss_func, activation, mode='regression', optimizer='sgd', layers=1, dropout=.0,
+                 y_labels=None):
         """
         Initiating the class creates a net with the established parameters
         :param X             - (Numpy 2D Array) Training data used to train the model (Features).
@@ -668,67 +677,27 @@ class LSTM:
         :param activation    - (String)  Neuron activation function used to activate/trigger neurons.
         :param mode          - (String)  A flag used to set specific model training mode (Classification OR Regression).
         :param optimizer     - (String)  Denotes which function to us to optimize the model build (eg: Gradient Descent).
-        :param lstm_layers   - (Integer) Denotes the number of LSTM layers to be included in the model build.
+        :param layers        - (Integer) Denotes the number of Neuron layers to be included in the model build.
         :param dropout       - (Float)   Denotes amount of dropout for model. This parameter must be a value between 0 and 1.
-        :param stateful      - (Boolean) Denotes whether state is used as initial state for next training batch.
         :param: y_labels     - (List) List of target label names
-        :param: num_classes  - (Integer) Denotes number of classes to predict. This value equals the binning value.
         """
         self.mode = mode
         self.__lag = lag
         self.__model = ke.models.Sequential()
+        self.__y_labels = y_labels
 
         if dropout > 1 and dropout < 0:
             raise ValueError('Dropout parameter exceeded! Must be a value between 0 and 1.')
 
-        for i in range(0, lstm_layers - 1):  # If lstm_layers == 1, this for loop logic is skipped.
-            if stateful:
-                if i == 0:
-                    self.__model.add(ke.layers.LSTM(X.shape[2],
-                                                    batch_input_shape=(X.shape[0],
-                                                                       X.shape[1],
-                                                                       X.shape[2]),
-                                                    return_sequences=True,
-                                                    stateful=stateful))
-                else:
-                    self.__model.add(ke.layers.LSTM(X.shape[2],
-                                                    input_shape=(X.shape[1],
-                                                                 X.shape[2]),
-                                                    return_sequences=True,
-                                                    stateful=stateful))
-            else:
-                self.__model.add(ke.layers.LSTM(X.shape[2],
-                                                input_shape=(X.shape[1],
-                                                             X.shape[2]),
-                                                return_sequences=True,
-                                                stateful=stateful))
+        for i in range(0, layers):
+            self.__model.add(ke.layers.Dense(X.shape[1], activation=activation, input_shape=(X.shape[1],)))
             self.__model.add(ke.layers.Dropout(dropout))
-        if lstm_layers > 1:
-            self.__model.add(ke.layers.LSTM(X.shape[2],
-                                            input_shape=(X.shape[1],
-                                                         X.shape[2]),
-                                            stateful=stateful,
-                                            return_sequences=False))
-        else:
-            if stateful:
-                self.__model.add(ke.layers.LSTM(X.shape[2],
-                                                batch_input_shape=(X.shape[0],
-                                                                   X.shape[1],
-                                                                   X.shape[2]),
-                                                stateful=stateful,
-                                                return_sequences=False))
-            else:
-                self.__model.add(ke.layers.LSTM(X.shape[2],
-                                                input_shape=(X.shape[1],
-                                                             X.shape[2]),
-                                                stateful=stateful,
-                                                return_sequences=False))
+        self.__model.add(ke.layers.Dense(X.shape[1], activation='softmax', input_shape=(X.shape[1],)))
         self.__model.add(ke.layers.Dropout(dropout))
 
-        self.__model.add(ke.layers.Dense(num_classes))
+        self.__model.add(ke.layers.Dense(self.__lag * len(self.__y_labels)))
         self.__model.add(ke.layers.Activation(activation.lower()))
-        self.__model.compile(loss=loss_func, optimizer=optimizer, metrics=['accuracy'])
-        self.__y_labels = y_labels
+        self.__model.compile(loss=loss_func, optimizer=optimizer, metrics=['acc'])
         print(self.__model.summary())
 
     def fit_model(self, X_train=None, X_test=None, y_train=None, y_test=None, epochs=50, batch_size=50, verbose=2,
@@ -741,8 +710,7 @@ class LSTM:
         :param: y_train    - (Numpy 2D Array) Numpy matrix consisting of output training labels
         :param: y_test     - (Numpy 2D Array) Numpy matrix consisting of output validation/testing labels
         :param: epochs     - (Integer) Integer value denoting number of trained epochs
-        :param: batch_size - (Integer) Integer value denoting LSTM training batch_size
-        :param: verbose    - (Integer) Integer value denoting net verbosity (Amount of information shown to user during LSTM training)
+        :param: verbose    - (Integer) Integer value denoting net verbosity (Amount of information shown to user during NeuralNet training)
         :param: shuffle    - (Bool) Boolean value denoting whether or not to shuffle data. This parameter must always remain 'False' for time series datasets.
         :param: plot       - (Bool) Boolean value denoting whether this function should plot out it's evaluation
 
@@ -787,15 +755,12 @@ class LSTM:
         yhat = self.__model.predict(X, batch_size=batch_size)
         return yhat
 
-    def evaluate(self, y, yhat, plot=False, category=1):
+    def evaluate(self, y, yhat, plot=False):
         """
         Receives 2D matrix of input features and 2D matrix of output labels, and evaluates input data and target predictions.
         :param: y    - Numpy array consisting of output label vectors (Test Set)
         :param: yhat - Numpy array consisting of output label vectors (Prediction Set)
         :param: plot     - (Bool) Boolean value denoting whether this function should plot out it's evaluation
-        :param: category - (Integer) Integer value denoting category type to use during evaluation. This parameter is
-                           experiment specific, refer to below. Note, that this parameter should always be
-                           established as a value of 1.
         :return: None
         """
         # RMSE Evaluation
@@ -807,27 +772,26 @@ class LSTM:
 
         elif self.mode == 'classification':
             column_names = []
-            for i in range(len(self.__y_labels) * self.__lag):
+            for i in range(len(self.__y_labels)):
                 column_names.append("column" + str(i))
 
-            # Denote category type
-            if category == 1:
-                y = pd.DataFrame(y, columns=column_names)
-                y = BinClass.discretize_value(y, bin_value)
-                y = y.values
-            yhat = pd.DataFrame(yhat, columns=column_names)
+            y = BinClass.discretize_value(y, bin_value)
             yhat = BinClass.discretize_value(yhat, bin_value)
-            yhat = yhat.values
+            y = y.flatten()
+            yhat = yhat.flatten()
 
-            if plot:
-                # F1-Score Evaluation
-                for i in range(len(self.__y_labels)):
-                    accuracy = accuracy_score(y[:, i], yhat[:, i])
-                    f1 = f1_score(y[:, i],
-                                  yhat[:, i],
-                                  average='micro')  # Calculate metrics globally by counting the total true positives, false negatives and false positives.
-                    print('Accuracy [' + self.__y_labels[i] + ']: ' + str(accuracy))
-                    print('FScore [' + self.__y_labels[i] + ']: ' + str(f1))
+            # F1-Score Evaluation
+            print(y)
+            print(yhat)
+            accuracy = accuracy_score(y, yhat)
+            f1 = f1_score(y,
+                          yhat,
+                          average='macro')  # Calculate metrics globally by counting the total true positives, false negatives and false positives.
+            print('Accuracy [' + str(accuracy) + ']')
+            print('FScore [' + str(f1) + ']')
+
+            if not plot:
+                return accuracy, f1
 
         if plot:
             for i in range(0, len(y[0])):
@@ -840,11 +804,11 @@ class LSTM:
                 plt.show()
 
     @staticmethod
-    def write_results_to_disk(path, iteration, lag, test_split, batch, dropout, epoch, layer, stateful, score,
-                              time_train):
+    def write_results_to_disk(path, iteration, lag, test_split, batch, dropout, epoch, layer, rmse, accuracy,
+                              f_score, time_train):
         """
         Static method which is used for test harness utilities. This method attempts a grid search across many
-        trained LSTM models, each denoted with different configurations.
+        trained NeuralNet models, each denoted with different configurations.
 
         Attempted configurations:
         * Varied data test split
@@ -857,19 +821,19 @@ class LSTM:
         :param: iteration  - (Integer) Integer denoting test iteration (Unique per test configuration).
         :param: lag        - (Integer) Denotes lag time shift
         :param: test_split - (Float) Float denoting data sample sizes.
-        :param: batch      - (Integer) Integer denoting LSTM batch size.
-        :param: epoch      - (Integer) Integer denoting number of LSTM training iterations.
-        :param: layer      - (Integer) Integer denoting number of LSTM layers
-        :param: stateful   - (Bool) Boolean flag which denotes whether LSTM model is trained in stateful mode or not.
+        :param: epoch      - (Integer) Integer denoting number of NeuralNet training iterations.
+        :param: layer      - (Integer) Integer denoting number of NeuralNet layers
         :param: dropout    - (Float) Float denoting model dropout layer.
-        :param: score      - (Float) Float denoting experiment configuration RSME score.
-        :param: time_train - (Integer) Integer denoting number of seconds taken by LSTM training iteration.
+        :param: rmse       - (Float) Float denoting experiment configuration RSME score.
+        :param: accuracy   - (Float) Float denoting experiment accuracy score.
+        :param: fscore     - (Float) Float denoting experiment fscore score.
+        :param: time_train - (Integer) Integer denoting number of seconds taken by NeuralNet training iteration.
 
         :return: None
         """
         file_exists = os.path.isfile(path)
         with open(path, 'a+') as csvfile:
-            headers = ['iteration', 'test_split', 'batch', 'epoch', 'layer', 'stateful', 'dropout', 'score',
+            headers = ['iteration', 'test_split', 'batch', 'epoch', 'layer', 'dropout', 'rmse', 'accuracy', 'f_score',
                        'time_train', 'lag']
             writer = csv.DictWriter(csvfile, delimiter=',', lineterminator='\n', fieldnames=headers)
             if not file_exists:
@@ -879,9 +843,10 @@ class LSTM:
                              'batch': batch,
                              'epoch': epoch,
                              'layer': layer,
-                             'stateful': stateful,
                              'dropout': dropout,
-                             'score': score,
+                             'rmse': rmse,
+                             'accuracy': accuracy,
+                             'f_score': f_score,
                              'time_train': time_train,
                              'lag': lag})
 
@@ -911,84 +876,81 @@ for test_split in test_harness_param:
     X_test = X_test.values
     y_test = y_test.values
 
-    # Lag Multiples
-    X_train = LSTM.lag_multiple(X=X_train, lag=lag)
-    y_train = LSTM.lag_multiple(X=y_train, lag=lag)
-    X_validate = LSTM.lag_multiple(X=X_validate, lag=lag)
-    y_validate = LSTM.lag_multiple(X=y_validate, lag=lag)
-    X_test = LSTM.lag_multiple(X=X_test, lag=lag)
-    y_test = LSTM.lag_multiple(X=y_test, lag=lag)
+    print('\nReshaping Training Frames')
+    print("X_train shape [" + str(X_train.shape) + "] Type - " + str(type(X_train)))
+    print("X_validate shape [" + str(X_validate.shape) + "] Type - " + str(type(X_validate)))
+    print("X_test shape [" + str(X_test.shape) + "] Type - " + str(type(X_test)))
+    print("y_train shape [" + str(y_train.shape) + "] Type - " + str(type(y_train)))
+    print("y_validate shape [" + str(y_validate.shape) + "] Type - " + str(type(y_validate)))
+    print("y_test shape [" + str(y_test.shape) + "] Type - " + str(type(y_test)))
 
-    # Reshape for fitting in LSTM
-    X_train = X_train.reshape((int(X_train.shape[0] / lag), lag, X_train.shape[1]))
-    y_train = y_train[0:int(y_train.shape[0] / lag),:]
-    X_validate = X_validate.reshape((int(X_validate.shape[0] / lag), lag, X_validate.shape[1]))
-    y_validate = y_validate[0:int(y_validate.shape[0] / lag),:]
-    X_test = X_test.reshape((int(X_test.shape[0] / lag), lag, X_test.shape[1]))
-    y_test = y_test[0:int(y_test.shape[0] / lag),:]
+    # X_train = BinClass.discretize_value(X_train, bin_value)
+    # X_validate = BinClass.discretize_value(X_validate, bin_value)
+    # X_test = BinClass.discretize_value(X_test, bin_value)
+    # y_train = BinClass.discretize_value(y_train, bin_value)
+    # y_validate = BinClass.discretize_value(y_validate, bin_value)
+    # y_test = BinClass.discretize_value(y_test, bin_value)
+    #
+    # X_train = ke.utils.to_categorical(X_train, num_classes=None)
+    # X_validate = ke.utils.to_categorical(X_validate, num_classes=None)
+    # X_test = ke.utils.to_categorical(X_test, num_classes=None)
 
     # Train Multiple Regression Forest Models using various estimators
     for epochs in max_epochs:
         for batch in max_batch:
-            for layer in lstm_layers:
-                for state in states:
-                    for dropout in drop_out:
-                        if state:
-                            batch=1
-                        t0 = time.time()
-                        model = LSTM(X=X_train,
-                                     y=y_train,
-                                     lag=lag,
-                                     loss_func='categorical_crossentropy',
-                                     activation='softmax',
-                                     optimizer='adam',
-                                     mode='regression',
-                                     lstm_layers=layer,
-                                     dropout=dropout,
-                                     stateful=state,
-                                     y_labels=y_label,
-                                     num_classes=bin_value)
+            for layer in layers:
+                for dropout in drop_out:
+                    t0 = time.time()
+                    model = NeuralNet(X=X_train,
+                                      y=y_train,
+                                      lag=lag,
+                                      loss_func='binary_crossentropy',
+                                      activation='relu',
+                                      optimizer='adam',
+                                      mode='classification',
+                                      layers=layer,
+                                      dropout=dropout,
+                                      y_labels=y_label)
 
-                        model.fit_model(X_train=X_train,
-                                        X_test=X_validate,
-                                        y_train=y_train,
-                                        y_test=y_validate,
-                                        epochs=epochs,
-                                        batch_size=batch,
-                                        verbose=2,
+                    model.fit_model(X_train=X_train,
+                                    X_test=X_validate,
+                                    y_train=y_train,
+                                    y_test=y_validate,
+                                    epochs=epochs,
+                                    batch_size=batch,
+                                    verbose=2,
+                                    shuffle=False,
+                                    plot=False)
+                    acc_list, f_list = [], []
+                    for i in range(0, X_validate.shape[0]):
+                        X = np.array([X_validate[i, :]])
+                        y = model.predict(X, batch_size=batch)
+                        model.fit_model(X_train=X,
+                                        y_train=y,
+                                        epochs=5,
+                                        batch_size=1,
+                                        verbose=1,
                                         shuffle=False,
-                                        plot=False)
-                        rmse_list = []
-                        print('state: ' + str(state))
-                        print('layers: ' + str(layer))
-                        print(np.array([X_validate[0, :]]).shape)
-                        for i in range(0, X_validate.shape[0]):
-                            X = np.array([X_validate[i, :]])
-                            y = model.predict(X, batch_size=batch)
-                            model.fit_model(X_train=X,
-                                            y_train=y,
-                                            epochs=5,
-                                            batch_size=1,
-                                            verbose=1,
-                                            shuffle=False,
-                                            plot=False)  # Online Learning, Training on validation predictions.
-                            rmse = model.evaluate(y=y_validate[i,:],
-                                                  yhat=y,
-                                                  plot=False)
-                            rmse_list.append(rmse)
+                                        plot=False)  # Online Learning, Training on validation predictions.
+                        acc_score, f_score = model.evaluate(y=y_validate[i,:],
+                                                            yhat=y,
+                                                            plot=False)
+                        acc_list.append(acc_score)
+                        f_list.append(f_score)
 
-                        t1 = time.time()
-                        time_total = t1 - t0
-                        LSTM.write_results_to_disk(path="time_series_lstm_nonlag_shifting_results.csv",
-                                                   iteration=iteration,
-                                                   lag=lag,
-                                                   test_split=test_split,
-                                                   epoch=epochs,
-                                                   layer=layer,
-                                                   stateful=state,
-                                                   dropout=dropout,
-                                                   batch=batch,
-                                                   score=sum(rmse_list) / len(rmse_list),
-                                                   time_train=time_total)
-                        print('----------------------------' + str(iteration) + '----------------------------')
-                        iteration += 1
+                    t1 = time.time()
+                    time_total = t1 - t0
+                    NeuralNet.write_results_to_disk(path="time_series_nn_results.csv",
+                                                    iteration=iteration,
+                                                    lag=lag,
+                                                    test_split=test_split,
+                                                    epoch=epochs,
+                                                    layer=layer,
+                                                    dropout=dropout,
+                                                    batch=batch,
+                                                    rmse=None,
+                                                    accuracy=sum(acc_list) / len(acc_list),
+                                                    f_score=sum(f_list) / len(f_list),
+                                                    time_train=time_total)
+                    print('----------------------------' + str(iteration) + '----------------------------')
+                    iteration += 1
