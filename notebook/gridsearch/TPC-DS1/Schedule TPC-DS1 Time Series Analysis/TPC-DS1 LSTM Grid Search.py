@@ -49,7 +49,7 @@ import time
 # Experiment Config
 tpcds='TPCDS1' # Schema upon which to operate test
 bin_value = 2
-nrows=500000
+nrows=None
 iteration = 0
 lag = 13
 test_harness_param = (.2, .3, .4, .5)
@@ -58,14 +58,15 @@ max_batch = (32, 64, 128)
 lstm_layers = (1, 2, 3)
 states = (False,)
 drop_out = (0,.2,.4)
+activations = ('elu', 'selu', 'tanh', 'sigmoid', 'linear')
 initializers = ('zero', 'uniform', 'normal', 'lecun_uniform')
 parallel_degree = -1
 n_estimators = 300
 y_label = ['CPU_TIME_DELTA', 'ELAPSED_TIME_DELTA']
 
 # Root path
-root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
-#root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
+#root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
+root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
 
 # Open Data
 rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
@@ -518,17 +519,17 @@ class FeatureEliminator:
 
         return self.__X_df[recommended_columns]
 
-# fe = FeatureEliminator(X_df=X_df,
-#                        y_df=y_df)
-# column_mask, column_rankings = fe.rfe_selector(test_split=.7,
-#                                                optimum_feature_count=X_df.shape[1] / 4,
-#                                                parallel_degree=parallel_degree,
-#                                                max_depth=1,
-#                                                max_features='sqrt',
-#                                                n_estimators=n_estimators)
-# print(X_df.columns)
-# X_df = fe.get_selected_features(column_mask=column_mask)
-# print(X_df.columns)
+fe = FeatureEliminator(X_df=X_df,
+                       y_df=y_df)
+column_mask, column_rankings = fe.rfe_selector(test_split=.7,
+                                               optimum_feature_count=X_df.shape[1] / 4,
+                                               parallel_degree=parallel_degree,
+                                               max_depth=1,
+                                               max_features='sqrt',
+                                               n_estimators=n_estimators)
+print(X_df.columns)
+X_df = fe.get_selected_features(column_mask=column_mask)
+print(X_df.columns)
 
 
 class PrincipalComponentAnalysisClass:
@@ -952,66 +953,67 @@ for test_split in test_harness_param:
     # Train Multiple Regression Forest Models using various estimators
     for epochs in max_epochs:
         for batch in max_batch:
-            for layer in lstm_layers:
-                for state in states:
-                    for dropout in drop_out:
-                        for initializer in initializers:
-                            t0 = time.time()
-                            model = LSTM(X=X_train,
-                                         y=y_train,
-                                         lag=lag,
-                                         loss_func='binary_crossentropy',
-                                         activation='relu',
-                                         optimizer='adam',
-                                         mode='classification',
-                                         lstm_layers=layer,
-                                         dropout=dropout,
-                                         stateful=state,
-                                         y_labels=y_label,
-                                         initializer=initializer)
+            for activation in activations:
+                for layer in lstm_layers:
+                    for state in states:
+                        for dropout in drop_out:
+                            for initializer in initializers:
+                                t0 = time.time()
+                                model = LSTM(X=X_train,
+                                             y=y_train,
+                                             lag=lag,
+                                             loss_func='binary_crossentropy',
+                                             activation='relu',
+                                             optimizer='adam',
+                                             mode='classification',
+                                             lstm_layers=layer,
+                                             dropout=dropout,
+                                             stateful=state,
+                                             y_labels=y_label,
+                                             initializer=initializer)
 
-                            model.fit_model(X_train=X_train,
-                                            X_test=X_validate,
-                                            y_train=y_train,
-                                            y_test=y_validate,
-                                            epochs=epochs,
-                                            batch_size=batch,
-                                            verbose=2,
-                                            shuffle=False,
-                                            plot=False)
-
-                            acc_list, f_list = [], []
-                            for i in range(0, X_validate.shape[0]):
-                                X = np.array(np.array(X_validate[i, :]))
-                                X = X.reshape((int(X.shape[0] / lag), lag, X.shape[1]))
-                                y = model.predict(X, batch_size=batch)
-                                model.fit_model(X_train=X,
-                                                y_train=y,
-                                                epochs=5,
-                                                batch_size=1,
-                                                verbose=1,
+                                model.fit_model(X_train=X_train,
+                                                X_test=X_validate,
+                                                y_train=y_train,
+                                                y_test=y_validate,
+                                                epochs=epochs,
+                                                batch_size=batch,
+                                                verbose=2,
                                                 shuffle=False,
-                                                plot=False)  # Online Learning, Training on validation predictions.
-                                acc_score, f_score = model.evaluate(y=np.array(y_validate[i,:]),
-                                                                    yhat=y,
-                                                                    plot=False)
-                                acc_list.append(acc_score)
-                                f_list.append(f_score)
+                                                plot=False)
 
-                            t1 = time.time()
-                            time_total = t1 - t0
-                            LSTM.write_results_to_disk(path="time_series_lstm_lag_shifting_results.csv",
-                                                       iteration=iteration,
-                                                       lag=lag,
-                                                       test_split=test_split,
-                                                       epoch=epochs,
-                                                       layer=layer,
-                                                       stateful=state,
-                                                       dropout=dropout,
-                                                       batch=batch,
-                                                       rmse=None,
-                                                       accuracy=sum(acc_list) / len(acc_list),
-                                                       f_score=sum(f_list) / len(f_list),
-                                                       time_train=time_total)
-                            print('----------------------------' + str(iteration) + '----------------------------')
-                            iteration += 1
+                                acc_list, f_list = [], []
+                                for i in range(0, X_validate.shape[0]):
+                                    X = np.array(np.array(X_validate[i, :]))
+                                    X = X.reshape((int(X.shape[0] / lag), lag, X.shape[1]))
+                                    y = model.predict(X, batch_size=batch)
+                                    model.fit_model(X_train=X,
+                                                    y_train=y,
+                                                    epochs=5,
+                                                    batch_size=1,
+                                                    verbose=1,
+                                                    shuffle=False,
+                                                    plot=False)  # Online Learning, Training on validation predictions.
+                                    acc_score, f_score = model.evaluate(y=np.array(y_validate[i,:]),
+                                                                        yhat=y,
+                                                                        plot=False)
+                                    acc_list.append(acc_score)
+                                    f_list.append(f_score)
+
+                                t1 = time.time()
+                                time_total = t1 - t0
+                                LSTM.write_results_to_disk(path="time_series_lstm_lag_shifting_results.csv",
+                                                           iteration=iteration,
+                                                           lag=lag,
+                                                           test_split=test_split,
+                                                           epoch=epochs,
+                                                           layer=layer,
+                                                           stateful=state,
+                                                           dropout=dropout,
+                                                           batch=batch,
+                                                           rmse=None,
+                                                           accuracy=sum(acc_list) / len(acc_list),
+                                                           f_score=sum(f_list) / len(f_list),
+                                                           time_train=time_total)
+                                print('----------------------------' + str(iteration) + '----------------------------')
+                                iteration += 1
