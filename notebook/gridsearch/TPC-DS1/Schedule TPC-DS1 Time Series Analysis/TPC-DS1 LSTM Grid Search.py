@@ -24,6 +24,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_selection import RFE
 from sklearn import preprocessing
 from sklearn.metrics import r2_score
+from sklearn.preprocessing import LabelEncoder
 import sklearn as sk
 print('sklearn: %s' % sk.__version__)
 # theano
@@ -55,15 +56,16 @@ test_harness_param = (.2, .3, .4, .5)
 max_epochs = (5, 25, 50, 100)
 max_batch = (32, 64, 128)
 lstm_layers = (1, 2, 3)
-states = (False, True)
+states = (False,)
 drop_out = (0,.2,.4)
+initializers = ('zero', 'uniform', 'normal', 'lecun_uniform')
 parallel_degree = -1
 n_estimators = 300
 y_label = ['CPU_TIME_DELTA', 'ELAPSED_TIME_DELTA']
 
 # Root path
-# root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
-root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
+root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
+#root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
 
 # Open Data
 rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
@@ -405,7 +407,7 @@ def remove_n_time_steps(data, n=1):
 
 
 # Frame as supervised learning set
-shifted_df = series_to_supervised(df, 1, lag)
+shifted_df = series_to_supervised(df, lag, lag)
 
 # Separate labels from features
 y_row = []
@@ -659,7 +661,7 @@ class LSTM:
     """
 
     def __init__(self, X, y, lag, loss_func, activation, mode='regression', optimizer='sgd', lstm_layers=1, dropout=.0,
-                 stateful=False, y_labels=None, num_classes=2):
+                 stateful=False, y_labels=None, initializer='uniform'):
         """
         Initiating the class creates a net with the established parameters
         :param X             - (Numpy 2D Array) Training data used to train the model (Features).
@@ -673,7 +675,7 @@ class LSTM:
         :param dropout       - (Float)   Denotes amount of dropout for model. This parameter must be a value between 0 and 1.
         :param stateful      - (Boolean) Denotes whether state is used as initial state for next training batch.
         :param: y_labels     - (List) List of target label names
-        :param: num_classes  - (Integer) Denotes number of classes to predict.
+        :param: initializer  - (String)  String initializer which denotes starting weights.
         """
         self.mode = mode
         self.__lag = lag
@@ -683,10 +685,6 @@ class LSTM:
         if dropout > 1 and dropout < 0:
             raise ValueError('Dropout parameter exceeded! Must be a value between 0 and 1.')
 
-        # self.__model.add(ke.layers.Embedding(input_dim=num_classes,
-        #                                      output_dim=self.__lag*len(self.__y_labels),
-        #                                      input_length=X.shape[2]))
-        # self.__model.add(ke.layers.Flatten())
         for i in range(0, lstm_layers - 1):  # If lstm_layers == 1, this for loop logic is skipped.
             if stateful:
                 if i == 0:
@@ -730,8 +728,8 @@ class LSTM:
                                                 stateful=stateful,
                                                 return_sequences=False))
         self.__model.add(ke.layers.Dropout(dropout))
-
-        self.__model.add(ke.layers.Dense(num_classes))
+        # self.__model.add(ke.layers.TimeDistributed(ke.layers.Dense(self.__lag * len(self.__y_labels), kernel_initializer=initializer)))
+        self.__model.add(ke.layers.Dense(self.__lag * len(self.__y_labels), kernel_initializer=initializer))
         self.__model.add(ke.layers.Activation(activation.lower()))
         self.__model.compile(loss=loss_func, optimizer=optimizer, metrics=['acc'])
         print(self.__model.summary())
@@ -818,6 +816,8 @@ class LSTM:
             yhat = yhat.flatten()
 
             # F1-Score Evaluation
+            print(y)
+            print(yhat)
             accuracy = accuracy_score(y, yhat)
             f1 = f1_score(y,
                           yhat,
@@ -899,7 +899,7 @@ class LSTM:
         n_rows = X.shape[0]
         multiple = int(n_rows/lag)
         max_new_rows = multiple * lag
-        return X[0:max_new_rows,:]
+        return X[0:max_new_rows, :]
 
 """ Data Encoding """
 
@@ -907,6 +907,12 @@ X_df = pd.DataFrame(BinClass.discretize_value(X_df.values, bin_value), columns=X
 y_df = pd.DataFrame(BinClass.discretize_value(y_df.values, bin_value), columns=y_df.columns)
 print(np.unique(X_df.values))
 print(np.unique(y_df.values))
+
+X_df = X_df.apply(LabelEncoder().fit_transform)
+y_df = y_df.apply(LabelEncoder().fit_transform)
+print(np.unique(X_df.values))
+print(np.unique(y_df.values))
+
 # X_df = pd.DataFrame(ke.utils.to_categorical(X_df.values, num_classes=None), columns=X_df.columns)
 # y_df = pd.DataFrame(ke.utils.to_categorical(y_df.values, num_classes=None), columns=y_df.columns)
 # print(np.unique(X_df.values))
@@ -949,62 +955,63 @@ for test_split in test_harness_param:
             for layer in lstm_layers:
                 for state in states:
                     for dropout in drop_out:
-                        if state:
-                            batch=1
-                        t0 = time.time()
-                        model = LSTM(X=X_train,
-                                     y=y_train,
-                                     lag=lag,
-                                     loss_func='mean_squared_error',
-                                     activation='softmax',
-                                     optimizer='adam',
-                                     mode='classification',
-                                     lstm_layers=layer,
-                                     dropout=dropout,
-                                     stateful=state,
-                                     y_labels=y_label,
-                                     num_classes=bin_value)
+                        for initializer in initializers:
+                            t0 = time.time()
+                            model = LSTM(X=X_train,
+                                         y=y_train,
+                                         lag=lag,
+                                         loss_func='binary_crossentropy',
+                                         activation='relu',
+                                         optimizer='adam',
+                                         mode='classification',
+                                         lstm_layers=layer,
+                                         dropout=dropout,
+                                         stateful=state,
+                                         y_labels=y_label,
+                                         initializer=initializer)
 
-                        model.fit_model(X_train=X_train,
-                                        X_test=X_validate,
-                                        y_train=y_train,
-                                        y_test=y_validate,
-                                        epochs=epochs,
-                                        batch_size=batch,
-                                        verbose=2,
-                                        shuffle=False,
-                                        plot=False)
-                        acc_list, f_list = [], []
-                        for i in range(0, X_validate.shape[0]):
-                            X = np.array(np.array(X_validate[i, :]))
-                            y = model.predict(X, batch_size=batch)
-                            model.fit_model(X_train=X,
-                                            y_train=y,
-                                            epochs=5,
-                                            batch_size=1,
-                                            verbose=1,
+                            model.fit_model(X_train=X_train,
+                                            X_test=X_validate,
+                                            y_train=y_train,
+                                            y_test=y_validate,
+                                            epochs=epochs,
+                                            batch_size=batch,
+                                            verbose=2,
                                             shuffle=False,
-                                            plot=False)  # Online Learning, Training on validation predictions.
-                            acc_score, f_score = model.evaluate(y=np.array(y_validate[i,:]),
-                                                                yhat=y,
-                                                                plot=False)
-                            acc_list.append(acc_score)
-                            f_list.append(f_score)
+                                            plot=False)
 
-                        t1 = time.time()
-                        time_total = t1 - t0
-                        LSTM.write_results_to_disk(path="time_series_lstm_lag_shifting_results.csv",
-                                                   iteration=iteration,
-                                                   lag=lag,
-                                                   test_split=test_split,
-                                                   epoch=epochs,
-                                                   layer=layer,
-                                                   stateful=state,
-                                                   dropout=dropout,
-                                                   batch=batch,
-                                                   rmse=None,
-                                                   accuracy=sum(acc_list) / len(acc_list),
-                                                   f_score=sum(f_list) / len(f_list),
-                                                   time_train=time_total)
-                        print('----------------------------' + str(iteration) + '----------------------------')
-                        iteration += 1
+                            acc_list, f_list = [], []
+                            for i in range(0, X_validate.shape[0]):
+                                X = np.array(np.array(X_validate[i, :]))
+                                X = X.reshape((int(X.shape[0] / lag), lag, X.shape[1]))
+                                y = model.predict(X, batch_size=batch)
+                                model.fit_model(X_train=X,
+                                                y_train=y,
+                                                epochs=5,
+                                                batch_size=1,
+                                                verbose=1,
+                                                shuffle=False,
+                                                plot=False)  # Online Learning, Training on validation predictions.
+                                acc_score, f_score = model.evaluate(y=np.array(y_validate[i,:]),
+                                                                    yhat=y,
+                                                                    plot=False)
+                                acc_list.append(acc_score)
+                                f_list.append(f_score)
+
+                            t1 = time.time()
+                            time_total = t1 - t0
+                            LSTM.write_results_to_disk(path="time_series_lstm_lag_shifting_results.csv",
+                                                       iteration=iteration,
+                                                       lag=lag,
+                                                       test_split=test_split,
+                                                       epoch=epochs,
+                                                       layer=layer,
+                                                       stateful=state,
+                                                       dropout=dropout,
+                                                       batch=batch,
+                                                       rmse=None,
+                                                       accuracy=sum(acc_list) / len(acc_list),
+                                                       f_score=sum(f_list) / len(f_list),
+                                                       time_train=time_total)
+                            print('----------------------------' + str(iteration) + '----------------------------')
+                            iteration += 1

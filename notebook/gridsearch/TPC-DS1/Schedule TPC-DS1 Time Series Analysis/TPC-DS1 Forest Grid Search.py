@@ -15,12 +15,13 @@ print('statsmodels: %s' % statsmodels.__version__)
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, roc_curve, roc_auc_score
-from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
+from sklearn.metrics import f1_score, accuracy_score
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.decomposition import PCA
 from sklearn.feature_selection import RFE
 from sklearn import preprocessing
 from sklearn.metrics import r2_score
+from sklearn.preprocessing import LabelEncoder
 import sklearn as sk
 print('sklearn: %s' % sk.__version__)
 # math
@@ -594,6 +595,49 @@ print(X_df.shape)
 # df = pd.concat([X_df, y_df], axis=1)
 
 
+class BinClass:
+    """
+    Takes data column, and scales them into discrete buckets. Parameter 'n' denotes number of buckets. This class needs
+    to be defined before the LSTM class, since it is referenced during the prediction stage. Since Keras models output a
+    continuous output (even when trained on discrete data), the 'BinClass' is required by the LSTM class.
+    """
+
+    @staticmethod
+    def __validate(df, n):
+        """
+        Validates class parameters
+        """
+        if df is None:
+            raise ValueError('Input data parameter is empty!')
+        elif n < 2:
+            raise ValueError('Number of buckets must be greater than 1')
+
+    @staticmethod
+    def __bucket_val(val, threshold, n):
+        """
+        Receives threshold value and buckets the val according to the passed threshold
+        """
+        for i in range(1, n+1):
+            if val <= threshold * i:
+                return i
+
+    @staticmethod
+    def discretize_value(X, n):
+        """
+        param: X - Input data
+        param: n - Number of buckets
+        """
+        if len(X.shape) == 1:
+            X = X.reshape(-1, 2)
+
+        for i in range(X.shape[1]):
+            max_val = X[:, i].max()
+            threshold = max_val / n
+            myfunc_vec = np.vectorize(lambda x: BinClass.__bucket_val(x, threshold, n))
+            X[:, i] = myfunc_vec(X[:, i])
+        return X
+
+
 # Random Forest
 class RandomForest:
     """
@@ -677,20 +721,23 @@ class RandomForest:
 
         elif self.__mode == 'classification':
 
-            # Evaluation
-            for i in range(0, len(self.__y_label) * self.__lag):
-                accuracy = accuracy_score(y[:, i], yhat[:, i])
-                precision = precision_score(y[:, i], yhat[:, i], average='micro')
-                recall = recall_score(y[:, i], yhat[:, i], average='micro')
-                f1 = f1_score(y[:, i], yhat[:, i], average='micro')
+            y = BinClass.discretize_value(y, bin_value)
+            yhat = BinClass.discretize_value(yhat, bin_value)
+            y = y.flatten()
+            yhat = yhat.flatten()
 
-                print('Label [' + self.__y_label[i % len(self.__y_label)] + '] - Lag [' + str(
-                    math.ceil((i + 1) / len(self.__y_label))) + ']')
-                print('Accuracy: ' + str(accuracy))
-                print('Precision: ' + str(precision))
-                print('Recall: ' + str(recall))
-                print('F1-Score: ' + str(f1))
-                print('-------------------------------------')
+            # Evaluation
+            print(y)
+            print(yhat)
+            accuracy = accuracy_score(y, yhat)
+            f1 = f1_score(y,
+                          yhat,
+                          average='macro')  # Calculate metrics globally by counting the total true positives, false negatives and false positives.
+            print('Accuracy [' + str(accuracy) + ']')
+            print('FScore [' + str(f1) + ']')
+
+            if not plot:
+                return accuracy, f1
 
         # if plot:
         #     for i in range(0, len(self.__y_label) * self.__lag):
@@ -703,7 +750,8 @@ class RandomForest:
         #         plt.show()
 
     @staticmethod
-    def write_results_to_disk(path, iteration, lag, test_split, max_depth, max_features, score, time_train):
+    def write_results_to_disk(path, iteration, lag, test_split, max_depth, max_features, rmse, accuracy,
+                              f_score, time_train):
         """
         Static method which is used for test harness utilities. This method attempts a grid search across many
         trained RandomForest models, each denoted with different configurations.
@@ -719,13 +767,15 @@ class RandomForest:
         :param: test_split   - Float denoting data sample sizes
         :param: max_depth    - Integer denoting max number tree nodes to consider. This param can be 'None'.
         :param: max_features - String denoting amount of feature subset to consider.
-        :param: score        - Float denoting experiment configuration RSME score
+        :param: rmse         - (Float) Float denoting experiment configuration RSME score.
+        :param: accuracy     - (Float) Float denoting experiment accuracy score.
+        :param: fscore       - (Float) Float denoting experiment fscore score.
         :param: time_train   - Integer denoting number of seconds taken by LSTM training iteration
         :return: None
         """
         file_exists = os.path.isfile(path)
         with open(path, 'a') as csvfile:
-            headers = ['iteration', 'lag', 'test_split', 'max_depth', 'max_features', 'score', 'time_train']
+            headers = ['iteration', 'lag', 'test_split', 'max_depth', 'max_features', 'rmse', 'accuracy', 'f_score', 'time_train']
             writer = csv.DictWriter(csvfile, delimiter=',', lineterminator='\n', fieldnames=headers)
             if not file_exists:
                 writer.writeheader()  # file doesn't exist yet, write a header
@@ -734,8 +784,22 @@ class RandomForest:
                              'test_split': test_split,
                              'max_depth': max_depth,
                              'max_features': max_features,
-                             'score': score,
+                             'rmse': rmse,
+                             'accuracy': accuracy,
+                             'f_score': f_score,
                              'time_train': time_train})
+
+""" Data Encoding """
+
+X_df = pd.DataFrame(BinClass.discretize_value(X_df.values, bin_value), columns=X_df.columns)
+y_df = pd.DataFrame(BinClass.discretize_value(y_df.values, bin_value), columns=y_df.columns)
+print(np.unique(X_df.values))
+print(np.unique(y_df.values))
+
+X_df = X_df.apply(LabelEncoder().fit_transform)
+y_df = y_df.apply(LabelEncoder().fit_transform)
+print(np.unique(X_df.values))
+print(np.unique(y_df.values))
 
 """ Hyper Parameter Grid Search """
 
@@ -752,7 +816,7 @@ for test_split in test_harness_param:
     for features in max_features:
         for depth in max_depth:
             t0 = time.time()
-            model = RandomForest(mode='regression',
+            model = RandomForest(mode='classification',
                                  n_estimators=n_estimators,
                                  parallel_degree=parallel_degree,
                                  max_depth=depth,
@@ -761,17 +825,18 @@ for test_split in test_harness_param:
                                  max_features=features)
             model.fit_model(X=X_train,
                             y=y_train)
-            rmse_list = []
+            acc_list, f_list = [], []
             for i in range(0, X_validate.shape[0]):
                 X = np.array([X_validate[i, :]])
                 y = model.predict(X)
                 model.fit_model(X=X,
                                 y=y)
 
-                rmse = model.evaluate(y=y_validate[i, :],
-                                      yhat=y,
-                                      plot=False)
-                rmse_list.append(rmse)
+                acc_score, f_score = model.evaluate(y=y_validate[i, :],
+                                                    yhat=y,
+                                                    plot=False)
+                acc_list.append(acc_score)
+                f_list.append(f_score)
 
             t1 = time.time()
             time_total = t1 - t0
@@ -781,7 +846,9 @@ for test_split in test_harness_param:
                                                test_split=test_split,
                                                max_depth=depth,
                                                max_features=features,
-                                               score=sum(rmse_list) / len(rmse_list),
+                                               rmse=None,
+                                               accuracy=sum(acc_list) / len(acc_list),
+                                               f_score=sum(f_list) / len(f_list),
                                                time_train=time_total)
 
             print('----------------------------'+str(iteration)+'----------------------------')

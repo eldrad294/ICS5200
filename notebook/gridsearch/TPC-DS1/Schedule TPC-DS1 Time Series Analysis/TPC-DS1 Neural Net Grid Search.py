@@ -24,6 +24,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_selection import RFE
 from sklearn import preprocessing
 from sklearn.metrics import r2_score
+from sklearn.preprocessing import LabelEncoder
 import sklearn as sk
 print('sklearn: %s' % sk.__version__)
 # theano
@@ -56,13 +57,14 @@ max_epochs = (5, 25, 50, 100, 150)
 max_batch = (32, 64, 128)
 layers = (1, 2, 3)
 drop_out = (0, .2, .4)
+initializers = ('zero', 'uniform', 'normal', 'lecun_uniform')
 parallel_degree = -1
 n_estimators = 300
-y_label = ['CPU_TIME_DELTA','ELAPSED_TIME_DELTA']
+y_label = ['CPU_TIME_DELTA', 'ELAPSED_TIME_DELTA']
 
 # Root path
-# root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
-root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
+root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
+# root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
 
 # Open Data
 rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
@@ -667,7 +669,7 @@ class NeuralNet:
     """
 
     def __init__(self, X, y, lag, loss_func, activation, mode='regression', optimizer='sgd', layers=1, dropout=.0,
-                 y_labels=None):
+                 y_labels=None, initializer='uniform'):
         """
         Initiating the class creates a net with the established parameters
         :param X             - (Numpy 2D Array) Training data used to train the model (Features).
@@ -679,7 +681,8 @@ class NeuralNet:
         :param optimizer     - (String)  Denotes which function to us to optimize the model build (eg: Gradient Descent).
         :param layers        - (Integer) Denotes the number of Neuron layers to be included in the model build.
         :param dropout       - (Float)   Denotes amount of dropout for model. This parameter must be a value between 0 and 1.
-        :param: y_labels     - (List) List of target label names
+        :param: y_labels     - (List)    List of target label names.
+        :param: initializer  - (String)  String initializer which denotes starting weights.
         """
         self.mode = mode
         self.__lag = lag
@@ -690,9 +693,15 @@ class NeuralNet:
             raise ValueError('Dropout parameter exceeded! Must be a value between 0 and 1.')
 
         for i in range(0, layers):
-            self.__model.add(ke.layers.Dense(X.shape[1], activation=activation, input_shape=(X.shape[1],)))
+            self.__model.add(ke.layers.Dense(X.shape[1],
+                                             kernel_initializer=initializer,
+                                             activation=activation,
+                                             input_shape=(X.shape[1],)))
             self.__model.add(ke.layers.Dropout(dropout))
-        self.__model.add(ke.layers.Dense(X.shape[1], activation='softmax', input_shape=(X.shape[1],)))
+        self.__model.add(ke.layers.Dense(X.shape[1],
+                                         kernel_initializer=initializer,
+                                         activation='sigmoid',
+                                         input_shape=(X.shape[1],)))
         self.__model.add(ke.layers.Dropout(dropout))
 
         self.__model.add(ke.layers.Dense(self.__lag * len(self.__y_labels)))
@@ -869,6 +878,12 @@ X_df = pd.DataFrame(BinClass.discretize_value(X_df.values, bin_value), columns=X
 y_df = pd.DataFrame(BinClass.discretize_value(y_df.values, bin_value), columns=y_df.columns)
 print(np.unique(X_df.values))
 print(np.unique(y_df.values))
+
+X_df = X_df.apply(LabelEncoder().fit_transform)
+y_df = y_df.apply(LabelEncoder().fit_transform)
+print(np.unique(X_df.values))
+print(np.unique(y_df.values))
+
 # X_df = pd.DataFrame(ke.utils.to_categorical(X_df.values, num_classes=None), columns=X_df.columns)
 # y_df = pd.DataFrame(ke.utils.to_categorical(y_df.values, num_classes=None), columns=y_df.columns)
 # print(np.unique(X_df.values))
@@ -902,57 +917,59 @@ for test_split in test_harness_param:
         for batch in max_batch:
             for layer in layers:
                 for dropout in drop_out:
-                    t0 = time.time()
-                    model = NeuralNet(X=X_train,
-                                      y=y_train,
-                                      lag=lag,
-                                      loss_func='binary_crossentropy',
-                                      activation='sigmoid',
-                                      optimizer='adam',
-                                      mode='classification',
-                                      layers=layer,
-                                      dropout=dropout,
-                                      y_labels=y_label)
+                    for initializer in initializers:
+                        t0 = time.time()
+                        model = NeuralNet(X=X_train,
+                                          y=y_train,
+                                          lag=lag,
+                                          loss_func='binary_crossentropy',
+                                          activation='relu',
+                                          optimizer='adam',
+                                          mode='classification',
+                                          layers=layer,
+                                          dropout=dropout,
+                                          y_labels=y_label,
+                                          initializer=initializer)
 
-                    model.fit_model(X_train=X_train,
-                                    X_test=X_validate,
-                                    y_train=y_train,
-                                    y_test=y_validate,
-                                    epochs=epochs,
-                                    batch_size=batch,
-                                    verbose=2,
-                                    shuffle=False,
-                                    plot=False)
-                    acc_list, f_list = [], []
-                    for i in range(0, X_validate.shape[0]):
-                        X = np.array([X_validate[i, :]])
-                        y = model.predict(X, batch_size=batch)
-                        model.fit_model(X_train=X,
-                                        y_train=y,
-                                        epochs=5,
-                                        batch_size=1,
-                                        verbose=1,
+                        model.fit_model(X_train=X_train,
+                                        X_test=X_validate,
+                                        y_train=y_train,
+                                        y_test=y_validate,
+                                        epochs=epochs,
+                                        batch_size=batch,
+                                        verbose=2,
                                         shuffle=False,
-                                        plot=False)  # Online Learning, Training on validation predictions.
-                        acc_score, f_score = model.evaluate(y=y_validate[i,:],
-                                                            yhat=y,
-                                                            plot=False)
-                        acc_list.append(acc_score)
-                        f_list.append(f_score)
+                                        plot=False)
+                        acc_list, f_list = [], []
+                        for i in range(0, X_validate.shape[0]):
+                            X = np.array([X_validate[i, :]])
+                            y = model.predict(X, batch_size=batch)
+                            model.fit_model(X_train=X,
+                                            y_train=y,
+                                            epochs=5,
+                                            batch_size=1,
+                                            verbose=1,
+                                            shuffle=False,
+                                            plot=False)  # Online Learning, Training on validation predictions.
+                            acc_score, f_score = model.evaluate(y=y_validate[i,:],
+                                                                yhat=y,
+                                                                plot=False)
+                            acc_list.append(acc_score)
+                            f_list.append(f_score)
 
-                    t1 = time.time()
-                    time_total = t1 - t0
-                    NeuralNet.write_results_to_disk(path="time_series_nn_results.csv",
-                                                    iteration=iteration,
-                                                    lag=lag,
-                                                    test_split=test_split,
-                                                    epoch=epochs,
-                                                    layer=layer,
-                                                    dropout=dropout,
-                                                    batch=batch,
-                                                    rmse=None,
-                                                    accuracy=sum(acc_list) / len(acc_list),
-                                                    f_score=sum(f_list) / len(f_list),
-                                                    time_train=time_total)
-                    print('----------------------------' + str(iteration) + '----------------------------')
-                    iteration += 1
+                        t1 = time.time()
+                        time_total = t1 - t0
+                        NeuralNet.write_results_to_disk(path="time_series_nn_results.csv",
+                                                        iteration=iteration,
+                                                        lag=lag,
+                                                        test_split=test_split,
+                                                        epoch=epochs,
+                                                        layer=layer,
+                                                        dropout=dropout,
+                                                        batch=batch,
+                                                        rmse=None,
+                                                        accuracy=sum(acc_list) / len(acc_list),
+                                                        f_score=sum(f_list) / len(f_list),
+                                                        time_train=time_total)
+                        print('----------------------------' + str(iteration) + '----------------------------')
+                        iteration += 1
