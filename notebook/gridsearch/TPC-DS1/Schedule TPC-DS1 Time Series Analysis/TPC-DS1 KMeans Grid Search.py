@@ -64,7 +64,7 @@ n_estimators = 300
 n_clusters = bin_value
 n_jobs = parallel_degree
 initializers = ('k-means++', 'random')
-random_state = 0
+random_state = None
 
 # Root path
 root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
@@ -548,17 +548,17 @@ class FeatureEliminator:
 
         return self.__X_df[recommended_columns]
 
-# fe = FeatureEliminator(X_df=X_df,
-#                        y_df=y_df)
-# column_mask, column_rankings = fe.rfe_selector(test_split=test_split,
-#                                                optimum_feature_count=X_df.shape[1]/4,
-#                                                parallel_degree=parallel_degree,
-#                                                max_depth=1,
-#                                                max_features='sqrt',
-#                                                n_estimators=n_estimators)
-# print(X_df.columns)
-# X_df = fe.get_selected_features(column_mask=column_mask)
-# print(X_df.columns)
+fe = FeatureEliminator(X_df=X_df,
+                       y_df=y_df)
+column_mask, column_rankings = fe.rfe_selector(test_split=test_split,
+                                               optimum_feature_count=X_df.shape[1]/4,
+                                               parallel_degree=parallel_degree,
+                                               max_depth=1,
+                                               max_features='sqrt',
+                                               n_estimators=n_estimators)
+print(X_df.columns)
+X_df = fe.get_selected_features(column_mask=column_mask)
+print(X_df.columns)
 
 class PrincipalComponentAnalysisClass:
     """
