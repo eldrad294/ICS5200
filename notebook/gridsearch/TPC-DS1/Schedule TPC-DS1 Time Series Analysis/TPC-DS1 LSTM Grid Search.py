@@ -53,7 +53,7 @@ nrows=None
 iteration = 0
 lag = 13
 test_harness_param = (.2, .3, .4, .5)
-max_epochs = (5, 25, 50, 100)
+max_epochs = (5, 25, 50, 100, 150)
 max_batch = (32, 64, 128)
 lstm_layers = (1, 2, 3)
 states = (False,)
@@ -963,7 +963,7 @@ for test_split in test_harness_param:
                                              y=y_train,
                                              lag=lag,
                                              loss_func='binary_crossentropy',
-                                             activation='relu',
+                                             activation=activation,
                                              optimizer='adam',
                                              mode='classification',
                                              lstm_layers=layer,
