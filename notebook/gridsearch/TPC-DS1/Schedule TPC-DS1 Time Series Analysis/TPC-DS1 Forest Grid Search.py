@@ -501,10 +501,10 @@ class FeatureEliminator:
 
 fe = FeatureEliminator(X_df=X_df,
                        y_df=y_df)
-column_mask, column_rankings = fe.rfe_selector(test_split=.7,
+column_mask, column_rankings = fe.rfe_selector(test_split=.3,
                                                optimum_feature_count=X_df.shape[1] / 4,
                                                parallel_degree=parallel_degree,
-                                               max_depth=1,
+                                               max_depth=3,
                                                max_features='sqrt',
                                                n_estimators=n_estimators)
 print(X_df.columns)
@@ -840,7 +840,7 @@ for test_split in test_harness_param:
 
             t1 = time.time()
             time_total = t1 - t0
-            RandomForest.write_results_to_disk(path="time_series_random_forest_regression_results.csv",
+            RandomForest.write_results_to_disk(path="time_series_random_forest_classification_results.csv",
                                                iteration=iteration,
                                                lag=lag,
                                                test_split=test_split,
