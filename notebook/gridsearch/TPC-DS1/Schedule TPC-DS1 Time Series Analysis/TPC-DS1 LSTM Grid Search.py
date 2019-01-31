@@ -47,19 +47,19 @@ import time
 
 """ Config Setup """
 # Experiment Config
-tpcds='TPCDS1' # Schema upon which to operate test
+tpcds='TPCDS1'  # Schema upon which to operate test
 bin_value = 2
 nrows=None
 iteration = 0
 lag = 13
 test_harness_param = (.2, .3, .4, .5)
-max_epochs = (5, 25, 50, 100, 150)
+max_epochs = (50, 100, 150)
 max_batch = (32, 64, 128)
 lstm_layers = (1, 2, 3)
 states = (False,)
 drop_out = (0,.2,.4)
-activations = ('elu', 'selu', 'tanh', 'sigmoid', 'linear')
-initializers = ('zero', 'uniform', 'normal', 'lecun_uniform')
+activations = ('tanh', 'sigmoid')
+initializers = ('zero', 'uniform', 'normal')
 parallel_degree = -1
 n_estimators = 300
 y_label = ['CPU_TIME_DELTA', 'ELAPSED_TIME_DELTA']
@@ -730,8 +730,10 @@ class LSTM:
                                                 return_sequences=False))
         self.__model.add(ke.layers.Dropout(dropout))
         # self.__model.add(ke.layers.TimeDistributed(ke.layers.Dense(self.__lag * len(self.__y_labels), kernel_initializer=initializer)))
-        self.__model.add(ke.layers.Dense(self.__lag * len(self.__y_labels), kernel_initializer=initializer))
-        self.__model.add(ke.layers.Activation(activation.lower()))
+        self.__model.add(ke.layers.Dense(self.__lag * len(self.__y_labels),
+                                         kernel_initializer=initializer,
+                                         activation=activation))
+        self.__model.add(ke.layers.Activation(activation))
         self.__model.compile(loss=loss_func, optimizer=optimizer, metrics=['acc'])
         print(self.__model.summary())
 
@@ -840,8 +842,8 @@ class LSTM:
                 plt.show()
 
     @staticmethod
-    def write_results_to_disk(path, iteration, lag, test_split, batch, dropout, epoch, layer, stateful, rmse, accuracy,
-                              f_score, time_train):
+    def write_results_to_disk(path, iteration, lag, test_split, batch, dropout, epoch, layer, activation, initializer,
+                              stateful, rmse, accuracy, f_score, time_train):
         """
         Static method which is used for test harness utilities. This method attempts a grid search across many
         trained LSTM models, each denoted with different configurations.
@@ -860,6 +862,8 @@ class LSTM:
         :param: batch      - (Integer) Integer denoting LSTM batch size.
         :param: epoch      - (Integer) Integer denoting number of LSTM training iterations.
         :param: layer      - (Integer) Integer denoting number of LSTM layers
+        :param: activation - (String) String denoting activation for LSTM layers.
+        :param: initializer- (String) String denoting LSTM initializing weights.
         :param: stateful   - (Bool) Boolean flag which denotes whether LSTM model is trained in stateful mode or not.
         :param: dropout    - (Float) Float denoting model dropout layer.
         :param: rmse       - (Float) Float denoting experiment configuration RSME score.
@@ -871,8 +875,8 @@ class LSTM:
         """
         file_exists = os.path.isfile(path)
         with open(path, 'a+') as csvfile:
-            headers = ['iteration', 'test_split', 'batch', 'epoch', 'layer', 'stateful', 'dropout', 'rmse', 'accuracy', 'f_score',
-                       'time_train', 'lag']
+            headers = ['iteration', 'test_split', 'batch', 'epoch', 'layer', 'stateful', 'dropout', 'activation',
+                       'initializer', 'rmse', 'accuracy', 'f_score', 'time_train', 'lag']
             writer = csv.DictWriter(csvfile, delimiter=',', lineterminator='\n', fieldnames=headers)
             if not file_exists:
                 writer.writeheader()  # file doesn't exist yet, write a header
@@ -883,6 +887,8 @@ class LSTM:
                              'layer': layer,
                              'stateful': stateful,
                              'dropout': dropout,
+                             'activation': activation,
+                             'initializer': initializer,
                              'rmse': rmse,
                              'accuracy': accuracy,
                              'f_score': f_score,
@@ -989,12 +995,12 @@ for test_split in test_harness_param:
                                     y = model.predict(X, batch_size=batch)
                                     model.fit_model(X_train=X,
                                                     y_train=y,
-                                                    epochs=5,
+                                                    epochs=2,
                                                     batch_size=1,
                                                     verbose=1,
                                                     shuffle=False,
                                                     plot=False)  # Online Learning, Training on validation predictions.
-                                    acc_score, f_score = model.evaluate(y=np.array(y_validate[i,:]),
+                                    acc_score, f_score = model.evaluate(y=np.array(y_validate[i, :]),
                                                                         yhat=y,
                                                                         plot=False)
                                     acc_list.append(acc_score)
@@ -1011,6 +1017,8 @@ for test_split in test_harness_param:
                                                            stateful=state,
                                                            dropout=dropout,
                                                            batch=batch,
+                                                           activation=activation,
+                                                           initializer=initializer,
                                                            rmse=None,
                                                            accuracy=sum(acc_list) / len(acc_list),
                                                            f_score=sum(f_list) / len(f_list),

@@ -53,12 +53,12 @@ nrows=None
 iteration = 0
 lag = 13
 test_harness_param = (.2, .3, .4, .5)
-max_epochs = (5, 25, 50, 100, 150)
+max_epochs = (50, 100, 150)
 max_batch = (32, 64, 128)
 layers = (1, 2, 3)
 drop_out = (0, .2, .4)
-activations = ('elu', 'selu', 'tanh', 'sigmoid', 'linear')
-initializers = ('zero', 'uniform', 'normal', 'lecun_uniform')
+activations = ('tanh', 'sigmoid')
+initializers = ('zero', 'uniform', 'normal')
 parallel_degree = -1
 n_estimators = 300
 y_label = ['CPU_TIME_DELTA', 'ELAPSED_TIME_DELTA']
@@ -701,12 +701,14 @@ class NeuralNet:
             self.__model.add(ke.layers.Dropout(dropout))
         self.__model.add(ke.layers.Dense(X.shape[1],
                                          kernel_initializer=initializer,
-                                         activation='sigmoid',
+                                         activation=activation,
                                          input_shape=(X.shape[1],)))
         self.__model.add(ke.layers.Dropout(dropout))
 
-        self.__model.add(ke.layers.Dense(self.__lag * len(self.__y_labels)))
-        self.__model.add(ke.layers.Activation(activation.lower()))
+        self.__model.add(ke.layers.Dense(self.__lag * len(self.__y_labels),
+                                         kernel_initializer=initializer,
+                                         activation=activation))
+        self.__model.add(ke.layers.Activation(activation))
         self.__model.compile(loss=loss_func, optimizer=optimizer, metrics=['acc'])
         print(self.__model.summary())
 
@@ -814,8 +816,8 @@ class NeuralNet:
                 plt.show()
 
     @staticmethod
-    def write_results_to_disk(path, iteration, lag, test_split, batch, dropout, epoch, layer, rmse, accuracy,
-                              f_score, time_train):
+    def write_results_to_disk(path, iteration, lag, test_split, batch, dropout, epoch, layer, activation, initializer,
+                              rmse, accuracy, f_score, time_train):
         """
         Static method which is used for test harness utilities. This method attempts a grid search across many
         trained NeuralNet models, each denoted with different configurations.
@@ -832,7 +834,9 @@ class NeuralNet:
         :param: lag        - (Integer) Denotes lag time shift
         :param: test_split - (Float) Float denoting data sample sizes.
         :param: epoch      - (Integer) Integer denoting number of NeuralNet training iterations.
-        :param: layer      - (Integer) Integer denoting number of NeuralNet layers
+        :param: layer      - (Integer) Integer denoting number of NeuralNet layers.
+        :param: activation - (String) String denoting activation for NeuralNet layers.
+        :param: initializer- (String) String denoting NeuralNet initializing weights.
         :param: dropout    - (Float) Float denoting model dropout layer.
         :param: rmse       - (Float) Float denoting experiment configuration RSME score.
         :param: accuracy   - (Float) Float denoting experiment accuracy score.
@@ -843,8 +847,8 @@ class NeuralNet:
         """
         file_exists = os.path.isfile(path)
         with open(path, 'a+') as csvfile:
-            headers = ['iteration', 'test_split', 'batch', 'epoch', 'layer', 'dropout', 'rmse', 'accuracy', 'f_score',
-                       'time_train', 'lag']
+            headers = ['iteration', 'test_split', 'batch', 'epoch', 'layer', 'dropout', 'activation', 'initializer',
+                       'rmse', 'accuracy', 'f_score', 'time_train', 'lag']
             writer = csv.DictWriter(csvfile, delimiter=',', lineterminator='\n', fieldnames=headers)
             if not file_exists:
                 writer.writeheader()  # file doesn't exist yet, write a header
@@ -854,6 +858,8 @@ class NeuralNet:
                              'epoch': epoch,
                              'layer': layer,
                              'dropout': dropout,
+                             'activation': activation,
+                             'initializer': initializer,
                              'rmse': rmse,
                              'accuracy': accuracy,
                              'f_score': f_score,
@@ -948,7 +954,7 @@ for test_split in test_harness_param:
                                 y = model.predict(X, batch_size=batch)
                                 model.fit_model(X_train=X,
                                                 y_train=y,
-                                                epochs=5,
+                                                epochs=2,
                                                 batch_size=1,
                                                 verbose=1,
                                                 shuffle=False,
@@ -969,6 +975,8 @@ for test_split in test_harness_param:
                                                             layer=layer,
                                                             dropout=dropout,
                                                             batch=batch,
+                                                            activation=activation,
+                                                            initializer=initializer,
                                                             rmse=None,
                                                             accuracy=sum(acc_list) / len(acc_list),
                                                             f_score=sum(f_list) / len(f_list),
