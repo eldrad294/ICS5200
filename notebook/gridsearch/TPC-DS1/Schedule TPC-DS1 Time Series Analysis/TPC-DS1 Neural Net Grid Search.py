@@ -708,7 +708,6 @@ class NeuralNet:
         self.__model.add(ke.layers.Dense(self.__lag * len(self.__y_labels),
                                          kernel_initializer=initializer,
                                          activation=activation))
-        self.__model.add(ke.layers.Activation(activation))
         self.__model.compile(loss=loss_func, optimizer=optimizer, metrics=['acc'])
         print(self.__model.summary())
 
