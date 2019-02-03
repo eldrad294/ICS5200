@@ -58,7 +58,7 @@ max_batch = (32, 64, 128)
 layers = (1, 2, 3)
 drop_out = (0, .2, .4)
 activations = ('selu', 'tanh', 'sigmoid')
-initializers = ('zero',)
+initializers = ('zero', 'uniform', 'normal')
 state=False
 
 # Root path
@@ -607,6 +607,50 @@ print(type(y_df))
 # print(y_df.shape)
 # print(type(y_df))
 
+""" Discrete Training """
+
+class BinClass:
+    """
+    Takes data column, and scales them into discrete buckets. Parameter 'n' denotes number of buckets. This class needs
+    to be defined before the NeuralNet class, since it is referenced during the prediction stage. Since Keras models output a
+    continuous output (even when trained on discrete data), the 'BinClass' is required by the NeuralNet class.
+    """
+
+    @staticmethod
+    def __validate(df, n):
+        """
+        Validates class parameters
+        """
+        if df is None:
+            raise ValueError('Input data parameter is empty!')
+        elif n < 2:
+            raise ValueError('Number of buckets must be greater than 1')
+
+    @staticmethod
+    def __bucket_val(val, threshold, n):
+        """
+        Receives threshold value and buckets the val according to the passed threshold
+        """
+        for i in range(1, n+1):
+            if val <= threshold * i:
+                return i-1
+
+    @staticmethod
+    def discretize_value(X, n):
+        """
+        param: X - Input data
+        param: n - Number of buckets
+        """
+        if len(X.shape) == 1:
+            X = np.reshape(X, (-1, 1))
+
+        for i in range(X.shape[1]):
+            max_val = X[:,i].max()
+            threshold = max_val / n
+            myfunc_vec = np.vectorize(lambda x: BinClass.__bucket_val(x, threshold, n))
+            X[:,i] = myfunc_vec(X[:,i])
+        return X
+
 """ Deep Learning Model (LSTM) """
 
 # LSTM Class
@@ -745,6 +789,8 @@ class LSTM:
         :param: plot     - (Bool) Boolean value denoting whether this function should plot out it's evaluation
         :return: None
         """
+        y = BinClass.discretize_value(y, 2)
+        yhat = BinClass.discretize_value(yhat, 2)
         y = y.flatten()
         yhat = yhat.flatten()
 

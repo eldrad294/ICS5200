@@ -463,6 +463,71 @@ print(df['SQL_ID'].iloc[1])
 print("Length at index 2: " + str(len(df['SQL_ID'].iloc[2])))
 print(df['SQL_ID'].iloc[2])
 
+""" Expand Feature Lists """
+
+
+def sequence2features(df):
+    """
+    Converts pandas sequences into full fledged columns/features
+    """
+    feature_count = len(df[df.columns[0]].iloc[0])
+    for column_name in df.columns:
+        data_matrix = []
+        new_values = df[column_name].values
+
+        new_values = np.stack(new_values, axis=0)
+
+        for i in range(1, feature_count + 1):
+            new_column_name = column_name + "_" + str(i)
+            df[new_column_name] = new_values[:, i - 1]
+
+        # Drop original list columns
+        df.drop(column_name, inplace=True, axis=1)
+    return df
+
+
+print('Features')
+print('Before: ' + str(df.shape))
+df = sequence2features(df=df)
+print('After: ' + str(df.shape))
+
+
+""" One Hot Encoding """
+
+
+class OneHotEncoder:
+
+    def __init__(self, classes):
+        self.__mapper = pd.DataFrame(columns=classes)
+
+    def fit_transform(self, X):
+        class_types = self.__mapper.columns
+        for row in X:
+            temp_row = []
+            for i in range(len(class_types)):
+                if class_types[i] in row:
+                    temp_row.append(float(1))
+                else:
+                    temp_row.append(float(0))
+            self.__mapper.loc[len(self.__mapper)] = temp_row
+        return self.__mapper
+
+    def get_classes(self):
+        return self.__mapper.columns
+
+    def get_unique_values(self):
+        return np.unique(self.__mapper.values)
+
+# One Hot Encoding train data
+ohe = OneHotEncoder(classes=le.get_encoded_map())
+print('Training Data:')
+print("Before One Hot Encoding: " + str(df.shape))
+df = ohe.fit_transform(X=df.values)
+print("After One Hot Encoding: " + str(df.shape))
+print(df)
+print('Value type: ' + str(ohe.get_unique_values()))
+print(type(df))
+
 """ Time Series Shifting """
 
 
@@ -549,68 +614,6 @@ print(y_df.shape)
 # print('\n-------------\nLabels After Time Shift')
 # print(y_df.columns)
 # print(y_df.shape)
-
-""" Expand Feature Lists """
-
-
-def sequence2features(df):
-    """
-    Converts pandas sequences into full fledged columns/features
-    """
-    feature_count = len(df[df.columns[0]].iloc[0])
-    for column_name in df.columns:
-        data_matrix = []
-        new_values = df[column_name].values
-
-        new_values = np.stack(new_values, axis=0)
-
-        for i in range(1, feature_count + 1):
-            new_column_name = column_name + "_" + str(i)
-            df[new_column_name] = new_values[:, i - 1]
-
-        # Drop original list columns
-        df.drop(column_name, inplace=True, axis=1)
-    return df
-
-
-print('Features')
-print('Before: ' + str(X_df.shape))
-X_df = sequence2features(df=X_df)
-print('After: ' + str(X_df.shape))
-
-print('Labels')
-print('Before: ' + str(y_df.shape))
-y_df = sequence2features(df=y_df)
-print('After: ' + str(y_df.shape))
-
-""" Feature Selection """
-
-print('Before: ' + str(X_df.shape))
-print('After: ' + str(y_df.shape))
-
-
-def drop_flatline_columns(df):
-    columns = df.columns
-    flatline_features = []
-    for i in range(len(columns)):
-        try:
-            std = df[columns[i]].std()
-            if std == 0:
-                flatline_features.append(columns[i])
-        except:
-            pass
-
-    print('\nShape before changes: [' + str(df.shape) + ']')
-    df = df.drop(columns=flatline_features)
-    print('Shape after changes: [' + str(df.shape) + ']')
-    print('Dropped a total [' + str(len(flatline_features)) + ']')
-    return df
-
-
-X_df = drop_flatline_columns(df=X_df)
-print('After: ' + str(X_df.shape))
-y_df = drop_flatline_columns(df=y_df)
-print('After: ' + str(y_df.shape))
 
 """ Tree Based Model """
 
