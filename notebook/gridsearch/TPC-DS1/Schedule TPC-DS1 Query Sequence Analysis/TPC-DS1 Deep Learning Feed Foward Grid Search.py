@@ -43,7 +43,7 @@ if lag < 1:
     raise ValueError('Lag value must be greater than 1!')
 
 iteration=0
-nrows=10000
+nrows=None
 test_harness_param = (.2, .3, .4, .5) # Denotes which Data Split to operate under when it comes to training / validation
 
 # Top Consumer Identification
@@ -69,7 +69,7 @@ rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
 rep_vsql_plan_path = root_dir + '/rep_vsql_plan.csv'
 
 rep_hist_snapshot_df = pd.read_csv(rep_hist_snapshot_path, nrows=nrows)
-rep_vsql_plan_df = pd.read_csv(rep_vsql_plan_path, nrows=nrows)
+rep_vsql_plan_df = pd.read_csv(rep_vsql_plan_path, nrows=4000000)
 
 def prettify_header(headers):
     """
@@ -727,8 +727,8 @@ class NeuralNet:
         yhat = yhat.flatten()
 
         # F1-Score Evaluation
-        #print(y)
-        #print(yhat)
+        print(y)
+        print(yhat)
         accuracy = accuracy_score(y, yhat)
         f1 = f1_score(y,
                       yhat,
@@ -861,11 +861,9 @@ for test_split in test_harness_param:
                             for i in range(0, X_validate.shape[0]):
                                 X = np.array([X_validate[i, :]])
                                 y = model.predict(X, batch_size=batch)
-                                print(X)
-                                print(y)
                                 model.fit_model(X_train=X,
                                                 y_train=y,
-                                                epochs=2,
+                                                epochs=5,
                                                 batch_size=1,
                                                 verbose=1,
                                                 shuffle=False,
