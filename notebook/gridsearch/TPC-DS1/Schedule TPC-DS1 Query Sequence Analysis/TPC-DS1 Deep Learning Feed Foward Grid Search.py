@@ -1,4 +1,4 @@
-""" Module Imports """
+""" Module Import """
 
 # scipy
 import scipy as sc
@@ -9,21 +9,32 @@ print('numpy: %s' % np.__version__)
 # matplotlib
 import matplotlib.pyplot as plt
 from statsmodels.graphics.gofplots import qqplot
-from statsmodels.graphics.tsaplots import plot_acf
 # pandas
 import pandas as pd
 print('pandas: %s' % pd.__version__)
 # scikit-learn
-from sklearn.preprocessing import MinMaxScaler, LabelEncoder
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier, IsolationForest
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import f1_score, accuracy_score, roc_curve, roc_auc_score, mean_squared_error
+from sklearn import preprocessing
+from sklearn.metrics import f1_score, accuracy_score, roc_curve, roc_auc_score
+from sklearn.ensemble import IsolationForest
 import sklearn as sk
 print('sklearn: %s' % sk.__version__)
-import math, time
-import csv, os
+# theano
+import theano
+print('theano: %s' % theano.__version__)
+# tensorflow
+import tensorflow
+print('tensorflow: %s' % tensorflow.__version__)
+# plaidml keras
+import plaidml.keras
+plaidml.keras.install_backend()
+# keras
+import keras as ke
+print('keras: %s' % ke.__version__)
+import math, csv, time, os
 
-""" Configuration """
+""" Configuration Cell """
 
 # Experiment Config
 tpcds='TPCDS1' # Schema upon which to operate test
@@ -31,27 +42,29 @@ lag=13 # Time Series shift / Lag Step. Each lag value equates to 1 minute. Canno
 if lag < 1:
     raise ValueError('Lag value must be greater than 1!')
 
-nrows = None
-test_split=.2 # Denotes which Data Split to operate under when it comes to training / validation
+iteration=0
+nrows=10000
+test_harness_param = (.2, .3, .4, .5) # Denotes which Data Split to operate under when it comes to training / validation
 
 # Top Consumer Identification
 y_label = ['COST','CARDINALITY','BYTES','IO_COST','TEMP_SPACE','TIME']
 black_list = ['TIMESTAMP','SQL_ID'] # Columns which will be ignored during type conversion, and later used for aggregation
 contamination = .1
-
-# Forest Config
-test_harness_param_list = (.2,.3,.4,.5)
-max_features_list=('sqrt','log2', None)
-max_depth_list=(3, 6, None)
-n_estimators = 300
 parallel_degree = -1
-iteration = 0
+
+# Net Config
+max_epochs = (50, 100, 150)
+max_batch = (32, 64, 128)
+layers = (1, 2, 3)
+drop_out = (0, .2, .4)
+activations = ('selu', 'tanh', 'sigmoid')
+initializers = ('zero',)
 
 # Root path
 #root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
 root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
 
-# Open Data'
+# Open Data
 rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
 rep_vsql_plan_path = root_dir + '/rep_vsql_plan.csv'
 
@@ -73,7 +86,7 @@ print(rep_hist_snapshot_df.columns.values)
 print('------------------------------------------')
 print(rep_vsql_plan_df.columns)
 
-""" Empty value subsitution """
+""" Dealing with empty values """
 
 def get_na_columns(df, headers):
     """
@@ -100,7 +113,7 @@ def fill_na(df):
 rep_hist_snapshot_df = fill_na(df=rep_hist_snapshot_df)
 rep_vsql_plan_df = fill_na(df=rep_vsql_plan_df)
 
-""" Numeric conversion and overflow handling """
+""" Type conversion """
 
 
 def handle_numeric_overflows(x):
@@ -131,13 +144,13 @@ for col in rep_vsql_plan_df.columns:
 print(rep_hist_snapshot_df.columns)
 print(rep_vsql_plan_df.columns)
 
-""" Changing matrix shapes """
+""" Changing Matrix Shapes """
 
 print("Shape Before Aggregation: " + str(rep_hist_snapshot_df.shape))
-
+#
 # Group By Values by SNAP_ID , sum all metrics (for table REP_HIST_SNAPSHOT) and drop all numeric
 df = rep_hist_snapshot_df.groupby(['SNAP_ID'])['SQL_ID'].apply(list).reset_index()
-
+#
 print("Shape After Aggregation: " + str(df.shape))
 print(type(df))
 print(df.head(100))
@@ -396,19 +409,12 @@ class LabelEncoder:
             encoded_map.append(value)
         return encoded_map
 
-    def get_map(self):
-        return self.__class_map
-
 print(df.shape)
 print(df.head(10))
 le = LabelEncoder()
-
-# Train to SQL Encoder
 for index, row in df.iterrows():
     sql_id_list = row['SQL_ID']
     le.fit(sql_id_list)
-
-# Transform SQL_IDs using above trained encoder
 for index, row in df.iterrows():
     sql_id_list = row['SQL_ID']
     transformed_list = le.transform(sql_id_list)
@@ -463,95 +469,7 @@ print(df['SQL_ID'].iloc[1])
 print("Length at index 2: " + str(len(df['SQL_ID'].iloc[2])))
 print(df['SQL_ID'].iloc[2])
 
-""" Time Series Shifting """
-
-
-def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
-    """
-    Frame a time series as a supervised learning dataset.
-    Arguments:
-        data: Sequence of observations as a list or NumPy array.
-        n_in: Number of lag observations as input (X).
-        n_out: Number of observations as output (y).
-        dropnan: Boolean whether or not to drop rows with NaN values.
-    Returns:
-        Pandas DataFrame of series framed for supervised learning.
-    """
-    n_vars = 1 if type(data) is list else data.shape[1]
-    df = data
-    cols, names = list(), list()
-    # input sequence (t-n, ... t-1)
-    if n_in != 0:
-        for i in range(n_in, 0, -1):
-            cols.append(df.shift(i))
-            names += [('var%d(t-%d)' % (j + 1, i)) for j in range(n_vars)]
-    # forecast sequence (t, t+1, ... t+n)
-    n_out += 1
-    for i in range(0, n_out):
-        cols.append(df.shift(-i))
-        if i == 0:
-            names += [('var%d(t)' % (j + 1)) for j in range(n_vars)]
-        else:
-            names += [('var%d(t+%d)' % (j + 1, i)) for j in range(n_vars)]
-    # put it all together
-    agg = pd.concat(cols, axis=1)
-    agg.columns = names
-    # drop rows with NaN values
-    if dropnan:
-        agg.dropna(inplace=True)
-    return agg
-
-
-def remove_n_time_steps(data, n=1):
-    if n == 0:
-        return data
-    df = data
-    headers = df.columns
-    dropped_headers = []
-
-    for i in range(1, n + 1):
-        for header in headers:
-            if "(t+" + str(i) + ")" in header:
-                dropped_headers.append(str(header))
-
-    return df.drop(dropped_headers, axis=1)
-
-
-# Frame as supervised learning set
-shifted_df = series_to_supervised(df, lag, lag)
-
-# Seperate labels from features
-y_row = []
-for i in range(lag + 1, (lag * 2) + 2):
-    y_df_column_names = shifted_df.columns[len(df.columns) * i:len(df.columns) * i + 1]
-    y_row.append(y_df_column_names)
-y_df_column_names = []
-for row in y_row:
-    for val in row:
-        y_df_column_names.append(val)
-
-# y_df_column_names = shifted_df.columns[len(df.columns)*lag:len(df.columns)*lag + len(y_label)]
-y_df = shifted_df[y_df_column_names]
-X_df = shifted_df.drop(columns=y_df_column_names)
-print('\n-------------\nFeatures')
-print(X_df.columns)
-print(X_df.shape)
-print('\n-------------\nLabels')
-print(y_df.columns)
-print(y_df.shape)
-
-# Delete middle timesteps
-# X_df = remove_n_time_steps(data=X_df, n=lag)
-# print('\n-------------\nFeatures After Time Shift')
-# print(X_df.columns)
-# print(X_df.shape)
-# # y_df = remove_n_time_steps(data=y_df, n=lag)
-# print('\n-------------\nLabels After Time Shift')
-# print(y_df.columns)
-# print(y_df.shape)
-
 """ Expand Feature Lists """
-
 
 def sequence2features(df):
     """
@@ -574,142 +492,249 @@ def sequence2features(df):
 
 
 print('Features')
-print('Before: ' + str(X_df.shape))
-X_df = sequence2features(df=X_df)
-print('After: ' + str(X_df.shape))
+print('Before: ' + str(df.shape))
+df = sequence2features(df=df)
+print('After: ' + str(df.shape))
 
-print('Labels')
-print('Before: ' + str(y_df.shape))
-y_df = sequence2features(df=y_df)
-print('After: ' + str(y_df.shape))
-
-""" Feature Selection """
-
-print('Before: ' + str(X_df.shape))
-print('After: ' + str(y_df.shape))
+""" One Hot Encoding """
 
 
-def drop_flatline_columns(df):
-    columns = df.columns
-    flatline_features = []
-    for i in range(len(columns)):
-        try:
-            std = df[columns[i]].std()
-            if std == 0:
-                flatline_features.append(columns[i])
-        except:
-            pass
+class OneHotEncoder:
 
-    print('\nShape before changes: [' + str(df.shape) + ']')
-    df = df.drop(columns=flatline_features)
-    print('Shape after changes: [' + str(df.shape) + ']')
-    print('Dropped a total [' + str(len(flatline_features)) + ']')
-    return df
+    def __init__(self, classes):
+        self.__mapper = pd.DataFrame(columns=classes)
 
+    def fit_transform(self, X):
+        class_types = self.__mapper.columns
+        for row in X:
+            temp_row = []
+            for i in range(len(class_types)):
+                if class_types[i] in row:
+                    temp_row.append(float(1))
+                else:
+                    temp_row.append(float(0))
+            self.__mapper.loc[len(self.__mapper)] = temp_row
+        return self.__mapper
 
-X_df = drop_flatline_columns(df=X_df)
-print('After: ' + str(X_df.shape))
-y_df = drop_flatline_columns(df=y_df)
-print('After: ' + str(y_df.shape))
+    def get_classes(self):
+        return self.__mapper.columns
 
-""" Tree Based Model """
+    def get_unique_values(self):
+        return np.unique(self.__mapper.values)
 
-# Random Forest
-class RandomForest:
+# One Hot Encoding train data
+ohe = OneHotEncoder(classes=le.get_encoded_map())
+print('Training Data:')
+print("Before One Hot Encoding: " + str(df.shape))
+df = ohe.fit_transform(X=df.values)
+print("After One Hot Encoding: " + str(df.shape))
+print(df)
+print('Value type: ' + str(ohe.get_unique_values()))
+print(type(df))
+
+""" Time Series Shifting """
+
+def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     """
-    Random Forest Class (Regression + Classification)
+    Frame a time series as a supervised learning dataset.
+    Arguments:
+        data: Sequence of observations as a list or NumPy array.
+        n_in: Number of lag observations as input (X).
+        n_out: Number of observations as output (y).
+        dropnan: Boolean whether or not to drop rows with NaN values.
+    Returns:
+        Pandas DataFrame of series framed for supervised learning.
+    """
+    n_vars = 1 if type(data) is list else data.shape[1]
+    df = data
+    cols, names = list(), list()
+    # input sequence (t-n, ... t-1)
+    if n_in != 0:
+        for i in range(n_in, 0, -1):
+            cols.append(df.shift(i))
+            names += [('var%d(t-%d)' % (j+1, i)) for j in range(n_vars)]
+    # forecast sequence (t, t+1, ... t+n)
+    n_out += 1
+    for i in range(0, n_out):
+        cols.append(df.shift(-i))
+        if i == 0:
+            names += [('var%d(t)' % (j+1)) for j in range(n_vars)]
+        else:
+            names += [('var%d(t+%d)' % (j+1, i)) for j in range(n_vars)]
+    # put it all together
+    agg = pd.concat(cols, axis=1)
+    agg.columns = names
+    # drop rows with NaN values
+    if dropnan:
+        agg.dropna(inplace=True)
+    return agg
+
+def remove_n_time_steps(data, n=1):
+    if n == 0:
+        return data
+    df = data
+    headers = df.columns
+    dropped_headers = []
+    #
+    for i in range(1,n+1):
+        for header in headers:
+            if "(t+"+str(i)+")" in header:
+                dropped_headers.append(str(header))
+    #
+    return df.drop(dropped_headers, axis=1)
+
+# Frame as supervised learning set
+shifted_df = series_to_supervised(df, lag, lag)
+
+# Seperate labels from features
+x_columns, y_columns = [], []
+for col in shifted_df.columns:
+    if '+' in col:
+        y_columns.append(col)
+    else:
+        x_columns.append(col)
+
+y_df = shifted_df[y_columns]
+X_df = shifted_df[x_columns]
+print('\n-------------\nFeatures')
+print(X_df.columns)
+print(X_df.shape)
+print(type(X_df))
+print('\n-------------\nLabels')
+print(y_df.columns)
+print(y_df.shape)
+print(type(y_df))
+
+# # Delete middle timesteps
+# X_df = remove_n_time_steps(data=X_df, n=lag)
+# print('\n-------------\nFeatures After Time Shift')
+# print(X_df.columns)
+# print(X_df.shape)
+# print(type(X_df))
+# # y_df = remove_n_time_steps(data=y_df, n=lag)
+# print('\n-------------\nLabels After Time Shift')
+# print(y_df.columns)
+# print(y_df.shape)
+# print(type(y_df))
+
+""" Deep Learning Model """
+
+# NeuralNet Class
+class NeuralNet:
+    """
+    NeuralNet Class
     """
 
-    def __init__(self, mode, n_estimators, max_depth, parallel_degree, lag, max_features='sqrt'):
+    def __init__(self, X, y, lag, loss_func, activation, optimizer='sgd', layers=1, dropout=.0,
+                 initializer='uniform'):
         """
-        Constructor method for RandomForest wrapper
-        :param: mode            - String denoting the class to activate either 'classification' or 'regression' logic.
-        :param: n_estimators    - Integer denoting number of decision making forests utilized by inner forests.
-        :param: max_depth       - Integer denoting tree purity cut off.
-        :param: parallel_degree - Integer denoting model parallel degree.
-        :param: lag             - Integer denoting lag value.
-        :param: max_features    - String denoting the max amount of features to consider.
-        :return: None
+        Initiating the class creates a net with the established parameters
+        :param X             - (Numpy 2D Array) Training data used to train the model (Features).
+        :param y             - (Numpy 2D Array) Test data used to test the model (Labels
+        :param lag           - (Integer) Denotes lag step value
+        :param loss_function - (String)  Denotes mode of measure fitting of model (Fitting function).
+        :param activation    - (String)  Neuron activation function used to activate/trigger neurons.
+        :param optimizer     - (String)  Denotes which function to us to optimize the model build (eg: Gradient Descent).
+        :param layers        - (Integer) Denotes the number of Neuron layers to be included in the model build.
+        :param dropout       - (Float)   Denotes amount of dropout for model. This parameter must be a value between 0 and 1.
+        :param: initializer  - (String)  String initializer which denotes starting weights.
         """
         self.__lag = lag
-        self.__mode = self.__validate(mode)
-        self.__n_estimators = n_estimators
-        self.__max_depth = max_depth
-        self.__parallel_degree = parallel_degree
-        self.__max_features = max_features
-        if self.__mode == 'regression':
-            self.__model = RandomForestRegressor(max_depth=self.__max_depth,
-                                                 n_estimators=self.__n_estimators,
-                                                 n_jobs=self.__parallel_degree,
-                                                 max_features=self.__max_features)
-        elif self.__mode == 'classification':
-            self.__model = RandomForestClassifier(max_depth=self.__max_depth,
-                                                  n_estimators=self.__n_estimators,
-                                                  n_jobs=self.__parallel_degree,
-                                                  max_features=self.__max_features)
+        self.__model = ke.models.Sequential()
 
-    def __validate(self, mode):
-        """
-        Validation method used to validate input data
-        :param: mode - String denoting the class to activate either 'classification' or 'regression' logic.
-        :return: mode - String denoting the class to activate either 'classification' or 'regression' logic.
-        """
-        mode = mode.lower()
-        if mode not in ('classification', 'regression'):
-            raise ValueError('Specified mode is incorrect!')
-        return mode
+        if dropout > 1 and dropout < 0:
+            raise ValueError('Dropout parameter exceeded! Must be a value between 0 and 1.')
 
-    def fit_model(self, X, y):
+        for i in range(0, layers-1):
+            self.__model.add(ke.layers.Dense(X.shape[1],
+                                             kernel_initializer=initializer,
+                                             activation=activation,
+                                             input_shape=(X.shape[1],)))
+            self.__model.add(ke.layers.Dropout(dropout))
+        self.__model.add(ke.layers.Dense(X.shape[1],
+                                         kernel_initializer=initializer,
+                                         activation=activation,
+                                         input_shape=(X.shape[1],)))
+        self.__model.add(ke.layers.Dropout(dropout))
+        self.__model.add(ke.layers.Dense(y.shape[1],
+                                         kernel_initializer=initializer,
+                                         activation=activation))
+        self.__model.compile(loss=loss_func,
+                             optimizer=optimizer,
+                             metrics=['acc'])
+        print(self.__model.summary())
+
+    def fit_model(self, X_train=None, X_test=None, y_train=None, y_test=None, epochs=50, batch_size=50, verbose=2,
+                  shuffle=False, plot=False):
         """
-        This method fits training data to target labels
-        :param: X - Numpy array consisting of input feature vectors
-        :param: y - Numpy array consisting of output label vectors
+        Fit data to model & validate. Trains a number of epochs.
+
+        :param: X_train    - (Numpy 2D Array) Numpy matrix consisting of input training features
+        :param: X_test     - (Numpy 2D Array) Numpy matrix consisting of input validation/testing features
+        :param: y_train    - (Numpy 2D Array) Numpy matrix consisting of output training labels
+        :param: y_test     - (Numpy 2D Array) Numpy matrix consisting of output validation/testing labels
+        :param: epochs     - (Integer) Integer value denoting number of trained epochs
+        :param: verbose    - (Integer) Integer value denoting net verbosity (Amount of information shown to user during NeuralNet training)
+        :param: shuffle    - (Bool) Boolean value denoting whether or not to shuffle data. This parameter must always remain 'False' for time series datasets.
+        :param: plot       - (Bool) Boolean value denoting whether this function should plot out it's evaluation
+
         :return: None
         """
-        self.__model.fit(X, y)
+        if X_test is not None and y_test is not None:
+            history = self.__model.fit(x=X_train,
+                                       y=y_train,
+                                       epochs=epochs,
+                                       batch_size=batch_size,
+                                       validation_data=(X_test, y_test),
+                                       verbose=verbose,
+                                       shuffle=shuffle)
+        else:
+            history = self.__model.fit(x=X_train,
+                                       y=y_train,
+                                       epochs=epochs,
+                                       batch_size=batch_size,
+                                       verbose=verbose,
+                                       shuffle=shuffle)
 
-    def predict(self, X):
+        if plot:
+            plt.rcParams['figure.figsize'] = [20, 15]
+            plt.plot(history.history['acc'], label='train')
+            plt.plot(history.history['val_acc'], label='validation')
+            plt.ylabel('loss')
+            plt.xlabel('epoch')
+            plt.legend(['train', 'validation'], loc='upper left')
+            plt.show()
+
+    def predict(self, X, batch_size):
         """
-        This method predicts the output labels based on the input feature vectors
-        :param: X - Numpy array consisting of input feature vectors
-        :return: Numpy array consisting of output label vectors
+        Predicts label/s from input feature 'X'
+        :param: X - Numpy matrix consisting of a single feature vector
+        :param: batch_size - (Integer) Denotes prediction batch size
+        :return: Numpy matrix of predicted label output
         """
-        yhat = self.__model.predict(X)
+        yhat = self.__model.predict(X, batch_size=batch_size)
         return yhat
 
     def evaluate(self, y, yhat, plot=False):
         """
-        Evaluates y vs yhat
+        Receives 2D matrix of input features and 2D matrix of output labels, and evaluates input data and target predictions.
         :param: y    - Numpy array consisting of output label vectors (Test Set)
         :param: yhat - Numpy array consisting of output label vectors (Prediction Set)
-        :param: plot - Boolean value denoting whether this function should plot out it's evaluation
+        :param: plot     - (Bool) Boolean value denoting whether this function should plot out it's evaluation
         :return: None
         """
-        if self.__mode == 'regression':
+        y = y.flatten()
+        yhat = yhat.flatten()
 
-            # RMSE Evaluation
-            rmse = math.sqrt(mean_squared_error(y, yhat))
-            if not plot:
-                return rmse
-            print('Test RFR: %.3f\n-----------------------------\n\n' % rmse)
-
-        elif self.__mode == 'classification':
-
-            y = y.flatten()
-            yhat = yhat.flatten()
-
-            # Evaluation
-            print(y)
-            print(yhat)
-            accuracy = accuracy_score(y, yhat)
-            f1 = f1_score(y,
-                          yhat,
-                          average='macro')  # Calculate metrics globally by counting the total true positives, false negatives and false positives.
-            print('Accuracy [' + str(accuracy) + ']')
-            print('FScore [' + str(f1) + ']')
-
-            if not plot:
-                return accuracy, f1
+        # F1-Score Evaluation
+        #print(y)
+        #print(yhat)
+        accuracy = accuracy_score(y, yhat)
+        f1 = f1_score(y,
+                      yhat,
+                      average='macro')  # Calculate metrics globally by counting the total true positives, false negatives and false positives.
+        print('Accuracy [' + str(accuracy) + ']')
+        print('FScore [' + str(f1) + ']')
 
         if plot:
             plt.rcParams['figure.figsize'] = [20, 15]
@@ -718,50 +743,76 @@ class RandomForest:
             plt.legend(['actual', 'predicted'], loc='upper left')
             plt.title('Actual vs Predicted')
             plt.show()
+        else:
+            return accuracy, f1
 
     @staticmethod
-    def write_results_to_disk(path, iteration, lag, test_split, max_depth, max_features, rmse, accuracy,
-                              f_score, time_train):
+    def write_results_to_disk(path, iteration, lag, test_split, batch, dropout, epoch, layer, activation, initializer,
+                              rmse, accuracy, f_score, time_train):
         """
         Static method which is used for test harness utilities. This method attempts a grid search across many
-        trained RandomForest models, each denoted with different configurations.
+        trained NeuralNet models, each denoted with different configurations.
+
         Attempted configurations:
-        * Varied lag projection
         * Varied data test split
-        * Varied forest n_estimators
+        * Varied batch sizes
+        * Varied epoch counts
+
         Each configuration is denoted with a score, and used to identify the most optimal configuration.
 
-        :param: path         - String denoting path towards result csv output
-        :param: iteration    - Integer denoting test iteration (Unique per test configuration)
-        :param: lag          - Integer denoting lag value
-        :param: test_split   - Float denoting data sample sizes
-        :param: max_depth    - Integer denoting max number tree nodes to consider. This param can be 'None'.
-        :param: max_features - String denoting amount of feature subset to consider.
-        :param: rmse         - (Float) Float denoting experiment configuration RSME score.
-        :param: accuracy     - (Float) Float denoting experiment accuracy score.
-        :param: fscore       - (Float) Float denoting experiment fscore score.
-        :param: time_train   - Integer denoting number of seconds taken by LSTM training iteration
+        :param: path       - (String) String denoting result csv output.
+        :param: iteration  - (Integer) Integer denoting test iteration (Unique per test configuration).
+        :param: lag        - (Integer) Denotes lag time shift
+        :param: test_split - (Float) Float denoting data sample sizes.
+        :param: epoch      - (Integer) Integer denoting number of NeuralNet training iterations.
+        :param: layer      - (Integer) Integer denoting number of NeuralNet layers.
+        :param: activation - (String) String denoting activation for NeuralNet layers.
+        :param: initializer- (String) String denoting NeuralNet initializing weights.
+        :param: dropout    - (Float) Float denoting model dropout layer.
+        :param: rmse       - (Float) Float denoting experiment configuration RSME score.
+        :param: accuracy   - (Float) Float denoting experiment accuracy score.
+        :param: fscore     - (Float) Float denoting experiment fscore score.
+        :param: time_train - (Integer) Integer denoting number of seconds taken by NeuralNet training iteration.
+
         :return: None
         """
         file_exists = os.path.isfile(path)
-        with open(path, 'a') as csvfile:
-            headers = ['iteration', 'lag', 'test_split', 'max_depth', 'max_features', 'rmse', 'accuracy', 'f_score', 'time_train']
+        with open(path, 'a+') as csvfile:
+            headers = ['iteration', 'test_split', 'batch', 'epoch', 'layer', 'dropout', 'activation', 'initializer',
+                       'rmse', 'accuracy', 'f_score', 'time_train', 'lag']
             writer = csv.DictWriter(csvfile, delimiter=',', lineterminator='\n', fieldnames=headers)
             if not file_exists:
                 writer.writeheader()  # file doesn't exist yet, write a header
             writer.writerow({'iteration': iteration,
-                             'lag': lag,
                              'test_split': test_split,
-                             'max_depth': max_depth,
-                             'max_features': max_features,
+                             'batch': batch,
+                             'epoch': epoch,
+                             'layer': layer,
+                             'dropout': dropout,
+                             'activation': activation,
+                             'initializer': initializer,
                              'rmse': rmse,
                              'accuracy': accuracy,
                              'f_score': f_score,
-                             'time_train': time_train})
+                             'time_train': time_train,
+                             'lag': lag})
 
+    @staticmethod
+    def lag_multiple(X, lag):
+        """
+        Divides the total number of rows by the lag value, until a perfect multiple amount is retrieved.
+        :param X: (Numpy) 2D array consisting of input.
+        :param lag: (Integer) Denotes time shift value.
+        :return: (Numpy) 2D array consisting of a perfect lag multiple rows.
+        """
+        n_rows = X.shape[0]
+        multiple = int(n_rows/lag)
+        max_new_rows = multiple * lag
+        return X[0:max_new_rows,:]
 
-for test_split in test_harness_param_list:
+""" Grid Search """
 
+for test_split in test_harness_param:
     X_train, X_validate, y_train, y_validate = train_test_split(X_df, y_df, test_size=test_split)
     X_train = X_train.values
     y_train = y_train.values
@@ -770,51 +821,76 @@ for test_split in test_harness_param_list:
     y_validate = y_validate.values
     X_test = X_test.values
     y_test = y_test.values
-    print("X_train shape [" + str(X_train.shape) + "] Type - " + str(type(X_train)))
-    print("y_train shape [" + str(y_train.shape) + "] Type - " + str(type(y_train)))
-    print("X_validate shape [" + str(X_validate.shape) + "] Type - " + str(type(X_validate)))
-    print("y_validate shape [" + str(y_validate.shape) + "] Type - " + str(type(y_validate)))
-    print("X_test shape [" + str(X_test.shape) + "] Type - " + str(type(X_test)))
-    print("y_test shape [" + str(y_test.shape) + "] Type - " + str(type(y_test)) + "\n------------------------------")
 
-    for max_depth in max_depth_list:
-        for max_features in max_features_list:
-            t0 = time.time()
+    # print('\nReshaping Training Frames')
+    # print("X_train shape [" + str(X_train.shape) + "] Type - " + str(type(X_train)))
+    # print("X_validate shape [" + str(X_validate.shape) + "] Type - " + str(type(X_validate)))
+    # print("X_test shape [" + str(X_test.shape) + "] Type - " + str(type(X_test)))
+    # print("y_train shape [" + str(y_train.shape) + "] Type - " + str(type(y_train)))
+    # print("y_validate shape [" + str(y_validate.shape) + "] Type - " + str(type(y_validate)))
+    # print("y_test shape [" + str(y_test.shape) + "] Type - " + str(type(y_test)))
 
-            # Train on discrete data (Train > Validation)
-            model = RandomForest(mode='classification',
-                                 n_estimators=n_estimators,
-                                 parallel_degree=parallel_degree,
-                                 max_depth=max_depth,
-                                 lag=lag,
-                                 max_features=max_features)
-            model.fit_model(X=X_train,
-                            y=y_train)
+    for epochs in max_epochs:
+        for batch in max_batch:
+            for activation in activations:
+                for layer in layers:
+                    for dropout in drop_out:
+                        for initializer in initializers:
+                            t0 = time.time()
+                            model = NeuralNet(X=X_train,
+                                              y=y_train,
+                                              lag=lag,
+                                              loss_func='binary_crossentropy',
+                                              activation=activation,
+                                              optimizer='adam',
+                                              layers=layer,
+                                              dropout=dropout,
+                                              initializer=initializer)
 
-            acc_list, f_list = [], []
-            for i in range(0, X_validate.shape[0]):
-                X = np.array([X_validate[i,:]])
-                y = model.predict(X)
-                model.fit_model(X=X,
-                                y=y)  # Online Learning, Training on validation predictions.
-                acc_score, f_score = model.evaluate(y=y_validate[i,:],
-                                                    yhat=np.array(y),
-                                                    plot=False)
-                acc_list.append(acc_score)
-                f_list.append(f_score)
+                            model.fit_model(X_train=X_train,
+                                            X_test=X_validate,
+                                            y_train=y_train,
+                                            y_test=y_validate,
+                                            epochs=epochs,
+                                            batch_size=batch,
+                                            verbose=2,
+                                            shuffle=False,
+                                            plot=False)
 
-            t1 = time.time()
-            time_total = t1 - t0
-            RandomForest.write_results_to_disk(path="query_sequence_random_forest_classification_results.csv",
-                                               iteration=iteration,
-                                               lag=lag,
-                                               test_split=test_split,
-                                               max_depth=max_depth,
-                                               max_features=max_features,
-                                               rmse=None,
-                                               accuracy=sum(acc_list) / len(acc_list),
-                                               f_score=sum(f_list) / len(f_list),
-                                               time_train=time_total)
+                            acc_list, f_list = [], []
+                            for i in range(0, X_validate.shape[0]):
+                                X = np.array([X_validate[i, :]])
+                                y = model.predict(X, batch_size=batch)
+                                print(X)
+                                print(y)
+                                model.fit_model(X_train=X,
+                                                y_train=y,
+                                                epochs=2,
+                                                batch_size=1,
+                                                verbose=1,
+                                                shuffle=False,
+                                                plot=False)  # Online Learning, Training on validation predictions.
+                                acc_score, f_score = model.evaluate(y=y_validate[i, :],
+                                                                    yhat=y,
+                                                                    plot=False)
+                                acc_list.append(acc_score)
+                                f_list.append(f_score)
 
-            print('----------------------------' + str(iteration) + '----------------------------')
-            iteration += 1
+                            t1 = time.time()
+                            time_total = t1 - t0
+                            NeuralNet.write_results_to_disk(path="query_sequence_nn_results.csv",
+                                                            iteration=iteration,
+                                                            lag=lag,
+                                                            test_split=test_split,
+                                                            epoch=epochs,
+                                                            layer=layer,
+                                                            dropout=dropout,
+                                                            batch=batch,
+                                                            activation=activation,
+                                                            initializer=initializer,
+                                                            rmse=None,
+                                                            accuracy=sum(acc_list) / len(acc_list),
+                                                            f_score=sum(f_list) / len(f_list),
+                                                            time_train=time_total)
+                            print('----------------------------' + str(iteration) + '----------------------------')
+                            iteration += 1
