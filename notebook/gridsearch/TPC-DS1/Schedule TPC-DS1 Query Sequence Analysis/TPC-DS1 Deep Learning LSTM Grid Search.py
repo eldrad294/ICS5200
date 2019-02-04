@@ -50,7 +50,7 @@ test_harness_param = (.2, .3, .4, .5) # Denotes which Data Split to operate unde
 y_label = ['COST','CARDINALITY','BYTES','IO_COST','TEMP_SPACE','TIME']
 black_list = ['TIMESTAMP','SQL_ID'] # Columns which will be ignored during type conversion, and later used for aggregation
 contamination = .1
-parallel_degree = -1
+parallel_degree = 1
 
 # Net Config
 max_epochs = (50, 100, 150)
@@ -58,7 +58,7 @@ max_batch = (32, 64, 128)
 layers = (1, 2, 3)
 drop_out = (0, .2, .4)
 activations = ('selu', 'tanh', 'sigmoid')
-initializers = ('zero', 'uniform', 'normal')
+initializers = ('glorot_normal', 'uniform', 'normal')
 state=False
 
 # Root path

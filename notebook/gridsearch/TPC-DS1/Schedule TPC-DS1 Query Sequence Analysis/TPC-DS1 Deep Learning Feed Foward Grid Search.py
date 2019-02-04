@@ -58,7 +58,7 @@ max_batch = (32, 64, 128)
 layers = (1, 2, 3)
 drop_out = (0, .2, .4)
 activations = ('selu', 'tanh', 'sigmoid')
-initializers = ('zero', 'uniform', 'normal')
+initializers = ('glorot_normal', 'uniform', 'normal')
 
 # Root path
 #root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
