@@ -31,7 +31,7 @@ lag=13 # Time Series shift / Lag Step. Each lag value equates to 1 minute. Canno
 if lag < 1:
     raise ValueError('Lag value must be greater than 1!')
 
-nrows = None
+nrows = 4000000
 test_split=.2 # Denotes which Data Split to operate under when it comes to training / validation
 
 # Top Consumer Identification
@@ -44,7 +44,7 @@ test_harness_param_list = (.2,.3,.4,.5)
 max_features_list=('sqrt','log2', None)
 max_depth_list=(3, 6, None)
 n_estimators = 300
-parallel_degree = -1
+parallel_degree = 4
 iteration = 0
 
 # Root path
@@ -56,7 +56,7 @@ rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
 rep_vsql_plan_path = root_dir + '/rep_vsql_plan.csv'
 
 rep_hist_snapshot_df = pd.read_csv(rep_hist_snapshot_path, nrows=nrows)
-rep_vsql_plan_df = pd.read_csv(rep_vsql_plan_path, nrows=4000000)
+rep_vsql_plan_df = pd.read_csv(rep_vsql_plan_path, nrows=nrows)
 
 def prettify_header(headers):
     """

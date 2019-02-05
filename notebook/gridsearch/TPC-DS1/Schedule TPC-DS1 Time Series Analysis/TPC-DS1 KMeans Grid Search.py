@@ -48,7 +48,7 @@ if lag < 1:
     raise ValueError('Lag value must be greater than 1!')
 test_split = .3  # Denotes which Data Split to operate under when it comes to training / validation
 sub_sample_start = 350  # Denotes frist 0..n samples (Used for plotting purposes)
-y_label = ['CPU_TIME_DELTA', 'ELAPSED_TIME_DELTA']  # Denotes which label to use for time series experiments
+y_label = ['CPU_TIME_DELTA', 'IOWAIT_DELTA']  # Denotes which label to use for time series experiments
 bin_value = 2
 nrows = 100000
 if bin_value < 2:

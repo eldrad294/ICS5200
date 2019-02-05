@@ -27,8 +27,8 @@ print('theano: %s' % theano.__version__)
 import tensorflow
 print('tensorflow: %s' % tensorflow.__version__)
 # plaidml keras
-#import plaidml.keras
-#plaidml.keras.install_backend()
+import plaidml.keras
+plaidml.keras.install_backend()
 # keras
 import keras as ke
 print('keras: %s' % ke.__version__)
@@ -42,7 +42,7 @@ lag=13 # Time Series shift / Lag Step. Each lag value equates to 1 minute. Canno
 if lag < 1:
     raise ValueError('Lag value must be greater than 1!')
 
-nrows=None
+nrows=4000000
 iteration=0
 test_harness_param = (.2, .3, .4, .5) # Denotes which Data Split to operate under when it comes to training / validation
 
@@ -50,7 +50,7 @@ test_harness_param = (.2, .3, .4, .5) # Denotes which Data Split to operate unde
 y_label = ['COST','CARDINALITY','BYTES','IO_COST','TEMP_SPACE','TIME']
 black_list = ['TIMESTAMP','SQL_ID'] # Columns which will be ignored during type conversion, and later used for aggregation
 contamination = .1
-parallel_degree = 1
+parallel_degree = 4
 
 # Net Config
 max_epochs = (50, 100, 150)
@@ -71,7 +71,7 @@ rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
 rep_vsql_plan_path = root_dir + '/rep_vsql_plan.csv'
 
 rep_hist_snapshot_df = pd.read_csv(rep_hist_snapshot_path, nrows=nrows)
-rep_vsql_plan_df = pd.read_csv(rep_vsql_plan_path, nrows=4000000)
+rep_vsql_plan_df = pd.read_csv(rep_vsql_plan_path, nrows=nrows)
 
 def prettify_header(headers):
     """

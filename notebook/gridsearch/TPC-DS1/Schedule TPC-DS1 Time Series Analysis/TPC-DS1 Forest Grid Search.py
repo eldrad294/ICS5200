@@ -42,7 +42,7 @@ max_features=('sqrt','log2', None)
 max_depth=(3, 6, None)
 n_estimators = 300
 parallel_degree = -1
-y_label = ['CPU_TIME_DELTA','ELAPSED_TIME_DELTA']
+y_label = ['CPU_TIME_DELTA','IOWAIT_DELTA']
 
 # Root path
 root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
