@@ -553,7 +553,7 @@ fe = FeatureEliminator(X_df=X_df,
 column_mask, column_rankings = fe.rfe_selector(test_split=test_split,
                                                optimum_feature_count=X_df.shape[1]/4,
                                                parallel_degree=parallel_degree,
-                                               max_depth=1,
+                                               max_depth=3,
                                                max_features='sqrt',
                                                n_estimators=n_estimators)
 print(X_df.columns)
