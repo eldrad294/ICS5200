@@ -211,78 +211,6 @@ print('\nAfter additional column drop:')
 print(df.shape)
 
 
-def get_outliers_quartile(df=None, headers=None):
-    """
-    Detect and return which rows are considered outliers within the dataset, determined by :quartile_limit (99%)
-    """
-    outlier_rows = []  # This list of lists consists of elements of the following notation [column,rowid]
-    for header in headers:
-        outlier_count = 0
-        try:
-            q25, q75 = np.percentile(df[header], 25), np.percentile(df[header], 75)
-            iqr = q75 - q25
-            cut_off = iqr * .6  # This values needs to remain as it. It was found to be a good value so as to capture the relavent outlier data
-            lower, upper = q25 - cut_off, q75 + cut_off
-
-            series_row = (df[df[header] > upper].index)
-            outlier_count += len(list(np.array(series_row)))
-            for id in list(np.array(series_row)):
-                outlier_rows.append([header, id])
-
-            series_row = (df[df[header] < lower].index)
-            outlier_count += len(list(np.array(series_row)))
-            for id in list(np.array(series_row)):
-                outlier_rows.append([header, id])
-            print(header + ' - [' + str(outlier_count) + '] outliers')
-        except Exception as e:
-            print(str(e))
-
-    unique_outlier_rows = []
-    for col, rowid in outlier_rows:
-        unique_outlier_rows.append([col, rowid])
-    return unique_outlier_rows
-
-
-# Printing outliers to screen
-outliers = get_outliers_quartile(df=df,
-                                 headers=y_label)
-print('Total Outliers: [' + str(len(outliers)) + ']\n')
-for label in y_label:
-    min_val = df[label].min()
-    max_val = df[label].max()
-    mean_val = df[label].mean()
-    std_val = df[label].std()
-    print('Label[' + label + '] - Min[' + str(min_val) + '] - Max[' + str(max_val) + '] - Mean[' + str(
-        mean_val) + '] - Std[' + str(std_val) + ']')
-print('\n---------------------------------------------\n')
-for i in range(len(outliers)):
-    print('Header [' + str(outliers[i][0]) + '] - Location [' + str(outliers[i][1]) + '] - Value [' + str(
-        df.iloc[outliers[i][1]][outliers[i][0]]) + ']')
-
-def edit_outliers(df=None, headers=None):
-    """
-    This method uses the interquartile method to edit all outliers to std.
-    """
-    outliers = get_outliers_quartile(df=df,
-                                     headers=y_label)
-    for label in y_label:
-        min_val = df[label].min()
-        max_val = df[label].max()
-        mean_val = df[label].mean()
-        std_val = df[label].std()
-
-        for i in range(len(outliers)):
-            if label == outliers[i][0]:
-                df[label].iloc[outliers[i][1]] = mean_val + std_val
-                # print('Header [' + str(outliers[i][0]) + '] - Location [' + str(outliers[i][1]) + '] - Value [' + str(df.iloc[outliers[i][1]][outliers[i][0]]) + ']')
-    return df
-
-
-print("DF with outliers: " + str(df.shape))
-df = edit_outliers(df=df,
-                   headers=y_label)
-print("DF with edited outliers: " + str(df.shape))
-
 class Normalizer:
 
     @staticmethod
@@ -305,7 +233,7 @@ class Normalizer:
         :return: (Pandas) Normalized data matrix
         """
         headers = dataframe.columns
-        X = preprocessing.minmax_scale(dataframe.values)
+        X = preprocessing.minmax_scale(dataframe.values, feature_range=(0, 1))
         return pd.DataFrame(X, columns=headers)
 
     @staticmethod
@@ -342,15 +270,53 @@ print('\n\ndf')
 print(df.head())
 
 y_df = df[y_label]
-X_df = df.drop(columns=y_label)
+X_df = df
 print("Label " + str(y_label) + " shape: " + str(y_df.shape))
 print("Feature matrix shape: " + str(X_df.shape))
+print(X_df.head())
 
-# # Merging labels and features in respective order
-# df = pd.merge(y_df,df,on='SNAP_ID',sort=False,left_on=None, right_on=None)
-# print('Merged Labels + Vectors: ' + str(df.shape))
-# print(df.head())
+""" Discrete Training """
 
+
+class BinClass:
+    """
+    Takes data column, and scales them into discrete buckets. Parameter 'n' denotes number of buckets. This class needs
+    to be defined before the LSTM class, since it is referenced during the prediction stage. Since Keras models output a
+    continuous output (even when trained on discrete data), the 'BinClass' is required by the LSTM class.
+    """
+
+    @staticmethod
+    def __bucket_val(val, avg):
+        """
+        Receives threshold value and buckets the val according to the passed threshold
+        """
+        return np.where(val > avg, 1, 0)
+
+    @staticmethod
+    def discretize_value(X, threshold):
+        """
+        param: X - Input data
+        """
+        try:
+            myfunc_vec = np.vectorize(lambda x: BinClass.__bucket_val(x, threshold))
+            return myfunc_vec(X)
+        except:
+            return BinClass.__bucket_val(X, threshold)
+
+
+cpu_avg = y_df[y_label[0]].mean()
+y_df_cpu = pd.DataFrame(BinClass.discretize_value(y_df[[y_label[0]]].values, cpu_avg), columns=[y_label[0]])
+print('CPU y:')
+print(np.unique(y_df_cpu.values))
+print('Number of 0s: ' + str(np.count_nonzero(y_df_cpu == 0)))
+print('Number of 1s: ' + str(np.count_nonzero(y_df_cpu == 1)))
+#
+io_avg = y_df[y_label[1]].mean()
+y_df_io = pd.DataFrame(BinClass.discretize_value(y_df[[y_label[1]]].values, io_avg), columns=[y_label[1]])
+print('I/O y:')
+print(np.unique(y_df_io.values))
+print('Number of 0s: ' + str(np.count_nonzero(y_df_io == 0)))
+print('Number of 1s: ' + str(np.count_nonzero(y_df_io == 1)))
 
 def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     """
@@ -423,23 +389,25 @@ for row in y_row:
 
 # y_df_column_names = shifted_df.columns[len(df.columns)*lag:len(df.columns)*lag + len(y_label)]
 y_df = shifted_df[y_df_column_names]
-X_df = shifted_df.drop(columns=y_df_column_names)
+X_df = shifted_df
+# X_df = shifted_df.drop(columns=y_df_column_names)
+
+# # Delete middle timesteps
+X_df = remove_n_time_steps(data=X_df, n=lag)
+# print('\n-------------\nFeatures After Time Shift')
+# print(X_df.columns)
+# print(X_df.shape)
+# y_df = remove_n_time_steps(data=y_df, n=lag)
+# print('\n-------------\nLabels After Time Shift')
+# print(y_df.columns)
+# print(y_df.shape)
+
 print('\n-------------\nFeatures')
 print(X_df.columns)
 print(X_df.shape)
 print('\n-------------\nLabels')
 print(y_df.columns)
 print(y_df.shape)
-#
-# # Delete middle timesteps
-# X_df = remove_n_time_steps(data=X_df, n=lag)
-# print('\n-------------\nFeatures After Time Shift')
-# print(X_df.columns)
-# print(X_df.shape)
-# # y_df = remove_n_time_steps(data=y_df, n=lag)
-# print('\n-------------\nLabels After Time Shift')
-# print(y_df.columns)
-# print(y_df.shape)
 
 
 class FeatureEliminator:
@@ -518,17 +486,33 @@ class FeatureEliminator:
 
         return self.__X_df[recommended_columns]
 
-fe = FeatureEliminator(X_df=X_df,
-                       y_df=y_df)
-column_mask, column_rankings = fe.rfe_selector(test_split=.3,
-                                               optimum_feature_count=X_df.shape[1] / 4,
-                                               parallel_degree=parallel_degree,
-                                               max_depth=3,
-                                               max_features='sqrt',
-                                               n_estimators=n_estimators)
-print(X_df.columns)
-X_df = fe.get_selected_features(column_mask=column_mask)
-print(X_df.columns)
+# fe = FeatureEliminator(X_df=X_df,
+#                        y_df=y_df)
+# column_mask, column_rankings = fe.rfe_selector(test_split=test_split,
+#                                                optimum_feature_count=int(X_df.shape[1]/8),
+#                                                parallel_degree=2,
+#                                                max_depth=1,
+#                                                max_features='sqrt',
+#                                                n_estimators=n_estimators)
+# print(X_df.columns)
+# X_df = fe.get_selected_features(column_mask=column_mask)
+# print(X_df.columns)
+recursively_eliminated_columns = ['var422(t-1)', 'var423(t-1)', 'var424(t-1)', 'var425(t-1)', 'var426(t-1)',
+ 'var427(t-1)', 'var428(t-1)', 'var429(t-1)', 'var430(t-1)', 'var431(t-1)',
+ 'var432(t-1)', 'var433(t-1)', 'var434(t-1)', 'var435(t-1)', 'var436(t-1)',
+ 'var437(t-1)', 'var438(t-1)', 'var439(t-1)', 'var440(t-1)', 'var441(t-1)',
+ 'var442(t-1)', 'var443(t-1)', 'var444(t-1)', 'var445(t-1)', 'var446(t-1)',
+ 'var447(t-1)', 'var448(t-1)', 'var449(t-1)', 'var450(t-1)', 'var451(t-1)',
+ 'var452(t-1)', 'var453(t-1)', 'var454(t-1)', 'var455(t-1)', 'var456(t-1)',
+ 'var457(t-1)', 'var458(t-1)', 'var459(t-1)', 'var460(t-1)', 'var461(t-1)',
+ 'var462(t-1)', 'var463(t-1)', 'var464(t-1)', 'var465(t-1)', 'var466(t-1)',
+ 'var467(t-1)', 'var468(t-1)', 'var469(t-1)', 'var470(t-1)', 'var471(t-1)',
+ 'var472(t-1)', 'var473(t-1)', 'var474(t-1)', 'var475(t-1)', 'var476(t-1)',
+ 'var477(t-1)', 'var478(t-1)', 'var479(t-1)', 'var480(t-1)', 'var481(t-1)',
+ 'var482(t-1)', 'var483(t-1)', 'var484(t-1)', 'var485(t-1)', 'var486(t-1)',
+ 'var487(t-1)', 'var488(t-1)', 'var489(t-1)', 'var490(t-1)', 'var491(t-1)',
+ 'var492(t-1)']
+X_df = X_df[recursively_eliminated_columns]
 
 
 class PrincipalComponentAnalysisClass:
@@ -611,57 +595,6 @@ print('-' * 30)
 print(X_df.head())
 print(X_df.shape)
 
-class BinClass:
-    """
-    Takes data column, and scales them into discrete buckets. Parameter 'n' denotes number of buckets. This class needs
-    to be defined before the NeuralNet class, since it is referenced during the prediction stage. Since Keras models output a
-    continuous output (even when trained on discrete data), the 'BinClass' is required by the NeuralNet class.
-    """
-
-    @staticmethod
-    def __validate(df, n):
-        """
-        Validates class parameters
-        """
-        if df is None:
-            raise ValueError('Input data parameter is empty!')
-        elif n < 2:
-            raise ValueError('Number of buckets must be greater than 1')
-
-    @staticmethod
-    def __bucket_val(val, threshold, n):
-        """
-        Receives threshold value and buckets the val according to the passed threshold
-        """
-        for i in range(1, n+1):
-            if val <= threshold * i:
-                return i
-
-    @staticmethod
-    def discretize_value(X, n):
-        """
-        param: X - Input data
-        param: n - Number of buckets
-        """
-        if len(X.shape) == 1:
-            X = np.reshape(X, (-1, 1))
-
-        for i in range(X.shape[1]):
-            max_val = X[:,i].max()
-            threshold = max_val / n
-            myfunc_vec = np.vectorize(lambda x: BinClass.__bucket_val(x, threshold, n))
-            X[:,i] = myfunc_vec(X[:,i])
-        return X
-
-        # BinClass.__validate(df, n)
-        # for column in df.columns:
-        #     max_val = df[column].max(skipna=True)
-        #     threshold = max_val / n
-        #     df[column] = df[column].apply(lambda x: BinClass.__bucket_val(x, threshold, n))
-        #     if df[column].isnull().values.any():
-        #         df[column] = df[column].fillna(1)
-        # return df
-
 
 # NeuralNet Class
 class NeuralNet:
@@ -669,7 +602,7 @@ class NeuralNet:
     NeuralNet Class
     """
 
-    def __init__(self, X, y, lag, loss_func, activation, mode='regression', optimizer='sgd', layers=1, dropout=.0,
+    def __init__(self, X, y, lag, loss_func, activation, optimizer='sgd', layers=1, dropout=.0,
                  y_labels=None, initializer='uniform'):
         """
         Initiating the class creates a net with the established parameters
@@ -678,14 +611,12 @@ class NeuralNet:
         :param lag           - (Integer) Denotes lag step value
         :param loss_function - (String)  Denotes mode of measure fitting of model (Fitting function).
         :param activation    - (String)  Neuron activation function used to activate/trigger neurons.
-        :param mode          - (String)  A flag used to set specific model training mode (Classification OR Regression).
         :param optimizer     - (String)  Denotes which function to us to optimize the model build (eg: Gradient Descent).
         :param layers        - (Integer) Denotes the number of Neuron layers to be included in the model build.
         :param dropout       - (Float)   Denotes amount of dropout for model. This parameter must be a value between 0 and 1.
         :param: y_labels     - (List)    List of target label names.
         :param: initializer  - (String)  String initializer which denotes starting weights.
         """
-        self.mode = mode
         self.__lag = lag
         self.__model = ke.models.Sequential()
         self.__y_labels = y_labels
@@ -707,8 +638,8 @@ class NeuralNet:
 
         self.__model.add(ke.layers.Dense(self.__lag * len(self.__y_labels),
                                          kernel_initializer=initializer,
-                                         activation=activation))
-        self.__model.compile(loss=loss_func, optimizer=optimizer, metrics=['acc'])
+                                         activation='sigmoid'))
+        self.__model.compile(loss=loss_func, optimizer=optimizer, metrics=['mse','mae'])
         print(self.__model.summary())
 
     def fit_model(self, X_train=None, X_test=None, y_train=None, y_test=None, epochs=50, batch_size=50, verbose=2,
@@ -745,12 +676,8 @@ class NeuralNet:
 
         if plot:
             plt.rcParams['figure.figsize'] = [20, 15]
-            if self.mode == 'regression':
-                plt.plot(history.history['loss'], label='train')
-                plt.plot(history.history['val_loss'], label='validation')
-            elif self.mode == 'classification':
-                plt.plot(history.history['acc'], label='train')
-                plt.plot(history.history['val_acc'], label='validation')
+            plt.plot(history.history['mean_squared_error'], label='mean_squared_error')
+            plt.plot(history.history['mean_absolute_error'], label='mean_absolute_error')
             plt.ylabel('loss')
             plt.xlabel('epoch')
             plt.legend(['train', 'validation'], loc='upper left')
@@ -766,53 +693,51 @@ class NeuralNet:
         yhat = self.__model.predict(X, batch_size=batch_size)
         return yhat
 
-    def evaluate(self, y, yhat, plot=False):
-        """
-        Receives 2D matrix of input features and 2D matrix of output labels, and evaluates input data and target predictions.
-        :param: y    - Numpy array consisting of output label vectors (Test Set)
-        :param: yhat - Numpy array consisting of output label vectors (Prediction Set)
-        :param: plot     - (Bool) Boolean value denoting whether this function should plot out it's evaluation
-        :return: None
-        """
-        # RMSE Evaluation
-        if self.mode == 'regression':
-            rmse = math.sqrt(mean_squared_error(y, yhat.ravel()))
-            if not plot:
-                return rmse
-            print('Reported: ' + str(rmse) + ' rmse')
+#     def evaluate(self, y, yhat, plot=False):
+#         """
+#         Receives 2D matrix of input features and 2D matrix of output labels, and evaluates input data and target predictions.
+#         :param: y    - Numpy array consisting of output label vectors (Test Set)
+#         :param: yhat - Numpy array consisting of output label vectors (Prediction Set)
+#         :param: plot     - (Bool) Boolean value denoting whether this function should plot out it's evaluation
+#         :return: None
+#         """
+#         # RMSE Evaluation
+#         if self.mode == 'regression':
+#             rmse = math.sqrt(mean_squared_error(y, yhat))
+#             if not plot:
+#                 return rmse
+#             print('Reported: ' + str(rmse) + ' rmse')
 
-        elif self.mode == 'classification':
-            column_names = []
-            for i in range(len(self.__y_labels)):
-                column_names.append("column" + str(i))
+#         elif self.mode == 'classification':
+#             column_names = []
+#             for i in range(len(self.__y_labels)):
+#                 column_names.append("column" + str(i))
 
-            y = BinClass.discretize_value(y, bin_value)
-            yhat = BinClass.discretize_value(yhat, bin_value)
-            y = y.flatten()
-            yhat = yhat.flatten()
+#             y = BinClass.discretize_value(y, bin_value)
+#             yhat = BinClass.discretize_value(yhat, bin_value)
+#             y = y.flatten()
+#             yhat = yhat.flatten()
 
-            # F1-Score Evaluation
-            print(y)
-            print(yhat)
-            accuracy = accuracy_score(y, yhat)
-            f1 = f1_score(y,
-                          yhat,
-                          average='macro')  # Calculate metrics globally by counting the total true positives, false negatives and false positives.
-            print('Accuracy [' + str(accuracy) + ']')
-            print('FScore [' + str(f1) + ']')
+#             # F1-Score Evaluation
+#             print(y)
+#             print(yhat)
+#             accuracy = accuracy_score(y, yhat)
+#             f1 = f1_score(y,
+#                           yhat,
+#                           average='macro')  # Calculate metrics globally by counting the total true positives, false negatives and false positives.
+#             print('Accuracy [' + str(accuracy) + ']')
+#             print('FScore [' + str(f1) + ']')
 
-            if not plot:
-                return accuracy, f1
+#             if not plot:
+#                 return accuracy, f1
 
-        if plot:
-            for i in range(0, len(y[0])):
-                plt.rcParams['figure.figsize'] = [20, 15]
-                plt.plot(y[:, i], label='actual')
-                plt.plot(yhat[:, i], label='predicted')
-                plt.legend(['actual', 'predicted'], loc='upper left')
-                plt.title(
-                    self.__y_labels[i % len(self.__y_labels)] + " +" + str(math.ceil((i + 1) / len(self.__y_labels))))
-                plt.show()
+#         if plot:
+#             plt.rcParams['figure.figsize'] = [20, 15]
+#             plt.plot(y, label='actual')
+#             plt.plot(yhat, label='predicted')
+#             plt.legend(['actual', 'predicted'], loc='upper left')
+#             plt.title('Actual vs Predicted')
+#             plt.show()
 
     @staticmethod
     def write_results_to_disk(path, iteration, lag, test_split, batch, dropout, epoch, layer, activation, initializer,
@@ -878,45 +803,21 @@ class NeuralNet:
         max_new_rows = multiple * lag
         return X[0:max_new_rows,:]
 
-""" Data Encoding """
-
-X_df = pd.DataFrame(BinClass.discretize_value(X_df.values, bin_value), columns=X_df.columns)
-y_df = pd.DataFrame(BinClass.discretize_value(y_df.values, bin_value), columns=y_df.columns)
-print(np.unique(X_df.values))
-print(np.unique(y_df.values))
-
-X_df = X_df.apply(LabelEncoder().fit_transform)
-y_df = y_df.apply(LabelEncoder().fit_transform)
-print(np.unique(X_df.values))
-print(np.unique(y_df.values))
-
-# X_df = pd.DataFrame(ke.utils.to_categorical(X_df.values, num_classes=None), columns=X_df.columns)
-# y_df = pd.DataFrame(ke.utils.to_categorical(y_df.values, num_classes=None), columns=y_df.columns)
-# print(np.unique(X_df.values))
-# print(np.unique(y_df.values))
-# print(X_df)
-# print(y_df)
-
 """ Hyper Parameter Grid Search """
 
 # Test Multiple Train/Validation Splits
 for test_split in test_harness_param:
+
     X_train, X_validate, y_train, y_validate = train_test_split(X_df, y_df, test_size=test_split)
     X_train = X_train.values
     y_train = y_train.values
-    X_validate, X_test, y_validate, y_test = train_test_split(X_validate, y_validate, test_size=.5)
     X_validate = X_validate.values
     y_validate = y_validate.values
-    X_test = X_test.values
-    y_test = y_test.values
 
-    print('\nReshaping Training Frames')
     print("X_train shape [" + str(X_train.shape) + "] Type - " + str(type(X_train)))
     print("X_validate shape [" + str(X_validate.shape) + "] Type - " + str(type(X_validate)))
-    print("X_test shape [" + str(X_test.shape) + "] Type - " + str(type(X_test)))
     print("y_train shape [" + str(y_train.shape) + "] Type - " + str(type(y_train)))
     print("y_validate shape [" + str(y_validate.shape) + "] Type - " + str(type(y_validate)))
-    print("y_test shape [" + str(y_test.shape) + "] Type - " + str(type(y_test)))
 
     # Train Multiple Regression Forest Models using various estimators
     for epochs in max_epochs:
@@ -926,13 +827,13 @@ for test_split in test_harness_param:
                     for dropout in drop_out:
                         for initializer in initializers:
                             t0 = time.time()
+
                             model = NeuralNet(X=X_train,
                                               y=y_train,
                                               lag=lag,
-                                              loss_func='binary_crossentropy',
+                                              loss_func='mean_squared_error',
                                               activation=activation,
                                               optimizer='adam',
-                                              mode='classification',
                                               layers=layer,
                                               dropout=dropout,
                                               y_labels=y_label,
@@ -947,22 +848,72 @@ for test_split in test_harness_param:
                                             verbose=2,
                                             shuffle=False,
                                             plot=False)
-                            acc_list, f_list = [], []
-                            for i in range(0, X_validate.shape[0]):
-                                X = np.array([X_validate[i, :]])
-                                y = model.predict(X, batch_size=batch)
-                                model.fit_model(X_train=X,
-                                                y_train=y,
-                                                epochs=2,
-                                                batch_size=1,
-                                                verbose=1,
-                                                shuffle=False,
-                                                plot=False)  # Online Learning, Training on validation predictions.
-                                acc_score, f_score = model.evaluate(y=y_validate[i,:],
-                                                                    yhat=y,
-                                                                    plot=False)
-                                acc_list.append(acc_score)
-                                f_list.append(f_score)
+
+                            n = 7
+                            accuracy_per_day, f1score_per_day = [], []
+                            for i in range(0, n):
+
+                                print('Day ' + str(i + 1))
+
+                                # Segregate data for specific day
+                                X_validate_temp = X_validate[(int(X_validate.shape[0] / n) * i):(
+                                            int(X_validate.shape[0] / n) * (i + 1)), :]
+                                y_validate_temp = y_validate[(int(y_validate.shape[0] / n) * i):(
+                                            int(y_validate.shape[0] / n) * (i + 1)), :]
+                                print('Feature vectors: ' + str(X_validate_temp.shape))
+                                print('Label vectors: ' + str(y_validate_temp.shape))
+
+                                y_list, yhat_list = [], []
+                                for i in range(0, X_validate_temp.shape[0]):
+
+                                    X = X_validate_temp[i, :]
+                                    X = X.reshape(1, -1)
+                                    # X = X.reshape((int(X.shape[0] / lag), lag, X.shape[1]))
+                                    y = np.array(y_validate_temp[i, :])
+                                    yhat = model.predict(X, batch_size=batch)
+
+                                    y = y.reshape(1, -1)
+                                    model.fit_model(X_train=X,
+                                                    y_train=y,
+                                                    epochs=2,
+                                                    batch_size=1,
+                                                    verbose=0,
+                                                    shuffle=False,
+                                                    plot=False)  # Online Learning, Training on validation predictions.
+
+                                    y = y.flatten()
+                                    yhat = yhat.flatten()
+
+                                    for i in range(yhat.shape[0]):
+                                        if i % 2 == 0:
+                                            # print('CPU')
+                                            y[i] = BinClass.discretize_value(y[i], cpu_avg)
+                                            yhat[i] = BinClass.discretize_value(yhat[i], cpu_avg)
+                                        else:
+                                            # print('IO')
+                                            y[i] = BinClass.discretize_value(y[i], io_avg)
+                                            yhat[i] = BinClass.discretize_value(yhat[i], io_avg)
+                                    y_list.append(y)
+                                    yhat_list.append(yhat)
+
+                                #         print('Actual: ' + str(y))
+                                #         print('Predicted: ' + str(yhat) + '\n--------------------------')
+
+                                y_list = np.array(y_list)
+                                yhat_list = np.array(yhat_list)
+
+                                acc_score_list, f1_score_list = [], []
+                                for i in range(lag * len(y_label)):
+                                    print('Label: ' + str(i))
+                                    acc = accuracy_score(y_list[:, i], yhat_list[:, i])
+                                    f1 = f1_score(y_list[:, i], yhat_list[:, i], average='binary')
+                                    print('Accuracy: ' + str(acc) + '\nF1Score: ' + str(
+                                        f1) + '\n--------------------------')
+                                    acc_score_list.append(acc)
+                                    f1_score_list.append(f1)
+                                accuracy_per_day.append(sum(acc_score_list) / len(acc_score_list))
+                                f1score_per_day.append(sum(f1_score_list) / len(f1_score_list))
+                                print('-' * 40)
 
                             t1 = time.time()
                             time_total = t1 - t0
@@ -977,8 +928,8 @@ for test_split in test_harness_param:
                                                             activation=activation,
                                                             initializer=initializer,
                                                             rmse=None,
-                                                            accuracy=sum(acc_list) / len(acc_list),
-                                                            f_score=sum(f_list) / len(f_list),
+                                                            accuracy=sum(accuracy_per_day) / len(accuracy_per_day),
+                                                            f_score=sum(f1score_per_day) / len(f1score_per_day),
                                                             time_train=time_total)
                             print('----------------------------' + str(iteration) + '----------------------------')
                             iteration += 1
