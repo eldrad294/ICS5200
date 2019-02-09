@@ -34,7 +34,7 @@ import time
 # Experiment Config
 tpcds='TPCDS1' # Schema upon which to operate test
 bin_value = 2
-nrows=1000000
+nrows=None
 iteration = 0
 lag = 13
 test_harness_param = (.2,.3,.4,.5)
