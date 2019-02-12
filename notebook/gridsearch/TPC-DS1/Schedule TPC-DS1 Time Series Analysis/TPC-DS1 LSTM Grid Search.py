@@ -7,8 +7,6 @@ import numpy as np
 print('numpy: %s' % np.__version__)
 # matplotlib
 import matplotlib.pyplot as plt
-from statsmodels.graphics.gofplots import qqplot
-from statsmodels.graphics.tsaplots import plot_acf
 # pandas
 import pandas as pd
 from pandas.plotting import lag_plot

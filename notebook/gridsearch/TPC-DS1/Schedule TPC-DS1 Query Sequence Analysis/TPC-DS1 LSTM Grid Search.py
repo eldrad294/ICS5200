@@ -32,7 +32,7 @@ plaidml.keras.install_backend()
 # keras
 import keras as ke
 print('keras: %s' % ke.__version__)
-import math, csv, time, os
+import math, csv, os, time
 
 """ Configuration Cell """
 
@@ -42,8 +42,8 @@ lag=13 # Time Series shift / Lag Step. Each lag value equates to 1 minute. Canno
 if lag < 1:
     raise ValueError('Lag value must be greater than 1!')
 
+nrows=None
 iteration=0
-nrows=4000000
 test_harness_param = (.2, .3, .4, .5) # Denotes which Data Split to operate under when it comes to training / validation
 
 # Top Consumer Identification
@@ -59,12 +59,14 @@ layers = (1, 2, 3)
 drop_out = (0, .2, .4)
 activations = ('selu', 'tanh', 'sigmoid')
 initializers = ('glorot_normal', 'uniform', 'normal')
+state=False
 
 # Root path
 #root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
 root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
 
 # Open Data
+#rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
 rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
 rep_vsql_plan_path = root_dir + '/rep_vsql_plan.csv'
 
@@ -113,7 +115,7 @@ def fill_na(df):
 rep_hist_snapshot_df = fill_na(df=rep_hist_snapshot_df)
 rep_vsql_plan_df = fill_na(df=rep_vsql_plan_df)
 
-""" Type conversion """
+""" Type Conversion """
 
 
 def handle_numeric_overflows(x):
@@ -154,19 +156,6 @@ df = rep_hist_snapshot_df.groupby(['SNAP_ID'])['SQL_ID'].apply(list).reset_index
 print("Shape After Aggregation: " + str(df.shape))
 print(type(df))
 print(df.head(100))
-
-print('---------------------------')
-
-# Further Aggregation on V$SQL table
-print('Header Lengths [Before Pivot]')
-print('REP_VSQL_PLAN: ' + str(len(rep_vsql_plan_df.columns)))
-# Group By Values by PLAN_HASH_VALUE,TIMESTAMP, sum all metrics (for table REP_VSQL_PLAN
-rep_vsql_plan_df = rep_vsql_plan_df.groupby(['SQL_ID']).sum()
-rep_vsql_plan_df.reset_index(inplace=True)
-print('\nHeader Lengths [After Pivot]')
-print('REP_VSQL_PLAN: ' + str(len(rep_vsql_plan_df.columns)) + "\n")
-#rep_vsql_plan_df.drop(columns=black_list, inplace=True) # This is required since it will impede future aggragate functions to be carried out.
-print(rep_vsql_plan_df.columns)
 
 """ Data Ordering """
 
@@ -408,7 +397,7 @@ class LabelEncoder:
         for key, value in self.__class_map.items():
             encoded_map.append(value)
         return encoded_map
-
+    
 print(df.shape)
 print(df.head(10))
 le = LabelEncoder()
@@ -418,7 +407,7 @@ for index, row in df.iterrows():
 for index, row in df.iterrows():
     sql_id_list = row['SQL_ID']
     transformed_list = le.transform(sql_id_list)
-    df['SQL_ID'].iloc[index] = transformed_list
+    df['SQL_ID'].iloc[index] = transformed_list 
 
 print("\n----------------------------------\n\nAvailable Classes:")
 print('Total SQL_ID Classes: ' + str(len(le.get_class_map())))
@@ -471,6 +460,7 @@ print(df['SQL_ID'].iloc[2])
 
 """ Expand Feature Lists """
 
+
 def sequence2features(df):
     """
     Converts pandas sequences into full fledged columns/features
@@ -496,7 +486,7 @@ print('Before: ' + str(df.shape))
 df = sequence2features(df=df)
 print('After: ' + str(df.shape))
 
-""" One Hot Encoding """
+""" One Hot Encoder """
 
 
 class OneHotEncoder:
@@ -552,15 +542,15 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     if n_in != 0:
         for i in range(n_in, 0, -1):
             cols.append(df.shift(i))
-            names += [('var%d(t-%d)' % (j+1, i)) for j in range(n_vars)]
+            names += [('var%d(t-%d)' % (j + 1, i)) for j in range(n_vars)]
     # forecast sequence (t, t+1, ... t+n)
     n_out += 1
     for i in range(0, n_out):
         cols.append(df.shift(-i))
         if i == 0:
-            names += [('var%d(t)' % (j+1)) for j in range(n_vars)]
+            names += [('var%d(t)' % (j + 1)) for j in range(n_vars)]
         else:
-            names += [('var%d(t+%d)' % (j+1, i)) for j in range(n_vars)]
+            names += [('var%d(t+%d)' % (j + 1, i)) for j in range(n_vars)]
     # put it all together
     agg = pd.concat(cols, axis=1)
     agg.columns = names
@@ -569,108 +559,113 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
         agg.dropna(inplace=True)
     return agg
 
+
 def remove_n_time_steps(data, n=1):
     if n == 0:
         return data
     df = data
     headers = df.columns
     dropped_headers = []
-    #
-    for i in range(1,n+1):
+    #     for header in headers:
+    #         if "(t)" in header:
+    #             dropped_headers.append(header)
+
+    for i in range(1, n + 1):
         for header in headers:
-            if "(t+"+str(i)+")" in header:
+            if "(t+" + str(i) + ")" in header:
                 dropped_headers.append(str(header))
-    #
+
     return df.drop(dropped_headers, axis=1)
 
 # Frame as supervised learning set
 shifted_df = series_to_supervised(df, lag, lag)
 
-# Seperate labels from features
-x_columns, y_columns = [], []
-for col in shifted_df.columns:
-    if '+' in col:
-        y_columns.append(col)
-    else:
-        x_columns.append(col)
+# Separate labels from features
+y_row = []
+for i in range(lag + 1, (lag * 2) + 2):
+    y_df_column_names = shifted_df.columns[len(df.columns) * i:len(df.columns) * i + len(y_label)]
+    y_row.append(y_df_column_names)
+    print(y_df_column_names)
+    print(type(y_df_column_names))
+y_df_column_names = []
+for row in y_row:
+    for val in row:
+        y_df_column_names.append(val)
 
-y_df = shifted_df[y_columns]
-X_df = shifted_df[x_columns]
-print('\n-------------\nFeatures')
-print(X_df.columns)
-print(X_df.shape)
-print(type(X_df))
-print('\n-------------\nLabels')
-print(y_df.columns)
-print(y_df.shape)
-print(type(y_df))
+# y_df_column_names = shifted_df.columns[len(df.columns)*lag:len(df.columns)*lag + len(y_label)]
+y_df = shifted_df[y_df_column_names]
+X_df = shifted_df
+# X_df = shifted_df.drop(columns=y_df_column_names)
 
 # # Delete middle timesteps
-# X_df = remove_n_time_steps(data=X_df, n=lag)
+X_df = remove_n_time_steps(data=X_df, n=lag)
 # print('\n-------------\nFeatures After Time Shift')
 # print(X_df.columns)
 # print(X_df.shape)
-# print(type(X_df))
-# # y_df = remove_n_time_steps(data=y_df, n=lag)
+# y_df = remove_n_time_steps(data=y_df, n=lag)
 # print('\n-------------\nLabels After Time Shift')
 # print(y_df.columns)
 # print(y_df.shape)
-# print(type(y_df))
+
+print('\n-------------\nFeatures')
+print(X_df.columns)
+print(X_df.shape)
+print('\n-------------\nLabels')
+print(y_df.columns)
+print(y_df.shape)
 
 """ Discrete Training """
 
 class BinClass:
     """
     Takes data column, and scales them into discrete buckets. Parameter 'n' denotes number of buckets. This class needs
-    to be defined before the NeuralNet class, since it is referenced during the prediction stage. Since Keras models output a
-    continuous output (even when trained on discrete data), the 'BinClass' is required by the NeuralNet class.
+    to be defined before the LSTM class, since it is referenced during the prediction stage. Since Keras models output a
+    continuous output (even when trained on discrete data), the 'BinClass' is required by the LSTM class.
     """
 
     @staticmethod
-    def __validate(df, n):
-        """
-        Validates class parameters
-        """
-        if df is None:
-            raise ValueError('Input data parameter is empty!')
-        elif n < 2:
-            raise ValueError('Number of buckets must be greater than 1')
-
-    @staticmethod
-    def __bucket_val(val, threshold, n):
+    def __bucket_val(val, avg):
         """
         Receives threshold value and buckets the val according to the passed threshold
         """
-        for i in range(1, n+1):
-            if val <= threshold * i:
-                return i-1
+        return np.where(val > avg, 1, 0)
 
     @staticmethod
-    def discretize_value(X, n):
+    def discretize_value(X, threshold):
         """
         param: X - Input data
-        param: n - Number of buckets
         """
-        if len(X.shape) == 1:
-            X = np.reshape(X, (-1, 1))
+        try:
+            myfunc_vec = np.vectorize(lambda x: BinClass.__bucket_val(x, threshold))
+            return myfunc_vec(X)
+        except:
+            return BinClass.__bucket_val(X, threshold)
 
-        for i in range(X.shape[1]):
-            max_val = X[:,i].max()
-            threshold = max_val / n
-            myfunc_vec = np.vectorize(lambda x: BinClass.__bucket_val(x, threshold, n))
-            X[:,i] = myfunc_vec(X[:,i])
-        return X
 
-""" Deep Learning Model """
+cpu_avg = y_df[y_label[0]].mean()
+y_df_cpu = pd.DataFrame(BinClass.discretize_value(y_df[[y_label[0]]].values, cpu_avg), columns=[y_label[0]])
+print('CPU y:')
+print(np.unique(y_df_cpu.values))
+print('Number of 0s: ' + str(np.count_nonzero(y_df_cpu == 0)))
+print('Number of 1s: ' + str(np.count_nonzero(y_df_cpu == 1)))
+#
+io_avg = y_df[y_label[1]].mean()
+y_df_io = pd.DataFrame(BinClass.discretize_value(y_df[[y_label[1]]].values, io_avg), columns=[y_label[1]])
+print('I/O y:')
+print(np.unique(y_df_io.values))
+print('Number of 0s: ' + str(np.count_nonzero(y_df_io == 0)))
+print('Number of 1s: ' + str(np.count_nonzero(y_df_io == 1)))
 
-# NeuralNet Class
-class NeuralNet:
+""" Deep Learning Model (LSTM) """
+
+# LSTM Class
+class LSTM:
     """
-    NeuralNet Class
+    Long Short Term Memory Neural Net Class
     """
 
-    def __init__(self, X, y, lag, loss_func, activation, optimizer='sgd', layers=1, dropout=.0,
-                 initializer='uniform'):
+    def __init__(self, X, y, lag, loss_func, activation, optimizer='sgd', lstm_layers=1, dropout=.0,
+                 stateful=False, y_labels=None, initializer='uniform'):
         """
         Initiating the class creates a net with the established parameters
         :param X             - (Numpy 2D Array) Training data used to train the model (Features).
@@ -679,33 +674,86 @@ class NeuralNet:
         :param loss_function - (String)  Denotes mode of measure fitting of model (Fitting function).
         :param activation    - (String)  Neuron activation function used to activate/trigger neurons.
         :param optimizer     - (String)  Denotes which function to us to optimize the model build (eg: Gradient Descent).
-        :param layers        - (Integer) Denotes the number of Neuron layers to be included in the model build.
+        :param lstm_layers   - (Integer) Denotes the number of LSTM layers to be included in the model build.
         :param dropout       - (Float)   Denotes amount of dropout for model. This parameter must be a value between 0 and 1.
+        :param stateful      - (Boolean) Denotes whether state is used as initial state for next training batch.
+        :param: y_labels     - (List) List of target label names
         :param: initializer  - (String)  String initializer which denotes starting weights.
         """
         self.__lag = lag
         self.__model = ke.models.Sequential()
+        self.__y_labels = y_labels
 
         if dropout > 1 and dropout < 0:
             raise ValueError('Dropout parameter exceeded! Must be a value between 0 and 1.')
 
-        for i in range(0, layers-1):
-            self.__model.add(ke.layers.Dense(X.shape[1],
-                                             kernel_initializer=initializer,
-                                             activation=activation,
-                                             input_shape=(X.shape[1],)))
+        # self.__model.add(ke.layers.Embedding(2+1, 32, input_length=X.shape[1]))
+        for i in range(0, lstm_layers - 1):  # If lstm_layers == 1, this for loop logic is skipped.
+            if stateful:
+                if i == 0:
+                    self.__model.add(ke.layers.LSTM(X.shape[2],
+                                                    batch_input_shape=(X.shape[0],
+                                                                       X.shape[1],
+                                                                       X.shape[2]),
+                                                    return_sequences=True,
+                                                    recurrent_dropout=dropout,
+                                                    recurrent_initializer=initializer,
+                                                    activation=activation,
+                                                    stateful=stateful))
+                else:
+                    self.__model.add(ke.layers.LSTM(X.shape[2],
+                                                    input_shape=(X.shape[1],
+                                                                 X.shape[2]),
+                                                    return_sequences=True,
+                                                    recurrent_dropout=dropout,
+                                                    recurrent_initializer=initializer,
+                                                    activation=activation,
+                                                    stateful=stateful))
+            else:
+                self.__model.add(ke.layers.LSTM(X.shape[2],
+                                                input_shape=(X.shape[1],
+                                                             X.shape[2]),
+                                                return_sequences=True,
+                                                recurrent_dropout=dropout,
+                                                recurrent_initializer=initializer,
+                                                activation=activation,
+                                                stateful=stateful))
             self.__model.add(ke.layers.Dropout(dropout))
-        self.__model.add(ke.layers.Dense(X.shape[1],
-                                         kernel_initializer=initializer,
-                                         activation=activation,
-                                         input_shape=(X.shape[1],)))
+        if lstm_layers > 1:
+            self.__model.add(ke.layers.LSTM(X.shape[2],
+                                            input_shape=(X.shape[1],
+                                                         X.shape[2]),
+                                            stateful=stateful,
+                                            recurrent_dropout=dropout,
+                                            recurrent_initializer=initializer,
+                                            activation=activation,
+                                            return_sequences=False))
+        else:
+            if stateful:
+                self.__model.add(ke.layers.LSTM(X.shape[2],
+                                                batch_input_shape=(X.shape[0],
+                                                                   X.shape[1],
+                                                                   X.shape[2]),
+                                                stateful=stateful,
+                                                recurrent_dropout=dropout,
+                                                recurrent_initializer=initializer,
+                                                activation=activation,
+                                                return_sequences=False))
+            else:
+                self.__model.add(ke.layers.LSTM(X.shape[2],
+                                                input_shape=(X.shape[1],
+                                                             X.shape[2]),
+                                                stateful=stateful,
+                                                recurrent_dropout=dropout,
+                                                recurrent_initializer=initializer,
+                                                activation=activation,
+                                                return_sequences=False))
         self.__model.add(ke.layers.Dropout(dropout))
-        self.__model.add(ke.layers.Dense(y.shape[1],
+        # self.__model.add(ke.layers.TimeDistributed(ke.layers.Dense(self.__lag * len(self.__y_labels), kernel_initializer=initializer)))
+        self.__model.add(ke.layers.Dense(self.__lag * len(self.__y_labels),
                                          kernel_initializer=initializer,
-                                         activation=activation))
-        self.__model.compile(loss=loss_func,
-                             optimizer=optimizer,
-                             metrics=['acc'])
+                                         activation='sigmoid'))
+        self.__model.compile(loss=loss_func, optimizer=optimizer, metrics=['mse', 'mae'])
         print(self.__model.summary())
 
     def fit_model(self, X_train=None, X_test=None, y_train=None, y_test=None, epochs=50, batch_size=50, verbose=2,
@@ -718,7 +766,8 @@ class NeuralNet:
         :param: y_train    - (Numpy 2D Array) Numpy matrix consisting of output training labels
         :param: y_test     - (Numpy 2D Array) Numpy matrix consisting of output validation/testing labels
         :param: epochs     - (Integer) Integer value denoting number of trained epochs
-        :param: verbose    - (Integer) Integer value denoting net verbosity (Amount of information shown to user during NeuralNet training)
+        :param: batch_size - (Integer) Integer value denoting LSTM training batch_size
+        :param: verbose    - (Integer) Integer value denoting net verbosity (Amount of information shown to user during LSTM training)
         :param: shuffle    - (Bool) Boolean value denoting whether or not to shuffle data. This parameter must always remain 'False' for time series datasets.
         :param: plot       - (Bool) Boolean value denoting whether this function should plot out it's evaluation
 
@@ -742,8 +791,8 @@ class NeuralNet:
 
         if plot:
             plt.rcParams['figure.figsize'] = [20, 15]
-            plt.plot(history.history['acc'], label='train')
-            plt.plot(history.history['val_acc'], label='validation')
+            plt.plot(history.history['mean_squared_error'], label='mean_squared_error')
+            plt.plot(history.history['mean_absolute_error'], label='mean_absolute_error')
             plt.ylabel('loss')
             plt.xlabel('epoch')
             plt.legend(['train', 'validation'], loc='upper left')
@@ -759,45 +808,12 @@ class NeuralNet:
         yhat = self.__model.predict(X, batch_size=batch_size)
         return yhat
 
-    def evaluate(self, y, yhat, plot=False):
-        """
-        Receives 2D matrix of input features and 2D matrix of output labels, and evaluates input data and target predictions.
-        :param: y    - Numpy array consisting of output label vectors (Test Set)
-        :param: yhat - Numpy array consisting of output label vectors (Prediction Set)
-        :param: plot     - (Bool) Boolean value denoting whether this function should plot out it's evaluation
-        :return: None
-        """
-        y = BinClass.discretize_value(y, 2)
-        yhat = BinClass.discretize_value(yhat, 2)
-        y = y.flatten()
-        yhat = yhat.flatten()
-
-        # F1-Score Evaluation
-        print(y)
-        print(yhat)
-        accuracy = accuracy_score(y, yhat)
-        f1 = f1_score(y,
-                      yhat,
-                      average='macro')  # Calculate metrics globally by counting the total true positives, false negatives and false positives.
-        print('Accuracy [' + str(accuracy) + ']')
-        print('FScore [' + str(f1) + ']')
-
-        if plot:
-            plt.rcParams['figure.figsize'] = [20, 15]
-            plt.plot(y, label='actual')
-            plt.plot(yhat, label='predicted')
-            plt.legend(['actual', 'predicted'], loc='upper left')
-            plt.title('Actual vs Predicted')
-            plt.show()
-        else:
-            return accuracy, f1
-
     @staticmethod
     def write_results_to_disk(path, iteration, lag, test_split, batch, dropout, epoch, layer, activation, initializer,
-                              rmse, accuracy, f_score, time_train):
+                              stateful, rmse, accuracy, f_score, time_train):
         """
         Static method which is used for test harness utilities. This method attempts a grid search across many
-        trained NeuralNet models, each denoted with different configurations.
+        trained LSTM models, each denoted with different configurations.
 
         Attempted configurations:
         * Varied data test split
@@ -810,22 +826,24 @@ class NeuralNet:
         :param: iteration  - (Integer) Integer denoting test iteration (Unique per test configuration).
         :param: lag        - (Integer) Denotes lag time shift
         :param: test_split - (Float) Float denoting data sample sizes.
-        :param: epoch      - (Integer) Integer denoting number of NeuralNet training iterations.
-        :param: layer      - (Integer) Integer denoting number of NeuralNet layers.
-        :param: activation - (String) String denoting activation for NeuralNet layers.
-        :param: initializer- (String) String denoting NeuralNet initializing weights.
+        :param: batch      - (Integer) Integer denoting LSTM batch size.
+        :param: epoch      - (Integer) Integer denoting number of LSTM training iterations.
+        :param: layer      - (Integer) Integer denoting number of LSTM layers
+        :param: activation - (String) String denoting activation for LSTM layers.
+        :param: initializer- (String) String denoting LSTM initializing weights.
+        :param: stateful   - (Bool) Boolean flag which denotes whether LSTM model is trained in stateful mode or not.
         :param: dropout    - (Float) Float denoting model dropout layer.
         :param: rmse       - (Float) Float denoting experiment configuration RSME score.
         :param: accuracy   - (Float) Float denoting experiment accuracy score.
         :param: fscore     - (Float) Float denoting experiment fscore score.
-        :param: time_train - (Integer) Integer denoting number of seconds taken by NeuralNet training iteration.
+        :param: time_train - (Integer) Integer denoting number of seconds taken by LSTM training iteration.
 
         :return: None
         """
         file_exists = os.path.isfile(path)
         with open(path, 'a+') as csvfile:
-            headers = ['iteration', 'test_split', 'batch', 'epoch', 'layer', 'dropout', 'activation', 'initializer',
-                       'rmse', 'accuracy', 'f_score', 'time_train', 'lag']
+            headers = ['iteration', 'test_split', 'batch', 'epoch', 'layer', 'stateful', 'dropout', 'activation',
+                       'initializer', 'rmse', 'accuracy', 'f_score', 'time_train', 'lag']
             writer = csv.DictWriter(csvfile, delimiter=',', lineterminator='\n', fieldnames=headers)
             if not file_exists:
                 writer.writeheader()  # file doesn't exist yet, write a header
@@ -834,6 +852,7 @@ class NeuralNet:
                              'batch': batch,
                              'epoch': epoch,
                              'layer': layer,
+                             'stateful': stateful,
                              'dropout': dropout,
                              'activation': activation,
                              'initializer': initializer,
@@ -852,9 +871,10 @@ class NeuralNet:
         :return: (Numpy) 2D array consisting of a perfect lag multiple rows.
         """
         n_rows = X.shape[0]
-        multiple = int(n_rows/lag)
+        multiple = int(n_rows / lag)
         max_new_rows = multiple * lag
-        return X[0:max_new_rows,:]
+        return X[0:max_new_rows, :]
+
 
 """ Grid Search """
 
@@ -868,12 +888,28 @@ for test_split in test_harness_param:
     X_test = X_test.values
     y_test = y_test.values
 
+    # Lag Multiples
+    X_train = LSTM.lag_multiple(X=X_train, lag=lag)
+    y_train = LSTM.lag_multiple(X=y_train, lag=lag)
+    X_validate = LSTM.lag_multiple(X=X_validate, lag=lag)
+    y_validate = LSTM.lag_multiple(X=y_validate, lag=lag)
+    X_test = LSTM.lag_multiple(X=X_test, lag=lag)
+    y_test = LSTM.lag_multiple(X=y_test, lag=lag)
+
+    # Reshape for fitting in LSTM
+    X_train = X_train.reshape((int(X_train.shape[0] / lag), lag, X_train.shape[1]))
+    y_train = y_train[0:int(y_train.shape[0] / lag),:]
+    X_validate = X_validate.reshape((int(X_validate.shape[0] / lag), lag, X_validate.shape[1]))
+    y_validate = y_validate[0:int(y_validate.shape[0] / lag),:]
+    X_test = X_test.reshape((int(X_test.shape[0] / lag), lag, X_test.shape[1]))
+    y_test = y_test[0:int(y_test.shape[0] / lag),:]
+
     # print('\nReshaping Training Frames')
     # print("X_train shape [" + str(X_train.shape) + "] Type - " + str(type(X_train)))
-    # print("X_validate shape [" + str(X_validate.shape) + "] Type - " + str(type(X_validate)))
-    # print("X_test shape [" + str(X_test.shape) + "] Type - " + str(type(X_test)))
     # print("y_train shape [" + str(y_train.shape) + "] Type - " + str(type(y_train)))
+    # print("X_validate shape [" + str(X_validate.shape) + "] Type - " + str(type(X_validate)))
     # print("y_validate shape [" + str(y_validate.shape) + "] Type - " + str(type(y_validate)))
+    # print("X_test shape [" + str(X_test.shape) + "] Type - " + str(type(X_test)))
     # print("y_test shape [" + str(y_test.shape) + "] Type - " + str(type(y_test)))
 
     for epochs in max_epochs:
@@ -883,15 +919,18 @@ for test_split in test_harness_param:
                     for dropout in drop_out:
                         for initializer in initializers:
                             t0 = time.time()
-                            model = NeuralNet(X=X_train,
-                                              y=y_train,
-                                              lag=lag,
-                                              loss_func='binary_crossentropy',
-                                              activation=activation,
-                                              optimizer='adam',
-                                              layers=layer,
-                                              dropout=dropout,
-                                              initializer=initializer)
+                            # Train on discrete data (Train > Validation)
+                            model = LSTM(X=X_train,
+                                         y=y_train,
+                                         lag=lag,
+                                         loss_func='mean_squared_error',
+                                         activation=activation,
+                                         optimizer='adam',
+                                         lstm_layers=layer,
+                                         dropout=dropout,
+                                         stateful=state,
+                                         y_labels=y_label,
+                                         initializer=initializer)
 
                             model.fit_model(X_train=X_train,
                                             X_test=X_validate,
@@ -903,38 +942,79 @@ for test_split in test_harness_param:
                                             shuffle=False,
                                             plot=False)
 
-                            acc_list, f_list = [], []
-                            for i in range(0, X_validate.shape[0]):
-                                X = np.array([X_validate[i, :]])
-                                y = model.predict(X, batch_size=batch)
-                                model.fit_model(X_train=X,
-                                                y_train=y,
-                                                epochs=5,
-                                                batch_size=1,
-                                                verbose=1,
-                                                shuffle=False,
-                                                plot=False)  # Online Learning, Training on validation predictions.
-                                acc_score, f_score = model.evaluate(y=y_validate[i, :],
-                                                                    yhat=y,
-                                                                    plot=False)
-                                acc_list.append(acc_score)
-                                f_list.append(f_score)
+                            n = 7
+                            accuracy_per_day, f1score_per_day = [], []
+                            for i in range(0, n):
+                                # Segregate data for specific day
+                                X_validate_temp = X_validate[(int(X_validate.shape[0] / n) * i):(
+                                    int(X_validate.shape[0] / n) * (i + 1)), :]
+                                y_validate_temp = y_validate[(int(y_validate.shape[0] / n) * i):(
+                                    int(y_validate.shape[0] / n) * (i + 1)), :]
+
+                                y_list, yhat_list = [], []
+                                for i in range(0, X_validate_temp.shape[0]):
+
+                                    X = np.array(np.array(X_validate_temp[i, :]))
+                                    X = X.reshape((int(X.shape[0] / lag), lag, X.shape[1]))
+                                    y = np.array(y_validate_temp[i, :])
+                                    yhat = model.predict(X, batch_size=batch)
+
+                                    y = y.reshape(1, -1)
+                                    model.fit_model(X_train=X,
+                                                    y_train=y,
+                                                    epochs=2,
+                                                    batch_size=1,
+                                                    verbose=0,
+                                                    shuffle=False,
+                                                    plot=False)  # Online Learning, Training on validation predictions.
+
+                                    y = y.flatten()
+                                    yhat = yhat.flatten()
+
+                                    for i in range(yhat.shape[0]):
+                                        if i % 2 == 0:
+                                            # print('CPU')
+                                            y[i] = BinClass.discretize_value(y[i], cpu_avg)
+                                            yhat[i] = BinClass.discretize_value(yhat[i], cpu_avg)
+                                        else:
+                                            # print('IO')
+                                            y[i] = BinClass.discretize_value(y[i], io_avg)
+                                            yhat[i] = BinClass.discretize_value(yhat[i], io_avg)
+                                    y_list.append(y)
+                                    yhat_list.append(yhat)
+
+                                y_list = np.array(y_list)
+                                yhat_list = np.array(yhat_list)
+
+                                acc_score_list, f1_score_list = [], []
+                                for i in range(lag * len(y_label)):
+                                    print('Label: ' + str(i))
+                                    acc = accuracy_score(y_list[:, i], yhat_list[:, i])
+                                    f1 = f1_score(y_list[:, i], yhat_list[:, i], average='binary')
+                                    print('Accuracy: ' + str(acc) + '\nF1Score: ' + str(
+                                        f1) + '\n--------------------------')
+                                    acc_score_list.append(acc)
+                                    f1_score_list.append(f1)
+                                accuracy_per_day.append(sum(acc_score_list) / len(acc_score_list))
+                                f1score_per_day.append(sum(f1_score_list) / len(f1_score_list))
+                                print('-' * 40)
 
                             t1 = time.time()
                             time_total = t1 - t0
-                            NeuralNet.write_results_to_disk(path="query_sequence_nn_results.csv",
-                                                            iteration=iteration,
-                                                            lag=lag,
-                                                            test_split=test_split,
-                                                            epoch=epochs,
-                                                            layer=layer,
-                                                            dropout=dropout,
-                                                            batch=batch,
-                                                            activation=activation,
-                                                            initializer=initializer,
-                                                            rmse=None,
-                                                            accuracy=sum(acc_list) / len(acc_list),
-                                                            f_score=sum(f_list) / len(f_list),
-                                                            time_train=time_total)
+                            LSTM.write_results_to_disk(path="query_sequence_lstm_results.csv",
+                                                       iteration=iteration,
+                                                       lag=lag,
+                                                       test_split=test_split,
+                                                       epoch=epochs,
+                                                       layer=layer,
+                                                       dropout=dropout,
+                                                       stateful=state,
+                                                       batch=batch,
+                                                       activation=activation,
+                                                       initializer=initializer,
+                                                       rmse=None,
+                                                       accuracy=sum(accuracy_per_day) / len(accuracy_per_day),
+                                                       f_score=sum(f1score_per_day) / len(f1score_per_day),
+                                                       time_train=time_total)
                             print('----------------------------' + str(iteration) + '----------------------------')
                             iteration += 1

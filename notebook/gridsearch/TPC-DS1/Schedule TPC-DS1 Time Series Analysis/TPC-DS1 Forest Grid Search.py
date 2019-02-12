@@ -21,7 +21,6 @@ from sklearn.decomposition import PCA
 from sklearn.feature_selection import RFE
 from sklearn import preprocessing
 from sklearn.metrics import r2_score
-from sklearn.preprocessing import LabelEncoder
 import sklearn as sk
 print('sklearn: %s' % sk.__version__)
 # math
@@ -788,8 +787,8 @@ for test_split in test_harness_param:
                                                max_depth=depth,
                                                max_features=features,
                                                rmse=None,
-                                               accuracy=sum(acc_score_list) / len(acc_score_list),
-                                               f_score=sum(f1_score_list) / len(f1_score_list),
+                                               accuracy=sum(accuracy_per_day) / len(accuracy_per_day),
+                                               f_score=sum(f1score_per_day) / len(f1score_per_day),
                                                time_train=time_total)
 
             print('----------------------------'+str(iteration)+'----------------------------')

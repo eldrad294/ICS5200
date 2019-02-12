@@ -8,16 +8,13 @@ import numpy as np
 print('numpy: %s' % np.__version__)
 # matplotlib
 import matplotlib.pyplot as plt
-from statsmodels.graphics.gofplots import qqplot
-from statsmodels.graphics.tsaplots import plot_acf
 # pandas
 import pandas as pd
 print('pandas: %s' % pd.__version__)
 # scikit-learn
-from sklearn.preprocessing import MinMaxScaler, LabelEncoder
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier, IsolationForest
+from sklearn.ensemble import RandomForestClassifier, IsolationForest
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import f1_score, accuracy_score, roc_curve, roc_auc_score, mean_squared_error
+from sklearn.metrics import f1_score, accuracy_score, roc_curve, roc_auc_score
 import sklearn as sk
 print('sklearn: %s' % sk.__version__)
 import math, time
@@ -31,25 +28,25 @@ lag=13 # Time Series shift / Lag Step. Each lag value equates to 1 minute. Canno
 if lag < 1:
     raise ValueError('Lag value must be greater than 1!')
 
-nrows = 4000000
+nrows = 100000
 test_split=.2 # Denotes which Data Split to operate under when it comes to training / validation
 
 # Top Consumer Identification
 y_label = ['COST','CARDINALITY','BYTES','IO_COST','TEMP_SPACE','TIME']
-black_list = ['TIMESTAMP','SQL_ID'] # Columns which will be ignored during type conversion, and later used for aggregation
+black_list = ['TIMESTAMP','SQL_ID']  # Columns which will be ignored during type conversion, and later used for aggregation
 contamination = .1
 
 # Forest Config
 test_harness_param_list = (.2,.3,.4,.5)
-max_features_list=('sqrt','log2', None)
-max_depth_list=(3, 6, None)
+max_features=('sqrt','log2', None)
+max_depth=(3, 6, None)
 n_estimators = 300
-parallel_degree = 4
+parallel_degree = -1
 iteration = 0
 
 # Root path
-#root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
-root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
+root_dir = 'C:/Users/gabriel.sammut/University/Data_ICS5200/Schedule/' + tpcds
+# root_dir = 'D:/Projects/Datagenerated_ICS5200/Schedule/' + tpcds
 
 # Open Data'
 rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
@@ -321,8 +318,8 @@ sql_ids = np.unique(rep_vsql_plan_df['SQL_ID'].values)
 sql_map = {}
 for sql in sql_ids:
     df_plan = rep_vsql_plan_df.loc[rep_vsql_plan_df['SQL_ID'] == sql]
-    plan_costings = df_plan[y_label]
-    sql_map[sql] = ifw.predict_labels(plan_costings.values)[0]
+    plan_costings = df_plan[y_label].values
+    sql_map[sql] = ifw.predict_labels(plan_costings)[0]
 print(sql_map)
 
 outlier_ids = []
@@ -573,6 +570,9 @@ def remove_n_time_steps(data, n=1):
     df = data
     headers = df.columns
     dropped_headers = []
+    #     for header in headers:
+    #         if "(t)" in header:
+    #             dropped_headers.append(header)
 
     for i in range(1, n + 1):
         for header in headers:
@@ -585,11 +585,13 @@ def remove_n_time_steps(data, n=1):
 # Frame as supervised learning set
 shifted_df = series_to_supervised(df, lag, lag)
 
-# Seperate labels from features
+# Separate labels from features
 y_row = []
 for i in range(lag + 1, (lag * 2) + 2):
-    y_df_column_names = shifted_df.columns[len(df.columns) * i:len(df.columns) * i + 1]
+    y_df_column_names = shifted_df.columns[len(df.columns) * i:len(df.columns) * i + len(y_label)]
     y_row.append(y_df_column_names)
+    print(y_df_column_names)
+    print(type(y_df_column_names))
 y_df_column_names = []
 for row in y_row:
     for val in row:
@@ -597,23 +599,25 @@ for row in y_row:
 
 # y_df_column_names = shifted_df.columns[len(df.columns)*lag:len(df.columns)*lag + len(y_label)]
 y_df = shifted_df[y_df_column_names]
-X_df = shifted_df.drop(columns=y_df_column_names)
+X_df = shifted_df
+# X_df = shifted_df.drop(columns=y_df_column_names)
+
+# # Delete middle timesteps
+X_df = remove_n_time_steps(data=X_df, n=lag)
+# print('\n-------------\nFeatures After Time Shift')
+# print(X_df.columns)
+# print(X_df.shape)
+# y_df = remove_n_time_steps(data=y_df, n=lag)
+# print('\n-------------\nLabels After Time Shift')
+# print(y_df.columns)
+# print(y_df.shape)
+
 print('\n-------------\nFeatures')
 print(X_df.columns)
 print(X_df.shape)
 print('\n-------------\nLabels')
 print(y_df.columns)
 print(y_df.shape)
-
-# Delete middle timesteps
-# X_df = remove_n_time_steps(data=X_df, n=lag)
-# print('\n-------------\nFeatures After Time Shift')
-# print(X_df.columns)
-# print(X_df.shape)
-# # y_df = remove_n_time_steps(data=y_df, n=lag)
-# print('\n-------------\nLabels After Time Shift')
-# print(y_df.columns)
-# print(y_df.shape)
 
 """ Tree Based Model """
 
@@ -623,44 +627,26 @@ class RandomForest:
     Random Forest Class (Regression + Classification)
     """
 
-    def __init__(self, mode, n_estimators, max_depth, parallel_degree, lag, max_features='sqrt'):
+    def __init__(self, n_estimators, max_depth, parallel_degree, lag, max_features='sqrt'):
         """
         Constructor method for RandomForest wrapper
-        :param: mode            - String denoting the class to activate either 'classification' or 'regression' logic.
         :param: n_estimators    - Integer denoting number of decision making forests utilized by inner forests.
         :param: max_depth       - Integer denoting tree purity cut off.
         :param: parallel_degree - Integer denoting model parallel degree.
+        :param: y_label         - List columns consisting of labels.
         :param: lag             - Integer denoting lag value.
         :param: max_features    - String denoting the max amount of features to consider.
         :return: None
         """
         self.__lag = lag
-        self.__mode = self.__validate(mode)
         self.__n_estimators = n_estimators
         self.__max_depth = max_depth
         self.__parallel_degree = parallel_degree
         self.__max_features = max_features
-        if self.__mode == 'regression':
-            self.__model = RandomForestRegressor(max_depth=self.__max_depth,
-                                                 n_estimators=self.__n_estimators,
-                                                 n_jobs=self.__parallel_degree,
-                                                 max_features=self.__max_features)
-        elif self.__mode == 'classification':
-            self.__model = RandomForestClassifier(max_depth=self.__max_depth,
-                                                  n_estimators=self.__n_estimators,
-                                                  n_jobs=self.__parallel_degree,
-                                                  max_features=self.__max_features)
-
-    def __validate(self, mode):
-        """
-        Validation method used to validate input data
-        :param: mode - String denoting the class to activate either 'classification' or 'regression' logic.
-        :return: mode - String denoting the class to activate either 'classification' or 'regression' logic.
-        """
-        mode = mode.lower()
-        if mode not in ('classification', 'regression'):
-            raise ValueError('Specified mode is incorrect!')
-        return mode
+        self.__model = RandomForestClassifier(max_depth=self.__max_depth,
+                                              n_estimators=self.__n_estimators,
+                                              n_jobs=self.__parallel_degree,
+                                              max_features=self.__max_features)
 
     def fit_model(self, X, y):
         """
@@ -680,47 +666,49 @@ class RandomForest:
         yhat = self.__model.predict(X)
         return yhat
 
-    def evaluate(self, y, yhat, plot=False):
-        """
-        Evaluates y vs yhat
-        :param: y    - Numpy array consisting of output label vectors (Test Set)
-        :param: yhat - Numpy array consisting of output label vectors (Prediction Set)
-        :param: plot - Boolean value denoting whether this function should plot out it's evaluation
-        :return: None
-        """
-        if self.__mode == 'regression':
+#     def evaluate(self, y, yhat, plot=False):
+#         """
+#         Evaluates y vs yhat
+#         :param: y    - Numpy array consisting of output label vectors (Test Set)
+#         :param: yhat - Numpy array consisting of output label vectors (Prediction Set)
+#         :param: plot - Boolean value denoting whether this function should plot out it's evaluation
+#         :return: None
+#         """
+#         if self.__mode == 'regression':
 
-            # RMSE Evaluation
-            rmse = math.sqrt(mean_squared_error(y, yhat))
-            if not plot:
-                return rmse
-            print('Test RFR: %.3f\n-----------------------------\n\n' % rmse)
+#             # RMSE Evaluation
+#             rmse = math.sqrt(mean_squared_error(y, yhat))
+#             if not plot:
+#                 return rmse
+#             print('Test RFR: %.3f\n-----------------------------\n\n' % rmse)
 
-        elif self.__mode == 'classification':
+#         elif self.__mode == 'classification':
 
-            y = y.flatten()
-            yhat = yhat.flatten()
+#             y = BinClass.discretize_value(y, bin_value)
+#             yhat = BinClass.discretize_value(yhat, bin_value)
+#             y = y.flatten()
+#             yhat = yhat.flatten()
 
-            # Evaluation
-            print(y)
-            print(yhat)
-            accuracy = accuracy_score(y, yhat)
-            f1 = f1_score(y,
-                          yhat,
-                          average='macro')  # Calculate metrics globally by counting the total true positives, false negatives and false positives.
-            print('Accuracy [' + str(accuracy) + ']')
-            print('FScore [' + str(f1) + ']')
+#             # Evaluation
+#             print(y)
+#             print(yhat)
+#             accuracy = accuracy_score(y, yhat)
+#             f1 = f1_score(y,
+#                           yhat,
+#                           average='macro')  # Calculate metrics globally by counting the total true positives, false negatives and false positives.
+#             print('Accuracy [' + str(accuracy) + ']')
+#             print('FScore [' + str(f1) + ']')
 
-            if not plot:
-                return accuracy, f1
+#             if not plot:
+#                 return accuracy, f1
 
-        if plot:
-            plt.rcParams['figure.figsize'] = [20, 15]
-            plt.plot(y, label='actual')
-            plt.plot(yhat, label='predicted')
-            plt.legend(['actual', 'predicted'], loc='upper left')
-            plt.title('Actual vs Predicted')
-            plt.show()
+#         if plot:
+#                 plt.rcParams['figure.figsize'] = [20, 15]
+#                 plt.plot(y, label='actual')
+#                 plt.plot(yhat, label='predicted')
+#                 plt.legend(['actual', 'predicted'], loc='upper left')
+#                 plt.title('Actual vs Predicted')
+#                 plt.show()
 
     @staticmethod
     def write_results_to_disk(path, iteration, lag, test_split, max_depth, max_features, rmse, accuracy,
@@ -768,55 +756,79 @@ for test_split in test_harness_param_list:
     X_train, X_validate, y_train, y_validate = train_test_split(X_df, y_df, test_size=test_split)
     X_train = X_train.values
     y_train = y_train.values
-    X_validate, X_test, y_validate, y_test = train_test_split(X_validate, y_validate, test_size=.5)
     X_validate = X_validate.values
     y_validate = y_validate.values
-    X_test = X_test.values
-    y_test = y_test.values
-    print("X_train shape [" + str(X_train.shape) + "] Type - " + str(type(X_train)))
-    print("y_train shape [" + str(y_train.shape) + "] Type - " + str(type(y_train)))
-    print("X_validate shape [" + str(X_validate.shape) + "] Type - " + str(type(X_validate)))
-    print("y_validate shape [" + str(y_validate.shape) + "] Type - " + str(type(y_validate)))
-    print("X_test shape [" + str(X_test.shape) + "] Type - " + str(type(X_test)))
-    print("y_test shape [" + str(y_test.shape) + "] Type - " + str(type(y_test)) + "\n------------------------------")
 
-    for max_depth in max_depth_list:
-        for max_features in max_features_list:
+    for features in max_features:
+        for depth in max_depth:
             t0 = time.time()
 
             # Train on discrete data (Train > Validation)
-            model = RandomForest(mode='classification',
-                                 n_estimators=n_estimators,
+            model = RandomForest(n_estimators=n_estimators,
                                  parallel_degree=parallel_degree,
-                                 max_depth=max_depth,
+                                 max_depth=depth,
                                  lag=lag,
-                                 max_features=max_features)
+                                 max_features=features)
             model.fit_model(X=X_train,
                             y=y_train)
 
-            acc_list, f_list = [], []
-            for i in range(0, X_validate.shape[0]):
-                X = np.array([X_validate[i,:]])
-                y = model.predict(X)
-                model.fit_model(X=X,
-                                y=y)  # Online Learning, Training on validation predictions.
-                acc_score, f_score = model.evaluate(y=y_validate[i,:],
-                                                    yhat=np.array(y),
-                                                    plot=False)
-                acc_list.append(acc_score)
-                f_list.append(f_score)
+            n = 7
+            accuracy_per_day, f1score_per_day = [], []
+            for i in range(0, n):
+
+                print('Day ' + str(i + 1))
+
+                # Segregate data for specific day
+                X_validate_temp = X_validate[
+                                  (int(X_validate.shape[0] / n) * i):(int(X_validate.shape[0] / n) * (i + 1)), :]
+                y_validate_temp = y_validate[
+                                  (int(y_validate.shape[0] / n) * i):(int(y_validate.shape[0] / n) * (i + 1)), :]
+                print('Feature vectors: ' + str(X_validate_temp.shape))
+                print('Label vectors: ' + str(y_validate_temp.shape))
+
+                y_list, yhat_list = [], []
+                for i in range(0, X_validate_temp.shape[0]):
+
+                    X = X_validate_temp[i, :]
+                    X = X.reshape(1, -1)
+                    # X = X.reshape((int(X.shape[0] / lag), lag, X.shape[1]))
+                    y = np.array(y_validate_temp[i, :])
+                    yhat = model.predict(X)
+
+                    y = y.reshape(1, -1)
+                    model.fit_model(X=X,
+                                    y=y)  # Online Learning, Training on validation predictions.
+
+                    y = y.flatten()
+                    yhat = yhat.flatten()
+                    y_list.append(y)
+                    yhat_list.append(yhat)
+
+                y_list = np.array(y_list)
+                yhat_list = np.array(yhat_list)
+
+                acc_score_list, f1_score_list = [], []
+                for i in range(lag * len(y_label)):
+                    acc = accuracy_score(y_list[:, i], yhat_list[:, i])
+                    f1 = f1_score(y_list[:, i], yhat_list[:, i], average='binary')
+                    acc_score_list.append(acc)
+                    f1_score_list.append(f1)
+                accuracy_per_day.append(sum(acc_score_list) / len(acc_score_list))
+                f1score_per_day.append(sum(f1_score_list) / len(f1_score_list))
+                print('Accuracy: ' + str(sum(accuracy_per_day)/len(accuracy_per_day)) + '\nF1Score: ' + str(sum(f1score_per_day)/len(f1score_per_day)) + '\n--------------------------')
+                print('-' * 40)
 
             t1 = time.time()
             time_total = t1 - t0
-            RandomForest.write_results_to_disk(path="query_sequence_random_forest_classification_results.csv",
+            RandomForest.write_results_to_disk(path="query_sequence_random_forest_results.csv",
                                                iteration=iteration,
                                                lag=lag,
                                                test_split=test_split,
-                                               max_depth=max_depth,
-                                               max_features=max_features,
+                                               max_depth=depth,
+                                               max_features=features,
                                                rmse=None,
-                                               accuracy=sum(acc_list) / len(acc_list),
-                                               f_score=sum(f_list) / len(f_list),
+                                               accuracy=sum(accuracy_per_day) / len(accuracy_per_day),
+                                               f_score=sum(f1score_per_day) / len(f1score_per_day),
                                                time_train=time_total)
 
             print('----------------------------' + str(iteration) + '----------------------------')
