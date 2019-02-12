@@ -879,22 +879,17 @@ class NeuralNet:
 """ Grid Search """
 
 for test_split in test_harness_param:
+
     X_train, X_validate, y_train, y_validate = train_test_split(X_df, y_df, test_size=test_split)
     X_train = X_train.values
     y_train = y_train.values
-    X_validate, X_test, y_validate, y_test = train_test_split(X_validate, y_validate, test_size=.5)
     X_validate = X_validate.values
     y_validate = y_validate.values
-    X_test = X_test.values
-    y_test = y_test.values
 
-    # print('\nReshaping Training Frames')
-    # print("X_train shape [" + str(X_train.shape) + "] Type - " + str(type(X_train)))
-    # print("X_validate shape [" + str(X_validate.shape) + "] Type - " + str(type(X_validate)))
-    # print("X_test shape [" + str(X_test.shape) + "] Type - " + str(type(X_test)))
-    # print("y_train shape [" + str(y_train.shape) + "] Type - " + str(type(y_train)))
-    # print("y_validate shape [" + str(y_validate.shape) + "] Type - " + str(type(y_validate)))
-    # print("y_test shape [" + str(y_test.shape) + "] Type - " + str(type(y_test)))
+    print("X_train shape [" + str(X_train.shape) + "] Type - " + str(type(X_train)))
+    print("X_validate shape [" + str(X_validate.shape) + "] Type - " + str(type(X_validate)))
+    print("y_train shape [" + str(y_train.shape) + "] Type - " + str(type(y_train)))
+    print("y_validate shape [" + str(y_validate.shape) + "] Type - " + str(type(y_validate)))
 
     for epochs in max_epochs:
         for batch in max_batch:
@@ -959,6 +954,9 @@ for test_split in test_harness_param:
 
                                     y = y.flatten()
                                     yhat = yhat.flatten()
+                                    for i in range(yhat.shape[0]):
+                                        y[i] = BinClass.discretize_value(y[i], .5)
+                                        yhat[i] = BinClass.discretize_value(yhat[i], .5)
                                     y_list.append(y)
                                     yhat_list.append(yhat)
 
