@@ -8,12 +8,10 @@ import numpy as np
 print('numpy: %s' % np.__version__)
 # matplotlib
 import matplotlib.pyplot as plt
-from statsmodels.graphics.gofplots import qqplot
 # pandas
 import pandas as pd
 print('pandas: %s' % pd.__version__)
 # scikit-learn
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 from sklearn.metrics import f1_score, accuracy_score, roc_curve, roc_auc_score
@@ -50,7 +48,7 @@ test_harness_param = (.2, .3, .4, .5) # Denotes which Data Split to operate unde
 y_label = ['COST','CARDINALITY','BYTES','IO_COST','TEMP_SPACE','TIME']
 black_list = ['TIMESTAMP','SQL_ID'] # Columns which will be ignored during type conversion, and later used for aggregation
 contamination = .1
-parallel_degree = 4
+parallel_degree = -1
 
 # Net Config
 max_epochs = (50, 100, 150)
@@ -653,19 +651,19 @@ class BinClass:
             return BinClass.__bucket_val(X, threshold)
 
 
-cpu_avg = y_df[y_label[0]].mean()
-y_df_cpu = pd.DataFrame(BinClass.discretize_value(y_df[[y_label[0]]].values, cpu_avg), columns=[y_label[0]])
-print('CPU y:')
-print(np.unique(y_df_cpu.values))
-print('Number of 0s: ' + str(np.count_nonzero(y_df_cpu == 0)))
-print('Number of 1s: ' + str(np.count_nonzero(y_df_cpu == 1)))
-#
-io_avg = y_df[y_label[1]].mean()
-y_df_io = pd.DataFrame(BinClass.discretize_value(y_df[[y_label[1]]].values, io_avg), columns=[y_label[1]])
-print('I/O y:')
-print(np.unique(y_df_io.values))
-print('Number of 0s: ' + str(np.count_nonzero(y_df_io == 0)))
-print('Number of 1s: ' + str(np.count_nonzero(y_df_io == 1)))
+# cpu_avg = y_df[y_label[0]].mean()
+# y_df_cpu = pd.DataFrame(BinClass.discretize_value(y_df[[y_label[0]]].values, cpu_avg), columns=[y_label[0]])
+# print('CPU y:')
+# print(np.unique(y_df_cpu.values))
+# print('Number of 0s: ' + str(np.count_nonzero(y_df_cpu == 0)))
+# print('Number of 1s: ' + str(np.count_nonzero(y_df_cpu == 1)))
+# #
+# io_avg = y_df[y_label[1]].mean()
+# y_df_io = pd.DataFrame(BinClass.discretize_value(y_df[[y_label[1]]].values, io_avg), columns=[y_label[1]])
+# print('I/O y:')
+# print(np.unique(y_df_io.values))
+# print('Number of 0s: ' + str(np.count_nonzero(y_df_io == 0)))
+# print('Number of 1s: ' + str(np.count_nonzero(y_df_io == 1)))
 
 """ Deep Learning Model """
 
@@ -941,7 +939,7 @@ for test_split in test_harness_param:
                                     X = X.reshape(1, -1)
                                     # X = X.reshape((int(X.shape[0] / lag), lag, X.shape[1]))
                                     y = np.array(y_validate_temp[i, :])
-                                    yhat = model.predict(X)
+                                    yhat = model.predict(X, batch_size=batch)
 
                                     y = y.reshape(1, -1)
                                     model.fit_model(X_train=X,
@@ -971,9 +969,6 @@ for test_split in test_harness_param:
                                     f1_score_list.append(f1)
                                 accuracy_per_day.append(sum(acc_score_list) / len(acc_score_list))
                                 f1score_per_day.append(sum(f1_score_list) / len(f1_score_list))
-                                print('Accuracy: ' + str(
-                                    sum(accuracy_per_day) / len(accuracy_per_day)) + '\nF1Score: ' + str(
-                                    sum(f1score_per_day) / len(f1score_per_day)) + '\n--------------------------')
                                 print('-' * 40)
 
                             t1 = time.time()

@@ -50,7 +50,7 @@ test_harness_param = (.2, .3, .4, .5) # Denotes which Data Split to operate unde
 y_label = ['COST','CARDINALITY','BYTES','IO_COST','TEMP_SPACE','TIME']
 black_list = ['TIMESTAMP','SQL_ID'] # Columns which will be ignored during type conversion, and later used for aggregation
 contamination = .1
-parallel_degree = 4
+parallel_degree = -1
 
 # Net Config
 max_epochs = (50, 100, 150)
@@ -642,19 +642,19 @@ class BinClass:
             return BinClass.__bucket_val(X, threshold)
 
 
-cpu_avg = y_df[y_label[0]].mean()
-y_df_cpu = pd.DataFrame(BinClass.discretize_value(y_df[[y_label[0]]].values, cpu_avg), columns=[y_label[0]])
-print('CPU y:')
-print(np.unique(y_df_cpu.values))
-print('Number of 0s: ' + str(np.count_nonzero(y_df_cpu == 0)))
-print('Number of 1s: ' + str(np.count_nonzero(y_df_cpu == 1)))
-#
-io_avg = y_df[y_label[1]].mean()
-y_df_io = pd.DataFrame(BinClass.discretize_value(y_df[[y_label[1]]].values, io_avg), columns=[y_label[1]])
-print('I/O y:')
-print(np.unique(y_df_io.values))
-print('Number of 0s: ' + str(np.count_nonzero(y_df_io == 0)))
-print('Number of 1s: ' + str(np.count_nonzero(y_df_io == 1)))
+# cpu_avg = y_df[y_label[0]].mean()
+# y_df_cpu = pd.DataFrame(BinClass.discretize_value(y_df[[y_label[0]]].values, cpu_avg), columns=[y_label[0]])
+# print('CPU y:')
+# print(np.unique(y_df_cpu.values))
+# print('Number of 0s: ' + str(np.count_nonzero(y_df_cpu == 0)))
+# print('Number of 1s: ' + str(np.count_nonzero(y_df_cpu == 1)))
+# #
+# io_avg = y_df[y_label[1]].mean()
+# y_df_io = pd.DataFrame(BinClass.discretize_value(y_df[[y_label[1]]].values, io_avg), columns=[y_label[1]])
+# print('I/O y:')
+# print(np.unique(y_df_io.values))
+# print('Number of 0s: ' + str(np.count_nonzero(y_df_io == 0)))
+# print('Number of 1s: ' + str(np.count_nonzero(y_df_io == 1)))
 
 """ Deep Learning Model (LSTM) """
 
@@ -965,6 +965,7 @@ for test_split in test_harness_param:
                                     for i in range(yhat.shape[0]):
                                         y[i] = BinClass.discretize_value(y[i], .5)
                                         yhat[i] = BinClass.discretize_value(yhat[i], .5)
+
                                     y_list.append(y)
                                     yhat_list.append(yhat)
 
@@ -973,11 +974,8 @@ for test_split in test_harness_param:
 
                                 acc_score_list, f1_score_list = [], []
                                 for i in range(lag * len(y_label)):
-                                    print('Label: ' + str(i))
                                     acc = accuracy_score(y_list[:, i], yhat_list[:, i])
                                     f1 = f1_score(y_list[:, i], yhat_list[:, i], average='binary')
-                                    print('Accuracy: ' + str(acc) + '\nF1Score: ' + str(
-                                        f1) + '\n--------------------------')
                                     acc_score_list.append(acc)
                                     f1_score_list.append(f1)
                                 accuracy_per_day.append(sum(acc_score_list) / len(acc_score_list))
