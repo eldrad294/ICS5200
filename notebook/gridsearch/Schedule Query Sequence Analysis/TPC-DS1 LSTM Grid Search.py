@@ -71,7 +71,7 @@ rep_hist_snapshot_path = root_dir + '/rep_hist_snapshot.csv'
 rep_vsql_plan_path = root_dir + '/rep_vsql_plan.csv'
 
 rep_hist_snapshot_df = pd.read_csv(rep_hist_snapshot_path, nrows=nrows)
-rep_vsql_plan_df = pd.read_csv(rep_vsql_plan_path, nrows=4000000)
+rep_vsql_plan_df = pd.read_csv(rep_vsql_plan_path, nrows=2000000)
 
 def prettify_header(headers):
     """
