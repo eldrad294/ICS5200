@@ -1,0 +1,19 @@
+id,object_type,object_name
+1,No plan differences detected.,No plan differences detected.
+2,TABLE,CUSTOMER
+2,TABLE,CUSTOMER_ADDRESS
+2,INDEX,C_CURRENT_ADDR_SK_INDEX
+3,TABLE,ITEM
+4,No plan differences detected.,No plan differences detected.
+5,No plan differences detected.,No plan differences detected.
+6,No plan differences detected.,No plan differences detected.
+7,No plan differences detected.,No plan differences detected.
+8,No plan differences detected.,No plan differences detected.
+9,No plan differences detected.,No plan differences detected.
+10,No plan differences detected.,No plan differences detected.
+11,No plan differences detected.,No plan differences detected.
+12,INDEX,CS_SOLD_DATE_SK_INDEX
+12,TABLE,DATE_DIM
+12,TABLE,CATALOG_SALES
+13,No plan differences detected.,No plan differences detected.
+14,No plan differences detected.,No plan differences detected.
